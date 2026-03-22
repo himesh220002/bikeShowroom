@@ -1,0 +1,51 @@
+# Node modules
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build outputs
+.next/
+client/.next/
+server/dist/
+server/build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+client/.env*
+server/.env*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# Coverage reports
+coverage/
+
+# Temporary files
+tmp/
+temp/
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.swp
+
+# Misc
+*.lock
+
+# 3D / large binary assets (avoid committing large .glb files)
+*.glb

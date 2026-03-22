@@ -1,0 +1,95 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { Gauge, Cpu, Binary, Shield, Zap, Fuel, Scale, Ruler, Layers } from "lucide-react";
+
+interface BikeSpecificationsProps {
+    bike: any;
+}
+
+export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
+    const mainSpecs = [
+        { label: "Engine", value: bike.fullSpecs.engine, icon: Gauge },
+        { label: "Max Power", value: bike.fullSpecs.power, icon: Zap },
+        { label: "Max Torque", value: bike.fullSpecs.torque, icon: Cpu },
+        { label: "Transmission", value: bike.fullSpecs.transmission, icon: Binary },
+        { label: "Braking System", value: bike.fullSpecs.brakes, icon: Shield },
+        { label: "Fuel Capacity", value: bike.fullSpecs.fuelCapacity, icon: Fuel },
+    ];
+
+    const secondarySpecs = [
+        { label: "Curb Weight", value: bike.fullSpecs.weight, icon: Scale },
+        { label: "Seat Height", value: bike.fullSpecs.seatHeight, icon: Ruler },
+        { label: "Tyre Size", value: bike.fullSpecs.tyres, icon: Layers },
+    ];
+
+    return (
+        <section className="py-24 bg-zinc-900">
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-16">
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
+                        Technical Specs
+                    </h2>
+                    <h3 className="text-5xl md:text-6xl font-display font-black text-white uppercase tracking-tighter">
+                        ENGINEERING <span className="text-racing-blue">EXCELLENCE</span>
+                    </h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                    {mainSpecs.map((spec, index) => (
+                        <motion.div
+                            key={spec.label}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: index * 0.1 }}
+                            className="bg-zinc-950 p-8 rounded-[2.5rem] border border-zinc-800 hover:border-racing-blue/30 transition-all group"
+                        >
+                            <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <spec.icon className="w-6 h-6 text-racing-blue" />
+                            </div>
+                            <h4 className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">{spec.label}</h4>
+                            <p className="text-lg text-white font-bold uppercase tracking-tight">{spec.value}</p>
+                        </motion.div>
+                    ))}
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+                    <div className="bg-zinc-950 p-10 rounded-[3rem] border border-zinc-800">
+                        <h4 className="text-xl font-display font-black text-white uppercase tracking-tight mb-8">Dimensions & Chassis</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                            {secondarySpecs.map((spec) => (
+                                <div key={spec.label} className="flex flex-col gap-2">
+                                    <div className="flex items-center gap-3">
+                                        <spec.icon className="w-4 h-4 text-racing-blue" />
+                                        <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">{spec.label}</span>
+                                    </div>
+                                    <p className="text-white font-bold uppercase">{spec.value}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-blue-800 rounded-[3rem] p-10 flex flex-col justify-between relative overflow-hidden group">
+                        <div className="relative z-10">
+                            <h4 className="text-xl font-display font-black text-white uppercase tracking-tight mb-6">Key Features</h4>
+                            <div className="flex flex-wrap gap-3">
+                                {bike.fullSpecs.features.map((feature: string) => (
+                                    <span key={feature} className="px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black text-white uppercase tracking-widest">
+                                        {feature}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="absolute -bottom-10 -right-10 opacity-20 group-hover:scale-110 transition-transform duration-700">
+                            <div className="w-40 h-40 bg-white rounded-full blur-3xl" />
+                        </div>
+                        <div className="relative z-10 mt-12 bg-white text-racing-blue px-6 py-3 rounded-2xl w-fit text-xs font-black uppercase shadow-xl">
+                            Yamaha Racing Heritage
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}

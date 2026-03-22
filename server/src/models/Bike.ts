@@ -1,0 +1,23 @@
+import mongoose, { Schema, Document } from 'mongoose';
+
+export interface IBike extends Document {
+    name: string;
+    variant: string;
+    price: string;
+    image: string;
+    tag: string;
+    color: string;
+    stock: number;
+}
+
+const BikeSchema: Schema = new Schema({
+    name: { type: String, required: true },
+    variant: { type: String, required: true },
+    price: { type: String, required: true },
+    image: { type: String, required: true },
+    tag: { type: String, required: true },
+    color: { type: String, required: true },
+    stock: { type: Number, default: 0 }
+});
+
+export default mongoose.model<IBike>('Bike', BikeSchema);
