@@ -3,18 +3,18 @@
 import { useEffect, useState } from "react";
 import { BarChart2, Users, Package, Calendar, TrendingUp, Bell, Rocket, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import { LeadsTable } from "@/components/features/LeadsTable";
-import { ServicesTable } from "@/components/features/ServicesTable";
-import { LeadsTableHot } from "@/components/features/LeadsTableHot";
-import { io } from "socket.io-client";
+import { LeadsTable, type Lead } from "@/components/features/LeadsTable";
+import { ServicesTable, type ServiceBooking } from "@/components/features/ServicesTable";
+import { LeadsTableHot, type Lead as HotLead } from "@/components/features/LeadsTableHot";
+import io from "socket.io-client";
 import { motion, AnimatePresence } from "framer-motion";
 
 const socket = io("http://localhost:5000");
 
 export default function AdminDashboard() {
-    const [leads, setLeads] = useState<any[]>([]);
-    const [qualifiedLeads, setQualifiedLeads] = useState<any[]>([]);
-    const [services, setServices] = useState<any[]>([]);
+    const [leads, setLeads] = useState<Lead[]>([]);
+    const [qualifiedLeads, setQualifiedLeads] = useState<HotLead[]>([]);
+    const [services, setServices] = useState<ServiceBooking[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<"leads" | "services" | "hot">("leads");
 
@@ -45,21 +45,21 @@ export default function AdminDashboard() {
         fetchData();
 
         // 2. Listen for Socket events
-        socket.on("new_lead", (newLead) => {
-            setLeads(prev => [newLead, ...prev]);
+        socket.on("new_lead", (newLead: Lead) => {
+            setLeads((prev: Lead[]) => [newLead, ...prev]);
             notifyUser("New Inquiry Received!", `${newLead.name} wants to know more about Yamaha.`);
         });
 
-        socket.on("new_service", (newService) => {
-            setServices(prev => [newService, ...prev]);
+        socket.on("new_service", (newService: ServiceBooking) => {
+            setServices((prev: ServiceBooking[]) => [newService, ...prev]);
             notifyUser("New Workshop Booking!", `${newService.name} scheduled service for ${newService.bikeModel}.`);
         });
 
-        socket.on("lead_escalated", (data) => {
-            setQualifiedLeads(prev => {
-                const exists = prev.find(l => l._id === data.lead._id);
+        socket.on("lead_escalated", (data: { lead: HotLead; customer: { name: string } }) => {
+            setQualifiedLeads((prev: HotLead[]) => {
+                const exists = prev.find((l: HotLead) => l._id === data.lead._id);
                 if (exists) {
-                    return prev.map(l => l._id === data.lead._id ? data.lead : l);
+                    return prev.map((l: HotLead) => l._id === data.lead._id ? data.lead : l);
                 }
                 return [data.lead, ...prev];
             });

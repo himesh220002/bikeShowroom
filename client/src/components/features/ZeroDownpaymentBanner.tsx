@@ -23,6 +23,7 @@ export function ZeroDownpaymentBanner({ bikeName }: ZeroDownpaymentBannerProps) 
                         src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2070&auto=format&fit=crop"
                         alt="Zero Downpayment Finance Offer"
                         fill
+                        sizes="100vw"
                         unoptimized={true}
                         className="object-cover object-center transition-transform duration-1000 group-hover:scale-105"
                     />

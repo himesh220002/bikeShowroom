@@ -3,7 +3,7 @@
 import { CheckCircle2, MoreVertical, Phone, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-interface Lead {
+export interface Lead {
     _id?: string;
     id?: string;
     name: string;

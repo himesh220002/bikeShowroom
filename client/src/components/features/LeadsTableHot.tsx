@@ -3,7 +3,7 @@
 import { Rocket, Phone, MessageSquare, MoreVertical, Flame, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-interface Lead {
+export interface Lead {
     _id: string;
     customerId: {
         _id: string;

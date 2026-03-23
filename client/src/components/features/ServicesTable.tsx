@@ -3,7 +3,7 @@
 import { Wrench, Bike, Calendar, Package, MoreVertical, Phone, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-interface ServiceBooking {
+export interface ServiceBooking {
     _id: string;
     name: string;
     phone: string;

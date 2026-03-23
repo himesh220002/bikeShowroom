@@ -4,12 +4,21 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils/cn";
 import { Volume2, Cpu, Rotate3d, Play, Pause, X } from "lucide-react";
 import { motion, AnimatePresence, useSpring } from "framer-motion";
+import { RotatingBikeViewer } from "./RotatingBikeViewer";
 
 export function Viewer360() {
     const [activeMode, setActiveMode] = useState<"360" | "sound" | "tech">("360");
     const [isPlaying, setIsPlaying] = useState(false);
     const [gear, setGear] = useState<number | "N">("N");
-    const GEAR_SPEEDS = [0, 32, 65, 95, 120, 145];
+    const GEAR_DATA: Record<number | "N", { speed: number; note: string; vva: boolean }> = {
+        "N": { speed: 0, note: "Neutral gear - Engine idling", vva: false },
+        1: { speed: 40, note: "Strong initial pull, VVA not active yet", vva: false },
+        2: { speed: 60, note: "Good acceleration, hits limiter quickly", vva: false },
+        3: { speed: 80, note: "VVA starts helping above ~7,400 rpm", vva: true },
+        4: { speed: 100, note: "Smooth climb, best mid-range", vva: true },
+        5: { speed: 120, note: "Needs long stretch, VVA fully active", vva: true },
+        6: { speed: 140, note: "Maximum top speed achieved", vva: true },
+    };
 
     const springSpeed = useSpring(0, {
         stiffness: 30,
@@ -18,17 +27,13 @@ export function Viewer360() {
     });
 
     useEffect(() => {
-        if (gear === "N") {
-            springSpeed.set(0);
-        } else {
-            springSpeed.set(GEAR_SPEEDS[gear as number]);
-        }
+        springSpeed.set(GEAR_DATA[gear].speed);
     }, [gear, springSpeed]);
 
     const toggleGear = () => {
-        setGear((prev) => {
+        setGear((prev: number | "N") => {
             if (prev === "N") return 1;
-            if (prev >= 5) return "N";
+            if (prev >= 6) return "N";
             return (prev as number) + 1;
         });
     };
@@ -41,16 +46,15 @@ export function Viewer360() {
 
     return (
         <div className="relative max-w-[1400px] mx-auto h-[700px] bg-zinc-950 rounded-[3rem] overflow-hidden border border-zinc-900 shadow-2xl group/viewer">
-            {/* Main 3D View (Sketchfab Embed) */}
+            {/* Main 3D View (Custom Rotating Viewer) */}
             <div className="absolute inset-0 z-0">
-                <iframe
-                    title="Yamaha XSR700 2016"
-                    className="w-full h-full"
-                    frameBorder="0"
-                    allowFullScreen
-                    allow="autoplay; fullscreen; xr-spatial-tracking"
-                    src="https://sketchfab.com/models/d0a818f66f3a461ab30f4ffea2fc3699/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_watermark=0&ui_stop=0&autospin=0.04&scrollwheel=0&double_click=0"
-                />
+                {activeMode === "360" ? (
+                    <RotatingBikeViewer />
+                ) : (
+                    <div className="w-full h-full bg-zinc-950 flex items-center justify-center opacity-20">
+                        <Rotate3d className="w-32 h-32 text-white animate-pulse" />
+                    </div>
+                )}
             </div>
 
             {/* Mode Selection Tabs (Top) */}
@@ -147,26 +151,32 @@ export function Viewer360() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="absolute inset-10 z-30 bg-zinc-950/98 backdrop-blur-3xl border border-white/5 rounded-[3rem] overflow-hidden flex flex-col"
+                        className="absolute inset-x-4 md:inset-x-10 bottom-4 md:bottom-10 top-20 z-30 bg-zinc-950/98 backdrop-blur-3xl border border-white/5 rounded-[2rem] md:rounded-[3rem] overflow-hidden flex flex-col"
                     >
                         {/* Header */}
-                        <div className="p-10 border-b border-white/5 flex justify-between items-center bg-linear-to-r from-zinc-900/50 to-transparent">
+                        <div className="p-6 md:p-10 border-b border-white/5 flex justify-between items-center bg-linear-to-r from-zinc-900/50 to-transparent shrink-0">
                             <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue mb-2 block">Yamaha Power Core v4.2</span>
-                                <h4 className="text-4xl font-display font-black text-white uppercase tracking-tighter">XSR700 DIGITAL COMMAND</h4>
+                                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue mb-1 md:mb-2 block">Yamaha R-Series DNA v4.0</span>
+                                <h4 className="text-2xl md:text-4xl font-display font-black text-white uppercase tracking-tighter">R15-V4 TECH DETAILED</h4>
                             </div>
                             <button
                                 onClick={() => setActiveMode("360")}
-                                className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-white hover:bg-racing-blue transition-all group"
+                                className="w-10 h-10 md:w-12 md:h-12 bg-white/5 rounded-full flex items-center justify-center text-white hover:bg-racing-blue transition-all group"
                             >
-                                <X className="w-6 h-6 group-hover:rotate-90 transition-transform" />
+                                <X className="w-5 h-5 md:w-6 md:h-6 group-hover:rotate-90 transition-transform" />
                             </button>
                         </div>
 
-                        <div className="flex-1 p-12 grid grid-cols-12 gap-10">
-                            {/* Left: Main Gauge cluster */}
-                            <div className="col-span-12 lg:col-span-7 flex flex-col justify-center items-center relative">
-                                <div className="relative w-80 h-80 rounded-full border-8 border-zinc-900 shadow-[0_0_100px_rgba(0,123,255,0.15)] flex items-center justify-center overflow-hidden group">
+                        <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">
+                            <style>{`
+                                .scrollbar-hide::-webkit-scrollbar {
+                                    display: none;
+                                }
+                            `}</style>
+
+                            {/* Center: Main Gauge cluster */}
+                            <div className="flex-[3] flex flex-col justify-center items-center p-6 md:p-10 relative bg-linear-to-b from-white/[0.02] to-transparent">
+                                <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full border-8 border-zinc-900 shadow-[0_0_100px_rgba(0,123,255,0.15)] flex items-center justify-center overflow-hidden group">
                                     {/* RPM Ring */}
                                     <motion.div
                                         className="absolute inset-4 border-4 border-dashed border-racing-blue/30 rounded-full"
@@ -175,11 +185,25 @@ export function Viewer360() {
                                     />
                                     {/* Speed & Gear */}
                                     <div className="relative z-10 text-center">
+                                        {/* VVA Indicator Light */}
+                                        <AnimatePresence>
+                                            {GEAR_DATA[gear].vva && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: 10 }}
+                                                    className="absolute -top-12 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1 bg-racing-blue/20 rounded-full border border-racing-blue/50 shadow-[0_0_15px_rgba(0,123,255,0.3)]"
+                                                >
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-racing-blue animate-pulse" />
+                                                    <span className="text-[8px] font-black text-white tracking-[0.2em] uppercase">VVA ACTIVE</span>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
                                         <motion.span
                                             key={gear}
                                             initial={{ opacity: 0, scale: 0.5 }}
                                             animate={{ opacity: 1, scale: 1 }}
-                                            className="text-8xl font-display font-black text-white italic -mb-4 block"
+                                            className="text-7xl md:text-8xl font-display font-black text-white italic -mb-4 block"
                                         >
                                             <AnimatedNumber value={springSpeed} />
                                         </motion.span>
@@ -203,14 +227,16 @@ export function Viewer360() {
                                 </p>
                             </div>
 
-                            {/* Right: Technical Specifications */}
-                            <div className="col-span-12 lg:col-span-5 flex flex-col justify-center space-y-6">
-                                <div className="grid grid-cols-1 gap-4">
+                            {/* Right: Technical Specifications (Scrollable) */}
+                            <div className="flex-[2] p-6 md:p-12 overflow-y-auto scrollbar-hide border-l border-white/5 bg-black/20">
+                                <div className="space-y-4 md:space-y-6">
                                     {[
-                                        { label: "Engine Type", value: "689cc CP2 (Liquid Cooled)", detail: "Crossplane Philosophy" },
-                                        { label: "Max Torque", value: "67.0 Nm @ 6,500 rpm", detail: "Linear Response" },
+                                        { label: "Engine Type", value: "155cc LC4V SOHC VVA", detail: "Variable Valve Actuation" },
+                                        { label: "Gear Status", value: gear === "N" ? "Neutral" : `Gear ${gear}`, detail: GEAR_DATA[gear].note },
+                                        { label: "VVA System", value: GEAR_DATA[gear].vva ? "ACTIVE" : "INACTIVE", detail: gear === 3 ? "Kicks in @ 7,400 RPM" : gear === "N" ? "Standby" : gear > 3 ? "Fully Engaged" : "Below threshold" },
+                                        { label: "Max Torque", value: "14.2 Nm @ 7,500 rpm", detail: "Linear Power Delivery" },
                                         { label: "Braking System", value: "Dual Channel ABS", detail: "Safety Standard" },
-                                        { label: "Traction Control", value: "Electronic TCS v2", detail: "Multi-Mode" },
+                                        { label: "Traction Control", value: "TCS System", detail: "Advanced Stability" },
                                     ].map((spec, i) => (
                                         <motion.div
                                             key={spec.label}
@@ -223,19 +249,19 @@ export function Viewer360() {
                                                 <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{spec.label}</span>
                                                 <div className="w-1.5 h-1.5 rounded-full bg-racing-blue opacity-50 group-hover:opacity-100 transition-opacity" />
                                             </div>
-                                            <div className="text-white font-display font-black text-lg tracking-tight uppercase">{spec.value}</div>
+                                            <div className="text-white font-display font-black text-lg tracking-tight uppercase leading-tight">{spec.value}</div>
                                             <div className="text-[9px] text-racing-blue/60 font-black uppercase tracking-widest mt-1">{spec.detail}</div>
                                         </motion.div>
                                     ))}
-                                </div>
 
-                                <div className="p-6 bg-racing-blue/5 rounded-2xl border border-racing-blue/20">
-                                    <h5 className="text-[10px] font-black text-white uppercase tracking-widest mb-3">Vehicle Diagnostics</h5>
-                                    <div className="flex gap-4">
-                                        <div className="flex-1 h-1 bg-zinc-800 rounded-full overflow-hidden">
-                                            <motion.div className="h-full bg-racing-blue" initial={{ width: "0%" }} animate={{ width: "82%" }} transition={{ duration: 1.5 }} />
+                                    <div className="p-6 bg-racing-blue/5 rounded-2xl border border-racing-blue/20">
+                                        <h5 className="text-[10px] font-black text-white uppercase tracking-widest mb-3">Vehicle Diagnostics</h5>
+                                        <div className="flex gap-4">
+                                            <div className="flex-1 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                                <motion.div className="h-full bg-racing-blue" initial={{ width: "0%" }} animate={{ width: "82%" }} transition={{ duration: 1.5 }} />
+                                            </div>
+                                            <span className="text-[10px] font-black text-racing-blue leading-none">82% TEMP</span>
                                         </div>
-                                        <span className="text-[10px] font-black text-racing-blue leading-none">82% TEMP</span>
                                     </div>
                                 </div>
                             </div>

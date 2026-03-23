@@ -18,6 +18,7 @@ export function Hero() {
                     src="/images/hero_showroom.png"
                     alt="Choudhary Automobile Showroom"
                     fill
+                    sizes="100vw"
                     className="object-cover object-center scale-110 opacity-60"
                     priority
                 />
@@ -112,7 +113,8 @@ export function Hero() {
                         <Image
                             src="/images/YamahaLogo.png"
                             alt="Yamaha Logo"
-                            fill
+                            width={250}
+                            height={250}
                             className="object-contain opacity-20 brightness-200 invert"
                         />
                     </div>
