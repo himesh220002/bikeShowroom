@@ -32,7 +32,7 @@ export function AdminSidebar() {
     const { theme, toggleTheme } = useTheme();
 
     return (
-        <aside className="w-64 bg-card border-r border-border hidden lg:flex flex-col sticky top-28 py-8 h-[calc(100vh-7rem)]">
+        <aside className="w-64 bg-card border-r border-border hidden lg:flex flex-col fixed left-0 top-24 md:top-32 py-8 h-[calc(100vh-8rem)]">
             {/* <div className="p-6 border-b border-zinc-900">
                 <div className="flex items-center gap-3">
                     <div className="bg-yamaha-blue p-1.5 rounded-lg">
@@ -88,7 +88,7 @@ export function AdminSidebar() {
                     )}
                 </button>
                 <Link
-                    href="/settings"
+                    href="/admin/settings"
                     className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
                 >
                     <Settings className="w-5 h-5 text-muted-foreground" />

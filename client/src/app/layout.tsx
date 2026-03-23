@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className="antialiased bg-background text-foreground">
         <ThemeProvider>
           <Navbar />
-          <main className="pt-24 md:pt-18 font-sans">{children}</main>
+          <main className="font-sans">{children}</main>
           <Footer />
         </ThemeProvider>
       </body>

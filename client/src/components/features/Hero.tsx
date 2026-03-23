@@ -11,7 +11,7 @@ export function Hero() {
     const y1 = useTransform(scrollY, [0, 500], [0, 200]);
 
     return (
-        <section ref={ref} className="relative min-h-[90vh] flex items-center overflow-hidden bg-zinc-900">
+        <section ref={ref} className="relative min-h-[90vh] flex items-center overflow-hidden bg-zinc-900 pt-20 md:pt-28">
             {/* Immersive Background */}
             <motion.div style={{ y: y1 }} className="absolute inset-0 z-0">
                 <Image
@@ -26,7 +26,7 @@ export function Hero() {
                 <div className="absolute inset-0 bg-linear-to-r from-zinc-900 via-zinc-900/50 to-transparent" />
             </motion.div>
 
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12 md:py-34">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12 md:py-24">
                 <div className="max-w-3xl">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -48,7 +48,7 @@ export function Hero() {
                         transition={{ duration: 0.8, delay: 0.2 }}
                         className="space-y-4 mb-8"
                     >
-                        <h1 className="text-6xl md:text-[8rem] font-display font-black text-white leading-[0.85] uppercase tracking-tighter">
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[8rem] font-display font-black text-white leading-[0.85] uppercase tracking-tighter">
                             REVS YOUR <br />
                             <span className="text-gradient">HEART.</span>
                         </h1>
@@ -124,7 +124,7 @@ export function Hero() {
             </div>
 
             {/* Bottom Gradient for Smooth Transition */}
-            <div className="absolute bottom-0 left-0 w-full h-32 bg-linear-to-t from-zinc-900 to-transparent z-10" />
+            <div className="absolute bottom-0 left-0 w-full h-40 bg-linear-to-t from-zinc-950 to-transparent z-10" />
         </section>
     );
 }

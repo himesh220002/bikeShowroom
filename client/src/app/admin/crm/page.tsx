@@ -24,7 +24,7 @@ export default function CRMPage() {
     }, []);
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter">
@@ -75,7 +75,7 @@ export default function CRMPage() {
                 </button>
             </div>
 
-            <div className="bg-background border border-border rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[400px]">
+            <div className="bg-background/50 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[400px]">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-32 gap-4">
                         <Loader2 className="w-8 h-8 text-racing-blue animate-spin" />

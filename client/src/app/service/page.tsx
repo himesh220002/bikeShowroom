@@ -3,7 +3,7 @@ import { Wrench, Shield, Zap } from "lucide-react";
 
 export default function ServicePage() {
     return (
-        <div className="min-h-screen bg-zinc-950 pt-32 pb-24">
+        <div className="min-h-screen bg-zinc-950 pt-20 md:pt-28 pb-24">
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
                     {/* Sidebar Info */}

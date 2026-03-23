@@ -13,6 +13,7 @@ import qualifiedLeadsRouter from './routes/qualifiedLeads';
 import adsRouter from './routes/ads';
 import salesRouter from './routes/sales';
 import customersRouter from './routes/customers';
+import configRouter from './routes/config';
 
 dotenv.config();
 
@@ -58,6 +59,7 @@ app.use('/api/events', eventsRouter);
 app.use('/api/ads', adsRouter);
 app.use('/api/sales', salesRouter);
 app.use('/api/customers', customersRouter);
+app.use('/api/config', configRouter);
 
 app.get('/', (req, res) => {
     res.send('Bike Showroom API is running with Socket.io...');

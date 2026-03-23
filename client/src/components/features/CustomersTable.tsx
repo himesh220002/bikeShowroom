@@ -28,7 +28,7 @@ interface CustomersTableProps {
 export function CustomersTable({ customers }: CustomersTableProps) {
     if (customers.length === 0) {
         return (
-            <div className="py-20 flex flex-col items-center justify-center text-gray-500 gap-4">
+            <div className="py-20 flex flex-col items-center justify-center text-muted-foreground gap-4">
                 <User className="w-12 h-12 opacity-10" />
                 <p className="text-[10px] font-black uppercase tracking-[0.2em]">No customers found in CRM</p>
             </div>
@@ -105,7 +105,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                                         <Wrench className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
                                     </button>
                                     <button className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all title='WhatsApp Customer'">
-                                        <MessageSquare className="w-4 h-4 text-green-400 group-hover/btn:scale-110 transition-transform" />
+                                        <MessageSquare className="w-4 h-4 text-green-600 dark:text-green-400 group-hover/btn:scale-110 transition-transform" />
                                     </button>
                                     <button className="p-2 rounded-xl border border-border hover:bg-foreground/10 hover:border-foreground/50 group/btn transition-all title='View Detailed History'">
                                         <History className="w-4 h-4 text-muted-foreground group-hover/btn:scale-110 transition-transform" />

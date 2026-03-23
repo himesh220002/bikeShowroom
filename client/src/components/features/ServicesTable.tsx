@@ -24,11 +24,11 @@ interface ServicesTableProps {
 const STATUS_OPTIONS = ['booked', 'in-progress', 'completed', 'delivered', 'cancelled'];
 
 const statusColors = {
-    'booked': "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    'in-progress': "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    'completed': "bg-green-500/10 text-green-400 border-green-500/20",
-    'delivered': "bg-purple-500/10 text-purple-400 border-purple-500/20",
-    'cancelled': "bg-red-500/10 text-red-400 border-red-500/20",
+    'booked': "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+    'in-progress': "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+    'completed': "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20",
+    'delivered': "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+    'cancelled': "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
 };
 
 export function ServicesTable({ services }: ServicesTableProps) {
@@ -106,7 +106,7 @@ export function ServicesTable({ services }: ServicesTableProps) {
                                             <MessageSquare className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
                                         </button>
                                         <button className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all">
-                                            <Phone className="w-4 h-4 text-green-400 group-hover/btn:scale-110 transition-transform" />
+                                            <Phone className="w-4 h-4 text-green-600 dark:text-green-400 group-hover/btn:scale-110 transition-transform" />
                                         </button>
                                     </div>
                                     <div className="relative group/status w-full flex justify-end">

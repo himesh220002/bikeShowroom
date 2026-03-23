@@ -59,7 +59,7 @@ export function LeadsTableHot({ leads }: LeadsTableHotProps) {
                             <td className="py-6 px-4">
                                 <div className="flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 w-fit px-3 py-1 rounded-full">
                                     <Flame className="w-3 h-3 text-orange-500 animate-pulse" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-orange-400">
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-orange-600 dark:text-orange-400">
                                         {lead.leadStage}
                                     </span>
                                 </div>
@@ -70,7 +70,7 @@ export function LeadsTableHot({ leads }: LeadsTableHotProps) {
                                         <MessageSquare className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
                                     </button>
                                     <button className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all">
-                                        <Phone className="w-4 h-4 text-green-400 group-hover/btn:scale-110 transition-transform" />
+                                        <Phone className="w-4 h-4 text-green-600 dark:text-green-400 group-hover/btn:scale-110 transition-transform" />
                                     </button>
                                 </div>
                             </td>

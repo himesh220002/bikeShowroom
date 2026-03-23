@@ -8,7 +8,7 @@ import { MapPin, Clock, Phone, Info, User } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col bg-zinc-950 -mt-24">
+    <div className="flex flex-col bg-zinc-950">
       <Hero />
 
       <div id="promotions">

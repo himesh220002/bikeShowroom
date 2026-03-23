@@ -22,7 +22,7 @@ export default function BikePage() {
     }
 
     return (
-        <main className="bg-zinc-950 min-h-screen">
+        <main className="bg-zinc-950 min-h-screen -mt-24">
             <div className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-racing-blue to-dark-racing z-[100]" />
 
             <BikeDetailsHero bike={bike} />

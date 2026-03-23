@@ -23,6 +23,7 @@ export interface Bike {
         features: string[];
     };
     threeSixtyBaseUrl?: string;
+    brochureUrl?: string;
 }
 
 export const BIKES: Bike[] = [
@@ -52,14 +53,15 @@ export const BIKES: Bike[] = [
             tyres: "100/80-17 (Front), 140/70-17 (Rear) Radial",
             features: ["Traction Control System", "Quick Shifter (Up)", "VVA (Variable Valve Actuation)", "LCD Instrument Cluster"]
         },
-        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/"
+        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/",
+        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-r15v4.html"
     },
     {
         slug: "r15-v4-racing-blue",
         name: "Yamaha R15 V4",
         variant: "Racing Blue",
         price: "1,87,300",
-        image: "/images/r15m.png", // Reuse image with CSS filter or just placeholder
+        image: "/images/r15m.png",
         specs: [
             { icon: "Gauge", label: "155cc Engine" },
             { icon: "Zap", label: "VVA Tech" },
@@ -79,7 +81,8 @@ export const BIKES: Bike[] = [
             seatHeight: "815 mm",
             tyres: "100/80-17 (F), 140/70-17 (R)",
             features: ["R-Series DNA", "Bi-Functional LED Headlight", "Side Stand Engine Cut-off"]
-        }
+        },
+        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-r15v4.html"
     },
     {
         slug: "mt15-cyan-storm",
@@ -107,7 +110,8 @@ export const BIKES: Bike[] = [
             tyres: "100/80-17 (F), 140/70-17 (R)",
             features: ["USD Front Forks", "Aluminum Swingarm", "VVA Technology"]
         },
-        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/mt_series/mt15v2/360/"
+        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/mt_series/mt15v2/360/",
+        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-mt-15-v2.html"
     },
     {
         slug: "mt03",
@@ -134,7 +138,8 @@ export const BIKES: Bike[] = [
             seatHeight: "780 mm",
             tyres: "110/70-17 (Front), 140/70-17 (Rear)",
             features: ["Twin Cylinder Engine", "Upside Down Forks", "LED Lighting", "Aggressive Styling"]
-        }
+        },
+        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-mt-03.html"
     },
     {
         slug: "fz-rave",
@@ -162,7 +167,8 @@ export const BIKES: Bike[] = [
             tyres: "100/80-17 (Front), 140/60-R17 (Rear)",
             features: ["LED Headlight", "LCD Instrument Cluster", "E20 Compatible", "Single Channel ABS"]
         },
-        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/"
+        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
+        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
     },
     {
         slug: "fzs-v4",
@@ -190,7 +196,8 @@ export const BIKES: Bike[] = [
             tyres: "100/80-17 (F), 140/60-17 (R)",
             features: ["Traction Control System", "LED DRLs", "Bluetooth Y-Connect"]
         },
-        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-hybrid/360-hybrid/"
+        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-hybrid/360-hybrid/",
+        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fzs-fi-v4.html"
     },
     {
         slug: "fzx",
@@ -218,7 +225,8 @@ export const BIKES: Bike[] = [
             tyres: "100/80-17 (F), 140/60-17 (R)",
             features: ["Neo-Retro Styling", "LED Headlight", "Traction Control"]
         },
-        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzx-hybrid/360/"
+        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzx-hybrid/360/",
+        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fzx.html"
     },
     {
         slug: "xsr155",
@@ -246,7 +254,8 @@ export const BIKES: Bike[] = [
             tyres: "110/70-17 (F), 140/70-17 (R)",
             features: ["Neo-Retro Design", "Assist & Slipper Clutch"]
         },
-        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/x_series_all/xsr/360/"
+        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/x_series_all/xsr/360/",
+        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-xsr155.html"
     },
     {
         slug: "aerox155",
@@ -274,7 +283,8 @@ export const BIKES: Bike[] = [
             tyres: "110/80-14 (Front), 140/70-14 (Rear)",
             features: ["Traction Control", "VVA Technology", "Smart Key System"]
         },
-        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/aerox_all/aerox155vs/360/"
+        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/aerox_all/aerox155vs/360/",
+        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-aerox-155.html"
     },
     {
         slug: "rayzr-125-fi",
@@ -302,7 +312,8 @@ export const BIKES: Bike[] = [
             tyres: "90/90-12 (F), 110/90-10 (R)",
             features: ["Hybrid Tech", "Lightweight Chassis", "SMG System"]
         },
-        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/rayzr_all/ray-zr-streetrally125fihybrid/360_new/"
+        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/rayzr_all/ray-zr-streetrally125fihybrid/360_new/",
+        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-rayzr-125-fi-hybrid.html"
     },
     {
         slug: "fascino-125",
@@ -330,6 +341,7 @@ export const BIKES: Bike[] = [
             tyres: "90/90-12 (Front), 110/90-10 (Rear)",
             features: ["Classic Design", "Hybrid Assist", "Auto Stop/Start"]
         },
-        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_all/fascino125fi-new/360_new/"
+        threeSixtyBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_all/fascino125fi-new/360_new/",
+        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fascino-125-fi-hybrid.html"
     }
 ];
