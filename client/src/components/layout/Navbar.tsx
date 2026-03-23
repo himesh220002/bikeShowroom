@@ -4,11 +4,15 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Bike, Menu, X, ChevronRight, Phone } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function Navbar() {
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const isAdmin = pathname?.startsWith("/admin");
+    const isService = pathname === "/service";
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -27,7 +31,7 @@ export function Navbar() {
     return (
         <nav className={cn(
             "fixed top-0 w-full z-50 transition-all duration-500",
-            isScrolled ? "py-4 glass shadow-lg shadow-black/5" : "py-6 bg-transparent"
+            (isScrolled || isAdmin || isService) ? "py-4 glass shadow-lg shadow-black/5" : "py-6 bg-transparent"
         )}>
             <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center">
@@ -37,7 +41,7 @@ export function Navbar() {
                             <Bike className="w-6 h-6 text-white" />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <span className="text-2xl font-display font-black tracking-tighter text-white leading-none">
+                            <span className="text-2xl font-display font-black tracking-tighter text-gray-300 leading-none">
                                 CHOUDHARY AUTOMOBILE
                             </span>
                             <span className="text-[10px] uppercase font-black tracking-[0.3em] text-gray-400 -mt-0.5">

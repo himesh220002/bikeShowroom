@@ -26,7 +26,7 @@ export function Hero() {
                 <div className="absolute inset-0 bg-linear-to-r from-zinc-900 via-zinc-900/50 to-transparent" />
             </motion.div>
 
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12 md:py-24">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12 md:py-34">
                 <div className="max-w-3xl">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}

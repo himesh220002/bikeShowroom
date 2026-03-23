@@ -8,10 +8,17 @@ export interface IService extends Document {
     notes?: string;
     name: string;
     phone: string;
-    status: string;
+    status: 'booked' | 'in-progress' | 'completed' | 'delivered' | 'cancelled';
     priority: 'High' | 'Normal';
+    technicianName?: string;
     appointmentDate: string;
     appointmentTime: string;
+    bookedAt?: Date;
+    startedAt?: Date;
+    completedAt?: Date;
+    deliveredAt?: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const ServiceSchema: Schema = new Schema({
@@ -22,10 +29,19 @@ const ServiceSchema: Schema = new Schema({
     notes: { type: String },
     name: { type: String, required: true },
     phone: { type: String, required: true },
-    status: { type: String, default: 'Pending' },
+    status: {
+        type: String,
+        enum: ['booked', 'in-progress', 'completed', 'delivered', 'cancelled'],
+        default: 'booked'
+    },
     priority: { type: String, enum: ['High', 'Normal'], default: 'Normal' },
+    technicianName: { type: String },
     appointmentDate: { type: String, required: true },
     appointmentTime: { type: String, required: true },
+    bookedAt: { type: Date, default: Date.now },
+    startedAt: { type: Date },
+    completedAt: { type: Date },
+    deliveredAt: { type: Date },
 }, {
     timestamps: true,
     collection: 'service_bookings'

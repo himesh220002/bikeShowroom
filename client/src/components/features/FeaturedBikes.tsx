@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
 import { BIKES } from "@/lib/constants/bikes";
+import { LucideIcon } from "@/components/ui/LucideIcon";
 
 const bikes = BIKES;
 
@@ -85,7 +86,7 @@ export function FeaturedBikes() {
                                         </span>
 
                                         <div className="space-y-1 mb-6">
-                                            <h4 className="text-3xl font-display font-black text-white tracking-tighter uppercase leading-none group-hover:text-racing-blue transition-colors">
+                                            <h4 className="text-3xl font-display font-black text-gray-300 tracking-tighter uppercase leading-none group-hover:text-racing-blue transition-colors">
                                                 {bike.name}
                                             </h4>
                                             <p className="text-gray-500 font-bold uppercase tracking-[0.2em] text-[8px]">
@@ -97,7 +98,7 @@ export function FeaturedBikes() {
                                             {bike.specs.map(spec => (
                                                 <div key={spec.label} className="flex items-center gap-3">
                                                     <div className="p-1.5 bg-zinc-950 rounded-lg">
-                                                        <spec.icon className="w-3 h-3 text-racing-blue" />
+                                                        <LucideIcon name={spec.icon} className="w-3 h-3 text-racing-blue" />
                                                     </div>
                                                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">{spec.label}</span>
                                                 </div>

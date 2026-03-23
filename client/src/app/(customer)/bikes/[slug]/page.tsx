@@ -7,6 +7,7 @@ import { BikeSpecifications } from "@/components/features/BikeSpecifications";
 import { ZeroDownpaymentBanner } from "@/components/features/ZeroDownpaymentBanner";
 import { LeadForm } from "@/components/features/LeadForm";
 import { FeaturedBikes } from "@/components/features/FeaturedBikes";
+import { Viewer360 } from "@/components/features/Viewer360";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -29,6 +30,23 @@ export default function BikePage() {
             <div id="specifications">
                 <BikeSpecifications bike={bike} />
             </div>
+
+            {/* Added 360 Viewer Section */}
+            {bike.threeSixtyBaseUrl && (
+                <section className="py-24 bg-zinc-900 border-y border-white/5">
+                    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
+                                Interactive Experience
+                            </h2>
+                            <h3 className="text-5xl md:text-7xl font-display font-black text-white uppercase tracking-tighter">
+                                EXPLORE IN <span className="text-gradient">360 DEGREES</span>
+                            </h3>
+                        </div>
+                        <Viewer360 bike={bike} />
+                    </div>
+                </section>
+            )}
 
             <div id="promotion">
                 <ZeroDownpaymentBanner bikeName={bike.name} />
@@ -104,3 +122,4 @@ export default function BikePage() {
 
 // Missing motion import handled by adding it if necessary, but here I'll use it since it's already in the project.
 import { motion } from "framer-motion";
+import { Bike as BikeIcon } from "lucide-react";

@@ -5,8 +5,9 @@ import { cn } from "@/lib/utils/cn";
 import { Volume2, Cpu, Rotate3d, Play, Pause, X } from "lucide-react";
 import { motion, AnimatePresence, useSpring } from "framer-motion";
 import { RotatingBikeViewer } from "./RotatingBikeViewer";
+import { type Bike } from "@/lib/constants/bikes";
 
-export function Viewer360() {
+export function Viewer360({ bike }: { bike: Bike }) {
     const [activeMode, setActiveMode] = useState<"360" | "sound" | "tech">("360");
     const [isPlaying, setIsPlaying] = useState(false);
     const [gear, setGear] = useState<number | "N">("N");
@@ -49,7 +50,7 @@ export function Viewer360() {
             {/* Main 3D View (Custom Rotating Viewer) */}
             <div className="absolute inset-0 z-0">
                 {activeMode === "360" ? (
-                    <RotatingBikeViewer />
+                    <RotatingBikeViewer baseUrl={bike.threeSixtyBaseUrl || ""} />
                 ) : (
                     <div className="w-full h-full bg-zinc-950 flex items-center justify-center opacity-20">
                         <Rotate3d className="w-32 h-32 text-white animate-pulse" />
@@ -156,8 +157,8 @@ export function Viewer360() {
                         {/* Header */}
                         <div className="p-6 md:p-10 border-b border-white/5 flex justify-between items-center bg-linear-to-r from-zinc-900/50 to-transparent shrink-0">
                             <div>
-                                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue mb-1 md:mb-2 block">Yamaha R-Series DNA v4.0</span>
-                                <h4 className="text-2xl md:text-4xl font-display font-black text-white uppercase tracking-tighter">R15-V4 TECH DETAILED</h4>
+                                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue mb-1 md:mb-2 block">Yamaha {bike.name} DNA</span>
+                                <h4 className="text-2xl md:text-4xl font-display font-black text-white uppercase tracking-tighter">{bike.name} TECH DETAILED</h4>
                             </div>
                             <button
                                 onClick={() => setActiveMode("360")}

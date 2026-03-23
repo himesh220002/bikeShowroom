@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Gauge, Cpu, Binary, Shield, Zap, Fuel, Scale, Ruler, Layers } from "lucide-react";
+// import { Gauge, Cpu, Binary, Shield, Zap, Fuel, Scale, Ruler, Layers } from "lucide-react";
+import { LucideIcon } from "@/components/ui/LucideIcon";
 
 interface BikeSpecificationsProps {
     bike: any;
@@ -9,18 +10,18 @@ interface BikeSpecificationsProps {
 
 export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
     const mainSpecs = [
-        { label: "Engine", value: bike.fullSpecs.engine, icon: Gauge },
-        { label: "Max Power", value: bike.fullSpecs.power, icon: Zap },
-        { label: "Max Torque", value: bike.fullSpecs.torque, icon: Cpu },
-        { label: "Transmission", value: bike.fullSpecs.transmission, icon: Binary },
-        { label: "Braking System", value: bike.fullSpecs.brakes, icon: Shield },
-        { label: "Fuel Capacity", value: bike.fullSpecs.fuelCapacity, icon: Fuel },
+        { label: "Engine", value: bike.fullSpecs.engine, icon: "Gauge" },
+        { label: "Max Power", value: bike.fullSpecs.power, icon: "Zap" },
+        { label: "Max Torque", value: bike.fullSpecs.torque, icon: "Cpu" },
+        { label: "Transmission", value: bike.fullSpecs.transmission, icon: "Binary" },
+        { label: "Braking System", value: bike.fullSpecs.brakes, icon: "Shield" },
+        { label: "Fuel Capacity", value: bike.fullSpecs.fuelCapacity, icon: "Fuel" },
     ];
 
     const secondarySpecs = [
-        { label: "Curb Weight", value: bike.fullSpecs.weight, icon: Scale },
-        { label: "Seat Height", value: bike.fullSpecs.seatHeight, icon: Ruler },
-        { label: "Tyre Size", value: bike.fullSpecs.tyres, icon: Layers },
+        { label: "Curb Weight", value: bike.fullSpecs.weight, icon: "Scale" },
+        { label: "Seat Height", value: bike.fullSpecs.seatHeight, icon: "Ruler" },
+        { label: "Tyre Size", value: bike.fullSpecs.tyres, icon: "Layers" },
     ];
 
     return (
@@ -46,7 +47,7 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                             className="bg-zinc-950 p-8 rounded-[2.5rem] border border-zinc-800 hover:border-racing-blue/30 transition-all group"
                         >
                             <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <spec.icon className="w-6 h-6 text-racing-blue" />
+                                <LucideIcon name={spec.icon} className="w-6 h-6 text-racing-blue" />
                             </div>
                             <h4 className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">{spec.label}</h4>
                             <p className="text-lg text-white font-bold uppercase tracking-tight">{spec.value}</p>
@@ -61,7 +62,7 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                             {secondarySpecs.map((spec) => (
                                 <div key={spec.label} className="flex flex-col gap-2">
                                     <div className="flex items-center gap-3">
-                                        <spec.icon className="w-4 h-4 text-racing-blue" />
+                                        <LucideIcon name={spec.icon} className="w-4 h-4 text-racing-blue" />
                                         <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">{spec.label}</span>
                                     </div>
                                     <p className="text-white font-bold uppercase">{spec.value}</p>

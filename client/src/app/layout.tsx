@@ -4,6 +4,8 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
@@ -19,11 +21,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
-      <body className="antialiased">
-        <Navbar />
-        <main className="pt-24 md:pt-28">{children}</main>
-        <Footer />
+    <html lang="en" className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
+      <body className="antialiased bg-background text-foreground">
+        <ThemeProvider>
+          <Navbar />
+          <main className="pt-24 md:pt-18 font-sans">{children}</main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

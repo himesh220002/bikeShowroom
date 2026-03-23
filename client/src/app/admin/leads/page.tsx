@@ -28,9 +28,9 @@ export default function LeadsPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-display font-black text-white uppercase tracking-tighter">
-                        LEADS & <span className="text-gradient">CRM</span>
+                        SALES <span className="text-gradient">LEADS</span>
                     </h2>
-                    <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">Manage and track customer inquiries in real-time</p>
+                    <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">Manage and track pre-sales customer inquiries</p>
                 </div>
                 {/* ... rest of the header ... */}
                 <div className="flex gap-2">

@@ -8,6 +8,7 @@ export interface IBike extends Document {
     tag: string;
     color: string;
     stock: number;
+    category: 'bike' | 'scooty';
 }
 
 const BikeSchema: Schema = new Schema({
@@ -17,7 +18,11 @@ const BikeSchema: Schema = new Schema({
     image: { type: String, required: true },
     tag: { type: String, required: true },
     color: { type: String, required: true },
-    stock: { type: Number, default: 0 }
+    stock: { type: Number, default: 0 },
+    category: { type: String, enum: ['bike', 'scooty'], required: true }
 });
+
+// Allow multiple variants of the same bike name
+BikeSchema.index({ name: 1, variant: 1 }, { unique: true });
 
 export default mongoose.model<IBike>('Bike', BikeSchema);

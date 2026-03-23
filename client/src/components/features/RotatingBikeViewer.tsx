@@ -6,12 +6,12 @@ import { Rotate3d, Loader2, Play, Pause } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 const TOTAL_IMAGES = 40;
-const BASE_URL = "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/";
+// const BASE_URL = "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/";
 
 // ----------------------------------------------------------------------------
 // ImageFrame: Handles individual frame rendering and cross-fading logic
 // ----------------------------------------------------------------------------
-function ImageFrame({ id, smoothIndex, loaded }: { id: number; smoothIndex: any; loaded: boolean }) {
+function ImageFrame({ id, smoothIndex, loaded, baseUrl }: { id: number; smoothIndex: any; loaded: boolean; baseUrl: string }) {
     // Calculate opacity based on relative distance to this frame
     const opacity = useTransform(smoothIndex, (latestValue: number) => {
         // Normalize the floating index to stay within the 1-40 range
@@ -30,8 +30,8 @@ function ImageFrame({ id, smoothIndex, loaded }: { id: number; smoothIndex: any;
 
     return (
         <motion.img
-            src={`${BASE_URL}${id}.webp`}
-            alt={`R15 V4 Frame ${id}`}
+            src={`${baseUrl}${id}.webp`}
+            alt={`Frame ${id}`}
             className="absolute inset-0 w-full h-full object-contain pointer-events-none"
             style={{ opacity }}
             loading="eager"
@@ -42,7 +42,7 @@ function ImageFrame({ id, smoothIndex, loaded }: { id: number; smoothIndex: any;
 // ----------------------------------------------------------------------------
 // Main Component
 // ----------------------------------------------------------------------------
-export function RotatingBikeViewer() {
+export function RotatingBikeViewer({ baseUrl }: { baseUrl: string }) {
     const [targetIndex, setTargetIndex] = useState(1);
     const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>({});
     const [loading, setLoading] = useState(true);
@@ -94,7 +94,7 @@ export function RotatingBikeViewer() {
         let loadedCount = 0;
         for (let i = 1; i <= TOTAL_IMAGES; i++) {
             const img = new Image();
-            img.src = `${BASE_URL}${i}.webp`;
+            img.src = `${baseUrl}${i}.webp`;
             img.onload = () => {
                 setLoadedImages((prev) => ({ ...prev, [i]: true }));
                 loadedCount++;
@@ -111,7 +111,7 @@ export function RotatingBikeViewer() {
                 }
             };
         }
-    }, [hasBeenInView]);
+    }, [hasBeenInView, baseUrl]);
 
     // Auto-rotation (Relative turns)
     useEffect(() => {
@@ -205,6 +205,7 @@ export function RotatingBikeViewer() {
                         id={i}
                         smoothIndex={smoothIndex}
                         loaded={loadedImages[i]}
+                        baseUrl={baseUrl}
                     />
                 ))}
             </div>
@@ -223,7 +224,7 @@ export function RotatingBikeViewer() {
                         }
                         setIsAutoRotating(!isAutoRotating);
                     }}
-                    className="flex items-center justify-center w-10 h-10 bg-zinc-900/50 border border-zinc-800 rounded-xl text-racing-blue hover:bg-racing-blue hover:text-white transition-all shadow-lg"
+                    className="hidden flex items-center justify-center w-10 h-10 bg-zinc-900/50 border border-zinc-800 rounded-xl text-racing-blue hover:bg-racing-blue hover:text-white transition-all shadow-lg"
                 >
                     {isAutoRotating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
                 </button>
