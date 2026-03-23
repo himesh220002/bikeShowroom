@@ -85,10 +85,16 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                             <input
                                 type="tel"
                                 required
-                                className="w-full bg-background border border-border rounded-xl px-5 py-3.5 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all uppercase"
+                                maxLength={10}
+                                className="w-full bg-background border border-border rounded-xl px-5 py-3.5 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
                                 value={formData.customerPhone}
-                                onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
-                                placeholder="+91 XXXXX XXXXX"
+                                onChange={(e) => {
+                                    const val = e.target.value.replace(/[^0-9]/g, '');
+                                    if (val.length <= 10) {
+                                        setFormData({ ...formData, customerPhone: val });
+                                    }
+                                }}
+                                placeholder="10-digit Phone Number"
                             />
                         </div>
                     </div>

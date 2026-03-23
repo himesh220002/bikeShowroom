@@ -21,7 +21,9 @@ export function ServiceBooking() {
         regNumber: "",
         notes: "",
         name: "",
-        phone: ""
+        phone: "",
+        appointmentDate: "",
+        appointmentTime: ""
     });
 
     const serviceOptions = [
@@ -232,9 +234,35 @@ export function ServiceBooking() {
                                             required
                                             type="tel"
                                             value={formData.phone}
-                                            onChange={(e) => setFormData(p => ({ ...p, phone: e.target.value }))}
-                                            placeholder="Contact Number"
+                                            maxLength={10}
+                                            onChange={(e) => {
+                                                const val = e.target.value.replace(/[^0-9]/g, '');
+                                                if (val.length <= 10) {
+                                                    setFormData(p => ({ ...p, phone: val }));
+                                                }
+                                            }}
+                                            placeholder="10-digit mobile number"
                                             className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-4 text-white text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-4">Preferred Date</label>
+                                        <input
+                                            required
+                                            type="date"
+                                            value={formData.appointmentDate}
+                                            onChange={(e) => setFormData(p => ({ ...p, appointmentDate: e.target.value }))}
+                                            className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-4 text-white text-sm focus:outline-none focus:border-racing-blue transition-all [color-scheme:dark]"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-4">Preferred Time</label>
+                                        <input
+                                            required
+                                            type="time"
+                                            value={formData.appointmentTime}
+                                            onChange={(e) => setFormData(p => ({ ...p, appointmentTime: e.target.value }))}
+                                            className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-4 text-white text-sm focus:outline-none focus:border-racing-blue transition-all [color-scheme:dark]"
                                         />
                                     </div>
                                 </div>

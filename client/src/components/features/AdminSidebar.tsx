@@ -32,22 +32,22 @@ export function AdminSidebar() {
     const { theme, toggleTheme } = useTheme();
 
     return (
-        <aside className="w-64 bg-card border-r border-border hidden lg:flex flex-col fixed left-0 top-24 md:top-32 py-8 h-[calc(100vh-8rem)]">
-            {/* <div className="p-6 border-b border-zinc-900">
+        <aside className="w-64 bg-card border-r border-border hidden lg:flex flex-col fixed left-0 top-0 py-8 h-screen z-[60]">
+            <div className="px-8 mb-12">
                 <div className="flex items-center gap-3">
-                    <div className="bg-yamaha-blue p-1.5 rounded-lg">
+                    <div className="bg-racing-blue p-2 rounded-xl">
                         <Bike className="w-5 h-5 text-white" />
                     </div>
-                    <div className="flex flex-col -gap-1">
-                        <span className="text-lg font-display font-black tracking-tighter text-white">
+                    <div className="flex flex-col">
+                        <span className="text-xl font-display font-black tracking-tighter text-foreground uppercase">
                             YAMAHA
                         </span>
-                        <span className="text-[9px] uppercase font-bold tracking-widest text-gray-500 -mt-1">
-                            Katihar Admin
+                        <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground -mt-1">
+                            Admin Portal
                         </span>
                     </div>
                 </div>
-            </div> */}
+            </div>
 
             <nav className="flex-1 p-4 space-y-1">
                 {menuItems.map((item) => {

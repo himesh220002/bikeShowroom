@@ -133,7 +133,13 @@ export function LeadForm() {
                                                     required
                                                     name="phone"
                                                     type="tel"
-                                                    placeholder="+91 00000 00000"
+                                                    pattern="[0-9]{10}"
+                                                    maxLength={10}
+                                                    onInput={(e) => {
+                                                        const target = e.target as HTMLInputElement;
+                                                        target.value = target.value.replace(/[^0-9]/g, '');
+                                                    }}
+                                                    placeholder="Mobile number"
                                                     className="w-full bg-zinc-950 border border-zinc-800 focus:border-racing-blue/30 rounded-3xl pl-14 pr-8 py-5 text-sm font-black text-white transition-all outline-none"
                                                 />
                                             </div>

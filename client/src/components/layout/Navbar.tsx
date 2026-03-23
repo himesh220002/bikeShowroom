@@ -31,7 +31,8 @@ export function Navbar() {
     return (
         <nav className={cn(
             "fixed top-0 w-full z-50 transition-all duration-500 py-4",
-            (isScrolled || isAdmin || isService || pathname === "/") ? "glass shadow-lg shadow-black/5" : "bg-transparent"
+            (isScrolled || isAdmin || isService || pathname === "/") ? "glass shadow-lg shadow-black/5" : "bg-transparent",
+            isAdmin && "lg:left-64 lg:w-[calc(100%-16rem)] border-b border-border/50"
         )}>
             <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center">
