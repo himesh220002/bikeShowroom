@@ -26,7 +26,7 @@ const upload = multer({ storage: storage });
 // Get all campaigns
 router.get('/', async (req, res) => {
     try {
-        const ads = await Ad.find().sort({ createdAt: -1 });
+        const ads = await Ad.find().sort({ priority: 1, createdAt: -1 });
         res.json({ success: true, data: ads });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
@@ -45,6 +45,8 @@ router.post('/', upload.single('image'), async (req, res) => {
         // Return path relative to client's public folder
         const imagePath = `/images/ads/${req.file.filename}`;
 
+        const adCount = await Ad.countDocuments();
+
         const ad = new Ad({
             name,
             type,
@@ -52,13 +54,36 @@ router.post('/', upload.single('image'), async (req, res) => {
             status,
             description,
             image: imagePath,
-            impact: '0'
+            impact: '0',
+            priority: adCount
         });
 
         await ad.save();
         res.status(201).json({ success: true, data: ad });
     } catch (error: any) {
         res.status(400).json({ success: false, error: error.message });
+    }
+});
+
+// Reorder campaigns
+router.post('/reorder', async (req, res) => {
+    try {
+        const { ads } = req.body; // Array of { _id, priority }
+        if (!ads || !Array.isArray(ads)) {
+            return res.status(400).json({ success: false, message: 'Ads array is required' });
+        }
+
+        const bulkOps = ads.map((item: any) => ({
+            updateOne: {
+                filter: { _id: item._id },
+                update: { priority: item.priority }
+            }
+        }));
+
+        await Ad.bulkWrite(bulkOps);
+        res.json({ success: true, message: 'Priority updated successfully' });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 

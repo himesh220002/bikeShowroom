@@ -107,7 +107,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
                             </h3>
                         </div>
                         <p className="text-[11px] text-gray-400 font-medium leading-relaxed">
-                            {activeMode === "360" && "Immerse yourself in 360 virtual reality. Experience the XSR700 in its full glory."}
+                            {activeMode === "360" && `Immerse yourself in 360 virtual reality. Experience the ${bike.name} in its full glory.`}
                             {activeMode === "sound" && "Experience the raw power. Listen to the signature Yamaha exhaust note recorded live."}
                             {activeMode === "tech" && "Interact with the next-gen TFT console. Experience connected features and ride modes."}
                         </p>

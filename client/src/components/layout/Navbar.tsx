@@ -43,10 +43,10 @@ export function Navbar() {
                         </div>
                         <div className="flex flex-col gap-1">
                             <span className="text-2xl font-display font-black tracking-tighter text-gray-300 leading-none">
-                                CHOUDHARY AUTOMOBILE
+                                CHOUDHARY YAMAHA
                             </span>
                             <span className="text-[10px] uppercase font-black tracking-[0.3em] text-gray-400 -mt-0.5">
-                                Yamaha
+                                Since 1989
                             </span>
                         </div>
                     </Link>

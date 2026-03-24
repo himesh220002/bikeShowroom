@@ -17,10 +17,10 @@ export function Footer() {
                             </div>
                             <div className="flex flex-col -gap-1">
                                 <span className="text-2xl font-display font-black tracking-tighter text-white leading-none">
-                                    YAMAHA
+                                    CHOUDHARY YAMAHA
                                 </span>
                                 <span className="text-[10px] uppercase font-black tracking-[0.3em] text-gray-500 -mt-0.5">
-                                    CHOUDHARY AUTOMOBILE
+                                    Since 1989
                                 </span>
                             </div>
                         </Link>
@@ -83,7 +83,7 @@ export function Footer() {
                                     <MapPin className="w-5 h-5 text-racing-blue" />
                                 </div>
                                 <div className="text-sm font-bold text-gray-300 leading-snug">
-                                    Station Road, Near New Market,<br />
+                                    Manihari Mor, Mirchaibari Katihar <br />
                                     Katihar, Bihar - 854105
                                 </div>
                             </div>
@@ -92,7 +92,7 @@ export function Footer() {
                                     <Phone className="w-5 h-5 text-racing-blue" />
                                 </div>
                                 <div className="text-sm font-black text-white">
-                                    +91 123 456 7890
+                                    +91 7004100062
                                 </div>
                             </div>
                             <div className="flex gap-4">

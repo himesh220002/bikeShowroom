@@ -21,6 +21,7 @@ interface Bike {
     price: string;
     threeSixtyUrl: string;
     threeSixtyImageCount: number;
+    colorBaseUrl?: string;
     colors: Color[];
 }
 
@@ -56,6 +57,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                 price: "",
                 threeSixtyUrl: "",
                 threeSixtyImageCount: 40,
+                colorBaseUrl: "",
                 colors: [{ name: "", hex: "", image: "", colorOption: "", stock: 0 }]
             });
         }
@@ -196,7 +198,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Base URL</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">360 Frames Base URL</label>
                                         <input
                                             type="text"
                                             value={formData.threeSixtyUrl}
@@ -204,10 +206,21 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                             className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
                                             placeholder="https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/"
                                         />
-                                        <p className="text-[8px] text-muted-foreground mt-2 font-bold uppercase tracking-wider">Note: This base URL is used to resolve color images by swapping &apos;360/&apos; with &apos;color/&apos;</p>
+                                        <p className="text-[8px] text-muted-foreground mt-2 font-bold uppercase tracking-wider italic">Note: Used for the interactive 3D viewer</p>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Frame Count</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Color Image Base URL (Fallback)</label>
+                                        <input
+                                            type="text"
+                                            value={formData.colorBaseUrl}
+                                            onChange={(e) => setFormData({ ...formData, colorBaseUrl: e.target.value })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/color/"
+                                        />
+                                        <p className="text-[8px] text-muted-foreground mt-2 font-bold uppercase tracking-wider italic">Note: Used for main image fallbacks if 360 is unavailable</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">360 Frame Count</label>
                                         <input
                                             type="number"
                                             value={formData.threeSixtyImageCount}

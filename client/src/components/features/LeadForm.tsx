@@ -18,7 +18,11 @@ const interests = [
     { id: "EXCHANGE", label: "Exchange / Value", bonus: "+45 Score" }
 ];
 
-export function LeadForm() {
+interface LeadFormProps {
+    defaultInterest?: string;
+}
+
+export function LeadForm({ defaultInterest }: LeadFormProps) {
     const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
     const [response, setResponse] = useState<{ score?: number, message?: string }>({});
 
@@ -152,7 +156,13 @@ export function LeadForm() {
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                                             {interests.map((item) => (
                                                 <label key={item.id} className="relative group cursor-pointer block w-full">
-                                                    <input type="checkbox" className="sr-only peer" name="interest" value={item.label} />
+                                                    <input
+                                                        type="checkbox"
+                                                        className="sr-only peer"
+                                                        name="interest"
+                                                        value={item.label}
+                                                        defaultChecked={defaultInterest === item.id}
+                                                    />
                                                     <div className="px-3 py-4 rounded-2xl bg-zinc-950 border border-zinc-800 peer-checked:border-racing-blue/30 peer-checked:bg-racing-blue/10 transition-all flex flex-col gap-1 items-center text-center h-full min-h-[70px] justify-center">
                                                         <span className="text-[12px] font-black uppercase tracking-tight text-gray-300 peer-checked:text-racing-blue transition-colors leading-tight">
                                                             {item.label}

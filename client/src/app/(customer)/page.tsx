@@ -11,9 +11,11 @@ export default function Home() {
     <div className="flex flex-col bg-zinc-950">
       <Hero />
 
-      <AdCarousel />
+      {/* <AdCarousel /> */}
 
       <FeaturedBikes />
+
+      <AdCarousel />
 
       {/* 360 Experience Section */}
       <section id="explore" className="py-24 bg-zinc-900 overflow-hidden">

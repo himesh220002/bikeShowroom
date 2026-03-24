@@ -1,7 +1,7 @@
 "use client";
 
 import Image, { ImageProps } from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils/cn";
 
 interface BikeImageProps extends Omit<ImageProps, "src" | "onError"> {
@@ -12,6 +12,12 @@ interface BikeImageProps extends Omit<ImageProps, "src" | "onError"> {
 export function BikeImage({ src, fallbackSrc, className, alt, ...props }: BikeImageProps) {
     const [imgSrc, setImgSrc] = useState(src);
     const [hasError, setHasError] = useState(false);
+
+    // Update state when src prop changes
+    useEffect(() => {
+        setImgSrc(src);
+        setHasError(false);
+    }, [src]);
 
     const handleError = () => {
         if (!hasError && fallbackSrc) {

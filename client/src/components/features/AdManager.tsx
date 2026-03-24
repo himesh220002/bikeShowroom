@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Upload, Link as LinkIcon, Eye, Trash2, Plus, Loader2, X, Image as ImageIcon, CheckCircle2 } from "lucide-react";
+import { Upload, Link as LinkIcon, Eye, Trash2, Plus, Loader2, X, Image as ImageIcon, CheckCircle2, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { motion, Reorder } from "framer-motion";
 
 type Campaign = {
     _id: string;
@@ -84,6 +85,27 @@ export function AdManager() {
             console.error("Upload failed:", err);
         } finally {
             setUploading(false);
+        }
+    };
+
+    const handleReorder = async (newOrder: Campaign[]) => {
+        setCampaigns(newOrder);
+
+        // Prepare reorder data
+        const reorderData = newOrder.map((camp, index) => ({
+            _id: camp._id,
+            priority: index
+        }));
+
+        try {
+            await fetch("http://localhost:5000/api/ads/reorder", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ads: reorderData })
+            });
+        } catch (err) {
+            console.error("Reorder failed:", err);
+            // Optionally revert UI state if needed
         }
     };
 
@@ -249,7 +271,12 @@ export function AdManager() {
                     <span className="text-[10px] font-black uppercase tracking-widest text-racing-blue">Active Streams</span>
                     <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{campaigns.length} Total Campaigns</span>
                 </div>
-                <div className="divide-y border-border/50">
+                <Reorder.Group
+                    axis="y"
+                    values={campaigns}
+                    onReorder={handleReorder}
+                    className="divide-y border-border/50"
+                >
                     {campaigns.length === 0 && (
                         <div className="p-32 text-center">
                             <ImageIcon className="w-12 h-12 text-muted/20 mx-auto mb-4" />
@@ -259,8 +286,15 @@ export function AdManager() {
                         </div>
                     )}
                     {campaigns.map((camp) => (
-                        <div key={camp._id} className="p-6 md:px-10 flex items-center justify-between hover:bg-muted/30 transition-colors">
+                        <Reorder.Item
+                            key={camp._id}
+                            value={camp}
+                            className="p-6 md:px-10 flex items-center justify-between hover:bg-muted/30 transition-colors bg-background/50 cursor-grab active:cursor-grabbing"
+                        >
                             <div className="flex items-center gap-8">
+                                <div className="text-muted-foreground/30 hover:text-racing-blue transition-colors">
+                                    <GripVertical className="w-5 h-5" />
+                                </div>
                                 <div className="w-20 h-20 bg-muted rounded-2xl overflow-hidden border border-border flex-shrink-0">
                                     <img src={camp.image} alt={camp.name} className="w-full h-full object-cover" />
                                 </div>
@@ -306,9 +340,9 @@ export function AdManager() {
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </Reorder.Item>
                     ))}
-                </div>
+                </Reorder.Group>
             </div>
         </div>
     );

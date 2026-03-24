@@ -16,6 +16,7 @@ export interface IBike extends Document {
     price: string;
     threeSixtyUrl?: string;
     threeSixtyImageCount?: number;
+    colorBaseUrl?: string;
     colors: IColor[];
     brochureUrl?: string;
 }
@@ -36,6 +37,7 @@ const BikeSchema: Schema = new Schema({
     price: { type: String, required: true },
     threeSixtyUrl: { type: String },
     threeSixtyImageCount: { type: Number, default: 40 },
+    colorBaseUrl: { type: String },
     colors: [ColorSchema],
     brochureUrl: { type: String }
 });

@@ -8,6 +8,7 @@ export interface IAd extends Document {
     link: string;
     status: 'Active' | 'Scheduled' | 'Ended';
     impact: string; // e.g., "1.2k clicks"
+    priority: number;
 }
 
 const AdSchema: Schema = new Schema({
@@ -17,7 +18,8 @@ const AdSchema: Schema = new Schema({
     description: { type: String },
     link: { type: String, required: true },
     status: { type: String, enum: ['Active', 'Scheduled', 'Ended'], default: 'Scheduled' },
-    impact: { type: String, default: '0' }
+    impact: { type: String, default: '0' },
+    priority: { type: Number, default: 0 }
 }, {
     timestamps: true
 });

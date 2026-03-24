@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ChevronRight, Star, Shield, Clock, Zap } from "lucide-react";
+import { ChevronRight, Star, Shield, Clock, Zap, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { BikeImage } from "@/components/ui/BikeImage";
 
@@ -37,7 +37,7 @@ export function BikeDetailsHero({ bike }: BikeDetailsHeroProps) {
                         </div>
 
                         <div className="mb-10">
-                            <h1 className="text-6xl md:text-8xl font-display font-black text-white uppercase tracking-tighter leading-none mb-4">
+                            <h1 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter leading-none mb-4">
                                 {bike.name} <br />
                                 <span className="text-racing-blue">{color.name}</span>
                             </h1>
@@ -99,17 +99,27 @@ export function BikeDetailsHero({ bike }: BikeDetailsHeroProps) {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <button className="px-10 py-5 bg-racing-blue text-white rounded-2xl font-black uppercase tracking-widest hover:bg-dark-racing transition-all transform active:scale-95 shadow-xl shadow-racing-blue/20 flex items-center justify-center gap-3 group">
+                            <button
+                                onClick={() => document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' })}
+                                className="px-10 py-5 bg-racing-blue text-white rounded-2xl font-black uppercase tracking-widest hover:bg-dark-racing transition-all transform active:scale-95 shadow-xl shadow-racing-blue/20 flex items-center justify-center gap-3 group"
+                            >
                                 Book This Machine
                                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                            <button
+                                onClick={() => document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' })}
+                                className="px-10 py-5 bg-zinc-900 text-white border border-zinc-800 rounded-2xl font-black uppercase tracking-widest hover:border-racing-blue transition-all transform active:scale-95 flex items-center justify-center gap-3 group"
+                            >
+                                Finance Options
+                                <Wallet className="w-5 h-5 group-hover:scale-110 transition-transform text-racing-blue" />
                             </button>
                             {bike.brochureUrl && (
                                 <Link
                                     href={bike.brochureUrl}
                                     target="_blank"
-                                    className="px-10 py-5 bg-zinc-900 text-white border border-zinc-800 rounded-2xl font-black uppercase tracking-widest hover:border-racing-blue transition-all transform active:scale-95 flex items-center justify-center gap-3"
+                                    className="px-10 py-5 bg-zinc-900/50 text-gray-400 border border-zinc-800/50 rounded-2xl font-black uppercase tracking-widest hover:border-white/20 hover:text-white transition-all transform active:scale-95 flex items-center justify-center gap-3"
                                 >
-                                    Download Brochure
+                                    Brochure
                                 </Link>
                             )}
                         </div>
@@ -125,7 +135,11 @@ export function BikeDetailsHero({ bike }: BikeDetailsHeroProps) {
                         <div className="absolute inset-0 bg-racing-blue/20 blur-[150px] opacity-20 -z-10" />
                         <BikeImage
                             src={color.image}
-                            fallbackSrc={`${bike.threeSixtyUrl?.replace('360/', 'color/')}${color.colorOption}.webp`}
+                            fallbackSrc={
+                                bike.colorBaseUrl
+                                    ? `${bike.colorBaseUrl}${color.colorOption}.webp`
+                                    : (bike.threeSixtyUrl ? `${bike.threeSixtyUrl.replace('360/', 'color/')}${color.colorOption}.webp` : undefined)
+                            }
                             alt={bike.name}
                             width={800}
                             height={600}

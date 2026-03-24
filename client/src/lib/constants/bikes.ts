@@ -29,6 +29,7 @@ export interface Bike {
     };
     threeSixtyUrl?: string;
     threeSixtyImageCount?: number;
+    colorBaseUrl?: string;
     brochureUrl?: string;
 }
 
@@ -106,7 +107,7 @@ export const BIKES: Bike[] = [
         category: "bike",
         price: "3,45,000",
         colors: [
-            { name: "Midnight Cyan", hex: "#0891b2", image: "/images/mt15.png", colorOption: "midnight-cyan", stock: 1 }
+            { name: "Midnight Cyan", hex: "#0891b2", image: "/images/mt03-cyan.webp", colorOption: "midnight-cyan", stock: 1 }
         ],
         specs: [
             { icon: "Gauge", label: "321cc Twin Cylinder" },
@@ -127,8 +128,6 @@ export const BIKES: Bike[] = [
             tyres: "110/70-17 (F), 140/70-17 (R)",
             features: ["Twin Cylinder Engine", "Inverted front forks", "Multi-function LCD instrument cluster"]
         },
-        threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/mt_series/mt03/360/",
-        threeSixtyImageCount: 40,
         brochureUrl: "https://www.yamaha-motor-india.com/yamaha-mt-03.html"
     },
     {
@@ -160,8 +159,8 @@ export const BIKES: Bike[] = [
             tyres: "100/80-17 (F), 140/60-R17 (R)",
             features: ["Traction Control System", "LED Headlight & Tail Light", "E20 Compatible"]
         },
-        threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
-        threeSixtyImageCount: 40,
+        threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-v4-std/360/",
+        threeSixtyImageCount: 37,
         brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
     },
     {
@@ -192,8 +191,39 @@ export const BIKES: Bike[] = [
             tyres: "100/80-17 (F), 140/60-R17 (R)",
             features: ["Multi-function LCD Cluster", "LED Headlight", "Side Stand Cut-off"]
         },
+        threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-v4-std/360/",
+        threeSixtyImageCount: 37,
+        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
+    },
+    {
+        slug: "fzs-rave",
+        name: "Yamaha FZ-S FI V4 (Cyber Rave)",
+        category: "bike",
+        price: "1,29,500",
+        colors: [
+            { name: "Cyber Rave", hex: "#000", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/1.webp", colorOption: "cyber-rave", stock: 2 }
+        ],
+        specs: [
+            { icon: "Gauge", label: "149cc Fi Engine" },
+            { icon: "Zap", label: "Cyber Rave Edition" },
+            { icon: "Cpu", label: "Traction Control" }
+        ],
+        tag: "Digital Sensation",
+        description: "The Cyber Rave edition of FZ-S FI V4 is built for the trendsetters. A perfect blend of technology and street presence.",
+        fullSpecs: {
+            engine: "149cc, Air-cooled, 4-stroke",
+            power: "12.4 PS",
+            torque: "13.3 Nm",
+            transmission: "5-speed",
+            brakes: "Single Channel ABS",
+            fuelCapacity: "13 Liters",
+            weight: "136 kg",
+            seatHeight: "790 mm",
+            tyres: "100/80-17 (F), 140/60-R17 (R)",
+            features: ["Traction Control System", "Cyber Rave Special Color", "LED Headlight"]
+        },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
-        threeSixtyImageCount: 40,
+        threeSixtyImageCount: 37,
         brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
     },
     {
@@ -255,8 +285,9 @@ export const BIKES: Bike[] = [
             tyres: "110/70-17 (F), 140/70-17 (R)",
             features: ["Retro LCD Instrument", "LED Headlight & Tail Light", "Assist & Slipper Clutch"]
         },
-        threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/xsr_series/xsr155/360/",
-        threeSixtyImageCount: 40,
+        threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/x_series_all/xsr/360/",
+        threeSixtyImageCount: 36,
+        colorBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/xsr_series/xsr155/color/",
         brochureUrl: "https://www.yamaha-motor-india.com/yamaha-xsr-155.html"
     },
     {
@@ -319,8 +350,8 @@ export const BIKES: Bike[] = [
             tyres: "90/90-12 (F), 110/90-10 (R)",
             features: ["Hybrid Tech (SMG)", "LED Headlight", "Lightweight Chassis"]
         },
-        threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/rayzr_series/rayzr125/360/",
-        threeSixtyImageCount: 40,
+        threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/rayzr_all/ray-zr-streetrally125fihybrid/360_new/",
+        threeSixtyImageCount: 36,
         brochureUrl: "https://www.yamaha-motor-india.com/yamaha-rayzr-125-fi-hybrid.html"
     },
     {
@@ -330,7 +361,7 @@ export const BIKES: Bike[] = [
         price: "79,000",
         colors: [
             { name: "Vivid Red", hex: "#dc2626", image: "/images/fascino.png", colorOption: "vivid-red", stock: 3 },
-            { name: "Cyan Blue", hex: "#06b6d4", image: "/images/fascino.png", colorOption: "cyan-blue", stock: 4 }
+            { name: "Metallic Black", hex: "#000", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_all/fascino125fi-new/color/Drum/Metallic-Black-cd.webp", colorOption: "metallic-black", stock: 2 }
         ],
         specs: [
             { icon: "Gauge", label: "125cc Hybrid" },
@@ -351,8 +382,9 @@ export const BIKES: Bike[] = [
             tyres: "90/90-12 (F), 110/90-10 (R)",
             features: ["Hybrid Tech", "Classy Design", "Spacious Underseat Storage"]
         },
-        threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_series/fascino125/360/",
+        threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_all/fascino125fi-new/360_new/",
         threeSixtyImageCount: 40,
+        colorBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_series/fascino125/color/",
         brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fascino-125-fi-hybrid.html"
     }
 ];

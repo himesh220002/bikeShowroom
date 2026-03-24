@@ -41,8 +41,10 @@ export function Viewer360Carousel() {
         fetchBikes();
     }, []);
 
-    // Filter bikes that actually have 360 view assets
-    const bikesWith360 = bikes.filter(bike => !!bike.threeSixtyUrl);
+    // Filter bikes that actually have 360 view assets and sufficient frames
+    const bikesWith360 = bikes.filter(bike =>
+        !!bike.threeSixtyUrl && (bike.threeSixtyImageCount || 0) > 35
+    );
 
     // Deduplication: Only show one entry per unique 360 URL (fixes "Two R15s" issue)
     const uniqueBikes = bikesWith360.filter((bike, index, self) =>

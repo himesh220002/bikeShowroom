@@ -32,7 +32,7 @@ export default function BikePage() {
             </div>
 
             {/* Added 360 Viewer Section */}
-            {bike.threeSixtyUrl && (
+            {bike.threeSixtyUrl && bike.threeSixtyImageCount && bike.threeSixtyImageCount > 35 && (
                 <section className="py-24 bg-zinc-900 border-y border-white/5">
                     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-16">
@@ -102,7 +102,7 @@ export default function BikePage() {
                             className="relative"
                         >
                             <div className="absolute -inset-10 bg-racing-blue/10 blur-[120px] opacity-20" />
-                            <LeadForm />
+                            <LeadForm defaultInterest="EMI" />
                         </motion.div>
                     </div>
                 </div>

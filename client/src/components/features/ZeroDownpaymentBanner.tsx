@@ -91,6 +91,9 @@ export function ZeroDownpaymentBanner({ bikeName }: ZeroDownpaymentBannerProps) 
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.8 }}
+                            onClick={() => {
+                                document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
+                            }}
                             className="group bg-white text-zinc-950 px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-sm flex items-center gap-4 hover:bg-racing-blue hover:text-white transition-all transform active:scale-95 shadow-2xl"
                         >
                             Apply For Finance

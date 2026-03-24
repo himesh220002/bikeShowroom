@@ -82,10 +82,8 @@ router.post('/seed', async (req, res) => {
                 tag: "Dark Lightning",
                 description: "321cc Twin Cylinder power. The MT-03 is a lightweight, versatile hyper-naked that delivers serious thrills.",
                 price: "3,45,000",
-                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/mt_series/mt03/360/",
-                threeSixtyImageCount: 40,
                 colors: [
-                    { name: "Midnight Cyan", hex: "#0891b2", image: "/images/mt15.png", colorOption: "midnight-cyan", stock: 1 }
+                    { name: "Midnight Cyan", hex: "#0891b2", image: "/images/mt03-cyan.webp", colorOption: "midnight-cyan", stock: 1 }
                 ],
                 brochureUrl: "https://www.yamaha-motor-india.com/yamaha-mt-03.html"
             },
@@ -95,8 +93,8 @@ router.post('/seed', async (req, res) => {
                 tag: "Street Fighter",
                 description: "Muscular styling with advanced performance features like Traction Control for a superior ride.",
                 price: "1,29,000",
-                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
-                threeSixtyImageCount: 40,
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-v4-std/360/",
+                threeSixtyImageCount: 37,
                 colors: [
                     { name: "Racing Blue", hex: "#1e3a8a", image: "/images/fzs.png", colorOption: "racing-blue", stock: 5 },
                     { name: "Matte Black", hex: "#18181b", image: "/images/fzs.png", colorOption: "matte-black", stock: 3 },
@@ -110,11 +108,24 @@ router.post('/seed', async (req, res) => {
                 tag: "Street Commuter",
                 description: "The lord of the streets, offering a perfect balance of fuel efficiency and muscular performance for the daily urban rider.",
                 price: "1,16,500",
-                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
-                threeSixtyImageCount: 40,
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-v4-std/360/",
+                threeSixtyImageCount: 37,
                 colors: [
                     { name: "Blue", hex: "#2563eb", image: "/images/fzs.png", colorOption: "blue", stock: 4 },
                     { name: "Matte Black", hex: "#18181b", image: "/images/fzs.png", colorOption: "matte-black", stock: 3 }
+                ],
+                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
+            },
+            {
+                name: "Yamaha FZ-S FI V4 (Cyber Rave)",
+                category: "bike",
+                tag: "Digital Sensation",
+                description: "The Cyber Rave edition of FZ-S FI V4 is built for the trendsetters. A perfect blend of technology and street presence.",
+                price: "1,29,500",
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
+                threeSixtyImageCount: 37,
+                colors: [
+                    { name: "Cyber Rave", hex: "#000", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/1.webp", colorOption: "cyber-rave", stock: 2 }
                 ],
                 brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
             },
@@ -138,8 +149,9 @@ router.post('/seed', async (req, res) => {
                 tag: "Classic Elite",
                 description: "Retro elegance with Yamaha's high-performance 155cc VVA engine. A masterpiece of design.",
                 price: "1,48,000",
-                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/xsr_series/xsr155/360/",
-                threeSixtyImageCount: 40,
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/x_series_all/xsr/360/",
+                threeSixtyImageCount: 36,
+                colorBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/xsr_series/xsr155/color/",
                 colors: [
                     { name: "Heritage Silver", hex: "#d1d5db", image: "/images/XSR155.png", colorOption: "silver", stock: 2 }
                 ],
@@ -165,8 +177,8 @@ router.post('/seed', async (req, res) => {
                 tag: "Street Rally",
                 description: "Rugged styling and hybrid technology. The ultimate street machine for the bold.",
                 price: "84,000",
-                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/rayzr_series/rayzr125/360/",
-                threeSixtyImageCount: 40,
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/rayzr_all/ray-zr-streetrally125fihybrid/360_new/",
+                threeSixtyImageCount: 36,
                 colors: [
                     { name: "Cyan Blue", hex: "#0891b2", image: "/images/rayzr.png", colorOption: "cyan-blue", stock: 4 },
                     { name: "Matte Red", hex: "#b91c1c", image: "/images/rayzr.png", colorOption: "matte-red", stock: 3 }
@@ -179,11 +191,12 @@ router.post('/seed', async (req, res) => {
                 tag: "Fashionable",
                 description: "Elegance meets performance. Retro-classic styling with modern hybrid technology.",
                 price: "79,000",
-                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_series/fascino125/360/",
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_all/fascino125fi-new/360_new/",
                 threeSixtyImageCount: 40,
+                colorBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_series/fascino125/color/",
                 colors: [
                     { name: "Vivid Red", hex: "#dc2626", image: "/images/fascino.png", colorOption: "vivid-red", stock: 3 },
-                    { name: "Cyan Blue", hex: "#06b6d4", image: "/images/fascino.png", colorOption: "cyan-blue", stock: 4 }
+                    { name: "Metallic Black", hex: "#000", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_all/fascino125fi-new/color/Drum/Metallic-Black-cd.webp", colorOption: "metallic-black", stock: 2 }
                 ],
                 brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fascino-125-fi-hybrid.html"
             }
