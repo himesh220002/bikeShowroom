@@ -23,12 +23,19 @@ router.post('/', async (req, res) => {
             return res.status(404).json({ success: false, message: 'Bike not found in inventory' });
         }
 
-        if (bike.stock <= 0) {
+        // Find bike color and verify stock availability
+        const colorIndex = bike.colors.findIndex((c: any) => c.name === variant || c.colorOption === variant);
+        if (colorIndex === -1) {
+            return res.status(400).json({ success: false, message: `Color variant "${variant}" not found for ${bike.name}.` });
+        }
+
+        if (bike.colors[colorIndex].stock <= 0) {
             return res.status(400).json({ success: false, message: `The ${bike.name} (${variant}) is currently out of stock.` });
         }
 
         // 3. Automated Inventory Subtraction
-        bike.stock -= 1;
+        bike.colors[colorIndex].stock -= 1;
+        bike.markModified('colors');
         await bike.save();
 
         // 4. Record Transaction in Sales CRM

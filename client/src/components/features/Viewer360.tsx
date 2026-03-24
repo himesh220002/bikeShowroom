@@ -50,7 +50,10 @@ export function Viewer360({ bike }: { bike: Bike }) {
             {/* Main 3D View (Custom Rotating Viewer) */}
             <div className="absolute inset-0 z-0">
                 {activeMode === "360" ? (
-                    <RotatingBikeViewer baseUrl={bike.threeSixtyBaseUrl || ""} />
+                    <RotatingBikeViewer
+                        baseUrl={bike.threeSixtyUrl || ""}
+                        imageCount={bike.threeSixtyImageCount}
+                    />
                 ) : (
                     <div className="w-full h-full bg-zinc-950 flex items-center justify-center opacity-20">
                         <Rotate3d className="w-32 h-32 text-white animate-pulse" />

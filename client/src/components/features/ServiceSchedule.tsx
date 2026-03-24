@@ -110,7 +110,7 @@ export function ServiceSchedule() {
             </div>
 
             {/* Job List */}
-            <div className="bg-background/50 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl">
+            <div className="bg-background/90 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead className="bg-card/50 border-b border-border">
@@ -187,16 +187,18 @@ export function ServiceSchedule() {
                                                 {job.status.replace('-', ' ')}
                                                 <ChevronDown className="w-3 h-3 transition-transform group-hover/status:rotate-180" />
                                             </span>
-                                            <div className="absolute top-full mt-2 left-0 hidden group-hover/status:flex flex-col bg-card border border-border rounded-xl shadow-2xl z-50 overflow-hidden w-40">
-                                                {STATUS_OPTIONS.map((opt) => (
-                                                    <button
-                                                        key={opt}
-                                                        onClick={() => updateStatus(job.id, opt)}
-                                                        className="px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground hover:text-foreground border-b border-border/50 last:border-0"
-                                                    >
-                                                        {opt.replace('-', ' ')}
-                                                    </button>
-                                                ))}
+                                            <div className="absolute top-full left-0 pt-2 hidden group-hover/status:block z-50">
+                                                <div className="flex flex-col bg-card border border-border rounded-xl shadow-2xl overflow-hidden w-40">
+                                                    {STATUS_OPTIONS.map((opt) => (
+                                                        <button
+                                                            key={opt}
+                                                            onClick={() => updateStatus(job.id, opt)}
+                                                            className="px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground hover:text-foreground border-b border-border/50 last:border-0"
+                                                        >
+                                                            {opt.replace('-', ' ')}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     </td>

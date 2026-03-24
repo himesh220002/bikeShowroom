@@ -5,22 +5,22 @@ import { motion, useSpring, useTransform } from "framer-motion";
 import { Rotate3d, Loader2, Play, Pause } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-const TOTAL_IMAGES = 40;
+// const TOTAL_IMAGES = 40;
 // const BASE_URL = "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/";
 
 // ----------------------------------------------------------------------------
 // ImageFrame: Handles individual frame rendering and cross-fading logic
 // ----------------------------------------------------------------------------
-function ImageFrame({ id, smoothIndex, loaded, baseUrl }: { id: number; smoothIndex: any; loaded: boolean; baseUrl: string }) {
+function ImageFrame({ id, smoothIndex, loaded, baseUrl, totalImages }: { id: number; smoothIndex: any; loaded: boolean; baseUrl: string; totalImages: number }) {
     // Calculate opacity based on relative distance to this frame
     const opacity = useTransform(smoothIndex, (latestValue: number) => {
-        // Normalize the floating index to stay within the 1-40 range
-        const normalizedLatest = ((latestValue - 1) % TOTAL_IMAGES + TOTAL_IMAGES) % TOTAL_IMAGES + 1;
+        // Normalize the floating index to stay within the range
+        const normalizedLatest = ((latestValue - 1) % totalImages + totalImages) % totalImages + 1;
 
-        // Math.round can return 0.5 -> 1 or 40.5 -> 41. We must wrap 41 back to 1.
+        // Math.round can return 0.5 -> 1 or 40.5 -> 41. We must wrap back to 1.
         let rounded = Math.round(normalizedLatest);
-        if (rounded > TOTAL_IMAGES) rounded = 1;
-        if (rounded < 1) rounded = TOTAL_IMAGES;
+        if (rounded > totalImages) rounded = 1;
+        if (rounded < 1) rounded = totalImages;
 
         if (id === rounded) return 1;
         return 0;
@@ -42,7 +42,8 @@ function ImageFrame({ id, smoothIndex, loaded, baseUrl }: { id: number; smoothIn
 // ----------------------------------------------------------------------------
 // Main Component
 // ----------------------------------------------------------------------------
-export function RotatingBikeViewer({ baseUrl }: { baseUrl: string }) {
+export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: string; imageCount?: number }) {
+    const TOTAL_IMAGES = imageCount;
     const [targetIndex, setTargetIndex] = useState(1);
     const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>({});
     const [loading, setLoading] = useState(true);
@@ -206,6 +207,7 @@ export function RotatingBikeViewer({ baseUrl }: { baseUrl: string }) {
                         smoothIndex={smoothIndex}
                         loaded={loadedImages[i]}
                         baseUrl={baseUrl}
+                        totalImages={TOTAL_IMAGES}
                     />
                 ))}
             </div>

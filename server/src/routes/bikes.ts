@@ -45,45 +45,162 @@ router.put('/:id', async (req, res) => {
 router.post('/seed', async (req, res) => {
     try {
         const initialBikes = [
-            // R15 Series
-            { name: "Yamaha R15M", variant: "Metallic Grey", price: "1,96,000", image: "/images/r15m.png", tag: "Track Ready", color: "Metallic Grey", stock: 5, category: "bike" },
-            { name: "Yamaha R15 V4", variant: "Racing Blue", price: "1,87,300", image: "/images/r15m.png", tag: "Track Ready", color: "Racing Blue", stock: 3, category: "bike" },
-            { name: "Yamaha R15 V4", variant: "Metallic Red", price: "1,82,000", image: "/images/r15m.png", tag: "Track Ready", color: "Metallic Red", stock: 2, category: "bike" },
-            { name: "Yamaha R15 V4", variant: "Dark Knight", price: "1,83,000", image: "/images/r15m.png", tag: "Track Ready", color: "Dark Knight", stock: 2, category: "bike" },
-
-            // MT Series
-            { name: "Yamaha MT-15", variant: "Cyan Storm", price: "1,68,000", image: "/images/mt15.png", tag: "Street King", color: "Cyan Storm", stock: 3, category: "bike" },
-            { name: "Yamaha MT-15", variant: "Ice Fluo-Vermillion", price: "1,68,000", image: "/images/mt15.png", tag: "Street King", color: "Ice Fluo", stock: 2, category: "bike" },
-            { name: "Yamaha MT-03", variant: "Midnight Cyan", price: "3,45,000", image: "/images/mt15.png", tag: "Hyper Naked", color: "Midnight Cyan", stock: 1, category: "bike" },
-
-            // FZ Series
-            { name: "Yamaha FZ Rave", variant: "Standard", price: "1,18,000", image: "/images/fzs.png", tag: "New Arrival", color: "Matte Titan", stock: 4, category: "bike" },
-            { name: "Yamaha FZ-S FI V4", variant: "Standard", price: "1,29,000", image: "/images/fzs.png", tag: "Street Fighter", color: "Racing Blue", stock: 5, category: "bike" },
-            { name: "Yamaha FZ-S Hybrid", variant: "Standard", price: "1,23,000", image: "/images/fzs.png", tag: "Efficient", color: "Matte Black", stock: 3, category: "bike" },
-            { name: "Yamaha FZ", variant: "Standard", price: "1,16,500", image: "/images/fzs.png", tag: "Commuter", color: "Blue", stock: 4, category: "bike" },
-            { name: "Yamaha FZ-X", variant: "Chrome", price: "1,36,000", image: "/images/fzx.png", tag: "Neo-Retro", color: "Matte Copper", stock: 2, category: "bike" },
-
-            // XSR
-            { name: "Yamaha XSR155", variant: "TVC Edition", price: "1,48,000", image: "/images/XSR155.png", tag: "Classic", color: "Heritage Silver", stock: 2, category: "bike" },
-
-            // Scooters
-            { name: "Yamaha Aerox 155", variant: "Standard", price: "1,48,000", image: "/images/rayzr.png", tag: "Maxi-Scooter", color: "Racing Blue", stock: 3, category: "scooty" },
-            { name: "Yamaha RayZR 125 Fi", variant: "Hybrid", price: "84,000", image: "/images/rayzr.png", tag: "Street Rally", color: "Cyan Blue", stock: 4, category: "scooty" },
-            { name: "Yamaha Fascino 125 Fi", variant: "Hybrid", price: "79,000", image: "/images/fascino.png", tag: "Fashionable", color: "Vivid Red", stock: 3, category: "scooty" }
+            {
+                name: "Yamaha R15 V4 / M",
+                category: "bike",
+                tag: "Track Ready",
+                description: "The R15 V4 is an icon on the track and the street, offering unparalleled performance and aerodynamics with R-Series DNA.",
+                price: "1,82,000",
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/",
+                threeSixtyImageCount: 40,
+                colors: [
+                    { name: "Metallic Grey (M)", hex: "#9ca3af", image: "/images/r15m.png", colorOption: "metallic-grey", stock: 5 },
+                    { name: "Racing Blue", hex: "#005aff", image: "/images/r15m.png", colorOption: "racing-blue", stock: 3 },
+                    { name: "Dark Knight", hex: "#18181b", image: "/images/r15m.png", colorOption: "dark-knight", stock: 2 },
+                    { name: "Metallic Red", hex: "#ef4444", image: "/images/r15m.png", colorOption: "metallic-red", stock: 2 }
+                ],
+                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-r15v4.html"
+            },
+            {
+                name: "Yamaha MT-15 V2",
+                category: "bike",
+                tag: "Street King",
+                description: "The MT-15 V2 is for those who want to stand out while tearing up the asphalt. Hyper-naked styling with serious performance.",
+                price: "1,68,000",
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/mt_series/mt15v2/360/",
+                threeSixtyImageCount: 40,
+                colors: [
+                    { name: "Cyan Storm", hex: "#06b6d4", image: "/images/mt15.png", colorOption: "cyan-storm", stock: 3 },
+                    { name: "Ice Fluo-Vermillion", hex: "#f8fafc", image: "/images/mt15.png", colorOption: "ice-fluo", stock: 2 },
+                    { name: "Racing Blue", hex: "#1e3a8a", image: "/images/mt15.png", colorOption: "racing-blue", stock: 2 }
+                ],
+                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-mt-15-v2.html"
+            },
+            {
+                name: "Yamaha MT-03",
+                category: "bike",
+                tag: "Dark Lightning",
+                description: "321cc Twin Cylinder power. The MT-03 is a lightweight, versatile hyper-naked that delivers serious thrills.",
+                price: "3,45,000",
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/mt_series/mt03/360/",
+                threeSixtyImageCount: 40,
+                colors: [
+                    { name: "Midnight Cyan", hex: "#0891b2", image: "/images/mt15.png", colorOption: "midnight-cyan", stock: 1 }
+                ],
+                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-mt-03.html"
+            },
+            {
+                name: "Yamaha FZ-S FI V4",
+                category: "bike",
+                tag: "Street Fighter",
+                description: "Muscular styling with advanced performance features like Traction Control for a superior ride.",
+                price: "1,29,000",
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
+                threeSixtyImageCount: 40,
+                colors: [
+                    { name: "Racing Blue", hex: "#1e3a8a", image: "/images/fzs.png", colorOption: "racing-blue", stock: 5 },
+                    { name: "Matte Black", hex: "#18181b", image: "/images/fzs.png", colorOption: "matte-black", stock: 3 },
+                    { name: "Matte Titan", hex: "#3f3f46", image: "/images/fzs.png", colorOption: "matte-titan", stock: 4 }
+                ],
+                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
+            },
+            {
+                name: "Yamaha FZ FI",
+                category: "bike",
+                tag: "Street Commuter",
+                description: "The lord of the streets, offering a perfect balance of fuel efficiency and muscular performance for the daily urban rider.",
+                price: "1,16,500",
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
+                threeSixtyImageCount: 40,
+                colors: [
+                    { name: "Blue", hex: "#2563eb", image: "/images/fzs.png", colorOption: "blue", stock: 4 },
+                    { name: "Matte Black", hex: "#18181b", image: "/images/fzs.png", colorOption: "matte-black", stock: 3 }
+                ],
+                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
+            },
+            {
+                name: "Yamaha FZ-X",
+                category: "bike",
+                tag: "Neo-Retro",
+                description: "Ride into the future with a classic soul. Retro aesthetics meets modern performance.",
+                price: "1,36,000",
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzx/360/",
+                threeSixtyImageCount: 40,
+                colors: [
+                    { name: "Matte Copper", hex: "#b45309", image: "/images/fzx.png", colorOption: "matte-copper", stock: 2 },
+                    { name: "Chrome", hex: "#94a3b8", image: "/images/fzx.png", colorOption: "chrome", stock: 1 }
+                ],
+                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fzx.html"
+            },
+            {
+                name: "Yamaha XSR 155",
+                category: "bike",
+                tag: "Classic Elite",
+                description: "Retro elegance with Yamaha's high-performance 155cc VVA engine. A masterpiece of design.",
+                price: "1,48,000",
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/xsr_series/xsr155/360/",
+                threeSixtyImageCount: 40,
+                colors: [
+                    { name: "Heritage Silver", hex: "#d1d5db", image: "/images/XSR155.png", colorOption: "silver", stock: 2 }
+                ],
+                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-xsr-155.html"
+            },
+            {
+                name: "Yamaha Aerox 155",
+                category: "scooty",
+                tag: "Sport Scooter",
+                description: "India's first maxi-scooter with R-Series engine DNA and traction control.",
+                price: "1,48,000",
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/aerox_all/aerox155vs/360/",
+                threeSixtyImageCount: 40,
+                colors: [
+                    { name: "Racing Blue", hex: "#2563eb", image: "/images/rayzr.png", colorOption: "racing-blue", stock: 3 },
+                    { name: "Grey Vermillion", hex: "#4b5563", image: "/images/rayzr.png", colorOption: "grey", stock: 2 }
+                ],
+                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-aerox-155.html"
+            },
+            {
+                name: "Yamaha RayZR 125 FI",
+                category: "scooty",
+                tag: "Street Rally",
+                description: "Rugged styling and hybrid technology. The ultimate street machine for the bold.",
+                price: "84,000",
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/rayzr_series/rayzr125/360/",
+                threeSixtyImageCount: 40,
+                colors: [
+                    { name: "Cyan Blue", hex: "#0891b2", image: "/images/rayzr.png", colorOption: "cyan-blue", stock: 4 },
+                    { name: "Matte Red", hex: "#b91c1c", image: "/images/rayzr.png", colorOption: "matte-red", stock: 3 }
+                ],
+                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-rayzr-125-fi-hybrid.html"
+            },
+            {
+                name: "Yamaha Fascino 125 FI",
+                category: "scooty",
+                tag: "Fashionable",
+                description: "Elegance meets performance. Retro-classic styling with modern hybrid technology.",
+                price: "79,000",
+                threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_series/fascino125/360/",
+                threeSixtyImageCount: 40,
+                colors: [
+                    { name: "Vivid Red", hex: "#dc2626", image: "/images/fascino.png", colorOption: "vivid-red", stock: 3 },
+                    { name: "Cyan Blue", hex: "#06b6d4", image: "/images/fascino.png", colorOption: "cyan-blue", stock: 4 }
+                ],
+                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fascino-125-fi-hybrid.html"
+            }
         ];
 
-        // Drop the old unique name index if it exists
+        // Drop indices
         try {
-            await Bike.collection.dropIndex("name_1");
+            await Bike.collection.dropIndexes();
         } catch (e) {
-            // Index might not exist, ignore
+            // Ignore
         }
 
-        // Clear existing and seed
+        // Clear and seed
         await Bike.deleteMany({});
         const seeded = await Bike.insertMany(initialBikes);
 
-        // Emit socket event for full reload
+        // Emit socket event
         if ((req as any).io) {
             (req as any).io.emit('inventory_synced', seeded);
         }

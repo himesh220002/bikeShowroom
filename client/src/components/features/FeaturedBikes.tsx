@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
 import { BIKES } from "@/lib/constants/bikes";
 import { LucideIcon } from "@/components/ui/LucideIcon";
+import { BikeImage } from "@/components/ui/BikeImage";
 
 const bikes = BIKES;
 
@@ -78,10 +79,7 @@ export function FeaturedBikes() {
                                     className="group relative bg-zinc-900 rounded-[2.5rem] p-8 h-full border border-zinc-800 hover:border-racing-blue/30 transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden"
                                 >
                                     <div className="relative z-10">
-                                        <span className={cn(
-                                            "inline-block px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest text-white mb-6 shadow-xl",
-                                            bike.color
-                                        )}>
+                                        <span className="inline-block px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest text-white mb-6 shadow-xl bg-racing-blue">
                                             {bike.tag}
                                         </span>
 
@@ -90,7 +88,7 @@ export function FeaturedBikes() {
                                                 {bike.name}
                                             </h4>
                                             <p className="text-gray-500 font-bold uppercase tracking-[0.2em] text-[8px]">
-                                                {bike.variant}
+                                                {bike.colors[0].name}
                                             </p>
                                         </div>
 
@@ -117,8 +115,9 @@ export function FeaturedBikes() {
                                     </div>
 
                                     <div className="absolute top-8 right-0 w-[55%] pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-2">
-                                        <Image
-                                            src={bike.image}
+                                        <BikeImage
+                                            src={bike.colors[0].image}
+                                            fallbackSrc={`${bike.threeSixtyUrl?.replace('360/', 'color/')}${bike.colors[0].colorOption}.webp`}
                                             alt={bike.name}
                                             width={400}
                                             height={300}

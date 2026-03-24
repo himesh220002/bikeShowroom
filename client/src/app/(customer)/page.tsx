@@ -1,9 +1,9 @@
 import { Hero } from "@/components/features/Hero";
 import { FeaturedBikes } from "@/components/features/FeaturedBikes";
 import { LeadForm } from "@/components/features/LeadForm";
-import { Viewer360 } from "@/components/features/Viewer360";
+import { Viewer360Carousel } from "@/components/features/Viewer360Carousel";
+import { AdCarousel } from "@/components/features/AdCarousel";
 import { BIKES } from "@/lib/constants/bikes";
-import { LocalPromotions } from "@/components/features/LocalPromotions";
 import { MapPin, Clock, Phone, Info, User } from "lucide-react";
 
 export default function Home() {
@@ -11,28 +11,24 @@ export default function Home() {
     <div className="flex flex-col bg-zinc-950">
       <Hero />
 
-      <div id="promotions">
-        <LocalPromotions />
-      </div>
+      <AdCarousel />
 
       <FeaturedBikes />
 
       {/* 360 Experience Section */}
-      {BIKES[0].threeSixtyBaseUrl && (
-        <section id="explore" className="py-24 bg-zinc-900 overflow-hidden">
-          <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
-                Virtual Showroom
-              </h2>
-              <h3 className="text-5xl md:text-7xl font-display font-black text-white uppercase tracking-tighter">
-                IMMERSIVE <span className="text-gradient">360° VIEW</span>
-              </h3>
-            </div>
-            <Viewer360 bike={BIKES[0]} />
+      <section id="explore" className="py-24 bg-zinc-900 overflow-hidden">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
+              Virtual Showroom
+            </h2>
+            <h3 className="text-5xl md:text-7xl font-display font-black text-white uppercase tracking-tighter">
+              IMMERSIVE <span className="text-gradient">360° VIEW</span>
+            </h3>
           </div>
-        </section>
-      )}
+          <Viewer360Carousel />
+        </div>
+      </section>
 
       {/* Lead Capture Section */}
       <section id="inquiry" className="py-32 bg-zinc-950">

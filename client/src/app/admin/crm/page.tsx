@@ -75,7 +75,7 @@ export default function CRMPage() {
                 </button>
             </div>
 
-            <div className="bg-background/50 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[400px]">
+            <div className="bg-background/90 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[400px]">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-32 gap-4">
                         <Loader2 className="w-8 h-8 text-racing-blue animate-spin" />

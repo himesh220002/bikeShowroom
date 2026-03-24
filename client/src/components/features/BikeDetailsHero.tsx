@@ -4,12 +4,20 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ChevronRight, Star, Shield, Clock, Zap } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { BikeImage } from "@/components/ui/BikeImage";
 
 interface BikeDetailsHeroProps {
     bike: any;
 }
 
+import { useState } from "react";
+import Link from "next/link";
+import { BIKES } from "@/lib/constants/bikes";
+
 export function BikeDetailsHero({ bike }: BikeDetailsHeroProps) {
+    const [selectedColorIndex, setSelectedColorIndex] = useState(0);
+    const color = bike.colors[selectedColorIndex];
+
     return (
         <section className="relative min-h-screen bg-zinc-950 pb-20 overflow-hidden">
             {/* Background elements */}
@@ -28,10 +36,37 @@ export function BikeDetailsHero({ bike }: BikeDetailsHeroProps) {
                             {bike.tag}
                         </div>
 
-                        <h1 className="text-6xl md:text-8xl font-display font-black text-white uppercase tracking-tighter leading-none mb-4">
-                            {bike.name} <br />
-                            <span className="text-racing-blue">{bike.variant}</span>
-                        </h1>
+                        <div className="mb-10">
+                            <h1 className="text-6xl md:text-8xl font-display font-black text-white uppercase tracking-tighter leading-none mb-4">
+                                {bike.name} <br />
+                                <span className="text-racing-blue">{color.name}</span>
+                            </h1>
+
+                            {/* Color Selector */}
+                            {bike.colors.length > 1 && (
+                                <div className="mt-8 flex flex-col gap-3">
+                                    <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Available Colors</span>
+                                    <div className="flex gap-4">
+                                        {bike.colors.map((c: any, index: number) => (
+                                            <button
+                                                key={index}
+                                                onClick={() => setSelectedColorIndex(index)}
+                                                className={cn(
+                                                    "w-8 h-8 rounded-full border-2 transition-all p-1",
+                                                    index === selectedColorIndex ? "border-racing-blue scale-110" : "border-transparent hover:border-white/20"
+                                                )}
+                                                title={c.name}
+                                            >
+                                                <div
+                                                    className="w-full h-full rounded-full shadow-inner"
+                                                    style={{ backgroundColor: c.hex || '#555' }}
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
 
                         <p className="text-xl text-gray-400 font-medium leading-relaxed max-w-xl mb-10">
                             {bike.description}
@@ -68,21 +103,29 @@ export function BikeDetailsHero({ bike }: BikeDetailsHeroProps) {
                                 Book This Machine
                                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </button>
-                            <button className="px-10 py-5 bg-zinc-900 text-white border border-zinc-800 rounded-2xl font-black uppercase tracking-widest hover:border-racing-blue transition-all transform active:scale-95 flex items-center justify-center gap-3">
-                                Download Brochure
-                            </button>
+                            {bike.brochureUrl && (
+                                <Link
+                                    href={bike.brochureUrl}
+                                    target="_blank"
+                                    className="px-10 py-5 bg-zinc-900 text-white border border-zinc-800 rounded-2xl font-black uppercase tracking-widest hover:border-racing-blue transition-all transform active:scale-95 flex items-center justify-center gap-3"
+                                >
+                                    Download Brochure
+                                </Link>
+                            )}
                         </div>
                     </motion.div>
 
                     <motion.div
+                        key={color.name}
                         initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
                         animate={{ opacity: 1, scale: 1, rotate: 0 }}
                         transition={{ duration: 1, ease: "easeOut" }}
                         className="relative"
                     >
                         <div className="absolute inset-0 bg-racing-blue/20 blur-[150px] opacity-20 -z-10" />
-                        <Image
-                            src={bike.image}
+                        <BikeImage
+                            src={color.image}
+                            fallbackSrc={`${bike.threeSixtyUrl?.replace('360/', 'color/')}${color.colorOption}.webp`}
                             alt={bike.name}
                             width={800}
                             height={600}

@@ -1,30 +1,43 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export interface IColor {
+    name: string;
+    hex: string;
+    image: string;
+    colorOption: string;
+    stock: number;
+}
+
 export interface IBike extends Document {
     name: string;
-    variant: string;
-    price: string;
-    image: string;
-    tag: string;
-    color: string;
-    stock: number;
     category: 'bike' | 'scooty';
+    tag: string;
+    description: string;
+    price: string;
+    threeSixtyUrl?: string;
+    threeSixtyImageCount?: number;
+    colors: IColor[];
     brochureUrl?: string;
 }
 
-const BikeSchema: Schema = new Schema({
+const ColorSchema = new Schema({
     name: { type: String, required: true },
-    variant: { type: String, required: true },
-    price: { type: String, required: true },
+    hex: { type: String, required: true },
     image: { type: String, required: true },
-    tag: { type: String, required: true },
-    color: { type: String, required: true },
-    stock: { type: Number, default: 0 },
-    category: { type: String, enum: ['bike', 'scooty'], required: true },
-    brochureUrl: { type: String }
+    colorOption: { type: String, required: true },
+    stock: { type: Number, default: 0 }
 });
 
-// Allow multiple variants of the same bike name
-BikeSchema.index({ name: 1, variant: 1 }, { unique: true });
+const BikeSchema: Schema = new Schema({
+    name: { type: String, required: true, unique: true },
+    category: { type: String, enum: ['bike', 'scooty'], required: true },
+    tag: { type: String, required: true },
+    description: { type: String, required: true },
+    price: { type: String, required: true },
+    threeSixtyUrl: { type: String },
+    threeSixtyImageCount: { type: Number, default: 40 },
+    colors: [ColorSchema],
+    brochureUrl: { type: String }
+});
 
 export default mongoose.model<IBike>('Bike', BikeSchema);

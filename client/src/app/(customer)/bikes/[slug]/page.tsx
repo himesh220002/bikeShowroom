@@ -1,6 +1,7 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, notFound } from "next/navigation";
+import { motion } from "framer-motion";
 import { BIKES } from "@/lib/constants/bikes";
 import { BikeDetailsHero } from "@/components/features/BikeDetailsHero";
 import { BikeSpecifications } from "@/components/features/BikeSpecifications";
@@ -8,7 +9,6 @@ import { ZeroDownpaymentBanner } from "@/components/features/ZeroDownpaymentBann
 import { LeadForm } from "@/components/features/LeadForm";
 import { FeaturedBikes } from "@/components/features/FeaturedBikes";
 import { Viewer360 } from "@/components/features/Viewer360";
-import { notFound } from "next/navigation";
 import React from "react";
 
 export default function BikePage() {
@@ -22,7 +22,7 @@ export default function BikePage() {
     }
 
     return (
-        <main className="bg-zinc-950 min-h-screen -mt-24">
+        <main className="bg-zinc-950 min-h-screen">
             <div className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-racing-blue to-dark-racing z-[100]" />
 
             <BikeDetailsHero bike={bike} />
@@ -32,7 +32,7 @@ export default function BikePage() {
             </div>
 
             {/* Added 360 Viewer Section */}
-            {bike.threeSixtyBaseUrl && (
+            {bike.threeSixtyUrl && (
                 <section className="py-24 bg-zinc-900 border-y border-white/5">
                     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-16">
@@ -119,7 +119,3 @@ export default function BikePage() {
         </main>
     );
 }
-
-// Missing motion import handled by adding it if necessary, but here I'll use it since it's already in the project.
-import { motion } from "framer-motion";
-import { Bike as BikeIcon } from "lucide-react";

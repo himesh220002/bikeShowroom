@@ -117,16 +117,18 @@ export function ServicesTable({ services }: ServicesTableProps) {
                                             {service.status.replace('-', ' ')}
                                             <ChevronDown className="w-3 h-3 transition-transform group-hover/status:rotate-180" />
                                         </span>
-                                        <div className="absolute top-full mt-2 right-0 hidden group-hover/status:flex flex-col bg-card border border-border rounded-xl shadow-2xl z-50 overflow-hidden w-40">
-                                            {STATUS_OPTIONS.map((opt) => (
-                                                <button
-                                                    key={opt}
-                                                    onClick={() => updateStatus(service._id, opt)}
-                                                    className="px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground hover:text-foreground border-b border-border/50 last:border-0"
-                                                >
-                                                    {opt.replace('-', ' ')}
-                                                </button>
-                                            ))}
+                                        <div className="absolute top-full right-0 pt-2 hidden group-hover/status:block z-50">
+                                            <div className="flex flex-col bg-card border border-border rounded-xl shadow-2xl overflow-hidden w-40">
+                                                {STATUS_OPTIONS.map((opt) => (
+                                                    <button
+                                                        key={opt}
+                                                        onClick={() => updateStatus(service._id, opt)}
+                                                        className="px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground hover:text-foreground border-b border-border/50 last:border-0"
+                                                    >
+                                                        {opt.replace('-', ' ')}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

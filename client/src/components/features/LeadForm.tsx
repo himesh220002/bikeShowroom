@@ -11,6 +11,7 @@ const interests = [
     { id: "MT", label: "MT-15 V2", score: 0 },
     { id: "FZ", label: "FZ Series", score: 0 },
     { id: "AEROX", label: "Aerox 155", score: 0 },
+    { id: "XSR", label: "XSR 155", score: 0 },
     { id: "SCOOTER", label: "RayZR / Fascino", score: 0 },
     { id: "SERVICE", label: "Service Request", score: 0 },
     { id: "EMI", label: "EMI / Finance", bonus: "+50 Score" },
