@@ -2,8 +2,11 @@ import { Viewer360 } from "@/components/features/Viewer360";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Shield, Zap, Award, Target } from "lucide-react";
+import { BIKES } from "@/lib/constants/bikes";
 
 export default function ExperiencePage() {
+    const defaultBike = BIKES[0];
+
     return (
         <main className="min-h-screen bg-white dark:bg-black">
             <Navbar />
@@ -40,7 +43,7 @@ export default function ExperiencePage() {
                 </div>
 
                 {/* Main 3D Viewer */}
-                <Viewer360 />
+                <Viewer360 bike={defaultBike} />
 
                 {/* Features Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-24">
