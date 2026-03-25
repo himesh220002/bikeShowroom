@@ -71,7 +71,7 @@ export function Navbar() {
                     {/* Desktop Actions */}
                     <div className="hidden md:flex items-center gap-4">
                         <Link
-                            href="tel:+911234567890"
+                            href="tel:+917004100062"
                             className="p-3 rounded-full hover:bg-zinc-800 transition-colors group border border-transparent hover:border-zinc-700"
                         >
                             <Phone className="w-4 h-4 text-gray-400 group-hover:text-racing-blue" />
@@ -123,7 +123,8 @@ export function Navbar() {
                             ))}
                             <div className="pt-4 grid grid-cols-2 gap-4">
                                 <Link
-                                    href="tel:+911234567890"
+                                    href="tel:+917004100062"
+                                    onClick={() => setIsOpen(false)}
                                     className="bg-zinc-800 py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px] text-white border border-zinc-700"
                                 >
                                     Call Dealer

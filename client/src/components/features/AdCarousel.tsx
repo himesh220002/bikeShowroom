@@ -173,14 +173,14 @@ function AdCard({ ad }: { ad: Ad }) {
             <div className="px-2 space-y-4">
                 <div className="flex items-center gap-3">
                     <span className="text-racing-blue/60 text-[10px] font-black uppercase tracking-widest">
-                        Exclusively At BikeShowroom
+                        Choudhary Yamaha Exclusive
                     </span>
                 </div>
-                <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight leading-none">
+                <h3 className="text-2xl md:text-3xl font-display font-black text-white uppercase tracking-tight leading-none">
                     {ad.name}
                 </h3>
                 {ad.description && (
-                    <p className="text-muted-foreground text-sm font-medium line-clamp-2 max-w-xl">
+                    <p className="text-muted-foreground text-sm font-medium line-clamp-2 max-w-xl hidden md:block">
                         {ad.description}
                     </p>
                 )}

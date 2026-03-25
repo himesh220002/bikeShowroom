@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
-      <body className="antialiased bg-background text-foreground">
+      <body className="antialiased bg-background text-foreground overflow-x-hidden">
         <ThemeProvider>
           {children}
         </ThemeProvider>

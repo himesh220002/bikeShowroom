@@ -8,7 +8,7 @@ import { MapPin, Clock, Phone, Info, User } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col bg-zinc-950">
+    <div className="flex flex-col bg-zinc-950 overflow-x-hidden">
       <Hero />
 
       {/* <AdCarousel /> */}
@@ -24,7 +24,7 @@ export default function Home() {
             <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
               Virtual Showroom
             </h2>
-            <h3 className="text-5xl md:text-7xl font-display font-black text-white uppercase tracking-tighter">
+            <h3 className="text-3xl md:text-7xl font-display font-black text-white uppercase tracking-tighter">
               IMMERSIVE <span className="text-gradient">360° VIEW</span>
             </h3>
           </div>
@@ -41,7 +41,7 @@ export default function Home() {
                 <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
                   Connect With Us
                 </h2>
-                <h3 className="text-5xl md:text-6xl font-display font-black text-white mb-8 uppercase tracking-tighter">
+                <h3 className="text-3xl md:text-6xl font-display font-black text-white mb-8 uppercase tracking-tighter">
                   BOOK A TEST RIDE <br />
                   <span className="text-racing-blue">AT CHOUDHARY AUTOMOBILE</span>
                 </h3>
@@ -49,11 +49,11 @@ export default function Home() {
                   Don't just take our word for it—feel the power of Yamaha engineering for yourself. Fill out the form, and our team at Choudhary Automobile will arrange everything for you.
                 </p>
 
-                <div className="grid grid-cols-2 gap-4 space-y-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 gap-y-8 mt-12">
                   {[
-                    { icon: MapPin, title: "Our Location", detail: "Station Road, Katihar, Bihar" },
+                    { icon: MapPin, title: "Our Location", detail: "Manihari Mor, Mirchaibari, Katihar" },
                     { icon: Clock, title: "Opening Hours", detail: "Mon - Sat: 9:00 AM - 8:00 PM" },
-                    { icon: Phone, title: "Direct Contact", detail: "+91 91223 45678" },
+                    { icon: Phone, title: "Direct Contact", detail: "+91 7004100062" },
                     { icon: User, title: "Personalized Consultation", detail: "Expert guidance on model selection" },
                     { icon: Phone, title: "Priority Callback", detail: "Response within 2-4 business hours" }
                   ].map((item) => (

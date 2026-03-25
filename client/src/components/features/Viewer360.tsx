@@ -84,7 +84,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
             </div>
 
             {/* Content Context (Bottom Left) */}
-            <div className="absolute bottom-8 left-8 p-8 bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 rounded-[2.5rem] max-w-xs z-20 shadow-2xl">
+            <div className="absolute bottom-8 left-8 p-8 bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 rounded-[2.5rem] max-w-xs z-20 shadow-2xl hidden lg:block">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeMode}
