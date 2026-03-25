@@ -25,7 +25,7 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
     ];
 
     return (
-        <section className="py-24 bg-zinc-900">
+        <section className="py-24 bg-zinc-900 overflow-hidden">
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
