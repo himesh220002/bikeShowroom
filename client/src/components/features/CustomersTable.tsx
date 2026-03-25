@@ -1,5 +1,7 @@
 import { User, Phone, Bike, Calendar, Wrench, MessageSquare, History, PlusCircle } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface CustomerCRM {
     _id: string;
@@ -26,6 +28,51 @@ interface CustomersTableProps {
 }
 
 export function CustomersTable({ customers }: CustomersTableProps) {
+    const router = useRouter();
+    const [config, setConfig] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchConfig = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/api/config");
+                const data = await res.json();
+                if (data.success) setConfig(data.data);
+            } catch (err) {
+                console.error("Failed to fetch showroom config:", err);
+            }
+        };
+        fetchConfig();
+    }, []);
+
+    const handleWhatsApp = (customer: CustomerCRM) => {
+        const { showroomPhone, showroomAddress } = config || {};
+
+        const message = `Hello ${customer.name}! 
+
+This is Choudhary Yamaha, Katihar. We are checking in to see how your ${customer.lastSale?.bikeName || "Yamaha machine"} is performing.
+
+Is it time for your next periodic maintenance? Our expert technicians are ready to ensure your machine stays in peak condition. 
+
+📍 Address: ${showroomAddress || "Manihari Mor, Mirchaibari, Katihar"}
+📞 Contact: ${showroomPhone || "7004100062"}
+
+Reply to this message to schedule your service or ask any questions!`;
+
+        const encodedMessage = encodeURIComponent(message);
+        const cleanPhone = customer.phone.replace(/\D/g, '');
+        const phoneWithCountry = (cleanPhone.length === 10) ? `91${cleanPhone}` : cleanPhone;
+        const whatsappUrl = `https://wa.me/${phoneWithCountry}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+    };
+
+    const handleCall = (customer: CustomerCRM) => {
+        window.location.href = `tel:${customer.phone}`;
+    };
+
+    const handleService = () => {
+        router.push("/service");
+    };
+
     if (customers.length === 0) {
         return (
             <div className="py-20 flex flex-col items-center justify-center text-muted-foreground gap-4">
@@ -51,14 +98,20 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                         <tr key={customer._id} className="border-b border-border/30 group hover:bg-muted/30 transition-colors">
                             <td className="py-6 px-4">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center border border-border">
+                                    <div
+                                        className="w-10 h-10 rounded-full bg-muted flex items-center justify-center border border-border cursor-pointer hover:bg-racing-blue/20 transition-colors"
+                                        onClick={() => handleCall(customer)}
+                                    >
                                         <User className="w-5 h-5 text-muted-foreground" />
                                     </div>
                                     <div>
                                         <p className="text-sm font-black text-foreground">{customer.name}</p>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <Phone className="w-3 h-3 text-muted-foreground/60" />
-                                            <span className="text-[10px] font-bold text-muted-foreground">{customer.phone}</span>
+                                        <div
+                                            className="flex items-center gap-2 mt-1 cursor-pointer hover:text-racing-blue transition-colors group/phone"
+                                            onClick={() => handleCall(customer)}
+                                        >
+                                            <Phone className="w-3 h-3 text-muted-foreground/60 group-hover/phone:text-racing-blue" />
+                                            <span className="text-[10px] font-bold text-muted-foreground group-hover/phone:text-racing-blue">{customer.phone}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -101,13 +154,21 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                             </td>
                             <td className="py-6 px-4 text-right">
                                 <div className="flex justify-end gap-2">
-                                    <button className="p-2 rounded-xl border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 group/btn transition-all title='Schedule Service'">
+                                    <button
+                                        onClick={handleService}
+                                        className="p-2 rounded-xl border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 group/btn transition-all"
+                                        title="Schedule Service"
+                                    >
                                         <Wrench className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
                                     </button>
-                                    <button className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all title='WhatsApp Customer'">
+                                    <button
+                                        onClick={() => handleWhatsApp(customer)}
+                                        className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all"
+                                        title="WhatsApp Customer"
+                                    >
                                         <MessageSquare className="w-4 h-4 text-green-600 dark:text-green-400 group-hover/btn:scale-110 transition-transform" />
                                     </button>
-                                    <button className="p-2 rounded-xl border border-border hover:bg-foreground/10 hover:border-foreground/50 group/btn transition-all title='View Detailed History'">
+                                    <button className="p-2 rounded-xl border border-border hover:bg-foreground/10 hover:border-foreground/50 group/btn transition-all" title="View Detailed History">
                                         <History className="w-4 h-4 text-muted-foreground group-hover/btn:scale-110 transition-transform" />
                                     </button>
                                 </div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Package, Plus, Loader2, Settings2, Trash2, Edit3 } from "lucide-react";
 import io from "socket.io-client";
 import { BikeEditModal } from "@/components/features/BikeEditModal";
+import { BikeImage } from "@/components/ui/BikeImage";
 
 const socket = io("http://localhost:5000");
 
@@ -108,8 +109,21 @@ export default function InventoryPage() {
                         </div>
 
                         <div className="flex justify-between items-start mb-6">
-                            <div className="w-12 h-12 bg-background border border-border rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-black/5">
-                                <Package className="w-6 h-6 text-racing-blue" />
+                            <div className="w-16 h-16 bg-background border border-border rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-black/5 overflow-hidden p-1">
+                                {bike.colors && bike.colors.length > 0 ? (
+                                    <BikeImage
+                                        src={bike.colors[0].image.startsWith('http') || bike.colors[0].image.startsWith('/')
+                                            ? bike.colors[0].image
+                                            : `${bike.colorBaseUrl || '/images/bikes/'}${bike.colors[0].image}`
+                                        }
+                                        alt={bike.name}
+                                        width={64}
+                                        height={64}
+                                        className="w-full h-full object-contain"
+                                    />
+                                ) : (
+                                    <Package className="w-6 h-6 text-racing-blue" />
+                                )}
                             </div>
                             <div className="text-right">
                                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Variants</span>

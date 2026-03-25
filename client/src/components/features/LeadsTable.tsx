@@ -53,13 +53,13 @@ We have received your inquiry and we’re excited to assist you.
 Our showroom details are as follows:
 
 🏍️ Choudhary Yamaha Showroom  
-Address: ${showroomAddress || "[Insert Full Address Here]"}  
-Contact: ${showroomPhone || "[Insert Phone Number]"}  
-Email: ${showroomEmail || "[Insert Email Address]"}  
+Address: ${showroomAddress || "Manihari Mor, Mirchaibari, Katihar"}  
+Contact: ${showroomPhone || "7004100062"}  
+Email: ${showroomEmail || "choudhary_yamaha@example.com"}  
 ${showroomMap ? `Map: ${showroomMap}` : ""}
 
 We invite you to visit our showroom to experience the Yamaha ${bikeName} and other models in person. 
-You can also book a free test drive at your convenience and connect directly with our team for guidance.
+You can also book a free test ride at your convenience and connect directly with our team for guidance.
 
 Please find attached our latest Yamaha brochure (PDF) with detailed specifications, features, and offers.
 ${brochureUrl || ""}
@@ -74,6 +74,11 @@ We look forward to welcoming you soon at Choudhary Yamaha!`;
         const whatsappUrl = `https://wa.me/${phoneWithCountry}?text=${encodedMessage}`;
         window.open(whatsappUrl, '_blank');
     };
+
+    const handleCall = (lead: Lead) => {
+        window.location.href = `tel:${lead.phone}`;
+    };
+
     return (
         <div className="w-full overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -95,9 +100,12 @@ We look forward to welcoming you soon at Choudhary Yamaha!`;
                                     </div>
                                     <div>
                                         <p className="text-sm font-black text-foreground">{lead.name}</p>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <Phone className="w-3 h-3 text-muted-foreground/60" />
-                                            <span className="text-[10px] font-bold text-muted-foreground">{lead.phone}</span>
+                                        <div
+                                            className="flex items-center gap-2 mt-1 cursor-pointer hover:text-racing-blue transition-colors group/phone"
+                                            onClick={() => handleCall(lead)}
+                                        >
+                                            <Phone className="w-3 h-3 text-muted-foreground/60 group-hover/phone:text-racing-blue" />
+                                            <span className="text-[10px] font-bold text-muted-foreground group-hover/phone:text-racing-blue">{lead.phone}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -131,7 +139,11 @@ We look forward to welcoming you soon at Choudhary Yamaha!`;
                                     >
                                         <MessageSquare className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
                                     </button>
-                                    <button className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all">
+                                    <button
+                                        onClick={() => handleCall(lead)}
+                                        className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all"
+                                        title="Call Prospect"
+                                    >
                                         <Phone className="w-4 h-4 text-green-400 group-hover/btn:scale-110 transition-transform" />
                                     </button>
                                     <button className="p-2 rounded-xl border border-border hover:bg-muted/30 transition-all">
