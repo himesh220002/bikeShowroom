@@ -5,6 +5,7 @@ export interface IInquiry extends Document {
     name: string; // Denormalized for quick access
     phone: string; // Denormalized
     interests: string[];
+    bikeModel?: string;
     message?: string;
     status: string;
     score: number;
@@ -17,6 +18,7 @@ const InquirySchema: Schema = new Schema({
     name: { type: String, required: true },
     phone: { type: String, required: true },
     interests: [{ type: String }],
+    bikeModel: { type: String },
     message: { type: String },
     status: { type: String, default: 'New' },
     score: { type: Number, default: 0 },

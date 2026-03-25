@@ -37,15 +37,15 @@ export function Navbar() {
             <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-3 group">
-                        <div className="bg-yamaha-blue p-2 rounded-xl group-hover:rotate-12 transition-transform duration-500 shadow-xl shadow-yamaha-blue/20">
-                            <Bike className="w-6 h-6 text-white" />
+                    <Link href="/" className="flex items-center gap-2 md:gap-3 group">
+                        <div className="bg-yamaha-blue p-1.5 md:p-2 rounded-xl group-hover:rotate-12 transition-transform duration-500 shadow-xl shadow-yamaha-blue/20">
+                            <Bike className="w-5 h-5 md:w-6 md:h-6 text-white" />
                         </div>
-                        <div className="flex flex-col gap-1">
-                            <span className="text-2xl font-display font-black tracking-tighter text-gray-300 leading-none">
+                        <div className="flex flex-col gap-0 md:gap-1">
+                            <span className="text-lg md:text-2xl font-display font-black tracking-tighter text-gray-300 leading-none">
                                 CHOUDHARY YAMAHA
                             </span>
-                            <span className="text-[10px] uppercase font-black tracking-[0.3em] text-gray-400 -mt-0.5">
+                            <span className="hidden md:block text-[10px] uppercase font-black tracking-[0.3em] text-gray-400 -mt-0.5">
                                 Since 1989
                             </span>
                         </div>
@@ -115,7 +115,7 @@ export function Navbar() {
                                     <Link
                                         href={link.href}
                                         onClick={() => setIsOpen(false)}
-                                        className="block text-2xl font-display font-black text-white uppercase tracking-tight py-2 border-b border-zinc-800"
+                                        className="block text-xl font-display font-black text-white uppercase tracking-tight py-3 border-b border-zinc-800"
                                     >
                                         {link.name}
                                     </Link>

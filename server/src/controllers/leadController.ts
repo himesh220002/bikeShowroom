@@ -19,6 +19,13 @@ export class LeadService {
         const signals: any[] = [];
         if (input.interests.some((i: string) => i.includes("EMI"))) signals.push("EMI_CALC");
         if (input.interests.some((i: string) => i.includes("Exchange"))) signals.push("EXCHANGE_VAL");
+
+        // Strategic: If they selected a specific model series, they are warmer
+        if (input.interests.some((i: string) => /R15|MT|FZ|AEROX|XSR/i.test(i))) signals.push("MODEL_SPECIFIC");
+
+        // High Intensity: If they provided a specific bikeModel (from Book Machine), they are HOT
+        if (input.bikeModel) signals.push("DIRECT_BOOKING");
+
         signals.push("GENERAL_BROWSE");
 
         // 2. Calculate strategic score

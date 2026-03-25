@@ -20,11 +20,27 @@ const interests = [
 
 interface LeadFormProps {
     defaultInterest?: string;
+    bikeModel?: string;
 }
 
-export function LeadForm({ defaultInterest }: LeadFormProps) {
+export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
     const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
     const [response, setResponse] = useState<{ score?: number, message?: string }>({});
+
+    // Auto-selection logic
+    const isItemSelected = (item: typeof interests[0]) => {
+        if (defaultInterest === item.id) return true;
+        if (bikeModel) {
+            const modelUpper = bikeModel.toUpperCase();
+            if (modelUpper.includes("R15") && item.id === "R15") return true;
+            if (modelUpper.includes("MT") && item.id === "MT") return true;
+            if (modelUpper.includes("FZ") && item.id === "FZ") return true;
+            if (modelUpper.includes("AEROX") && item.id === "AEROX") return true;
+            if (modelUpper.includes("XSR") && item.id === "XSR") return true;
+            if ((modelUpper.includes("RAYZR") || modelUpper.includes("FASCINO")) && item.id === "SCOOTER") return true;
+        }
+        return false;
+    };
 
     async function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -126,15 +142,15 @@ export function LeadForm({ defaultInterest }: LeadFormProps) {
                                                         className="sr-only peer"
                                                         name="interest"
                                                         value={item.label}
-                                                        defaultChecked={defaultInterest === item.id}
+                                                        defaultChecked={isItemSelected(item)}
                                                     />
                                                     <div className="px-2 py-3 sm:px-3 sm:py-4 rounded-xl sm:rounded-2xl bg-zinc-950 border border-zinc-800 peer-checked:border-racing-blue/30 peer-checked:bg-racing-blue/10 transition-all flex flex-col gap-1 items-center text-center h-full min-h-[60px] sm:min-h-[70px] justify-center">
                                                         <span className="text-[11px] sm:text-[12px] font-black uppercase tracking-tight text-gray-300 peer-checked:text-racing-blue transition-colors leading-tight">
                                                             {item.label}
                                                         </span>
-                                                        {item.bonus && (
+                                                        {(item.bonus || (bikeModel && isItemSelected(item))) && (
                                                             <span className="text-[7px] font-black text-racing-blue opacity-0 peer-checked:opacity-100 transition-opacity mt-1">
-                                                                {item.bonus}
+                                                                {item.bonus || "SELECTED MODEL"}
                                                             </span>
                                                         )}
                                                     </div>
@@ -163,6 +179,8 @@ export function LeadForm({ defaultInterest }: LeadFormProps) {
                                         />
                                     </div>
 
+
+                                    <input type="hidden" name="bikeModel" value={bikeModel || ""} />
 
                                     <button
                                         disabled={status === "submitting"}

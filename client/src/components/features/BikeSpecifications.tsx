@@ -31,12 +31,12 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                     <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
                         Technical Specs
                     </h2>
-                    <h3 className="text-5xl md:text-6xl font-display font-black text-white uppercase tracking-tighter">
+                    <h3 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter">
                         ENGINEERING <span className="text-racing-blue">EXCELLENCE</span>
                     </h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 mb-16">
                     {mainSpecs.map((spec, index) => (
                         <motion.div
                             key={spec.label}
@@ -44,13 +44,16 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
-                            className="bg-zinc-950 p-8 rounded-[2.5rem] border border-zinc-800 hover:border-racing-blue/30 transition-all group"
+                            className="bg-zinc-950 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-zinc-800 hover:border-racing-blue/30 transition-all group relative overflow-hidden"
                         >
-                            <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <LucideIcon name={spec.icon} className="w-6 h-6 text-racing-blue" />
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-racing-blue/5 blur-2xl -mr-12 -mt-12 group-hover:bg-racing-blue/10 transition-colors" />
+
+                            <div className="w-10 h-10 md:w-14 md:h-14 bg-zinc-900 rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform relative z-10">
+                                <LucideIcon name={spec.icon} className="w-5 h-5 md:w-6 md:h-6 text-racing-blue" />
                             </div>
-                            <h4 className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">{spec.label}</h4>
-                            <p className="text-lg text-white font-bold uppercase tracking-tight">{spec.value}</p>
+
+                            <h4 className="text-[8px] md:text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1 md:mb-2 relative z-10">{spec.label}</h4>
+                            <p className="text-sm md:text-lg text-white font-bold uppercase tracking-tight relative z-10">{spec.value}</p>
                         </motion.div>
                     ))}
                 </div>

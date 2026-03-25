@@ -190,18 +190,18 @@ export function ServiceBooking() {
                                         />
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
                                     <button
                                         type="button"
                                         onClick={() => setStep(1)}
-                                        className="py-5 bg-zinc-800 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-zinc-700 transition-all"
+                                        className="py-5 bg-zinc-800 text-white rounded-2xl font-black text-xs md:text-sm uppercase tracking-[0.2em] hover:bg-zinc-700 transition-all w-full"
                                     >
                                         Back
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setStep(3)}
-                                        className="py-5 bg-racing-blue text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-racing-blue/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                                        className="py-5 bg-racing-blue text-white rounded-2xl font-black text-xs md:text-sm uppercase tracking-[0.2em] shadow-lg shadow-racing-blue/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 w-full"
                                     >
                                         Next: Date & Time <ChevronRight className="w-4 h-4" />
                                     </button>
@@ -275,11 +275,11 @@ export function ServiceBooking() {
                                         Our workshop manager will call you within 15 minutes of submission to confirm your preferred time slot and pickup options.
                                     </p>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
                                     <button
                                         type="button"
                                         onClick={() => setStep(2)}
-                                        className="py-5 bg-zinc-800 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-zinc-700 transition-all"
+                                        className="py-5 bg-zinc-800 text-white rounded-2xl font-black text-xs md:text-sm uppercase tracking-[0.2em] hover:bg-zinc-700 transition-all w-full"
                                     >
                                         Back
                                     </button>
@@ -287,7 +287,7 @@ export function ServiceBooking() {
                                         type="submit"
                                         disabled={isSubmitting}
                                         className={cn(
-                                            "py-5 bg-racing-blue text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-racing-blue/20 transition-all flex items-center justify-center gap-2",
+                                            "py-5 bg-racing-blue text-white rounded-2xl font-black text-xs md:text-sm uppercase tracking-[0.2em] shadow-lg shadow-racing-blue/20 transition-all flex items-center justify-center gap-2 w-full",
                                             isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:scale-[1.02] active:scale-[0.98]"
                                         )}
                                     >

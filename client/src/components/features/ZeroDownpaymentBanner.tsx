@@ -6,9 +6,10 @@ import Image from "next/image";
 
 interface ZeroDownpaymentBannerProps {
     bikeName: string;
+    onApply?: () => void;
 }
 
-export function ZeroDownpaymentBanner({ bikeName }: ZeroDownpaymentBannerProps) {
+export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBannerProps) {
     return (
         <section className="py-24 bg-zinc-950 overflow-hidden px-4 sm:px-6 lg:px-8">
             <motion.div
@@ -54,11 +55,11 @@ export function ZeroDownpaymentBanner({ bikeName }: ZeroDownpaymentBannerProps) 
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
                         >
-                            <h2 className="text-6xl md:text-8xl font-display font-black text-white uppercase tracking-tighter leading-[0.85] mb-8">
+                            <h2 className="text-4xl md:text-8xl font-display font-black text-white uppercase tracking-tighter leading-[0.85] mb-8">
                                 ZERO <br />
                                 <span className="text-racing-blue">DOWNPAYMENT</span>
                             </h2>
-                            <p className="text-xl md:text-2xl text-gray-300 font-medium mb-12 max-w-xl leading-relaxed">
+                            <p className="text-lg md:text-2xl text-gray-300 font-medium mb-12 max-w-xl leading-relaxed">
                                 Get your hands on the <span className="text-white font-black">{bikeName}</span> without any upfront cost. Our flexible financing solutions make ownership effortless.
                             </p>
                         </motion.div>
@@ -92,7 +93,8 @@ export function ZeroDownpaymentBanner({ bikeName }: ZeroDownpaymentBannerProps) 
                             viewport={{ once: true }}
                             transition={{ delay: 0.8 }}
                             onClick={() => {
-                                document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
+                                if (onApply) onApply();
+                                else document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
                             }}
                             className="group bg-white text-zinc-950 px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-sm flex items-center gap-4 hover:bg-racing-blue hover:text-white transition-all transform active:scale-95 shadow-2xl"
                         >

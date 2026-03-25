@@ -2,6 +2,7 @@
 
 import { useParams, notFound } from "next/navigation";
 import { motion } from "framer-motion";
+import { Shield } from "lucide-react";
 import { BIKES } from "@/lib/constants/bikes";
 import { BikeDetailsHero } from "@/components/features/BikeDetailsHero";
 import { BikeSpecifications } from "@/components/features/BikeSpecifications";
@@ -12,6 +13,7 @@ import { Viewer360 } from "@/components/features/Viewer360";
 import React from "react";
 
 export default function BikePage() {
+    const [activeIntent, setActiveIntent] = React.useState<string | undefined>();
     const params = useParams();
     const slug = (params?.slug as string)?.toLowerCase();
 
@@ -25,7 +27,13 @@ export default function BikePage() {
         <main className="bg-zinc-950 min-h-screen">
             <div className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-racing-blue to-dark-racing z-[100]" />
 
-            <BikeDetailsHero bike={bike} />
+            <BikeDetailsHero
+                bike={bike}
+                onAction={(intent) => {
+                    setActiveIntent(intent);
+                    document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+            />
 
             <div id="specifications">
                 <BikeSpecifications bike={bike} />
@@ -49,7 +57,13 @@ export default function BikePage() {
             )}
 
             <div id="promotion">
-                <ZeroDownpaymentBanner bikeName={bike.name} />
+                <ZeroDownpaymentBanner
+                    bikeName={bike.name}
+                    onApply={() => {
+                        setActiveIntent("EMI");
+                        document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                />
             </div>
 
             <section className="py-24 bg-zinc-950">
@@ -74,21 +88,29 @@ export default function BikePage() {
                                 </p>
                             </div>
 
-                            <div className="bg-zinc-900/50 p-10 rounded-[3rem] border border-zinc-800 backdrop-blur-sm relative overflow-hidden group">
+                            <div className="bg-zinc-900/50 p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-zinc-800 backdrop-blur-sm relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-racing-blue/10 blur-3xl -mr-16 -mt-16 group-hover:bg-racing-blue/20 transition-colors" />
-                                <h4 className="text-white font-black uppercase tracking-widest mb-6 text-sm">Exclusive Showroom Benefits</h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <h4 className="text-white font-black uppercase tracking-widest mb-6 text-xs md:text-sm flex items-center gap-2">
+                                    <Shield className="w-4 h-4 text-racing-blue" />
+                                    Exclusive Showroom Advantage
+                                </h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
                                     {[
-                                        "On-spot valuation for exchange",
-                                        "Low interest EMI schemes",
-                                        "Genuine Yamaha Accessories",
-                                        "8-Year Extended Warranty",
-                                        "Priority After-Sales Service",
-                                        "Free First Service Check"
-                                    ].map(item => (
-                                        <div key={item} className="flex items-center gap-3 text-xs text-gray-400 font-bold uppercase tracking-tight">
-                                            <div className="w-1.5 h-1.5 bg-racing-blue rounded-full shrink-0" />
-                                            {item}
+                                        { text: "Spot exchange valuation", highlight: "Best Price" },
+                                        { text: "Low interest EMI schemes", highlight: "Easy Finance" },
+                                        { text: "Genuine Yamaha Spares", highlight: "100% Original" },
+                                        { text: "8-Year Extended Warranty", highlight: "Peace of Mind" },
+                                        { text: "Priority Service Slot", highlight: "Save Time" },
+                                        { text: "Free First Service", highlight: "Zero Cost" }
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex flex-col gap-1">
+                                            <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-300 font-bold uppercase tracking-tight">
+                                                <div className="w-1.5 h-1.5 bg-racing-blue rounded-full shrink-0" />
+                                                {item.text}
+                                            </div>
+                                            <span className="text-[8px] text-racing-blue/60 font-black uppercase tracking-[0.2em] ml-3.5">
+                                                {item.highlight}
+                                            </span>
                                         </div>
                                     ))}
                                 </div>
@@ -100,9 +122,14 @@ export default function BikePage() {
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
                             className="relative"
+                            id="inquiry"
                         >
                             <div className="absolute -inset-10 bg-racing-blue/10 blur-[120px] opacity-20" />
-                            <LeadForm defaultInterest="EMI" />
+                            <LeadForm
+                                key={activeIntent} // Re-mount to trigger auto-selection
+                                bikeModel={bike.name}
+                                defaultInterest={activeIntent}
+                            />
                         </motion.div>
                     </div>
                 </div>
