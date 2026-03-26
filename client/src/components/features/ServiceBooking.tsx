@@ -1,19 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import axios from "axios";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wrench, Calendar, Clock, Bike, Package, CheckCircle2, ChevronRight } from "lucide-react";
+import { Wrench, Calendar, Clock, Bike, Package, CheckCircle2, ChevronRight, User } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-
 import { submitServiceBooking } from "@/lib/actions/serviceActions";
 
 type ServiceType = "General" | "Periodic" | "Repair" | "Spares";
 
 export function ServiceBooking() {
+    const { user } = useAuth();
     const [step, setStep] = useState(1);
     const [serviceType, setServiceType] = useState<ServiceType>("General");
     const [submitted, setSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [userBikes, setUserBikes] = useState<any[]>([]);
 
     // Form data state
     const [formData, setFormData] = useState({
@@ -25,6 +28,25 @@ export function ServiceBooking() {
         appointmentDate: "",
         appointmentTime: ""
     });
+
+    useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                name: user.displayName,
+                phone: prev.phone // Keep phone if already entered, though usually it's null
+            }));
+
+            // Fetch user's registered bikes
+            axios.get("http://localhost:5000/api/user-bikes", { withCredentials: true })
+                .then(res => {
+                    if (res.data.success) {
+                        setUserBikes(res.data.data);
+                    }
+                })
+                .catch(err => console.error("Failed to fetch user bikes:", err));
+        }
+    }, [user]);
 
     const serviceOptions = [
         { id: "General", label: "General Checkup", icon: Wrench, desc: "Standard 21-point inspection" },
@@ -78,7 +100,7 @@ export function ServiceBooking() {
 
     return (
         <div className="w-full max-w-4xl mx-auto">
-            <div className="bg-zinc-900 rounded-[3rem] p-8 md:p-14 border border-zinc-800 shadow-2xl relative overflow-hidden">
+            <div className="bg-zinc-900 rounded-[1.5rem] md:rounded-[3rem] p-4 md:p-8 md:p-14 border border-zinc-800 shadow-2xl relative overflow-hidden">
                 {/* Progress Bar */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-zinc-800">
                     <motion.div
@@ -156,6 +178,40 @@ export function ServiceBooking() {
                                 exit={{ opacity: 0, x: -20 }}
                                 className="space-y-6"
                             >
+                                {user && userBikes.length > 0 && (
+                                    <div className="p-6 bg-racing-blue/5 border border-racing-blue/20 rounded-[2rem] mb-6">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div className="p-2 bg-racing-blue/10 rounded-xl">
+                                                <User className="w-4 h-4 text-racing-blue" />
+                                            </div>
+                                            <h4 className="text-[10px] font-black text-white uppercase tracking-widest">Select from Your Garage</h4>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            {userBikes.map((bike) => (
+                                                <button
+                                                    key={bike._id}
+                                                    type="button"
+                                                    onClick={() => setFormData(p => ({ ...p, bikeModel: bike.bikeModel, regNumber: bike.registrationNumber }))}
+                                                    className={cn(
+                                                        "p-4 rounded-xl border text-left transition-all",
+                                                        formData.regNumber === bike.registrationNumber
+                                                            ? "bg-racing-blue border-racing-blue text-white shadow-lg shadow-racing-blue/20"
+                                                            : "bg-black/50 border-zinc-800 text-gray-400 hover:border-zinc-700"
+                                                    )}
+                                                >
+                                                    <p className="text-[10px] font-black uppercase tracking-tight mb-1">{bike.bikeModel}</p>
+                                                    <p className={cn(
+                                                        "text-[8px] font-bold uppercase",
+                                                        bike.registrationNumber ? "opacity-70" : "text-racing-blue"
+                                                    )}>
+                                                        {bike.registrationNumber || "Registration Pending"}
+                                                    </p>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
@@ -169,12 +225,14 @@ export function ServiceBooking() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-4">Registration Number</label>
+                                            <div className="flex justify-between items-center ml-4">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Registration Number</label>
+                                                {!formData.regNumber && <span className="text-[8px] font-black text-racing-blue/60 uppercase tracking-widest bg-racing-blue/5 px-2 py-0.5 rounded-full">Optional for New Bikes</span>}
+                                            </div>
                                             <input
-                                                required
                                                 value={formData.regNumber}
                                                 onChange={(e) => setFormData(p => ({ ...p, regNumber: e.target.value }))}
-                                                placeholder="e.g. BR 11 XY 0000"
+                                                placeholder="e.g. BR 11 XY 0000 or 'NEW BIKE'"
                                                 className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-4 text-white text-sm focus:outline-none focus:border-racing-blue transition-all"
                                             />
                                         </div>
@@ -266,15 +324,7 @@ export function ServiceBooking() {
                                         />
                                     </div>
                                 </div>
-                                <div className="p-6 bg-racing-blue/10 border border-racing-blue/20 rounded-2xl">
-                                    <div className="flex items-center gap-3 text-white mb-2">
-                                        <Clock className="w-4 h-4 text-racing-blue" />
-                                        <span className="text-xs font-black uppercase tracking-widest">Fast Track Protocol</span>
-                                    </div>
-                                    <p className="text-[10px] text-gray-400 font-medium">
-                                        Our workshop manager will call you within 15 minutes of submission to confirm your preferred time slot and pickup options.
-                                    </p>
-                                </div>
+
                                 <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
                                     <button
                                         type="button"
@@ -293,6 +343,15 @@ export function ServiceBooking() {
                                     >
                                         {isSubmitting ? "Processing..." : "Confirm Booking"}
                                     </button>
+                                </div>
+                                <div className="p-6 bg-racing-blue/10 border border-racing-blue/20 rounded-2xl">
+                                    <div className="flex items-center gap-3 text-white mb-2">
+                                        <Clock className="w-4 h-4 text-racing-blue" />
+                                        <span className="text-xs font-black uppercase tracking-widest">Fast Track Protocol</span>
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 font-medium">
+                                        Our workshop manager will call you within 12 to 24 hours of submission to confirm your preferred time slot and pickup options.
+                                    </p>
                                 </div>
                             </motion.div>
                         )}

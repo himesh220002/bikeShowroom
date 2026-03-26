@@ -113,18 +113,27 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                             <select
                                 required
                                 className="w-full bg-background border border-border rounded-xl px-5 py-3.5 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all appearance-none"
-                                value={formData.bikeId}
+                                value={formData.bikeId + "|" + formData.variant}
                                 onChange={(e) => {
-                                    const bike = bikes.find(b => b._id === e.target.value);
-                                    setFormData({ ...formData, bikeId: e.target.value, variant: bike?.variant || "", salePrice: bike?.price || "" });
+                                    const [bikeId, variantName] = e.target.value.split("|");
+                                    const bike = bikes.find(b => b._id === bikeId);
+                                    const colorInfo = bike?.colors.find((c: any) => c.name === variantName);
+                                    setFormData({
+                                        ...formData,
+                                        bikeId: bikeId,
+                                        variant: variantName,
+                                        salePrice: colorInfo?.price?.split('-')[0].replace(/[^0-9]/g, '') || bike?.price?.split('-')[0].replace(/[^0-9]/g, '') || ""
+                                    });
                                 }}
                             >
-                                <option value="">Select a bike</option>
-                                {bikes.filter(b => b.stock > 0).map((bike) => (
-                                    <option key={bike._id} value={bike._id}>
-                                        {bike.name} ({bike.color}) - {bike.stock} left
-                                    </option>
-                                ))}
+                                <option value="">Select a bike variant</option>
+                                {bikes.flatMap(bike =>
+                                    (bike.colors || []).filter((c: any) => c.stock > 0).map((color: any) => (
+                                        <option key={`${bike._id}-${color.name}`} value={`${bike._id}|${color.name}`}>
+                                            {bike.name} ({color.name}) - {color.stock} left
+                                        </option>
+                                    ))
+                                )}
                             </select>
                         </div>
 

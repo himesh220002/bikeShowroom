@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Bike, Facebook, Instagram, Mail, MapPin, Phone, Youtube, ChevronRight, ShieldCheck, Award } from "lucide-react";
+import Image from "next/image";
+import { Facebook, Instagram, Mail, MapPin, Phone, Youtube, ChevronRight, ShieldCheck, Award } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 export function Footer() {
@@ -11,16 +12,21 @@ export function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-12">
                     {/* Brand Meta */}
                     <div className="space-y-8">
-                        <Link href="/" className="flex items-center gap-3 group">
-                            <div className="bg-yamaha-blue p-2 rounded-xl group-hover:rotate-12 transition-transform duration-500 shadow-xl shadow-yamaha-blue/20">
-                                <Bike className="w-6 h-6 text-white" />
+                        <Link href="/" className="flex items-center gap-4 group">
+                            <div className="relative w-12 h-12 transition-transform duration-500 group-hover:scale-110">
+                                <Image
+                                    src="/images/YamahaLogo.png"
+                                    alt="Yamaha Logo"
+                                    fill
+                                    className="object-contain"
+                                />
                             </div>
-                            <div className="flex flex-col -gap-1">
-                                <span className="text-2xl font-display font-black tracking-tighter text-white leading-none">
+                            <div className="flex flex-col">
+                                <span className="text-xl font-display font-black tracking-tighter text-white leading-none">
                                     CHOUDHARY YAMAHA
                                 </span>
-                                <span className="text-[10px] uppercase font-black tracking-[0.3em] text-gray-500 -mt-0.5">
-                                    Since 1989
+                                <span className="text-[10px] uppercase font-black tracking-[0.3em] text-racing-blue -mt-0.5">
+                                    THE CALL OF THE BLUE
                                 </span>
                             </div>
                         </Link>

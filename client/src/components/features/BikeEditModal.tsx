@@ -15,6 +15,7 @@ interface Color {
 interface Bike {
     _id?: string;
     name: string;
+    slug: string;
     category: 'bike' | 'scooty';
     tag: string;
     description: string;
@@ -35,6 +36,7 @@ interface BikeEditModalProps {
 export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalProps) {
     const [formData, setFormData] = useState<Bike>({
         name: "",
+        slug: "",
         category: "bike",
         tag: "",
         description: "",
@@ -51,6 +53,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
         } else {
             setFormData({
                 name: "",
+                slug: "",
                 category: "bike",
                 tag: "",
                 description: "",
@@ -142,6 +145,17 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
                                         placeholder="e.g. Yamaha R15 V4"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Model Slug (URL)</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        value={formData.slug}
+                                        onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                                        className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                        placeholder="e.g. r15v4"
                                     />
                                 </div>
                                 <div className="space-y-2">

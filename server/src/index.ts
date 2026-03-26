@@ -1,9 +1,17 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+dotenv.config();
 import mongoose from 'mongoose';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import session from 'express-session';
+import passport from 'passport';
+import cookieParser from 'cookie-parser';
+import './config/passport';
+
+import authRouter from './routes/auth';
+import userBikesRouter from './routes/userBikes';
 import leadsRouter from './routes/leads';
 import bikesRouter from './routes/bikes';
 import eventsRouter from './routes/events';
@@ -14,8 +22,6 @@ import adsRouter from './routes/ads';
 import salesRouter from './routes/sales';
 import customersRouter from './routes/customers';
 import configRouter from './routes/config';
-
-dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
@@ -29,8 +35,21 @@ const io = new Server(httpServer, {
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || '';
 
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
+
+// Session Configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'yamaha_secret_session',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // Set to true in production
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // MongoDB Connection
 mongoose.connect(MONGO_URI)
@@ -51,6 +70,8 @@ app.use((req: any, res, next) => {
     next();
 });
 
+app.use('/api/auth', authRouter);
+app.use('/api/user-bikes', userBikesRouter);
 app.use('/api/leads', leadsRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/qualified-leads', qualifiedLeadsRouter);

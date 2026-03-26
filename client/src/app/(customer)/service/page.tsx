@@ -13,7 +13,7 @@ export default function ServicePage() {
                                 <span className="w-8 h-1 bg-racing-blue rounded-full" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue">Expert Care</span>
                             </div>
-                            <h1 className="text-5xl md:text-6xl font-display font-black text-white uppercase tracking-tighter mb-6">
+                            <h1 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter mb-6">
                                 PREMIUM <br /><span className="text-gradient">SERVICE</span>
                             </h1>
                             <p className="text-gray-400 font-medium leading-relaxed">

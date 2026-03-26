@@ -109,7 +109,7 @@ export default function InventoryPage() {
                         </div>
 
                         <div className="flex justify-between items-start mb-6">
-                            <div className="w-16 h-16 bg-background border border-border rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-black/5 overflow-hidden p-1">
+                            <div className="w-20 h-20 bg-background border border-border rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-black/5 overflow-hidden p-1">
                                 {bike.colors && bike.colors.length > 0 ? (
                                     <BikeImage
                                         src={bike.colors[0].image.startsWith('http') || bike.colors[0].image.startsWith('/')
@@ -178,7 +178,7 @@ export default function InventoryPage() {
         <div className="space-y-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-display font-black text-gray-200 uppercase tracking-tighter">
+                    <h2 className="text-2xl font-display font-black text-gray-500 uppercase tracking-tighter">
                         VEHICLE <span className="text-gradient">INVENTORY</span>
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Consolidated model-wise stock control</p>

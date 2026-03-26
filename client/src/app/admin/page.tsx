@@ -114,7 +114,10 @@ export default function AdminDashboard() {
         };
     }, []);
 
-    const totalStock = bikes.reduce((acc, bike) => acc + (bike.stock || 0), 0);
+    const totalStock = bikes.reduce((acc, bike) => {
+        const bikeStock = (bike.colors || []).reduce((sum: number, color: any) => sum + (color.stock || 0), 0);
+        return acc + bikeStock;
+    }, 0);
 
     const stats = [
         { label: "Active Inquiries", value: leads.length.toString(), icon: Users, change: "Live", trend: "up", tab: "leads" as const },

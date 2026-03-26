@@ -2,7 +2,7 @@
 
 import { useParams, notFound } from "next/navigation";
 import { motion } from "framer-motion";
-import { Shield } from "lucide-react";
+import { Shield, Loader2 } from "lucide-react";
 import { BIKES } from "@/lib/constants/bikes";
 import { BikeDetailsHero } from "@/components/features/BikeDetailsHero";
 import { BikeSpecifications } from "@/components/features/BikeSpecifications";
@@ -10,14 +10,45 @@ import { ZeroDownpaymentBanner } from "@/components/features/ZeroDownpaymentBann
 import { LeadForm } from "@/components/features/LeadForm";
 import { FeaturedBikes } from "@/components/features/FeaturedBikes";
 import { Viewer360 } from "@/components/features/Viewer360";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function BikePage() {
-    const [activeIntent, setActiveIntent] = React.useState<string | undefined>();
+    const [activeIntent, setActiveIntent] = useState<string | undefined>();
+    const [bike, setBike] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
     const params = useParams();
     const slug = (params?.slug as string)?.toLowerCase();
 
-    const bike = BIKES.find(b => b.slug === slug);
+    useEffect(() => {
+        const fetchBike = async () => {
+            try {
+                const res = await fetch(`http://localhost:5000/api/bikes/slug/${slug}`);
+                const data = await res.json();
+                if (data.success) {
+                    setBike(data.data);
+                } else {
+                    // Fallback to constants if API fails or bike not found
+                    const fallback = BIKES.find(b => b.slug === slug);
+                    if (fallback) setBike(fallback);
+                }
+            } catch (err) {
+                console.error("Failed to fetch bike details:", err);
+                const fallback = BIKES.find(b => b.slug === slug);
+                if (fallback) setBike(fallback);
+            } finally {
+                setLoading(false);
+            }
+        };
+        if (slug) fetchBike();
+    }, [slug]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+                <Loader2 className="w-12 h-12 text-racing-blue animate-spin" />
+            </div>
+        );
+    }
 
     if (!bike) {
         return notFound();
@@ -39,7 +70,7 @@ export default function BikePage() {
                 <BikeSpecifications bike={bike} />
             </div>
 
-            {/* Added 360 Viewer Section */}
+            {/* 360 Viewer Section */}
             {bike.threeSixtyUrl && bike.threeSixtyImageCount && bike.threeSixtyImageCount > 35 && (
                 <section className="py-24 bg-zinc-900 border-y border-white/5">
                     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">

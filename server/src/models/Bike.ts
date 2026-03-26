@@ -8,8 +8,20 @@ export interface IColor {
     stock: number;
 }
 
+export interface ISpec {
+    icon: string;
+    label: string;
+}
+
+export interface IFullSpec {
+    [category: string]: {
+        [label: string]: string;
+    };
+}
+
 export interface IBike extends Document {
     name: string;
+    slug: string;
     category: 'bike' | 'scooty';
     tag: string;
     description: string;
@@ -18,6 +30,8 @@ export interface IBike extends Document {
     threeSixtyImageCount?: number;
     colorBaseUrl?: string;
     colors: IColor[];
+    specs: ISpec[];
+    fullSpecs: IFullSpec;
     brochureUrl?: string;
 }
 
@@ -31,6 +45,7 @@ const ColorSchema = new Schema({
 
 const BikeSchema: Schema = new Schema({
     name: { type: String, required: true, unique: true },
+    slug: { type: String, required: true, unique: true },
     category: { type: String, enum: ['bike', 'scooty'], required: true },
     tag: { type: String, required: true },
     description: { type: String, required: true },
@@ -39,6 +54,11 @@ const BikeSchema: Schema = new Schema({
     threeSixtyImageCount: { type: Number, default: 40 },
     colorBaseUrl: { type: String },
     colors: [ColorSchema],
+    specs: [{
+        icon: { type: String, required: true },
+        label: { type: String, required: true }
+    }],
+    fullSpecs: { type: Schema.Types.Mixed, default: {} },
     brochureUrl: { type: String }
 });
 

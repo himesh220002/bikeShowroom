@@ -38,7 +38,7 @@ export const BIKES: Bike[] = [
         slug: "r15v4",
         name: "Yamaha R15 V4 / M",
         category: "bike",
-        price: "1,82,000",
+        price: "1,82,000 - 1,98,000",
         colors: [
             { name: "Metallic Grey (M)", hex: "#9ca3af", image: "/images/r15m.png", colorOption: "metallic-grey", stock: 5 },
             { name: "Racing Blue", hex: "#005aff", image: "/images/r15m.png", colorOption: "racing-blue", stock: 3 },
@@ -72,7 +72,7 @@ export const BIKES: Bike[] = [
         slug: "mt15",
         name: "Yamaha MT-15 V2",
         category: "bike",
-        price: "1,68,000",
+        price: "1,68,000 - 1,74,000",
         colors: [
             { name: "Cyan Storm", hex: "#06b6d4", image: "/images/mt15.png", colorOption: "cyan-storm", stock: 3 },
             { name: "Ice Fluo-Vermillion", hex: "#f8fafc", image: "/images/mt15.png", colorOption: "ice-fluo", stock: 2 },
@@ -105,7 +105,7 @@ export const BIKES: Bike[] = [
         slug: "mt03",
         name: "Yamaha MT-03",
         category: "bike",
-        price: "3,45,000",
+        price: "4,60,000",
         colors: [
             { name: "Midnight Cyan", hex: "#0891b2", image: "/images/mt03-cyan.webp", colorOption: "midnight-cyan", stock: 1 }
         ],
@@ -134,7 +134,7 @@ export const BIKES: Bike[] = [
         slug: "fzs-v4",
         name: "Yamaha FZ-S FI V4",
         category: "bike",
-        price: "1,29,000",
+        price: "1,29,000 - 1,30,000",
         colors: [
             { name: "Racing Blue", hex: "#1e3a8a", image: "/images/fzs.png", colorOption: "racing-blue", stock: 5 },
             { name: "Matte Black", hex: "#18181b", image: "/images/fzs.png", colorOption: "matte-black", stock: 3 },
@@ -167,7 +167,7 @@ export const BIKES: Bike[] = [
         slug: "fz-fi",
         name: "Yamaha FZ FI",
         category: "bike",
-        price: "1,16,500",
+        price: "1,16,000",
         colors: [
             { name: "Blue", hex: "#2563eb", image: "/images/fzs.png", colorOption: "blue", stock: 4 },
             { name: "Matte Black", hex: "#18181b", image: "/images/fzs.png", colorOption: "matte-black", stock: 3 }
@@ -199,7 +199,7 @@ export const BIKES: Bike[] = [
         slug: "fzs-rave",
         name: "Yamaha FZ-S FI V4 (Cyber Rave)",
         category: "bike",
-        price: "1,29,500",
+        price: "1,29,500 - 1,30,500",
         colors: [
             { name: "Cyber Rave", hex: "#000", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/1.webp", colorOption: "cyber-rave", stock: 2 }
         ],
@@ -230,7 +230,7 @@ export const BIKES: Bike[] = [
         slug: "fzx",
         name: "Yamaha FZ-X",
         category: "bike",
-        price: "1,36,000",
+        price: "1,36,000 - 1,40,000",
         colors: [
             { name: "Matte Copper", hex: "#b45309", image: "/images/fzx.png", colorOption: "matte-copper", stock: 2 },
             { name: "Chrome", hex: "#94a3b8", image: "/images/fzx.png", colorOption: "chrome", stock: 1 }
@@ -326,7 +326,7 @@ export const BIKES: Bike[] = [
         slug: "rayzr",
         name: "Yamaha RayZR 125 FI",
         category: "scooty",
-        price: "84,000",
+        price: "85,030 - 98,130",
         colors: [
             { name: "Cyan Blue", hex: "#0891b2", image: "/images/rayzr.png", colorOption: "cyan-blue", stock: 4 },
             { name: "Matte Red", hex: "#b91c1c", image: "/images/rayzr.png", colorOption: "matte-red", stock: 3 }
@@ -358,7 +358,7 @@ export const BIKES: Bike[] = [
         slug: "fascino",
         name: "Yamaha Fascino 125 FI",
         category: "scooty",
-        price: "79,000",
+        price: "79,900 - 94,530",
         colors: [
             { name: "Vivid Red", hex: "#dc2626", image: "/images/fascino.png", colorOption: "vivid-red", stock: 3 },
             { name: "Metallic Black", hex: "#000", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_all/fascino125fi-new/color/Drum/Metallic-Black-cd.webp", colorOption: "metallic-black", stock: 2 }

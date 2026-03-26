@@ -1,16 +1,21 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Bike, Menu, X, ChevronRight, Phone } from "lucide-react";
+import Image from "next/image";
+import { Menu, X, ChevronRight, Phone } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { useAuth } from "@/context/AuthContext";
+import { LogIn, User as UserIcon, LogOut, ChevronDown } from "lucide-react";
+
 export function Navbar() {
     const pathname = usePathname();
+    const { user, login, logout, loading } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const isAdmin = pathname?.startsWith("/admin");
     const isService = pathname === "/service";
 
@@ -36,17 +41,23 @@ export function Navbar() {
         )}>
             <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center">
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 md:gap-3 group">
-                        <div className="bg-yamaha-blue p-1.5 md:p-2 rounded-xl group-hover:rotate-12 transition-transform duration-500 shadow-xl shadow-yamaha-blue/20">
-                            <Bike className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                    {/* Logo remains same... */}
+                    <Link href="/" className="flex items-center gap-2 md:gap-4 group">
+                        <div className="relative w-10 h-10 md:w-14 md:h-14 transition-transform duration-500 group-hover:scale-110">
+                            <Image
+                                src="/images/YamahaLogo.png"
+                                alt="Yamaha Logo"
+                                fill
+                                className="object-contain"
+                                priority
+                            />
                         </div>
                         <div className="flex flex-col gap-0 md:gap-1">
-                            <span className="text-lg md:text-2xl font-display font-black tracking-tighter text-gray-300 leading-none">
+                            <span className="text-base md:text-xl font-display font-black tracking-tighter text-white leading-none">
                                 CHOUDHARY YAMAHA
                             </span>
-                            <span className="hidden md:block text-[10px] uppercase font-black tracking-[0.3em] text-gray-400 -mt-0.5">
-                                Since 1989
+                            <span className="text-[10px] uppercase font-black tracking-[0.3em] text-racing-blue -mt-0.5">
+                                THE CALL OF THE BLUE
                             </span>
                         </div>
                     </Link>
@@ -76,6 +87,59 @@ export function Navbar() {
                         >
                             <Phone className="w-4 h-4 text-gray-400 group-hover:text-racing-blue" />
                         </Link>
+
+                        {loading ? (
+                            <div className="w-10 h-10 rounded-full bg-zinc-800 animate-pulse" />
+                        ) : user ? (
+                            <div className="relative">
+                                <button
+                                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                    className="flex items-center gap-2 p-1 pr-3 bg-zinc-800/50 hover:bg-zinc-800 rounded-full border border-zinc-700 transition-all group"
+                                >
+                                    <div className="w-8 h-8 rounded-full overflow-hidden border border-racing-blue/50">
+                                        {user.avatar ? (
+                                            <Image src={user.avatar} alt={user.displayName} width={32} height={32} className="object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full bg-racing-blue flex items-center justify-center">
+                                                <UserIcon className="w-4 h-4 text-white" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">{user.displayName.split(' ')[0]}</span>
+                                    <ChevronDown className={cn("w-3 h-3 text-gray-400 transition-transform", isProfileOpen && "rotate-180")} />
+                                </button>
+
+                                <AnimatePresence>
+                                    {isProfileOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            className="absolute right-0 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl py-2 z-50 overflow-hidden"
+                                        >
+                                            <Link href="/profile" className="flex items-center gap-3 px-4 py-3 hover:bg-zinc-800 text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-racing-blue transition-colors">
+                                                <UserIcon className="w-4 h-4" /> My Garage
+                                            </Link>
+                                            <button
+                                                onClick={() => logout()}
+                                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-500/10 text-[10px] font-black uppercase tracking-widest text-red-500 transition-colors"
+                                            >
+                                                <LogOut className="w-4 h-4" /> Sign Out
+                                            </button>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => login()}
+                                className="bg-zinc-800/50 hover:bg-zinc-800 text-white px-6 py-3 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border border-zinc-700 flex items-center gap-2"
+                            >
+                                <LogIn className="w-3.5 h-3.5" />
+                                Sign In
+                            </button>
+                        )}
+
                         <Link
                             href="/#inquiry"
                             className="bg-yamaha-blue hover:bg-dark-racing text-white px-8 py-3.5 rounded-full text-[11px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-xl shadow-yamaha-blue/20 flex items-center gap-2"

@@ -38,7 +38,7 @@ export function Hero() {
                             <Star className="w-3 h-3 text-white fill-white" />
                         </div>
                         <span className="text-gray-300 text-[10px] font-black uppercase tracking-[0.3em]">
-                            Authorized Yamaha Dealer • Choudhary Automobile
+                            The Call of the Blue • Authorized Yamaha Dealer
                         </span>
                     </motion.div>
 
