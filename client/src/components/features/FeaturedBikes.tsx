@@ -104,7 +104,7 @@ export function FeaturedBikes() {
                         return (
                             <div
                                 key={bike.slug || bike._id}
-                                className="w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.33rem)] flex-shrink-0 snap-start"
+                                className="w-[100%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.33rem)] flex-shrink-0 snap-center"
                             >
                                 <Link
                                     href={`/bikes/${bike.slug}`}
@@ -123,39 +123,39 @@ export function FeaturedBikes() {
                                             style={{ backgroundColor: primaryColor.hex }}
                                         />
 
-                                        <div className="relative z-10">
-                                            <span className="inline-block px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest text-white mb-6 shadow-xl bg-racing-blue/80 backdrop-blur-md border border-white/10">
+                                        <div className="relative z-20">
+                                            <span className="inline-block px-3 py-1 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white mb-4 md:mb-6 shadow-xl bg-racing-blue/80 backdrop-blur-md border border-white/10">
                                                 {bike.tag}
                                             </span>
 
-                                            <div className="space-y-1 mb-8">
-                                                <h4 className="text-3xl md:text-4xl font-display font-black text-white tracking-tighter uppercase leading-none group-hover:text-racing-blue transition-colors duration-500">
+                                            <div className="space-y-1 mb-6">
+                                                <h4 className="text-2xl md:text-4xl font-display font-black text-white tracking-tighter uppercase leading-none group-hover:text-racing-blue transition-colors duration-500">
                                                     {bike.name}
                                                 </h4>
-                                                <p className="text-gray-500 font-bold uppercase tracking-[0.3em] text-[8px]">
+                                                <p className="text-gray-500 font-bold uppercase tracking-[0.3em] text-[7px] md:text-[8px]">
                                                     {primaryColor.name}
                                                 </p>
                                             </div>
 
                                             <div className="grid grid-cols-3 gap-2 md:gap-3 mb-8">
                                                 {currentSpecs.slice(0, 3).map((spec: any, i: number) => (
-                                                    <div key={i} className="flex flex-col items-center gap-2 p-3 rounded-2xl bg-white/5 border border-white/10 group/spec hover:bg-white/10 transition-colors">
-                                                        <LucideIcon name={spec.icon} className="w-4 h-4 text-racing-blue group-hover/spec:scale-110 transition-transform" />
-                                                        <span className="text-[8px] font-black uppercase tracking-widest text-gray-400 text-center leading-tight">{spec.label}</span>
+                                                    <div key={i} className="flex flex-col items-center gap-1.5 p-2 md:p-3 rounded-xl md:rounded-2xl bg-white/5 border border-white/10 group/spec hover:bg-white/10 transition-colors">
+                                                        <LucideIcon name={spec.icon} className="w-3.5 h-3.5 md:w-4 md:h-4 text-racing-blue group-hover/spec:scale-110 transition-transform" />
+                                                        <span className="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-gray-400 text-center leading-tight">{spec.label}</span>
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
 
-                                        <div className="relative z-10 flex items-end justify-between pt-8 border-t border-white/5">
+                                        <div className="relative z-20 flex items-end justify-between pt-8 border-t border-white/5">
                                             <div className="flex flex-col gap-1">
                                                 <span className="text-[9px] text-gray-500 font-black uppercase tracking-[0.3em] flex items-center gap-2">
                                                     <span className="w-4 h-[1px] bg-gray-600" />
                                                     Ex-Showroom
                                                 </span>
                                                 <div className="flex items-baseline gap-1">
-                                                    <span className="text-[10px] font-black text-racing-blue">₹</span>
-                                                    <span className="text-2xl md:text-3xl font-display font-black text-white tracking-tighter italic">
+                                                    <span className="text-[9px] font-black text-racing-blue">₹</span>
+                                                    <span className="text-xl md:text-3xl font-display font-black text-white tracking-tighter italic">
                                                         {bike.price}*
                                                     </span>
                                                 </div>
@@ -172,7 +172,7 @@ export function FeaturedBikes() {
                                         </div>
 
                                         {/* Oversized Bike Image with Glow Support */}
-                                        <div className="absolute top-12 -right-8 w-[65%] pointer-events-none transition-all duration-700 ease-out group-hover:scale-115 group-hover:-translate-x-4 group-hover:-translate-y-4">
+                                        <div className="absolute top-[35%] -right-8 w-[75%] pointer-events-none transition-all duration-700 ease-out group-hover:scale-110 group-hover:-translate-x-4 group-hover:-translate-y-2 z-10">
                                             <div className="relative">
                                                 <div
                                                     className="absolute inset-0 blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-1000"
@@ -184,13 +184,13 @@ export function FeaturedBikes() {
                                                     alt={bike.name}
                                                     width={500}
                                                     height={400}
-                                                    className="object-contain drop-shadow-[0_30px_30px_rgba(0,0,0,0.6)] relative z-10"
+                                                    className="w-full h-auto object-contain drop-shadow-[0_30px_30px_rgba(0,0,0,0.6)] relative z-10"
                                                 />
                                             </div>
                                         </div>
 
                                         {/* Watermark Name */}
-                                        <div className="absolute -bottom-8 -left-4 text-8xl font-black text-white/[0.03] pointer-events-none select-none -z-0 tracking-tighter uppercase italic group-hover:text-racing-blue/[0.05] group-hover:-translate-y-4 transition-all duration-1000 ease-out">
+                                        <div className="absolute -bottom-8 -left-4 text-8xl font-black text-white/[0.03] pointer-events-none select-none z-0 tracking-tighter uppercase italic group-hover:text-racing-blue/[0.05] group-hover:-translate-y-4 transition-all duration-1000 ease-out">
                                             {bike.name.split(" ")[1] || bike.name.split(" ")[0]}
                                         </div>
                                     </motion.div>

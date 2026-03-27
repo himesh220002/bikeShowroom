@@ -1,22 +1,15 @@
 import { Router } from 'express';
 import UserBike from '../models/UserBike';
-import { Schema } from 'mongoose';
+import { protect } from '../middleware/authMiddleware';
+import { calculateNextService } from '../utils/serviceIntervals';
 
 const router = Router();
 
-// Middleware to check if user is authenticated
-const isAuthenticated = (req: any, res: any, next: any) => {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.status(401).json({ success: false, message: 'Not authenticated' });
-};
-
 // @desc    Get all bikes for the logged-in user
 // @route   GET /api/user-bikes
-router.get('/', isAuthenticated, async (req: any, res) => {
+router.get('/', protect, async (req: any, res) => {
     try {
-        const bikes = await UserBike.find({ userId: req.user._id });
+        const bikes = await UserBike.find({ userId: req.user._id }).sort({ createdAt: -1 });
         res.json({ success: true, data: bikes });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
@@ -25,18 +18,11 @@ router.get('/', isAuthenticated, async (req: any, res) => {
 
 // @desc    Add a new bike for the logged-in user
 // @route   POST /api/user-bikes
-router.post('/', isAuthenticated, async (req: any, res) => {
+router.post('/', protect, async (req: any, res) => {
     try {
-        const { bikeModel, registrationNumber, purchaseDate, lastServiceDate, mileage } = req.body;
+        const { bikeModel, registrationNumber, purchaseDate, lastServiceDate, mileage, serviceCount = 0 } = req.body;
 
-        // Simple next service date calculation (e.g., 6 months after last service or 3 months after purchase)
-        let nextServiceDate = new Date(purchaseDate);
-        if (lastServiceDate) {
-            nextServiceDate = new Date(lastServiceDate);
-            nextServiceDate.setMonth(nextServiceDate.getMonth() + 6);
-        } else {
-            nextServiceDate.setMonth(nextServiceDate.getMonth() + 3);
-        }
+        const { nextDate } = calculateNextService(bikeModel, new Date(purchaseDate), serviceCount);
 
         const newBike = new UserBike({
             userId: req.user._id,
@@ -44,8 +30,9 @@ router.post('/', isAuthenticated, async (req: any, res) => {
             registrationNumber,
             purchaseDate,
             lastServiceDate,
-            nextServiceDate,
-            mileage
+            nextServiceDate: nextDate,
+            mileage,
+            serviceCount
         });
 
         await newBike.save();
@@ -55,9 +42,23 @@ router.post('/', isAuthenticated, async (req: any, res) => {
     }
 });
 
+// @desc    Delete a bike
+// @route   DELETE /api/user-bikes/:id
+router.delete('/:id', protect, async (req: any, res) => {
+    try {
+        const bike = await UserBike.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+        if (!bike) {
+            return res.status(404).json({ success: false, message: 'Bike not found' });
+        }
+        res.json({ success: true, message: 'Bike deleted' });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // @desc    Get service reminders for the logged-in user
 // @route   GET /api/user-bikes/reminders
-router.get('/reminders', isAuthenticated, async (req: any, res) => {
+router.get('/reminders', protect, async (req: any, res) => {
     try {
         const today = new Date();
         const nextMonth = new Date();

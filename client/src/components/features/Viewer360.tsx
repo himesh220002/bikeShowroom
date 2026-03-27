@@ -46,7 +46,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
     ];
 
     return (
-        <div className="relative max-w-[1400px] mx-auto h-[700px] bg-zinc-950 rounded-[3rem] overflow-hidden border border-zinc-900 shadow-2xl group/viewer">
+        <div className="relative max-w-[1400px] mx-auto h-[600px] md:h-[700px] bg-zinc-950 rounded-[3rem] overflow-hidden border border-zinc-900 shadow-2xl group/viewer">
             {/* Main 3D View (Custom Rotating Viewer) */}
             <div className="absolute inset-0 z-0">
                 {activeMode === "360" ? (
@@ -155,19 +155,19 @@ export function Viewer360({ bike }: { bike: Bike }) {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="absolute inset-x-4 md:inset-x-10 bottom-4 md:bottom-10 top-20 z-30 bg-zinc-950/98 backdrop-blur-3xl border border-white/5 rounded-[2rem] md:rounded-[3rem] overflow-hidden flex flex-col"
+                        className="absolute inset-x-2 md:inset-x-10 bottom-2 md:bottom-10 top-16 md:top-20 z-30 bg-zinc-950/98 backdrop-blur-3xl border border-white/5 rounded-[2rem] md:rounded-[3rem] overflow-hidden flex flex-col"
                     >
                         {/* Header */}
-                        <div className="p-6 md:p-10 border-b border-white/5 flex justify-between items-center bg-linear-to-r from-zinc-900/50 to-transparent shrink-0">
+                        <div className="p-5 md:p-10 border-b border-white/5 flex justify-between items-center bg-linear-to-r from-zinc-900/50 to-transparent shrink-0">
                             <div>
-                                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue mb-1 md:mb-2 block">Yamaha {bike.name} DNA</span>
-                                <h4 className="text-2xl md:text-4xl font-display font-black text-white uppercase tracking-tighter">{bike.name} TECH DETAILED</h4>
+                                <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue mb-1 md:mb-2 block">Yamaha {bike.name} DNA</span>
+                                <h4 className="text-2xl md:text-4xl font-display font-black text-white uppercase tracking-tighter leading-none">{bike.name} TECH</h4>
                             </div>
                             <button
                                 onClick={() => setActiveMode("360")}
-                                className="w-10 h-10 md:w-12 md:h-12 bg-white/5 rounded-full flex items-center justify-center text-white hover:bg-racing-blue transition-all group"
+                                className="w-9 h-9 md:w-12 md:h-12 bg-white/5 rounded-full flex items-center justify-center text-white hover:bg-racing-blue transition-all group"
                             >
-                                <X className="w-5 h-5 md:w-6 md:h-6 group-hover:rotate-90 transition-transform" />
+                                <X className="w-4 h-4 md:w-6 md:h-6 group-hover:rotate-90 transition-transform" />
                             </button>
                         </div>
 
@@ -179,8 +179,8 @@ export function Viewer360({ bike }: { bike: Bike }) {
                             `}</style>
 
                             {/* Center: Main Gauge cluster */}
-                            <div className="flex-[3] flex flex-col justify-center items-center p-6 md:p-10 relative bg-linear-to-b from-white/[0.02] to-transparent">
-                                <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full border-8 border-zinc-900 shadow-[0_0_100px_rgba(0,123,255,0.15)] flex items-center justify-center overflow-hidden group">
+                            <div className="flex-[3] flex flex-col justify-center items-center p-4 md:p-10 relative bg-linear-to-b from-white/[0.02] to-transparent shrink-0">
+                                <div className="relative w-48 h-48 md:w-80 md:h-80 rounded-full border-4 md:border-8 border-zinc-900 shadow-[0_0_100px_rgba(0,123,255,0.15)] flex items-center justify-center overflow-hidden group">
                                     {/* RPM Ring */}
                                     <motion.div
                                         className="absolute inset-4 border-4 border-dashed border-racing-blue/30 rounded-full"
@@ -207,16 +207,18 @@ export function Viewer360({ bike }: { bike: Bike }) {
                                             key={gear}
                                             initial={{ opacity: 0, scale: 0.5 }}
                                             animate={{ opacity: 1, scale: 1 }}
-                                            className="text-7xl md:text-8xl font-display font-black text-white italic -mb-4 block"
+                                            className="text-6xl md:text-8xl font-display font-black text-white italic -mb-2 md:-mb-4 block"
                                         >
                                             <AnimatedNumber value={springSpeed} />
                                         </motion.span>
-                                        <span className="text-xs font-black text-racing-blue uppercase tracking-[0.3em]">KM/H</span>
+                                        <span className="text-[10px] md:text-xs font-black text-racing-blue uppercase tracking-[0.3em]">KM/H</span>
                                         <div
                                             onClick={toggleGear}
-                                            className="mt-4 px-4 py-1 bg-racing-blue/20 rounded-lg border border-racing-blue/40 cursor-pointer hover:bg-racing-blue/40 transition-all select-none"
+                                            className="mt-4 px-6 py-2 bg-racing-blue/20 rounded-lg border border-racing-blue/40 cursor-pointer hover:bg-racing-blue/40 transition-all select-none"
                                         >
-                                            <span className="text-sm font-black text-white tracking-widest">GEAR {gear}</span>
+                                            <span className="text-xl md:text-3xl font-display font-black text-white underline decoration-racing-blue/40 decoration-4 underline-offset-8 uppercase tracking-widest italic group-hover:text-racing-blue transition-colors">
+                                                G{gear}
+                                            </span>
                                         </div>
                                     </div>
                                     {/* Decorative Scan Line */}
@@ -247,14 +249,14 @@ export function Viewer360({ bike }: { bike: Bike }) {
                                             initial={{ opacity: 0, x: 20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: i * 0.1 }}
-                                            className="bg-zinc-900/50 p-6 rounded-2xl border border-white/5 hover:border-racing-blue/30 transition-all group"
+                                            className="bg-zinc-900/50 p-4 md:p-6 rounded-xl md:rounded-2xl border border-white/5 hover:border-racing-blue/30 transition-all group"
                                         >
                                             <div className="flex justify-between items-start mb-1">
-                                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{spec.label}</span>
+                                                <span className="text-[8px] md:text-[9px] font-black text-gray-500 uppercase tracking-widest">{spec.label}</span>
                                                 <div className="w-1.5 h-1.5 rounded-full bg-racing-blue opacity-50 group-hover:opacity-100 transition-opacity" />
                                             </div>
-                                            <div className="text-white font-display font-black text-lg tracking-tight uppercase leading-tight">{spec.value}</div>
-                                            <div className="text-[9px] text-racing-blue/60 font-black uppercase tracking-widest mt-1">{spec.detail}</div>
+                                            <div className="text-white font-display font-black text-sm md:text-lg tracking-tight uppercase leading-tight">{spec.value}</div>
+                                            <div className="text-[8px] md:text-[9px] text-racing-blue/60 font-black uppercase tracking-widest mt-1">{spec.detail}</div>
                                         </motion.div>
                                     ))}
 

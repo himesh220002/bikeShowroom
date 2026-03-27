@@ -8,6 +8,8 @@ export interface IUserBike extends Document {
     lastServiceDate?: Date;
     nextServiceDate?: Date;
     mileage?: number;
+    lastMileage?: number;
+    serviceCount: number;
     createdAt: Date;
 }
 
@@ -19,6 +21,8 @@ const UserBikeSchema: Schema = new Schema({
     lastServiceDate: { type: Date },
     nextServiceDate: { type: Date },
     mileage: { type: Number },
+    lastMileage: { type: Number },
+    serviceCount: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
 });
 

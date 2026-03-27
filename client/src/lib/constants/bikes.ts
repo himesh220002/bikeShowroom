@@ -107,7 +107,7 @@ export const BIKES: Bike[] = [
         category: "bike",
         price: "4,60,000",
         colors: [
-            { name: "Midnight Cyan", hex: "#0891b2", image: "/images/mt03-cyan.webp", colorOption: "midnight-cyan", stock: 1 }
+            { name: "Midnight Cyan", hex: "#0891b2", image: "/images/mt03-cyan.png", colorOption: "midnight-cyan", stock: 1 }
         ],
         specs: [
             { icon: "Gauge", label: "321cc Twin Cylinder" },
@@ -201,7 +201,7 @@ export const BIKES: Bike[] = [
         category: "bike",
         price: "1,29,500 - 1,30,500",
         colors: [
-            { name: "Cyber Rave", hex: "#000", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/1.webp", colorOption: "cyber-rave", stock: 2 }
+            { name: "Cyber Rave", hex: "#000", image: "/images/fz-rave.png", colorOption: "cyber-rave", stock: 2 }
         ],
         specs: [
             { icon: "Gauge", label: "149cc Fi Engine" },

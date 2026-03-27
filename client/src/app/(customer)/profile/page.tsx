@@ -28,7 +28,8 @@ export default function ProfilePage() {
         registrationNumber: "",
         purchaseDate: "",
         lastServiceDate: "",
-        mileage: ""
+        mileage: "",
+        serviceCount: "0"
     });
 
     const fetchBikes = async () => {
@@ -55,14 +56,15 @@ export default function ProfilePage() {
         try {
             const res = await axios.post("http://localhost:5000/api/user-bikes", formData, { withCredentials: true });
             if (res.data.success) {
-                setBikes([...bikes, res.data.data]);
+                setBikes([res.data.data, ...bikes]);
                 setIsAdding(false);
                 setFormData({
                     bikeModel: "",
                     registrationNumber: "",
                     purchaseDate: "",
                     lastServiceDate: "",
-                    mileage: ""
+                    mileage: "",
+                    serviceCount: "0"
                 });
             }
         } catch (err) {
@@ -70,8 +72,26 @@ export default function ProfilePage() {
         }
     };
 
+    const handleDeleteBike = async (id: string) => {
+        if (!confirm("Are you sure you want to remove this bike from your garage?")) return;
+        try {
+            const res = await axios.delete(`http://localhost:5000/api/user-bikes/${id}`, { withCredentials: true });
+            if (res.data.success) {
+                setBikes(bikes.filter(b => b._id !== id));
+            }
+        } catch (err) {
+            console.error("Failed to delete bike:", err);
+        }
+    };
+
     if (authLoading) return <div className="min-h-screen bg-background flex items-center justify-center"><div className="w-12 h-12 border-4 border-racing-blue border-t-transparent rounded-full animate-spin" /></div>;
-    if (!user) return <div className="min-h-screen bg-background flex items-center justify-center"><p className="text-gray-400 font-bold uppercase tracking-widest">Please sign in to access My Garage</p></div>;
+
+    if (!user) {
+        if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+        }
+        return null;
+    }
 
     return (
         <div className="min-h-screen bg-background pt-32 pb-20 px-4 md:px-8">
@@ -161,6 +181,21 @@ export default function ProfilePage() {
                                                 onChange={(e) => setFormData({ ...formData, mileage: e.target.value })}
                                             />
                                         </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Previous Services Done</label>
+                                            <select
+                                                className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:border-racing-blue transition-all"
+                                                value={formData.serviceCount}
+                                                onChange={(e) => setFormData({ ...formData, serviceCount: e.target.value })}
+                                            >
+                                                <option value="0" className="bg-zinc-900 text-white font-bold">0 (New Bike)</option>
+                                                <option value="1" className="bg-zinc-900 text-white font-bold">1st Service Done</option>
+                                                <option value="2" className="bg-zinc-900 text-white font-bold">2nd Service Done</option>
+                                                <option value="3" className="bg-zinc-900 text-white font-bold">3rd Service Done</option>
+                                                <option value="4" className="bg-zinc-900 text-white font-bold">4th Service Done</option>
+                                                <option value="5" className="bg-zinc-900 text-white font-bold">5+ Services Done</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <button
                                         type="submit"
@@ -231,7 +266,11 @@ export default function ProfilePage() {
                                                                 <span className="text-xl font-display font-black text-white italic">{bike.nextServiceDate ? new Date(bike.nextServiceDate).toLocaleDateString() : 'TBD'}</span>
                                                             </div>
                                                         </div>
-                                                        <button className="text-red-500/50 hover:text-red-500 transition-colors p-2">
+                                                        <button
+                                                            onClick={() => handleDeleteBike(bike._id)}
+                                                            className="text-red-500/50 hover:text-red-500 transition-colors p-2 hover:bg-red-500/10 rounded-lg"
+                                                            title="Delete Bike"
+                                                        >
                                                             <Trash2 className="w-4 h-4" />
                                                         </button>
                                                     </div>

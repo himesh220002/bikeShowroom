@@ -5,17 +5,20 @@ import axios from 'axios';
 
 interface User {
     _id: string;
-    googleId: string;
+    googleId?: string;
     displayName: string;
     email: string;
-    avatar: string;
+    avatar?: string;
     role: 'user' | 'admin';
+    authProvider: 'google' | 'local';
 }
 
 interface AuthContextType {
     user: User | null;
     loading: boolean;
     login: () => void;
+    loginLocal: (data: any) => Promise<{ success: boolean; message?: string }>;
+    register: (data: any) => Promise<{ success: boolean; message?: string }>;
     logout: () => Promise<void>;
     refreshUser: () => Promise<void>;
 }
@@ -49,6 +52,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         window.location.href = 'http://localhost:5000/api/auth/google';
     };
 
+    const loginLocal = async (data: any) => {
+        try {
+            const res = await axios.post('http://localhost:5000/api/auth/login', data, { withCredentials: true });
+            if (res.data.success) {
+                setUser(res.data.data);
+                return { success: true };
+            }
+            return { success: false, message: res.data.message };
+        } catch (err: any) {
+            return { success: false, message: err.response?.data?.message || 'Login failed' };
+        }
+    };
+
+    const register = async (data: any) => {
+        try {
+            const res = await axios.post('http://localhost:5000/api/auth/register', data, { withCredentials: true });
+            if (res.data.success) {
+                setUser(res.data.data);
+                return { success: true };
+            }
+            return { success: false, message: res.data.message };
+        } catch (err: any) {
+            return { success: false, message: err.response?.data?.message || 'Registration failed' };
+        }
+    };
+
     const logout = async () => {
         try {
             await axios.get('http://localhost:5000/api/auth/logout', { withCredentials: true });
@@ -60,7 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout, refreshUser }}>
+        <AuthContext.Provider value={{ user, loading, login, loginLocal, register, logout, refreshUser }}>
             {children}
         </AuthContext.Provider>
     );

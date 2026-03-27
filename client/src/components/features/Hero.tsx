@@ -48,7 +48,7 @@ export function Hero() {
                         transition={{ duration: 0.8, delay: 0.2 }}
                         className="space-y-4 mb-8"
                     >
-                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[8rem] font-display font-black text-white leading-[0.85] uppercase tracking-tighter">
+                        <h1 className="text-5xl sm:text-5xl md:text-6xl lg:text-[8rem] font-display font-black text-white leading-[0.9] md:leading-[0.85] uppercase tracking-tighter">
                             REVS YOUR <br />
                             <span className="text-gradient">HEART.</span>
                         </h1>
@@ -70,11 +70,11 @@ export function Hero() {
                         transition={{ duration: 0.8, delay: 0.6 }}
                         className="flex flex-wrap gap-5"
                     >
-                        <a href="#bikes" className="bg-racing-blue hover:bg-dark-racing text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-sm flex items-center gap-3 transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-racing-blue/40 group">
+                        <a href="#bikes" className="w-full sm:w-auto bg-racing-blue hover:bg-dark-racing text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-sm flex items-center justify-center gap-3 transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-racing-blue/40 group">
                             Explore Lineup
                             <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <a href="/service" className="bg-zinc-800/80 hover:bg-zinc-800 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all border border-zinc-700/50 shadow-2xl flex items-center gap-3">
+                        <a href="/service" className="w-full sm:w-auto bg-zinc-800/80 hover:bg-zinc-800 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all border border-zinc-700/50 shadow-2xl flex items-center justify-center gap-3">
                             <Activity className="w-4 h-4 text-racing-blue" />
                             Book Service
                         </a>
@@ -88,16 +88,16 @@ export function Hero() {
                         className="mt-20 grid grid-cols-2 md:grid-cols-3 gap-12 border-l-4 border-racing-blue pl-12"
                     >
                         <div className="space-y-1">
-                            <p className="text-4xl font-display font-black text-white tracking-tighter">1.2K+</p>
-                            <p className="text-[10px] text-gray-400 uppercase font-black tracking-[0.2em]">Katihar Riders</p>
+                            <p className="text-3xl md:text-4xl font-display font-black text-white tracking-tighter">1.2K+</p>
+                            <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black tracking-[0.2em]">Katihar Riders</p>
                         </div>
                         <div className="space-y-1">
-                            <p className="text-4xl font-display font-black text-white tracking-tighter">12+</p>
-                            <p className="text-[10px] text-gray-400 uppercase font-black tracking-[0.2em]">Legacy Years</p>
+                            <p className="text-3xl md:text-4xl font-display font-black text-white tracking-tighter">12+</p>
+                            <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black tracking-[0.2em]">Legacy Years</p>
                         </div>
-                        <div className="hidden md:block space-y-1">
-                            <p className="text-4xl font-display font-black text-white tracking-tighter">4.9/5</p>
-                            <p className="text-[10px] text-gray-400 uppercase font-black tracking-[0.2em]">Service Rating</p>
+                        <div className="hidden sm:block space-y-1">
+                            <p className="text-3xl md:text-4xl font-display font-black text-white tracking-tighter">4.9/5</p>
+                            <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black tracking-[0.2em]">Rating</p>
                         </div>
                     </motion.div>
                 </div>

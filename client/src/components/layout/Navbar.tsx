@@ -131,13 +131,13 @@ export function Navbar() {
                                 </AnimatePresence>
                             </div>
                         ) : (
-                            <button
-                                onClick={() => login()}
+                            <Link
+                                href="/login"
                                 className="bg-zinc-800/50 hover:bg-zinc-800 text-white px-6 py-3 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border border-zinc-700 flex items-center gap-2"
                             >
                                 <LogIn className="w-3.5 h-3.5" />
                                 Sign In
-                            </button>
+                            </Link>
                         )}
 
                         <Link
@@ -185,20 +185,66 @@ export function Navbar() {
                                     </Link>
                                 </motion.div>
                             ))}
-                            <div className="pt-4 grid grid-cols-2 gap-4">
+                            <div className="pt-4 space-y-4">
+                                {loading ? (
+                                    <div className="h-14 bg-zinc-800 rounded-3xl animate-pulse" />
+                                ) : user ? (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-4 p-4 bg-zinc-800/50 rounded-3xl border border-zinc-700">
+                                            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-racing-blue">
+                                                {user.avatar ? (
+                                                    <Image src={user.avatar} alt={user.displayName} width={48} height={48} className="object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full bg-racing-blue flex items-center justify-center">
+                                                        <UserIcon className="w-6 h-6 text-white" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-black text-white uppercase tracking-wider">{user.displayName}</span>
+                                                <Link href="/profile" onClick={() => setIsOpen(false)} className="text-[10px] font-black text-racing-blue uppercase tracking-[0.2em] mt-0.5">View Garage</Link>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <button
+                                                onClick={() => { logout(); setIsOpen(false); }}
+                                                className="bg-zinc-800 py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px] text-red-500 border border-zinc-700"
+                                            >
+                                                <LogOut className="w-4 h-4 mr-2" /> Sign Out
+                                            </button>
+                                            <Link
+                                                href="/#inquiry"
+                                                onClick={() => setIsOpen(false)}
+                                                className="bg-racing-blue text-white py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]"
+                                            >
+                                                Test Ride
+                                            </Link>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Link
+                                            href="/login"
+                                            onClick={() => setIsOpen(false)}
+                                            className="bg-zinc-800 py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px] text-white border border-zinc-700"
+                                        >
+                                            <LogIn className="w-4 h-4 mr-2" /> Sign In
+                                        </Link>
+                                        <Link
+                                            href="/#inquiry"
+                                            onClick={() => setIsOpen(false)}
+                                            className="bg-racing-blue text-white py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]"
+                                        >
+                                            Test Ride
+                                        </Link>
+                                    </div>
+                                )}
                                 <Link
                                     href="tel:+917004100062"
                                     onClick={() => setIsOpen(false)}
-                                    className="bg-zinc-800 py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px] text-white border border-zinc-700"
+                                    className="block w-full text-center py-4 bg-zinc-800/30 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 border border-zinc-700/30"
                                 >
-                                    Call Dealer
-                                </Link>
-                                <Link
-                                    href="/#inquiry"
-                                    onClick={() => setIsOpen(false)}
-                                    className="bg-racing-blue text-white py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]"
-                                >
-                                    Test Ride
+                                    Contact Dealer: +91 70041 00062
                                 </Link>
                             </div>
                         </div>

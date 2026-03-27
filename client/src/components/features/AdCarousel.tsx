@@ -74,24 +74,24 @@ export function AdCarousel() {
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between mb-10">
                     <div>
-                        <h2 className="text-3xl md:text-5xl font-display font-black text-white uppercase tracking-tighter italic">
+                        <h2 className="text-2xl md:text-5xl font-display font-black text-white uppercase tracking-tighter italic">
                             TRENDING <span className="text-racing-blue">OFFERS</span>
                         </h2>
-                        <div className="h-1.5 w-24 bg-racing-blue mt-2 rounded-full" />
+                        <div className="h-1 w-16 md:w-24 bg-racing-blue mt-2 rounded-full" />
                     </div>
 
-                    <div className="flex gap-4">
+                    <div className="flex gap-2 md:gap-4">
                         <button
                             onClick={prev}
-                            className="p-4 bg-muted border border-border text-white rounded-full hover:bg-racing-blue transition-all group"
+                            className="p-3 md:p-4 bg-muted border border-border text-white rounded-full hover:bg-racing-blue transition-all group"
                         >
-                            <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+                            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform" />
                         </button>
                         <button
                             onClick={next}
-                            className="p-4 bg-muted border border-border text-white rounded-full hover:bg-racing-blue transition-all group"
+                            className="p-3 md:p-4 bg-muted border border-border text-white rounded-full hover:bg-racing-blue transition-all group"
                         >
-                            <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                            <ChevronRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />
                         </button>
                     </div>
                 </div>
@@ -141,7 +141,7 @@ export function AdCarousel() {
 function AdCard({ ad }: { ad: Ad }) {
     return (
         <div className="group flex flex-col space-y-6">
-            <div className="relative aspect-video w-full rounded-[2.5rem] overflow-hidden bg-muted border border-border shadow-2xl">
+            <div className="relative aspect-video w-full rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden bg-muted border border-border shadow-2xl">
                 {/* Visual content part */}
                 <div className="absolute inset-0 w-full h-full">
                     {/* Blurred background for non-banner types */}
