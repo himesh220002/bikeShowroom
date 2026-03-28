@@ -28,8 +28,8 @@ export function Navbar() {
     const navLinks = [
         { name: "Explore", href: "/#explore" },
         { name: "Special Offers", href: "/#promotions" },
+        { name: "Products", href: "/products" },
         { name: "Service & Repairs", href: "/service" },
-        { name: "Showroom", href: "/#showroom" },
         { name: "Inquiry", href: "/#inquiry" },
     ];
 

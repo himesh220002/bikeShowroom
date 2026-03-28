@@ -178,13 +178,16 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>
                             {bike.brochureUrl && (
-                                <Link
+                                <a
                                     href={bike.brochureUrl}
-                                    target="_blank"
+                                    download={bike.brochureUrl.startsWith('/')}
+                                    target={bike.brochureUrl.startsWith('/') ? undefined : "_blank"}
+                                    rel={bike.brochureUrl.startsWith('/') ? undefined : "noopener noreferrer"}
                                     className="px-6 md:px-10 py-5 bg-zinc-900/50 text-gray-400 border border-zinc-800/50 rounded-2xl font-black uppercase tracking-widest text-[11px] md:text-xs hover:border-white/20 hover:text-white transition-all transform active:scale-95 flex items-center justify-center gap-3 sm:col-span-2 lg:col-auto"
                                 >
+                                    <Download className="w-4 h-4" />
                                     Brochure
-                                </Link>
+                                </a>
                             )}
                         </div>
                     </motion.div>

@@ -138,10 +138,11 @@ export default function LoginPage() {
 
                             {mode === 'register' && (
                                 <div className="space-y-1">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-500 ml-4">Full Name</label>
+                                    <label htmlFor="displayName" className="text-[9px] font-black uppercase tracking-widest text-zinc-500 ml-4">Full Name</label>
                                     <div className="relative">
                                         <UserIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                                         <input
+                                            id="displayName"
                                             required
                                             type="text"
                                             placeholder="Yamaha Rider"
@@ -154,10 +155,11 @@ export default function LoginPage() {
                             )}
 
                             <div className="space-y-1">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-zinc-500 ml-4">Email Address</label>
+                                <label htmlFor="email" className="text-[9px] font-black uppercase tracking-widest text-zinc-500 ml-4">Email Address</label>
                                 <div className="relative">
                                     <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                                     <input
+                                        id="email"
                                         required
                                         type="email"
                                         placeholder="rider@yamaha.com"
@@ -169,10 +171,11 @@ export default function LoginPage() {
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-zinc-500 ml-4">Password</label>
+                                <label htmlFor="password" className="text-[9px] font-black uppercase tracking-widest text-zinc-500 ml-4">Password</label>
                                 <div className="relative">
                                     <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                                     <input
+                                        id="password"
                                         required
                                         type="password"
                                         placeholder="••••••••"

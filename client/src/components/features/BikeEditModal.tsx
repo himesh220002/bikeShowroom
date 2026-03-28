@@ -23,6 +23,7 @@ interface Bike {
     threeSixtyUrl: string;
     threeSixtyImageCount: number;
     colorBaseUrl?: string;
+    brochureUrl: string;
     colors: Color[];
 }
 
@@ -43,6 +44,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
         price: "",
         threeSixtyUrl: "",
         threeSixtyImageCount: 40,
+        brochureUrl: "",
         colors: [{ name: "", hex: "", image: "", colorOption: "", stock: 0 }]
     });
     const [saving, setSaving] = useState(false);
@@ -61,6 +63,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                 threeSixtyUrl: "",
                 threeSixtyImageCount: 40,
                 colorBaseUrl: "",
+                brochureUrl: "",
                 colors: [{ name: "", hex: "", image: "", colorOption: "", stock: 0 }]
             });
         }
@@ -241,6 +244,17 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                             onChange={(e) => setFormData({ ...formData, threeSixtyImageCount: parseInt(e.target.value) || 0 })}
                                             className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
                                         />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Brochure PDF Path / URL</label>
+                                        <input
+                                            type="text"
+                                            value={formData.brochureUrl}
+                                            onChange={(e) => setFormData({ ...formData, brochureUrl: e.target.value })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="e.g. /brochure/r15.pdf"
+                                        />
+                                        <p className="text-[8px] text-muted-foreground mt-2 font-bold uppercase tracking-wider italic">Note: Ensure this is a direct link to the PDF brochure</p>
                                     </div>
                                 </div>
                             </div>

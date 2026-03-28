@@ -88,7 +88,7 @@ router.post('/seed', async (req, res) => {
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/",
                 threeSixtyImageCount: 40,
-                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-r15v4.html"
+                brochureUrl: "/brochure/r15.pdf"
             },
             {
                 slug: "mt15",
@@ -150,7 +150,7 @@ router.post('/seed', async (req, res) => {
                     tyres: "110/70-17 (F), 140/70-17 (R)",
                     features: ["Twin Cylinder Engine", "Inverted front forks", "Multi-function LCD instrument cluster"]
                 },
-                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-mt-03.html"
+                brochureUrl: "/brochure/mt03.pdf"
             },
             {
                 slug: "fzs-v4",
@@ -159,7 +159,7 @@ router.post('/seed', async (req, res) => {
                 price: "1,29,000 - 1,30,000",
                 colors: [
                     { name: "Racing Blue", hex: "#1e3a8a", image: "/images/fzs.png", colorOption: "racing-blue", stock: 5 },
-                    { name: "Matte Black", hex: "#18181b", image: "/images/fzs.png", colorOption: "matte-black", stock: 3 },
+                    { name: "Matte Black", hex: "#18181b", image: "/images/fzs.png", colorOption: "white", stock: 3 },
                     { name: "Matte Titan", hex: "#3f3f46", image: "/images/fzs.png", colorOption: "matte-titan", stock: 4 }
                 ],
                 specs: [
@@ -183,7 +183,7 @@ router.post('/seed', async (req, res) => {
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-v4-std/360/",
                 threeSixtyImageCount: 37,
-                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
+                brochureUrl: "/brochure/fzs-fi-series.pdf"
             },
             {
                 slug: "fz-fi",
@@ -192,7 +192,7 @@ router.post('/seed', async (req, res) => {
                 price: "1,16,000",
                 colors: [
                     { name: "Blue", hex: "#2563eb", image: "/images/fzs.png", colorOption: "blue", stock: 4 },
-                    { name: "Matte Black", hex: "#18181b", image: "/images/fzs.png", colorOption: "matte-black", stock: 3 }
+                    { name: "Matte Black", hex: "#18181b", image: "/images/fzs.png", colorOption: "black", stock: 3 }
                 ],
                 specs: [
                     { icon: "Gauge", label: "149cc Fi Engine" },
@@ -215,7 +215,7 @@ router.post('/seed', async (req, res) => {
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-v4-std/360/",
                 threeSixtyImageCount: 37,
-                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
+                brochureUrl: "/brochure/fzs-fi-series.pdf"
             },
             {
                 slug: "fzs-rave",
@@ -246,7 +246,7 @@ router.post('/seed', async (req, res) => {
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
                 threeSixtyImageCount: 37,
-                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
+                brochureUrl: "/brochure/fz_rave.pdf"
             },
             {
                 slug: "fzx",
@@ -278,7 +278,7 @@ router.post('/seed', async (req, res) => {
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzx/360/",
                 threeSixtyImageCount: 40,
-                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fzx.html"
+                brochureUrl: "/brochure/FZ-X_Hybrid.pdf"
             },
             {
                 slug: "xsr155",
@@ -310,7 +310,7 @@ router.post('/seed', async (req, res) => {
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/x_series_all/xsr/360/",
                 threeSixtyImageCount: 36,
                 colorBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/xsr_series/xsr155/color/",
-                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-xsr-155.html"
+                brochureUrl: "/brochure/xsr155.pdf"
             },
             {
                 slug: "aerox",
@@ -318,7 +318,7 @@ router.post('/seed', async (req, res) => {
                 category: "scooty",
                 price: "1,47,000 - 1,51,000",
                 colors: [
-                    { name: "Racing Blue", hex: "#2563eb", image: "/images/rayzr.png", colorOption: "racing-blue", stock: 3 },
+                    { name: "Racing Blue", hex: "#2563eb", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/aerox_all/aerox155vs/color/Racing-Blue.webp", colorOption: "racing-blue", stock: 3 },
                     { name: "Grey Vermillion", hex: "#4b5563", image: "/images/rayzr.png", colorOption: "grey", stock: 2 }
                 ],
                 specs: [
@@ -342,7 +342,7 @@ router.post('/seed', async (req, res) => {
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/aerox_all/aerox155vs/360/",
                 threeSixtyImageCount: 40,
-                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-aerox-155.html"
+                brochureUrl: "/brochure/aerox.pdf"
             },
             {
                 slug: "rayzr",
@@ -374,7 +374,7 @@ router.post('/seed', async (req, res) => {
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/rayzr_all/ray-zr-streetrally125fihybrid/360_new/",
                 threeSixtyImageCount: 36,
-                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-rayzr-125-fi-hybrid.html"
+                brochureUrl: "/brochure/ray-zr-streetrally125fihybrid.pdf"
             },
             {
                 slug: "fascino",
@@ -407,7 +407,7 @@ router.post('/seed', async (req, res) => {
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_all/fascino125fi-new/360_new/",
                 threeSixtyImageCount: 40,
                 colorBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_series/fascino125/color/",
-                brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fascino-125-fi-hybrid.html"
+                brochureUrl: "/brochure/fascinoS.pdf"
             }
         ];
 

@@ -123,7 +123,9 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                     maxLength={10}
                                                     onInput={(e) => {
                                                         const target = e.target as HTMLInputElement;
-                                                        target.value = target.value.replace(/[^0-9]/g, '');
+                                                        let val = target.value.replace(/[^0-9]/g, '');
+                                                        if (val.length > 10) val = val.slice(0, 10);
+                                                        target.value = val;
                                                     }}
                                                     placeholder="Mobile number"
                                                     className="w-full bg-zinc-950 border border-zinc-800 focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-4 md:py-5 text-sm font-black text-white transition-all outline-none"

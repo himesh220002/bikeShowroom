@@ -80,10 +80,11 @@ export default function SettingsPage() {
                 <div className="bg-card border border-border rounded-[2.5rem] p-8 md:p-12 shadow-2xl space-y-8">
                     <div className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Showroom Phone (WhatsApp)</label>
+                            <label htmlFor="showroomPhone" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Showroom Phone (WhatsApp)</label>
                             <div className="relative group">
                                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
                                 <input
+                                    id="showroomPhone"
                                     type="text"
                                     value={settings.showroomPhone}
                                     onChange={(e) => setSettings({ ...settings, showroomPhone: e.target.value })}
@@ -94,10 +95,11 @@ export default function SettingsPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Showroom Email</label>
+                            <label htmlFor="showroomEmail" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Showroom Email</label>
                             <div className="relative group">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
                                 <input
+                                    id="showroomEmail"
                                     type="email"
                                     value={settings.showroomEmail}
                                     onChange={(e) => setSettings({ ...settings, showroomEmail: e.target.value })}
@@ -108,10 +110,11 @@ export default function SettingsPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Showroom Address</label>
+                            <label htmlFor="showroomAddress" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Showroom Address</label>
                             <div className="relative group">
                                 <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
                                 <input
+                                    id="showroomAddress"
                                     type="text"
                                     value={settings.showroomAddress}
                                     onChange={(e) => setSettings({ ...settings, showroomAddress: e.target.value })}
@@ -122,10 +125,11 @@ export default function SettingsPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Google Maps Location (URL)</label>
+                            <label htmlFor="showroomMap" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Google Maps Location (URL)</label>
                             <div className="relative group">
                                 <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
                                 <input
+                                    id="showroomMap"
                                     type="text"
                                     value={settings.showroomMap}
                                     onChange={(e) => setSettings({ ...settings, showroomMap: e.target.value })}

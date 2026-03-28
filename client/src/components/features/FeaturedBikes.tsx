@@ -172,7 +172,7 @@ export function FeaturedBikes() {
                                         </div>
 
                                         {/* Oversized Bike Image with Glow Support */}
-                                        <div className="absolute top-[35%] -right-8 w-[75%] pointer-events-none transition-all duration-700 ease-out group-hover:scale-110 group-hover:-translate-x-4 group-hover:-translate-y-2 z-10">
+                                        <div className="absolute top-[38%] left-1/2 -translate-x-1/2 w-[82%] pointer-events-none transition-all duration-700 ease-out group-hover:scale-110 group-hover:-translate-y-4 z-10">
                                             <div className="relative">
                                                 <div
                                                     className="absolute inset-0 blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-1000"

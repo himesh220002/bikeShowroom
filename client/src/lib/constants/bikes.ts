@@ -66,7 +66,7 @@ export const BIKES: Bike[] = [
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/",
         threeSixtyImageCount: 40,
-        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-r15v4.html"
+        brochureUrl: "/brochure/r15.pdf"
     },
     {
         slug: "mt15",
@@ -128,7 +128,7 @@ export const BIKES: Bike[] = [
             tyres: "110/70-17 (F), 140/70-17 (R)",
             features: ["Twin Cylinder Engine", "Inverted front forks", "Multi-function LCD instrument cluster"]
         },
-        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-mt-03.html"
+        brochureUrl: "/brochure/mt03.pdf"
     },
     {
         slug: "fzs-v4",
@@ -161,7 +161,7 @@ export const BIKES: Bike[] = [
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-v4-std/360/",
         threeSixtyImageCount: 37,
-        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
+        brochureUrl: "/brochure/fzs-fi-series.pdf"
     },
     {
         slug: "fz-fi",
@@ -193,7 +193,7 @@ export const BIKES: Bike[] = [
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-v4-std/360/",
         threeSixtyImageCount: 37,
-        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
+        brochureUrl: "/brochure/fzs-fi-series.pdf"
     },
     {
         slug: "fzs-rave",
@@ -224,7 +224,7 @@ export const BIKES: Bike[] = [
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
         threeSixtyImageCount: 37,
-        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fz-fi.html"
+        brochureUrl: "/brochure/fz_rave.pdf"
     },
     {
         slug: "fzx",
@@ -256,7 +256,7 @@ export const BIKES: Bike[] = [
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzx/360/",
         threeSixtyImageCount: 40,
-        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fzx.html"
+        brochureUrl: "/brochure/FZ-X_Hybrid.pdf"
     },
     {
         slug: "xsr155",
@@ -288,7 +288,7 @@ export const BIKES: Bike[] = [
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/x_series_all/xsr/360/",
         threeSixtyImageCount: 36,
         colorBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/xsr_series/xsr155/color/",
-        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-xsr-155.html"
+        brochureUrl: "/brochure/xsr155.pdf"
     },
     {
         slug: "aerox",
@@ -320,7 +320,7 @@ export const BIKES: Bike[] = [
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/aerox_all/aerox155vs/360/",
         threeSixtyImageCount: 40,
-        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-aerox-155.html"
+        brochureUrl: "/brochure/aerox.pdf"
     },
     {
         slug: "rayzr",
@@ -352,7 +352,7 @@ export const BIKES: Bike[] = [
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/rayzr_all/ray-zr-streetrally125fihybrid/360_new/",
         threeSixtyImageCount: 36,
-        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-rayzr-125-fi-hybrid.html"
+        brochureUrl: "/brochure/ray-zr-streetrally125fihybrid.pdf"
     },
     {
         slug: "fascino",
@@ -385,6 +385,6 @@ export const BIKES: Bike[] = [
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_all/fascino125fi-new/360_new/",
         threeSixtyImageCount: 40,
         colorBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_series/fascino125/color/",
-        brochureUrl: "https://www.yamaha-motor-india.com/yamaha-fascino-125-fi-hybrid.html"
+        brochureUrl: "/brochure/fascinoS.pdf"
     }
 ];

@@ -70,8 +70,9 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
 
                     <div className="space-y-4">
                         <div className="group">
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Full Name</label>
+                            <label htmlFor="customerName" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Full Name</label>
                             <input
+                                id="customerName"
                                 type="text"
                                 required
                                 className="w-full bg-background border border-border rounded-xl px-5 py-3.5 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
@@ -81,8 +82,9 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                             />
                         </div>
                         <div className="group">
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Phone Number</label>
+                            <label htmlFor="customerPhone" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Phone Number</label>
                             <input
+                                id="customerPhone"
                                 type="tel"
                                 required
                                 maxLength={10}
@@ -109,8 +111,9 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
 
                     <div className="space-y-4">
                         <div className="group">
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Select Bike Model</label>
+                            <label htmlFor="bikeSelect" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Select Bike Model</label>
                             <select
+                                id="bikeSelect"
                                 required
                                 className="w-full bg-background border border-border rounded-xl px-5 py-3.5 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all appearance-none"
                                 value={formData.bikeId + "|" + formData.variant}
@@ -138,10 +141,11 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                         </div>
 
                         <div className="group">
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Final Sale Price</label>
+                            <label htmlFor="salePrice" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Final Sale Price</label>
                             <div className="relative">
                                 <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-racing-blue" />
                                 <input
+                                    id="salePrice"
                                     type="number"
                                     required
                                     className="w-full bg-background border border-border rounded-xl pl-12 pr-5 py-3.5 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
