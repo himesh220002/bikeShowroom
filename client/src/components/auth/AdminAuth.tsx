@@ -8,8 +8,7 @@ import Image from "next/image";
 const ADMIN_SESSION_KEY = "admin_session_active";
 const SESSION_TIMEOUT = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
-// Simple hash simulation for "Yamaha123"
-const ADMIN_PASSWORD_HASH = "7884762c2635921869e5d610850257321689163e753900224b11166699"; // Not a real hash, just a token
+// Admin password is now managed on the backend
 
 interface AdminAuthProps {
     children: React.ReactNode;
@@ -54,26 +53,36 @@ export function AdminAuth({ children }: AdminAuthProps) {
         return () => clearInterval(interval);
     }, [checkSession]);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError("");
 
-        // Simulate small delay for premium feel
-        setTimeout(() => {
-            if (password === "Yamaha123") {
+        try {
+            const res = await fetch("http://localhost:5000/api/admin/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password }),
+                credentials: "include"
+            });
+            const data = await res.json();
+
+            if (data.success) {
                 const session = {
                     timestamp: Date.now(),
-                    token: ADMIN_PASSWORD_HASH
+                    token: data.token
                 };
                 localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(session));
                 setIsAuthorized(true);
             } else {
-                setError("Invalid administrative credentials");
+                setError(data.message || "Invalid administrative credentials");
                 setPassword("");
             }
+        } catch (err) {
+            setError("Connection failed. Please check your network.");
+        } finally {
             setLoading(false);
-        }, 8000);
+        }
     };
 
     if (isAuthorized === null) {

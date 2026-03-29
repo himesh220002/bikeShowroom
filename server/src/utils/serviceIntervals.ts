@@ -11,43 +11,13 @@ interface Category {
 
 const CATEGORIES: Category[] = [
     {
-        name: "R-Series & MT",
-        models: ["R15", "R15S", "R15 V4", "MT15", "MT15 V2", "MT-15"],
+        name: "Standard Yamaha (R, MT, FZ, Scooters)",
+        models: ["R15", "MT15", "FZ", "FZS", "FZX", "Fascino", "RayZR", "Aerox"],
         intervals: [
             { km: 1000, days: 30 },
             { km: 5000, days: 150 },
             { km: 9000, days: 270 },
             { km: 13000, days: 390 }
-        ]
-    },
-    {
-        name: "FZ 250 Series",
-        models: ["FZ 250", "FZS 250", "FZ25", "FZS25"],
-        intervals: [
-            { km: 1000, days: 60 },
-            { km: 5000, days: 180 },
-            { km: 10000, days: 360 }
-        ]
-    },
-    {
-        name: "FZ V3 Series",
-        models: ["FZS V3", "FZ V3", "FZX", "FZ-S", "FZ-X", "FZS-FI"],
-        intervals: [
-            { km: 1000, days: 30 },
-            { km: 4000, days: 150 },
-            { km: 7000, days: 270 },
-            { km: 10000, days: 390 }
-        ]
-    },
-    {
-        name: "125cc Scooters",
-        models: ["Fascino", "Ray ZR", "RayZR", "Fascino 125", "Ray ZR 125"],
-        intervals: [
-            { km: 1000, days: 30 },
-            { km: 4000, days: 150 },
-            { km: 7000, days: 270 },
-            { km: 10000, days: 390 },
-            { km: 13000, days: 510 }
         ]
     }
 ];
@@ -65,19 +35,21 @@ export const findCategory = (model: string): Category => {
         }
     }
 
-    // 2. Default to FZ V3 Series if no match (common middle ground)
-    return CATEGORIES[2];
+    // 2. Default to Standard
+    return CATEGORIES[0];
 };
 
 export const calculateNextService = (model: string, purchaseDate: Date, serviceCount: number) => {
     const category = findCategory(model);
     const intervals = category.intervals;
 
-    // If all defined interval slots are used, default to every 6 months / 3000km from last
+    // If all defined interval slots are used, default to every 120 days / 4000km from last
     if (serviceCount >= intervals.length) {
+        const lastInterval = intervals[intervals.length - 1];
+        const extraCount = serviceCount - intervals.length + 1;
         return {
-            nextKm: (intervals[intervals.length - 1].km) + (3000 * (serviceCount - intervals.length + 1)),
-            nextDate: new Date(new Date(purchaseDate).getTime() + ((intervals[intervals.length - 1].days + (180 * (serviceCount - intervals.length + 1))) * 24 * 60 * 60 * 1000))
+            nextKm: lastInterval.km + (4000 * extraCount),
+            nextDate: new Date(new Date(purchaseDate).getTime() + ((lastInterval.days + (120 * extraCount)) * 24 * 60 * 60 * 1000))
         };
     }
 

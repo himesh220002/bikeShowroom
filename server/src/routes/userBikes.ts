@@ -2,6 +2,8 @@ import { Router } from 'express';
 import UserBike from '../models/UserBike';
 import { protect } from '../middleware/authMiddleware';
 import { calculateNextService } from '../utils/serviceIntervals';
+import Bike from '../models/Bike';
+import Service from '../models/Service';
 
 const router = Router();
 
@@ -20,17 +22,32 @@ router.get('/', protect, async (req: any, res) => {
 // @route   POST /api/user-bikes
 router.post('/', protect, async (req: any, res) => {
     try {
-        const { bikeModel, registrationNumber, purchaseDate, lastServiceDate, mileage, serviceCount = 0 } = req.body;
+        const { bikeId, bikeModel, registrationNumber, purchaseDate, lastServiceDate, mileage, serviceCount = 0 } = req.body;
 
-        const { nextDate } = calculateNextService(bikeModel, new Date(purchaseDate), serviceCount);
+        let finalBikeImage = "";
+        let finalBikeModel = bikeModel;
+
+        if (bikeId) {
+            const officialBike = await Bike.findById(bikeId);
+            if (officialBike) {
+                finalBikeModel = officialBike.name;
+                finalBikeImage = officialBike.colors[0]?.image || "";
+            }
+        }
+
+        const { nextDate, nextKm } = calculateNextService(finalBikeModel, new Date(purchaseDate), serviceCount);
+        console.log(`Calculated for ${finalBikeModel}: Next Date - ${nextDate}, Next KM - ${nextKm}`);
 
         const newBike = new UserBike({
             userId: req.user._id,
-            bikeModel,
+            bikeId: bikeId || null,
+            bikeModel: finalBikeModel,
+            bikeImage: finalBikeImage,
             registrationNumber,
             purchaseDate,
             lastServiceDate,
             nextServiceDate: nextDate,
+            nextServiceKm: nextKm,
             mileage,
             serviceCount
         });
@@ -70,6 +87,46 @@ router.get('/reminders', protect, async (req: any, res) => {
         });
 
         res.json({ success: true, data: reminders });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// @desc    Get service log for a specific user bike
+// @route   GET /api/user-bikes/:id/services
+router.get('/:id/services', protect, async (req: any, res) => {
+    try {
+        const bike = await UserBike.findOne({ _id: req.params.id, userId: req.user._id });
+        if (!bike) {
+            return res.status(404).json({ success: false, message: 'Bike not found' });
+        }
+
+        // Fetch services using registration number
+        const services = await Service.find({
+            regNumber: bike.registrationNumber
+        }).sort({ createdAt: -1 });
+
+        res.json({ success: true, data: services });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// @desc    Update odometer reading
+// @route   PATCH /api/user-bikes/:id/odometer
+router.patch('/:id/odometer', protect, async (req: any, res) => {
+    try {
+        const { mileage } = req.body;
+        const bike = await UserBike.findOne({ _id: req.params.id, userId: req.user._id });
+
+        if (!bike) {
+            return res.status(404).json({ success: false, message: 'Bike not found' });
+        }
+
+        bike.mileage = mileage;
+        await bike.save();
+
+        res.json({ success: true, data: bike });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
     }

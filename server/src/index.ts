@@ -23,6 +23,10 @@ import salesRouter from './routes/sales';
 import customersRouter from './routes/customers';
 import configRouter from './routes/config';
 
+import adminAuthRouter from './routes/adminAuthRoutes';
+import bcrypt from 'bcryptjs';
+import Config from './models/Config';
+
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -53,7 +57,21 @@ app.use(passport.session());
 
 // MongoDB Connection
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('Successfully connected to MongoDB bikeYamahaDB'))
+    .then(async () => {
+        console.log('Successfully connected to MongoDB bikeYamahaDB');
+        // Seed admin password if not exists
+        const adminHash = await Config.findOne({ key: 'admin_password_hash' });
+        if (!adminHash) {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash('Yamaha123', salt);
+            await Config.create({
+                key: 'admin_password_hash',
+                value: hashedPassword,
+                description: 'Hashed administrative password'
+            });
+            console.log('Admin password initialized');
+        }
+    })
     .catch((err) => console.error('MongoDB connection error:', err));
 
 // Socket.io Connection
@@ -71,6 +89,7 @@ app.use((req: any, res, next) => {
 });
 
 app.use('/api/auth', authRouter);
+app.use('/api/admin/auth', adminAuthRouter);
 app.use('/api/user-bikes', userBikesRouter);
 app.use('/api/leads', leadsRouter);
 app.use('/api/services', servicesRouter);

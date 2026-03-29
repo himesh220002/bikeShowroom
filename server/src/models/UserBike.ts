@@ -2,12 +2,15 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUserBike extends Document {
     userId: mongoose.Types.ObjectId;
+    bikeId?: mongoose.Types.ObjectId; // Reference to official Bike model
     bikeModel: string;
+    bikeImage?: string;
     registrationNumber: string;
     purchaseDate: Date;
-    lastServiceDate?: Date;
-    nextServiceDate?: Date;
-    mileage?: number;
+    lastServiceDate: Date;
+    nextServiceDate: Date;
+    nextServiceKm: number;
+    mileage: number;
     lastMileage?: number;
     serviceCount: number;
     createdAt: Date;
@@ -15,12 +18,15 @@ export interface IUserBike extends Document {
 
 const UserBikeSchema: Schema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    bikeId: { type: Schema.Types.ObjectId, ref: 'Bike' },
     bikeModel: { type: String, required: true },
+    bikeImage: { type: String },
     registrationNumber: { type: String },
     purchaseDate: { type: Date, required: true },
     lastServiceDate: { type: Date },
     nextServiceDate: { type: Date },
-    mileage: { type: Number },
+    nextServiceKm: { type: Number },
+    mileage: { type: Number, default: 0 },
     lastMileage: { type: Number },
     serviceCount: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },

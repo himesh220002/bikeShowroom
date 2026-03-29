@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Phone, Mail, Loader2, CheckCircle2, MapPin } from "lucide-react";
+import { Save, Phone, Mail, Loader2, CheckCircle2, MapPin, Lock, ShieldCheck, AlertCircle } from "lucide-react";
 
 export default function SettingsPage() {
     const [settings, setSettings] = useState({
@@ -13,6 +13,16 @@ export default function SettingsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [success, setSuccess] = useState(false);
+
+    // Security states
+    const [security, setSecurity] = useState({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+    });
+    const [securitySaving, setSecuritySaving] = useState(false);
+    const [securitySuccess, setSecuritySuccess] = useState(false);
+    const [securityError, setSecurityError] = useState("");
 
     useEffect(() => {
         const fetchSettings = async () => {
@@ -44,7 +54,8 @@ export default function SettingsPage() {
             const res = await fetch("http://localhost:5000/api/config", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ settings })
+                body: JSON.stringify({ settings }),
+                credentials: "include"
             });
             const data = await res.json();
             if (data.success) {
@@ -55,6 +66,47 @@ export default function SettingsPage() {
             console.error("Failed to save settings:", err);
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleSecuritySave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSecurityError("");
+        setSecuritySuccess(false);
+
+        if (security.newPassword !== security.confirmPassword) {
+            setSecurityError("New passwords do not match");
+            return;
+        }
+
+        if (security.newPassword.length < 6) {
+            setSecurityError("Password must be at least 6 characters");
+            return;
+        }
+
+        setSecuritySaving(true);
+        try {
+            const res = await fetch("http://localhost:5000/api/admin/auth/change-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    currentPassword: security.currentPassword,
+                    newPassword: security.newPassword
+                }),
+                credentials: "include"
+            });
+            const data = await res.json();
+            if (data.success) {
+                setSecuritySuccess(true);
+                setSecurity({ currentPassword: "", newPassword: "", confirmPassword: "" });
+                setTimeout(() => setSecuritySuccess(false), 3000);
+            } else {
+                setSecurityError(data.message || "Failed to update password");
+            }
+        } catch (err) {
+            setSecurityError("Connection failed");
+        } finally {
+            setSecuritySaving(false);
         }
     };
 
@@ -154,6 +206,93 @@ export default function SettingsPage() {
                             <div className="flex items-center gap-2 text-green-500 animate-in fade-in slide-in-from-left-4">
                                 <CheckCircle2 className="w-4 h-4" />
                                 <span className="text-[10px] font-black uppercase tracking-widest">Saved Successfully</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </form>
+            <div className="pt-8 border-t border-border">
+                <h2 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter">
+                    SECURITY <span className="text-gradient">SETTINGS</span>
+                </h2>
+                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Manage administrative access credentials</p>
+            </div>
+
+            <form onSubmit={handleSecuritySave} className="max-w-2xl space-y-8 pb-12">
+                <div className="bg-card border border-border rounded-[2.5rem] p-8 md:p-12 shadow-2xl space-y-8">
+                    <div className="space-y-6">
+                        <div className="space-y-2">
+                            <label htmlFor="currentPassword" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Current Admin Password</label>
+                            <div className="relative group">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
+                                <input
+                                    id="currentPassword"
+                                    type="password"
+                                    value={security.currentPassword}
+                                    onChange={(e) => setSecurity({ ...security, currentPassword: e.target.value })}
+                                    placeholder="Enter current password"
+                                    className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label htmlFor="newPassword" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">New Password</label>
+                                <div className="relative group">
+                                    <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
+                                    <input
+                                        id="newPassword"
+                                        type="password"
+                                        value={security.newPassword}
+                                        onChange={(e) => setSecurity({ ...security, newPassword: e.target.value })}
+                                        placeholder="Min. 6 characters"
+                                        className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Confirm New Password</label>
+                                <div className="relative group">
+                                    <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
+                                    <input
+                                        id="confirmPassword"
+                                        type="password"
+                                        value={security.confirmPassword}
+                                        onChange={(e) => setSecurity({ ...security, confirmPassword: e.target.value })}
+                                        placeholder="Repeat new password"
+                                        className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {securityError && (
+                        <div className="flex items-center gap-2 text-red-500 bg-red-500/10 p-4 rounded-xl border border-red-500/20">
+                            <AlertCircle className="w-4 h-4" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">{securityError}</span>
+                        </div>
+                    )}
+
+                    <div className="pt-4 flex items-center gap-4">
+                        <button
+                            type="submit"
+                            disabled={securitySaving}
+                            className="flex items-center gap-2 px-8 py-4 bg-zinc-900 border border-white/5 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-lg active:scale-95 disabled:opacity-50"
+                        >
+                            {securitySaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                            {securitySaving ? "Updating..." : "Update Password"}
+                        </button>
+
+                        {securitySuccess && (
+                            <div className="flex items-center gap-2 text-green-500 animate-in fade-in slide-in-from-left-4">
+                                <CheckCircle2 className="w-4 h-4" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Password Updated</span>
                             </div>
                         )}
                     </div>

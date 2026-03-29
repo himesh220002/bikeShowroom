@@ -70,6 +70,33 @@ router.put('/:id/status', async (req, res) => {
     }
 });
 
+// Update full service details
+router.put('/:id', async (req, res) => {
+    try {
+        const { name, phone, ...updateData } = req.body;
+
+        // If name or phone is changed, we should ideally update the customer record too
+        // but for now we'll just update the service record which contains these as de-normalized fields.
+        const service = await Service.findByIdAndUpdate(
+            req.params.id,
+            { ...updateData, name, phone },
+            { new: true }
+        ).populate('customerId');
+
+        if (!service) return res.status(404).json({ success: false, message: 'Service not found' });
+
+        // Emit update to all connected admin dashboards
+        const io = (req as any).io;
+        if (io) {
+            io.emit('service_updated', service);
+        }
+
+        res.json({ success: true, data: service });
+    } catch (error: any) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+
 router.get('/', async (req, res) => {
     try {
         const services = await Service.find().populate('customerId').sort({ createdAt: -1 });

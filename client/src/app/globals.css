@@ -71,7 +71,7 @@
   }
 
   .glass {
-    @apply bg-zinc-800/60 backdrop-blur-xl border border-zinc-700/50 shadow-2xl;
+    @apply bg-card/60 backdrop-blur-xl border border-border/50 shadow-2xl;
   }
 
   .hover-lift {
@@ -99,12 +99,12 @@ h6 {
 /* Date and Time Picker Icon Fix for Dark Mode */
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-    cursor: pointer;
-    opacity: 0.8;
+  filter: invert(1);
+  cursor: pointer;
+  opacity: 0.8;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator:hover,
 input[type="time"]::-webkit-calendar-picker-indicator:hover {
-    opacity: 1;
+  opacity: 1;
 }
