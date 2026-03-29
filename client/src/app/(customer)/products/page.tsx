@@ -48,7 +48,7 @@ export default function ProductsPage() {
                         <Zap className="w-3 h-3" />
                         Yamaha Lineup
                     </div>
-                    <h1 className="text-4xl md:text-8xl font-display font-black text-white uppercase tracking-tighter">
+                    <h1 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter">
                         OUR <span className="text-racing-blue">MACHINES</span>
                     </h1>
                     <p className="text-gray-500 max-w-2xl font-medium leading-relaxed">

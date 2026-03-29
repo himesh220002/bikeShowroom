@@ -10,6 +10,7 @@ interface Color {
     image: string;
     colorOption: string;
     stock: number;
+    price?: string;
 }
 
 interface Bike {
@@ -45,7 +46,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
         threeSixtyUrl: "",
         threeSixtyImageCount: 40,
         brochureUrl: "",
-        colors: [{ name: "", hex: "", image: "", colorOption: "", stock: 0 }]
+        colors: [{ name: "", hex: "", image: "", colorOption: "", stock: 0, price: "" }]
     });
     const [saving, setSaving] = useState(false);
 
@@ -64,7 +65,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                 threeSixtyImageCount: 40,
                 colorBaseUrl: "",
                 brochureUrl: "",
-                colors: [{ name: "", hex: "", image: "", colorOption: "", stock: 0 }]
+                colors: [{ name: "", hex: "", image: "", colorOption: "", stock: 0, price: "" }]
             });
         }
     }, [bike, isOpen]);
@@ -85,7 +86,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
     const addColor = () => {
         setFormData({
             ...formData,
-            colors: [...formData.colors, { name: "", hex: "", image: "", colorOption: "", stock: 0 }]
+            colors: [...formData.colors, { name: "", hex: "", image: "", colorOption: "", stock: 0, price: "" }]
         });
     };
 
@@ -337,6 +338,16 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price (Optional)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={color.price || ""}
+                                                        onChange={(e) => updateColor(index, 'price', e.target.value)}
+                                                        className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                                        placeholder="Leave empty for base price"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
                                                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Initial Stock</label>
                                                     <input
                                                         required
@@ -378,7 +389,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                         </button>
                     </div>
                 </motion.div>
-            </div>
-        </AnimatePresence>
+            </div >
+        </AnimatePresence >
     );
 }

@@ -5,6 +5,7 @@ import { CheckCircle2, ChevronRight, Loader2, Send, Phone, User, MessageSquare, 
 import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 import { submitLead } from "@/lib/actions/leadActions";
+import { useAuth } from "@/context/AuthContext";
 
 const interests = [
     { id: "R15", label: "R15 Series", score: 0 },
@@ -15,7 +16,9 @@ const interests = [
     { id: "SCOOTER", label: "RayZR / Fascino", score: 0 },
     { id: "SERVICE", label: "Service Request", score: 0 },
     { id: "EMI", label: "EMI / Finance", bonus: "+50 Score" },
-    { id: "EXCHANGE", label: "Exchange / Value", bonus: "+45 Score" }
+    { id: "EXCHANGE", label: "Exchange / Value", bonus: "+45 Score" },
+    { id: "BOOKING", label: "Booking Request", score: 0 },
+    { id: "PRE-ORDER", label: "Pre-order", score: 0 }
 ];
 
 interface LeadFormProps {
@@ -24,8 +27,18 @@ interface LeadFormProps {
 }
 
 export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
+    const { user } = useAuth();
     const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
     const [response, setResponse] = useState<{ score?: number, message?: string }>({});
+
+    const getInitialNotes = () => {
+        if (defaultInterest === "BOOKING") return `I'm interested in booking the ${bikeModel || 'bike'}. Please contact me with details.`;
+        if (defaultInterest === "EMI") return `I'm interested in finance options for the ${bikeModel || 'bike'}.`;
+        if (defaultInterest === "PRE-ORDER") return `I want to pre-order the ${bikeModel || 'bike'} in the selected colour.`;
+        return "";
+    };
+
+    const [notes, setNotes] = useState(getInitialNotes());
 
     // Auto-selection logic
     const isItemSelected = (item: typeof interests[0]) => {
@@ -79,7 +92,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 </div>
                                 <h3 className="text-3xl md:text-4xl font-display font-black text-white mb-4 uppercase tracking-tighter">Inquiry Logged!</h3>
                                 <p className="text-gray-400 mb-8 md:mb-10 max-w-sm font-medium leading-relaxed font-sans text-sm">
-                                    Wait for the thrill. Our specialists at Choudhary Automobile will reach out shortly.
+                                    Wait for the thrill. Our specialists at Choudhary Yamaha will reach out shortly.
                                     {response.score && <span className="block mt-4 text-racing-blue font-black uppercase text-xs tracking-widest">Lead Priority Score: {response.score}</span>}
                                 </p>
                                 <button
@@ -106,6 +119,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                     required
                                                     name="name"
                                                     type="text"
+                                                    defaultValue={user?.displayName || ""}
                                                     placeholder="Who's riding?"
                                                     className="w-full bg-zinc-950 border border-zinc-800 focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-4 md:py-5 text-sm font-black text-white transition-all outline-none"
                                                 />
@@ -119,6 +133,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                     required
                                                     name="phone"
                                                     type="tel"
+                                                    defaultValue={user?.phone || ""}
                                                     pattern="[0-9]{10}"
                                                     maxLength={10}
                                                     onInput={(e) => {
@@ -128,6 +143,20 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                         target.value = val;
                                                     }}
                                                     placeholder="Mobile number"
+                                                    className="w-full bg-zinc-950 border border-zinc-800 focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-4 md:py-5 text-sm font-black text-white transition-all outline-none"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2 sm:col-span-2">
+                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 ml-2">Email Address</label>
+                                            <div className="relative">
+                                                <Send className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 shadow-xl" />
+                                                <input
+                                                    required
+                                                    name="email"
+                                                    type="email"
+                                                    defaultValue={user?.email || ""}
+                                                    placeholder="email@example.com"
                                                     className="w-full bg-zinc-950 border border-zinc-800 focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-4 md:py-5 text-sm font-black text-white transition-all outline-none"
                                                 />
                                             </div>
@@ -168,6 +197,8 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                         <textarea
                                             name="message"
                                             rows={2}
+                                            value={notes}
+                                            onChange={(e) => setNotes(e.target.value)}
                                             placeholder="EMI preferences, test ride schedule..."
                                             className="w-full bg-zinc-950 border border-zinc-800 focus:border-racing-blue/30 
                                                 rounded-2xl md:rounded-3xl px-6 md:px-8 py-4 md:py-5 text-sm font-black text-white transition-all outline-none
@@ -205,7 +236,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                     </button>
 
                                     <p className="text-[9px] text-gray-400 font-black text-center uppercase tracking-[0.2em] px-4 md:px-8 leading-relaxed">
-                                        Data secured with Choudhary Automobile Encryption Protocols.
+                                        Data secured with Choudhary Yamaha Encryption Protocols.
                                         By submitting, you agree to our digital terms.
                                     </p>
                                 </form>

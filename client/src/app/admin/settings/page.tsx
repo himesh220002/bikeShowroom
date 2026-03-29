@@ -155,7 +155,7 @@ export default function SettingsPage() {
                                     type="email"
                                     value={settings.showroomEmail}
                                     onChange={(e) => setSettings({ ...settings, showroomEmail: e.target.value })}
-                                    placeholder="contact@choudharyautomobile.com"
+                                    placeholder="contact@choudharyYamaha.com"
                                     className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
                                 />
                             </div>

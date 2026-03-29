@@ -9,6 +9,7 @@ interface User {
     displayName: string;
     email: string;
     avatar?: string;
+    phone?: string;
     role: 'user' | 'admin';
     authProvider: 'google' | 'local';
 }

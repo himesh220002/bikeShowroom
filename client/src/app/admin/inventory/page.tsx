@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Package, Plus, Loader2, Settings2, Trash2, Edit3 } from "lucide-react";
+import { Package, Plus, Loader2, Settings2, Trash2, Edit3, Search } from "lucide-react";
 import io from "socket.io-client";
 import { BikeEditModal } from "@/components/features/BikeEditModal";
 import { BikeImage } from "@/components/ui/BikeImage";
@@ -13,6 +13,7 @@ export default function InventoryPage() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedBike, setSelectedBike] = useState<any | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const fetchBikes = async () => {
         try {
@@ -80,8 +81,13 @@ export default function InventoryPage() {
         }
     };
 
-    const motorcycles = bikes.filter(b => b.category === "bike");
-    const scooters = bikes.filter(b => b.category === "scooty");
+    const filteredBikes = bikes.filter(b =>
+        b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        b.tag.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        b.category.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const motorcycles = filteredBikes.filter(b => b.category === "bike");
+    const scooters = filteredBikes.filter(b => b.category === "scooty");
 
     const renderGrid = (items: any[], title: string) => (
         <div className="space-y-8">
@@ -147,10 +153,10 @@ export default function InventoryPage() {
                                         title={`${color.name}: ${color.stock} in stock`}
                                     >
                                         <div
-                                            className="w-2.5 h-2.5 rounded-full border border-black/10"
+                                            className="w-2.5 h-2.5 rounded-full border border-white/20"
                                             style={{ backgroundColor: color.hex }}
                                         />
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-foreground/70">{color.stock}</span>
+                                        <span className="text-[12px] font-black uppercase tracking-widest text-foreground/70">{color.stock}</span>
                                     </div>
                                 ))}
                             </div>
@@ -158,8 +164,19 @@ export default function InventoryPage() {
 
                         <div className="mt-8 pt-6 border-t border-border/10 flex justify-between items-center">
                             <div className="flex flex-col">
-                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Base Price</span>
-                                <span className="text-lg font-display font-black text-foreground italic">₹ {bike.price}</span>
+                                {bike.colors.some((c: any) => c.price && c.price !== bike.price) ? (
+                                    <>
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-racing-blue blink flex items-center gap-1">
+                                            <div className="w-1 h-1 rounded-full bg-racing-blue" /> Varied Pricing
+                                        </span>
+                                        <span className="text-lg font-display font-black text-foreground italic">From ₹ {bike.price}</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Base Price</span>
+                                        <span className="text-lg font-display font-black text-foreground italic">₹ {bike.price}</span>
+                                    </>
+                                )}
                             </div>
                             <div className="text-right">
                                 <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Total Stock</span>
@@ -182,6 +199,18 @@ export default function InventoryPage() {
                         VEHICLE <span className="text-gradient">INVENTORY</span>
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Consolidated model-wise stock control</p>
+                </div>
+                <div className="flex items-center gap-4 flex-1 max-w-md">
+                    <div className="relative w-full">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <input
+                            type="text"
+                            placeholder="Search models, tags..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-background border border-border rounded-xl pl-12 pr-4 py-3 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all shadow-xl shadow-black/5"
+                        />
+                    </div>
                 </div>
                 <button
                     onClick={() => { setSelectedBike(null); setIsModalOpen(true); }}

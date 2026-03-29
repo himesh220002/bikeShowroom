@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
-import { Bike, Calendar, Clock, Plus, Trash2, Wrench, AlertCircle, ChevronRight, CheckCircle2, Edit3, Save, X } from "lucide-react";
+import { Bike, Calendar, Clock, Plus, Trash2, Wrench, AlertCircle, ChevronRight, CheckCircle2, Edit3, Save, X, User, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
@@ -42,6 +42,27 @@ export default function ProfilePage() {
     });
     const [bikeServices, setBikeServices] = useState<Record<string, any[]>>({});
     const [expandedHistory, setExpandedHistory] = useState<string | null>(null);
+
+    // Profile Editing State
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [profileFormData, setProfileFormData] = useState({
+        displayName: user?.displayName || "",
+        email: user?.email || "",
+        phone: user?.phone || ""
+    });
+    const [updatingProfile, setUpdatingProfile] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            setProfileFormData({
+                displayName: user.displayName,
+                email: user.email,
+                phone: user.phone || ""
+            });
+        }
+    }, [user]);
+
+    const { refreshUser } = useAuth();
 
     const fetchBikes = async () => {
         try {
@@ -133,6 +154,22 @@ export default function ProfilePage() {
         }
     };
 
+    const handleUpdateProfile = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setUpdatingProfile(true);
+        try {
+            const res = await axios.put("http://localhost:5000/api/auth/profile", profileFormData, { withCredentials: true });
+            if (res.data.success) {
+                await refreshUser();
+                setIsEditingProfile(false);
+            }
+        } catch (err: any) {
+            alert(err.response?.data?.message || "Failed to update profile");
+        } finally {
+            setUpdatingProfile(false);
+        }
+    };
+
     if (authLoading) return <div className="min-h-screen bg-background flex items-center justify-center"><div className="w-12 h-12 border-4 border-racing-blue border-t-transparent rounded-full animate-spin" /></div>;
 
     if (!user) {
@@ -148,32 +185,120 @@ export default function ProfilePage() {
                 <div className="glass p-6 sm:p-12 rounded-[2rem] sm:rounded-[3rem] border border-border/50 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-racing-blue/5 to-transparent pointer-events-none" />
 
-                    <header className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
-                        <div>
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="w-20 h-20 rounded-3xl overflow-hidden border-2 border-racing-blue shadow-2xl shadow-racing-blue/20">
-                                    {user.avatar ? (
-                                        <Image src={user.avatar} alt={user.displayName} width={80} height={80} className="object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full bg-muted flex items-center justify-center">
-                                            <Bike className="w-8 h-8 text-racing-blue" />
-                                        </div>
+                    <header className="mb-12 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 relative z-10 p-2">
+                        <div className="flex items-center gap-6">
+                            <div className="w-24 h-24 rounded-3xl overflow-hidden border-2 border-racing-blue shadow-2xl shadow-racing-blue/20 shrink-0">
+                                {user.avatar ? (
+                                    <Image src={user.avatar} alt={user.displayName} width={96} height={96} className="object-cover w-full h-full" />
+                                ) : (
+                                    <div className="w-full h-full bg-muted flex items-center justify-center">
+                                        <Bike className="w-10 h-10 text-racing-blue" />
+                                    </div>
+                                )}
+                            </div>
+                            <div>
+                                <h1 className="text-4xl md:text-5xl font-display font-black text-white uppercase tracking-tighter leading-tight">
+                                    My <span className="text-racing-blue">Garage</span>
+                                </h1>
+                                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">{user.displayName}</p>
+                                    <div className="w-1 h-1 bg-white/20 rounded-full hidden sm:block" />
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">{user.email}</p>
+                                    {user.phone && (
+                                        <>
+                                            <div className="w-1 h-1 bg-white/20 rounded-full hidden sm:block" />
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-racing-blue/80">{user.phone}</p>
+                                        </>
                                     )}
-                                </div>
-                                <div>
-                                    <h1 className="text-4xl font-display font-black text-foreground uppercase tracking-tighter">My <span className="text-racing-blue">Garage</span></h1>
-                                    <p className="text-xs text-muted-foreground font-black uppercase tracking-[0.2em] mt-1">{user.displayName} &bull; {user.email}</p>
                                 </div>
                             </div>
                         </div>
-                        <button
-                            onClick={() => setIsAdding(!isAdding)}
-                            className="bg-racing-blue hover:bg-racing-blue/90 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 flex items-center gap-2 shadow-xl shadow-racing-blue/30"
-                        >
-                            {isAdding ? <Clock className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                            {isAdding ? "Cancel" : "Register New Bike"}
-                        </button>
+
+                        <div className="flex flex-wrap gap-4 w-full lg:w-auto">
+                            <button
+                                onClick={() => setIsEditingProfile(!isEditingProfile)}
+                                className={cn(
+                                    "flex-1 lg:flex-none px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                                    isEditingProfile ? "bg-zinc-800 text-white border border-white/10" : "bg-white/5 text-white border border-white/10 hover:bg-white/10"
+                                )}
+                            >
+                                {isEditingProfile ? <X className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
+                                {isEditingProfile ? "Cancel Edit" : "Edit Profile"}
+                            </button>
+                            <button
+                                onClick={() => setIsAdding(!isAdding)}
+                                className="flex-1 lg:flex-none bg-racing-blue hover:bg-racing-blue/90 text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 flex items-center justify-center gap-2 shadow-xl shadow-racing-blue/30"
+                            >
+                                {isAdding ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                                {isAdding ? "Cancel" : "Add Bike"}
+                            </button>
+                        </div>
                     </header>
+
+                    <AnimatePresence>
+                        {isEditingProfile && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="overflow-hidden mb-12"
+                            >
+                                <form onSubmit={handleUpdateProfile} className="glass p-8 rounded-[2.5rem] border border-racing-blue/30 shadow-2xl space-y-8 max-w-4xl mx-auto">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-xl font-display font-black text-white uppercase tracking-tighter flex items-center gap-3">
+                                            <User className="w-6 h-6 text-racing-blue" />
+                                            Personal Information
+                                        </h3>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Full Name</label>
+                                            <input
+                                                required
+                                                type="text"
+                                                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:border-racing-blue transition-all"
+                                                value={profileFormData.displayName}
+                                                onChange={(e) => setProfileFormData({ ...profileFormData, displayName: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Email Address</label>
+                                            <input
+                                                required
+                                                type="email"
+                                                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:border-racing-blue transition-all"
+                                                value={profileFormData.email}
+                                                onChange={(e) => setProfileFormData({ ...profileFormData, email: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Phone Number</label>
+                                            <input
+                                                required
+                                                type="tel"
+                                                pattern="[0-9]{10}"
+                                                maxLength={10}
+                                                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:border-racing-blue transition-all"
+                                                value={profileFormData.phone}
+                                                onChange={(e) => {
+                                                    const val = e.target.value.replace(/[^0-9]/g, '');
+                                                    setProfileFormData({ ...profileFormData, phone: val });
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                    <button
+                                        disabled={updatingProfile}
+                                        type="submit"
+                                        className="w-full bg-racing-blue text-white py-5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-racing-blue/30 disabled:opacity-50 flex items-center justify-center gap-3"
+                                    >
+                                        {updatingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                        {updatingProfile ? "Updating Profile..." : "Save Changes"}
+                                    </button>
+                                </form>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Bike List */}
@@ -360,22 +485,22 @@ export default function ProfilePage() {
                                                                                 </>
                                                                             )}
                                                                         </p>
-                                                                        <div className="flex gap-6 mt-4">
+                                                                        <div className="flex items-center gap-6 mt-4">
                                                                             <div className="flex flex-col">
                                                                                 <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Purchased</span>
                                                                                 <span className="text-xs font-bold text-foreground/80">{new Date(bike.purchaseDate).toLocaleDateString()}</span>
                                                                             </div>
                                                                             <div className="flex flex-col relative group/odo">
-                                                                                <div className="flex items-center gap-2 mb-1">
+                                                                                <div className="flex items-center gap-2">
                                                                                     <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Odometer</span>
                                                                                     <button
                                                                                         onClick={() => {
                                                                                             setIsUpdatingOdometer(bike._id);
                                                                                             setNewOdometer(bike.mileage.toString());
                                                                                         }}
-                                                                                        className="p-1 hover:bg-muted rounded-md text-racing-blue opacity-0 group-hover/odo:opacity-100 transition-opacity"
+                                                                                        className="p-1 hover:bg-muted rounded-md text-racing-blue opacity-60 group-hover/odo:opacity-100 transition-opacity"
                                                                                     >
-                                                                                        <Edit3 className="w-2.5 h-2.5" />
+                                                                                        <Edit3 className="w-4 h-4" />
                                                                                     </button>
                                                                                 </div>
                                                                                 <div className="flex items-center gap-2">

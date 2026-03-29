@@ -21,7 +21,7 @@ export async function submitLead(formData: FormData) {
 
         return {
             success: true,
-            message: "Lead processed successfully by the Choudhary Automobile Service Engine.",
+            message: "Lead processed successfully by the Choudhary Yamaha Service Engine.",
             data: result
         };
 

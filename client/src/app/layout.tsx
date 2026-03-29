@@ -7,9 +7,9 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "Choudhary Automobile | Authorized Yamaha Dealer",
-  description: "Experience the best of Yamaha at Choudhary Automobile in Katihar. Book test rides, services, and explore the latest Yamaha motorcycles including R15, MT-15, and FZ series.",
-  keywords: ["Choudhary Automobile", "Yamaha bikes Katihar", "Yamaha service Katihar", "R15 Katihar", "MT-15 Katihar"],
+  title: "Choudhary Yamaha | Authorized Yamaha Dealer",
+  description: "Experience the best of Yamaha at Choudhary Yamaha in Katihar. Book test rides, services, and explore the latest Yamaha motorcycles including R15, MT-15, and FZ series.",
+  keywords: ["Choudhary Yamaha", "Yamaha bikes Katihar", "Yamaha service Katihar", "R15 Katihar", "MT-15 Katihar"],
 };
 
 import { AuthProvider } from "@/context/AuthContext";

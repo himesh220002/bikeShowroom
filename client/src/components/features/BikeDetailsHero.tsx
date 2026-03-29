@@ -14,7 +14,8 @@ import {
     Maximize2,
     RotateCcw,
     CheckCircle2,
-    Wallet
+    Wallet,
+    AlertTriangle
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { BikeImage } from "@/components/ui/BikeImage";
@@ -69,11 +70,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                 <div className="absolute inset-0 bg-racing-blue/20 blur-[100px] opacity-20 -z-10" />
                                 <BikeImage
                                     src={color.image}
-                                    fallbackSrc={
-                                        bike.colorBaseUrl
-                                            ? `${bike.colorBaseUrl}${color.colorOption}.webp`
-                                            : (bike.threeSixtyUrl ? `${bike.threeSixtyUrl.replace('360/', 'color/')}${color.colorOption}.webp` : undefined)
-                                    }
+                                    fallbackSrc={bike.threeSixtyUrl ? `${bike.threeSixtyUrl.replace('360/', 'color/')}${color.colorOption}.webp` : undefined}
                                     alt={bike.name}
                                     width={600}
                                     height={400}
@@ -93,7 +90,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                                 onClick={() => setSelectedColorIndex(index)}
                                                 className={cn(
                                                     "w-8 h-8 rounded-full border-2 transition-all p-1",
-                                                    index === selectedColorIndex ? "border-racing-blue scale-110" : "border-transparent hover:border-white/20"
+                                                    index === selectedColorIndex ? "border-racing-blue scale-110" : "border-transparent border-white/20 hover:border-white/40"
                                                 )}
                                                 title={c.name}
                                             >
@@ -128,10 +125,12 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                             ))}
                         </div>
 
-                        <div className="flex flex-wrap gap-6 mb-12 items-center">
+                        <div className="flex flex-wrap gap-6 mb-8 items-center">
                             <div className="flex flex-col">
-                                <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Starting From</span>
-                                <span className="text-2xl lg:text-4xl font-display font-black text-white tracking-tighter">₹ {bike.price}*</span>
+                                <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">
+                                    {color.price ? "Price" : "Starting From"}
+                                </span>
+                                <span className="text-2xl lg:text-4xl font-display font-black text-white tracking-tighter italic">₹ {color.price || bike.price}*</span>
                                 <span className="text-[8px] text-gray-600 font-bold uppercase mt-1">*Ex-Showroom Price</span>
                             </div>
 
@@ -156,15 +155,38 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                             </div>
                         </div>
 
+                        {color.stock === 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mb-10 p-5 rounded-3xl bg-racing-blue/5 border border-racing-blue/20 flex items-start gap-4 max-w-md backdrop-blur-sm shadow-2xl shadow-black/20"
+                            >
+                                <div className="w-10 h-10 rounded-2xl bg-racing-blue/10 flex items-center justify-center shrink-0">
+                                    <AlertTriangle className="w-5 h-5 text-racing-blue" />
+                                </div>
+                                <div>
+                                    <h4 className="text-[10px] font-black text-racing-blue uppercase tracking-widest mb-1">Color Out of Stock</h4>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-loose">
+                                        This colour is not available at the moment. Please contact the dealer to <span className="text-white">pre-order</span> this bike colour for you.
+                                    </p>
+                                </div>
+                            </motion.div>
+                        )}
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex gap-4">
                             <button
                                 onClick={() => {
-                                    if (onAction) onAction("BOOKING");
+                                    if (onAction) onAction(color.stock === 0 ? "PRE-ORDER" : "BOOKING");
                                     else document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
                                 }}
-                                className="group bg-racing-blue text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:bg-dark-racing transition-all transform active:scale-95 shadow-2xl shadow-racing-blue/20"
+                                className={cn(
+                                    "group px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 transition-all transform active:scale-95 shadow-2xl",
+                                    color.stock === 0
+                                        ? "bg-zinc-900 border border-racing-blue/50 text-racing-blue hover:bg-zinc-800 shadow-racing-blue/5"
+                                        : "bg-racing-blue text-white hover:bg-dark-racing shadow-racing-blue/20"
+                                )}
                             >
-                                Book Machine
+                                {color.stock === 0 ? "Pre-order Now" : "Book Machine"}
                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>
                             <button
@@ -202,11 +224,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                         <div className="absolute inset-0 bg-racing-blue/20 blur-[150px] opacity-20 -z-10" />
                         <BikeImage
                             src={color.image}
-                            fallbackSrc={
-                                bike.colorBaseUrl
-                                    ? `${bike.colorBaseUrl}${color.colorOption}.webp`
-                                    : (bike.threeSixtyUrl ? `${bike.threeSixtyUrl.replace('360/', 'color/')}${color.colorOption}.webp` : undefined)
-                            }
+                            fallbackSrc={bike.threeSixtyUrl ? `${bike.threeSixtyUrl.replace('360/', 'color/')}${color.colorOption}.webp` : undefined}
                             alt={bike.name}
                             width={800}
                             height={600}

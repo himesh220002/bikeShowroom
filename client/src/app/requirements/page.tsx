@@ -113,7 +113,7 @@ export default function RequirementsPage() {
                             BRANCH <span className="text-racing-blue">LEVEL</span><br />OPERATIONS
                         </h1>
                         <p className="text-gray-500 dark:text-gray-400 font-medium max-w-xl">
-                            A high-precision look at our Digital Showroom situation. Every branch represents a core business functional unit designed for Choudhary Automobile's success.
+                            A high-precision look at our Digital Showroom situation. Every branch represents a core business functional unit designed for Choudhary Yamaha's success.
                         </p>
                     </div>
                     <div className="bg-white dark:bg-zinc-900 p-8 rounded-[3rem] border border-gray-100 dark:border-zinc-800 flex items-center gap-6 shadow-2xl shadow-black/5">
@@ -242,7 +242,7 @@ export default function RequirementsPage() {
                         <div className="p-10 text-center bg-gray-50 dark:bg-zinc-900/50 rounded-[3.5rem] border border-dashed border-gray-200 dark:border-zinc-800">
                             <Bike className="w-8 h-8 mx-auto mb-4 text-gray-300 dark:text-zinc-700" />
                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em]">
-                                Choudhary Automobile <br />Digital Intelligence v1.0.8
+                                Choudhary Yamaha <br />Digital Intelligence v1.0.8
                             </p>
                         </div>
                     </div>

@@ -74,11 +74,11 @@ export function AdminSidebar() {
             )}
 
             <aside className={cn(
-                "w-64 bg-card border-r border-border flex flex-col fixed left-0 top-0 py-8 h-screen z-[75] transition-transform duration-500 ease-in-out lg:translate-x-0",
+                "w-64 bg-card border-r border-border flex flex-col fixed left-0 top-0 py-20 h-screen z-[75] transition-transform duration-500 ease-in-out lg:translate-x-0",
                 isOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 <div className="px-8 mb-12">
-                    <div className="flex items-center gap-3">
+                    <Link href="/" className="flex items-center gap-3">
                         <div className="relative w-10 h-10 transition-transform duration-500 group-hover:scale-110">
                             <Image
                                 src="/images/YamahaLogo.png"
@@ -97,7 +97,7 @@ export function AdminSidebar() {
                                 Admin Portal
                             </span>
                         </div>
-                    </div>
+                    </Link>
                 </div>
 
                 <nav className="flex-1 p-4 space-y-1">

@@ -1,4 +1,4 @@
-// Choudhary Automobile - MongoDB Schema Initialization Script
+// Choudhary Yamaha - MongoDB Schema Initialization Script
 // Run this in mongosh or your MongoDB Compass console
 
 use bikeYamahaDB
@@ -35,6 +35,6 @@ db.createCollection("workshop_slots")
 db.workshop_slots.createIndex({ "date": 1, "slotTime": 1 }, { unique: true })
 
 print("--------------------------------------------------")
-print("Choudhary Automobile Database Schema Expanded.")
+print("Choudhary Yamaha Database Schema Expanded.")
 print("Collections: Customers, Inquiries, Leads, Services, Bikes, Ads, Slots")
 print("--------------------------------------------------")

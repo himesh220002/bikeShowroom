@@ -7,6 +7,7 @@ export interface IUser extends Document {
     email: string;
     password?: string;
     avatar?: string;
+    phone?: string;
     role: 'user' | 'admin';
     authProvider: 'google' | 'local';
     createdAt: Date;
@@ -19,6 +20,7 @@ const UserSchema: Schema = new Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String },
     avatar: { type: String },
+    phone: { type: String, default: '' },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     authProvider: { type: String, enum: ['google', 'local'], default: 'google' },
     createdAt: { type: Date, default: Date.now },

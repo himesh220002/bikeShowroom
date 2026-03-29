@@ -29,7 +29,7 @@ export function Navbar() {
         { name: "Explore", href: "/#explore" },
         { name: "Special Offers", href: "/#promotions" },
         { name: "Products", href: "/products" },
-        { name: "Service & Repairs", href: "/service" },
+        { name: "Service & Spares", href: "/service" },
         { name: "Inquiry", href: "/#inquiry" },
     ];
 
@@ -63,7 +63,7 @@ export function Navbar() {
                     </Link>
 
                     {/* Desktop Nav */}
-                    <div className="hidden lg:flex items-center gap-10">
+                    <div className="hidden xl:flex items-center gap-10">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
@@ -80,7 +80,7 @@ export function Navbar() {
                     </div>
 
                     {/* Desktop Actions */}
-                    <div className="hidden lg:flex items-center gap-4">
+                    <div className="hidden xl:flex items-center gap-4">
                         <Link
                             href="tel:+917004100062"
                             className="p-3 rounded-full hover:bg-zinc-800 transition-colors group border border-transparent hover:border-zinc-700"
@@ -152,7 +152,7 @@ export function Navbar() {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="lg:hidden p-2 text-gray-300 bg-zinc-800/50 rounded-xl backdrop-blur-md border border-zinc-700/50"
+                        className="xl:hidden p-2 text-gray-300 bg-zinc-800/50 rounded-xl backdrop-blur-md border border-zinc-700/50"
                     >
                         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
@@ -166,7 +166,7 @@ export function Navbar() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="lg:hidden absolute top-full left-0 w-full bg-zinc-900/95 backdrop-blur-xl border-t border-zinc-800 shadow-2xl"
+                        className="xl:hidden absolute top-full left-0 w-full bg-zinc-900/95 backdrop-blur-xl border-t border-zinc-800 shadow-2xl"
                     >
                         <div className="p-8 space-y-6">
                             {navLinks.map((link, idx) => (

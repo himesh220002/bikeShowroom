@@ -7,16 +7,22 @@ import { useRef } from "react";
 
 export function Hero() {
     const ref = useRef(null);
-    const { scrollY } = useScroll();
-    const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+    const { scrollYProgress } = useScroll({
+        target: ref,
+        offset: ["start start", "end start"]
+    });
+    const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
 
     return (
-        <section ref={ref} className="relative min-h-[90vh] flex items-center overflow-hidden bg-zinc-900 pt-20 md:pt-28">
-            {/* Immersive Background */}
-            <motion.div style={{ y: y1 }} className="absolute inset-0 z-0">
+        <section ref={ref} className="relative min-h-[90vh] flex items-center overflow-hidden bg-zinc-900/40 pt-20 md:pt-28">
+            {/* Immersive Background - Optimized for Scroll Performance */}
+            <motion.div
+                style={{ y }}
+                className="absolute inset-0 z-0 will-change-transform translate-z-0"
+            >
                 <Image
                     src="/images/hero_showroom.png"
-                    alt="Choudhary Automobile Showroom"
+                    alt="Choudhary Yamaha Showroom"
                     fill
                     sizes="100vw"
                     className="object-cover object-center scale-110 opacity-60"
@@ -60,7 +66,7 @@ export function Hero() {
                         transition={{ duration: 0.8, delay: 0.4 }}
                         className="text-lg md:text-xl text-gray-300 mb-12 max-w-xl leading-relaxed font-medium"
                     >
-                        Experience the absolute pinnacle of Yamaha performance at Choudhary Automobile.
+                        Experience the absolute pinnacle of Yamaha performance at Choudhary Yamaha.
                         Engineered for thrill, built for excellence.
                     </motion.p>
 
@@ -118,8 +124,8 @@ export function Hero() {
                             className="object-contain opacity-20 brightness-200 invert"
                         />
                     </div>
-                    {/* Glowing highlight */}
-                    <div className="absolute inset-0 bg-racing-blue/30 blur-[100px] rounded-full opacity-40 animate-pulse" />
+                    {/* Optimized Glow - Removed animate-pulse to prevent compositor thrashing during scroll */}
+                    <div className="absolute inset-0 bg-racing-blue/20 blur-[100px] rounded-full opacity-40" />
                 </motion.div>
             </div>
 

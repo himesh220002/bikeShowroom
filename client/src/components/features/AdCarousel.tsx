@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { ChevronLeft, ChevronRight, Play, ExternalLink, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Play, ExternalLink, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import { motion, AnimatePresence } from "framer-motion";
 
 type Ad = {
     _id: string;
@@ -17,8 +16,6 @@ type Ad = {
 export function AdCarousel() {
     const [ads, setAds] = useState<Ad[]>([]);
     const [loading, setLoading] = useState(true);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [direction, setDirection] = useState(0); // -1 for prev, 1 for next
 
     useEffect(() => {
         const fetchAds = async () => {
@@ -26,7 +23,10 @@ export function AdCarousel() {
                 const res = await fetch("http://localhost:5000/api/ads");
                 const data = await res.json();
                 if (data.success) {
-                    setAds(data.data.filter((ad: any) => ad.status === 'Active' || ad.status === 'Scheduled'));
+                    setAds(data.data
+                        .filter((ad: any) => ad.status === 'Active' || ad.status === 'Scheduled')
+                        .slice(0, 3)
+                    );
                 }
             } catch (err) {
                 console.error("Failed to fetch ads:", err);
@@ -37,98 +37,25 @@ export function AdCarousel() {
         fetchAds();
     }, []);
 
-    // Auto-scroll
-    useEffect(() => {
-        if (ads.length <= 2) return;
-        const timer = setInterval(() => {
-            next();
-        }, 6000);
-        return () => clearInterval(timer);
-    }, [ads.length, currentIndex]);
-
-    const next = () => {
-        setDirection(1);
-        setCurrentIndex((prev) => (prev + 1) % ads.length);
-    };
-
-    const prev = () => {
-        setDirection(-1);
-        setCurrentIndex((prev) => (prev - 1 + ads.length) % ads.length);
-    };
-
-    if (loading || !ads || ads.length === 0) return null;
-
-    // Determine visible ads based on currentIndex
-    // For a smoother "infinite" feel, we'll slice the array
-    const getVisibleAds = () => {
-        if (ads.length === 1) return [ads[0]];
-        const first = ads[currentIndex];
-        const nextIdx = (currentIndex + 1) % ads.length;
-        return [first, ads[nextIdx]];
-    };
-
-    const visibleAds = getVisibleAds();
 
     return (
-        <section id="promotions" className="relative py-16 bg-background overflow-hidden">
+        <section id="promotions" className="relative py-16 bg-transparent overflow-hidden">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between mb-10">
                     <div>
                         <h2 className="text-2xl md:text-5xl font-display font-black text-white uppercase tracking-tighter italic">
-                            TRENDING <span className="text-racing-blue">OFFERS</span>
+                            Yamaha Highlights <span className="text-racing-blue">& Events</span>
                         </h2>
                         <div className="h-1 w-16 md:w-24 bg-racing-blue mt-2 rounded-full" />
                     </div>
+                </div>
 
-                    <div className="flex gap-2 md:gap-4">
-                        <button
-                            onClick={prev}
-                            className="p-3 md:p-4 bg-muted border border-border text-white rounded-full hover:bg-racing-blue transition-all group"
-                        >
-                            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-1 transition-transform" />
-                        </button>
-                        <button
-                            onClick={next}
-                            className="p-3 md:p-4 bg-muted border border-border text-white rounded-full hover:bg-racing-blue transition-all group"
-                        >
-                            <ChevronRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />
-                        </button>
+                <div className="relative">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {ads.map((ad) => (
+                            <AdCard key={ad._id} ad={ad} />
+                        ))}
                     </div>
-                </div>
-
-                <div className="relative min-h-[500px]">
-                    <AnimatePresence mode="wait" custom={direction}>
-                        <motion.div
-                            key={currentIndex}
-                            custom={direction}
-                            initial={{ x: direction > 0 ? 100 : -100, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            exit={{ x: direction > 0 ? -100 : 100, opacity: 0 }}
-                            transition={{ duration: 0.5, ease: "circOut" }}
-                            className="grid grid-cols-1 md:grid-cols-2 gap-8"
-                        >
-                            {visibleAds.map((ad) => (
-                                <AdCard key={ad._id} ad={ad} />
-                            ))}
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
-
-                {/* Indicators */}
-                <div className="flex justify-center gap-2 mt-12">
-                    {ads.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => {
-                                setDirection(index > currentIndex ? 1 : -1);
-                                setCurrentIndex(index);
-                            }}
-                            className={cn(
-                                "h-1.5 transition-all duration-500 rounded-full",
-                                index === currentIndex ? "w-12 bg-racing-blue" : "w-4 bg-muted hover:bg-muted-foreground"
-                            )}
-                        />
-                    ))}
                 </div>
             </div>
 
@@ -140,8 +67,8 @@ export function AdCarousel() {
 
 function AdCard({ ad }: { ad: Ad }) {
     return (
-        <div className="group flex flex-col space-y-6">
-            <div className="relative aspect-video w-full rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden bg-muted border border-border shadow-2xl">
+        <div className="group flex flex-col space-y-4">
+            <div className="relative aspect-square w-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden bg-muted border border-border shadow-2xl">
                 {/* Visual content part */}
                 <div className="absolute inset-0 w-full h-full">
                     {/* Blurred background for non-banner types */}
@@ -158,8 +85,7 @@ function AdCard({ ad }: { ad: Ad }) {
                         src={ad.image}
                         alt={ad.name}
                         className={cn(
-                            "relative z-10 w-full h-full transition-transform duration-700 group-hover:scale-105",
-                            ad.type === "Banner" ? "object-cover" : "object-contain"
+                            "relative z-10 w-full h-full transition-transform duration-700 group-hover:scale-105 object-cover"
                         )}
                     />
                     <div className="absolute top-6 left-6 z-20">
@@ -176,7 +102,7 @@ function AdCard({ ad }: { ad: Ad }) {
                         Choudhary Yamaha Exclusive
                     </span>
                 </div>
-                <h3 className="text-2xl md:text-3xl font-display font-black text-white uppercase tracking-tight leading-none">
+                <h3 className="text-xl md:text-2xl font-display font-black text-white uppercase tracking-tight leading-none line-clamp-1">
                     {ad.name}
                 </h3>
                 {ad.description && (

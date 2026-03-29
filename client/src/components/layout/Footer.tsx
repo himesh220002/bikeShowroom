@@ -31,13 +31,23 @@ export function Footer() {
                             </div>
                         </Link>
                         <p className="text-sm text-gray-400 leading-relaxed font-medium">
-                            Choudhary Automobile - Your definitive Yamaha destination in Katihar. Engineering thrill,
+                            Choudhary Yamaha - Your definitive Yamaha destination in Katihar. Engineering thrill,
                             delivering excellence, and building a community of riders
                             since 2012.
                         </p>
                         <div className="flex gap-4">
-                            {[Facebook, Instagram, Youtube].map((Icon, i) => (
-                                <a key={i} href="#" className="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center text-gray-500 hover:text-racing-blue hover:scale-110 transition-all border border-transparent hover:border-racing-blue/20">
+                            {[
+                                { Icon: Facebook, url: "https://www.facebook.com/ChoudharyYamaha/" },
+                                { Icon: Instagram, url: "https://www.instagram.com/choudharyyamaha/" },
+                                { Icon: Youtube, url: "#" }
+                            ].map(({ Icon, url }, i) => (
+                                <a
+                                    key={i}
+                                    href={url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center text-gray-500 hover:text-racing-blue hover:scale-110 transition-all border border-transparent hover:border-racing-blue/20"
+                                >
                                     <Icon className="w-5 h-5" />
                                 </a>
                             ))}
@@ -115,7 +125,7 @@ export function Footer() {
 
                 <div className="mt-24 pt-12 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-6">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
-                        © {new Date().getFullYear()} Choudhary Automobile. Excellence Synchronized.
+                        © {new Date().getFullYear()} Choudhary Yamaha. Excellence Synchronized.
                     </p>
                     <div className="flex items-center gap-8">
                         <Link href="/requirements" className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-racing-blue transition-colors">Digital Roadmap</Link>

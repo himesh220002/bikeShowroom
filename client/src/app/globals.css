@@ -79,11 +79,20 @@
   }
 }
 
+.dark .fixed-bg {
+  background-image: linear-gradient(rgba(9, 9, 11, 0.7), rgba(9, 9, 11, 0.7)), url('/images/xsr_green-pc.webp');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
 }
 
 h1,

@@ -33,7 +33,7 @@ export function FeaturedBikes() {
 
     if (loading) {
         return (
-            <section id="machines" className="py-24 relative overflow-hidden bg-background">
+            <section id="machines" className="py-24 relative overflow-hidden bg-transparent">
                 <div className="max-w-7xl mx-auto px-4 md:px-8">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                         <div className="space-y-4">
@@ -63,7 +63,7 @@ export function FeaturedBikes() {
     };
 
     return (
-        <section id="machines" className="py-32 bg-zinc-950 overflow-hidden">
+        <section id="machines" className="py-32 bg-transparent overflow-hidden border-y border-white/5">
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
                     <div className="space-y-4">

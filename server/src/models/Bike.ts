@@ -6,6 +6,7 @@ export interface IColor {
     image: string;
     colorOption: string;
     stock: number;
+    price?: string; // Color-specific price
 }
 
 export interface ISpec {
@@ -40,7 +41,8 @@ const ColorSchema = new Schema({
     hex: { type: String, required: true },
     image: { type: String, required: true },
     colorOption: { type: String, required: true },
-    stock: { type: Number, default: 0 }
+    stock: { type: Number, default: 0 },
+    price: { type: String } // Optional: Defaults to base price if not set
 });
 
 const BikeSchema: Schema = new Schema({

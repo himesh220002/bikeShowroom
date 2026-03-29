@@ -115,7 +115,7 @@ export default function BikePage() {
                                     <span className="text-racing-blue">{bike.name}?</span>
                                 </h3>
                                 <p className="text-lg text-gray-400 mb-12 max-w-xl font-medium leading-relaxed">
-                                    Experience the thrill of Yamaha's engineering. Book a test ride at Choudhary Automobile and feel the difference for yourself.
+                                    Experience the thrill of Yamaha's engineering. Book a test ride at Choudhary Yamaha and feel the difference for yourself.
                                 </p>
                             </div>
 

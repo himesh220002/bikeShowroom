@@ -83,6 +83,35 @@ router.get('/me', protect, (req: any, res) => {
     res.json({ success: true, data: req.user });
 });
 
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+router.put('/profile', protect, async (req: any, res) => {
+    try {
+        const { displayName, email, phone } = req.body;
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        if (email && email !== user.email) {
+            const emailExists = await User.findOne({ email });
+            if (emailExists) {
+                return res.status(400).json({ success: false, message: 'Email already in use' });
+            }
+            user.email = email;
+        }
+
+        if (displayName) user.displayName = displayName;
+        if (phone !== undefined) user.phone = phone;
+
+        await user.save();
+        res.json({ success: true, data: user });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 // @desc    Logout user
 // @route   GET /api/auth/logout
 router.get('/logout', (req: any, res) => {

@@ -9,7 +9,7 @@ const promotions = [
         id: 1,
         title: "Katihar Exchange Fest",
         subtitle: "Upgrade to R15M",
-        description: "Get up to ₹15,000 additional exchange bonus on your old bike. Exclusive at Choudhary Automobile.",
+        description: "Get up to ₹15,000 additional exchange bonus on your old bike. Exclusive at Choudhary Yamaha.",
         tag: "EXCHANGE BONUS",
         date: "Ends 31st March",
         color: "bg-blue-600",
@@ -42,7 +42,7 @@ export function LocalPromotions() {
                         </h2>
                     </div>
                     <p className="max-w-md text-gray-400 font-medium text-sm leading-relaxed">
-                        Choudhary Automobile brings you the best Yamaha deals in Bihar. From exchange bonuses to easy finance, we make your dream ride accessible.
+                        Choudhary Yamaha brings you the best Yamaha deals in Bihar. From exchange bonuses to easy finance, we make your dream ride accessible.
                     </p>
                 </div>
 

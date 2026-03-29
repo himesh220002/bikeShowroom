@@ -3,12 +3,13 @@ import { FeaturedBikes } from "@/components/features/FeaturedBikes";
 import { LeadForm } from "@/components/features/LeadForm";
 import { Viewer360Carousel } from "@/components/features/Viewer360Carousel";
 import { AdCarousel } from "@/components/features/AdCarousel";
+import { RideVideo } from "@/components/features/RideVideo";
 import { BIKES } from "@/lib/constants/bikes";
 import { MapPin, Clock, Phone, Info, User } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col bg-zinc-950 overflow-x-hidden">
+    <div className="flex flex-col bg-zinc-950/40 overflow-x-hidden fixed-bg">
       <Hero />
 
       {/* <AdCarousel /> */}
@@ -16,9 +17,10 @@ export default function Home() {
       <FeaturedBikes />
 
       <AdCarousel />
+      <RideVideo />
 
       {/* 360 Experience Section */}
-      <section id="explore" className="py-24 bg-zinc-900 overflow-hidden">
+      <section id="explore" className="py-24 bg-zinc-900/60 backdrop-blur-sm overflow-hidden border-y border-white/5">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
@@ -33,7 +35,7 @@ export default function Home() {
       </section>
 
       {/* Lead Capture Section */}
-      <section id="inquiry" className="py-32 bg-zinc-950">
+      <section id="inquiry" className="py-32 bg-zinc-950/40 backdrop-blur-sm">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
             <div>
@@ -43,10 +45,10 @@ export default function Home() {
                 </h2>
                 <h3 className="text-3xl md:text-6xl font-display font-black text-white mb-8 uppercase tracking-tighter">
                   BOOK A TEST RIDE <br />
-                  <span className="text-racing-blue">AT CHOUDHARY AUTOMOBILE</span>
+                  <span className="text-racing-blue">AT CHOUDHARY Yamaha</span>
                 </h3>
                 <p className="text-lg text-gray-400 mb-12 max-w-lg font-medium leading-relaxed">
-                  Don't just take our word for it—feel the power of Yamaha engineering for yourself. Fill out the form, and our team at Choudhary Automobile will arrange everything for you.
+                  Don't just take our word for it—feel the power of Yamaha engineering for yourself. Fill out the form, and our team at Choudhary Yamaha will arrange everything for you.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 gap-y-8 mt-12">
@@ -81,7 +83,7 @@ export default function Home() {
                     <span className="text-gradient">DREAM RIDE.</span>
                   </h2>
                   <p className="text-lg text-gray-400 font-medium max-w-md leading-relaxed">
-                    Join the elite community of Yamaha riders at Choudhary Automobile.
+                    Join the elite community of Yamaha riders at Choudhary Yamaha.
                     Our experts are standing by to process your inquiry with priority.
                   </p>
                 </div>
@@ -114,10 +116,10 @@ export default function Home() {
       </section>
 
       {/* SEO/Local Keywords Footer */}
-      <section className="py-12 bg-zinc-950 border-t border-zinc-900">
+      <section className="py-12 bg-zinc-950/80 border-t border-zinc-900">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] text-center leading-relaxed max-w-4xl mx-auto">
-            Leading Yamaha Dealer - Choudhary Automobile • Best Price for R15M • Yamaha MT-15 V2 Katihar Showroom • Authorized Yamaha Service Center • Yamaha Genuine Spares • Purnea • Kishanganj • Araria • Seemanchal Region
+            Leading Yamaha Dealer - Choudhary Yamaha • Best Price for R15M • Yamaha MT-15 V2 Katihar Showroom • Authorized Yamaha Service Center • Yamaha Genuine Spares • Purnea • Kishanganj • Araria • Seemanchal Region
           </p>
         </div>
       </section>
