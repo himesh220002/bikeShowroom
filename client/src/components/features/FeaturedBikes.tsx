@@ -115,7 +115,7 @@ export function FeaturedBikes() {
                                         whileInView={{ opacity: 1, scale: 1 }}
                                         viewport={{ once: true, margin: "-100px" }}
                                         transition={{ duration: 0.4, ease: "easeOut" }}
-                                        className="group relative bg-zinc-900/60 backdrop-blur-md rounded-[2.5rem] p-8 h-[550px] border border-zinc-800/50 hover:border-racing-blue/40 transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden will-change-transform transform-gpu"
+                                        className="group relative bg-zinc-900/70 backdrop-blur-md rounded-[2.5rem] p-8 h-[550px] border border-zinc-800/50 hover:border-racing-blue/40 transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden will-change-transform gpu-accelerated"
                                     >
                                         {/* Dynamic Background Glow */}
                                         <div
@@ -180,7 +180,7 @@ export function FeaturedBikes() {
                                                 />
                                                 <BikeImage
                                                     src={primaryColor.image}
-                                                    fallbackSrc={`${bike.threeSixtyUrl?.replace('360/', 'color/')}${primaryColor.colorOption}.webp`}
+                                                    fallbackSrc={bike.threeSixtyUrl ? `${bike.threeSixtyUrl.replace('360/', 'color/')}${primaryColor.colorOption}.webp` : primaryColor.image}
                                                     alt={bike.name}
                                                     width={500}
                                                     height={400}

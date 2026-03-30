@@ -1,12 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { LeadsTable } from "@/components/features/LeadsTable";
-import { Download, Filter, Search, Plus, Loader2 } from "lucide-react";
+import { Download, Plus, Loader2 } from "lucide-react";
+import { AdminTableControls } from "@/components/ui/AdminTableControls";
 
 export default function LeadsPage() {
     const [leads, setLeads] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [sortBy, setSortBy] = useState("newest");
+    const [filterStatus, setFilterStatus] = useState("all");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
     useEffect(() => {
         const fetchLeads = async () => {
@@ -23,6 +29,34 @@ export default function LeadsPage() {
         fetchLeads();
     }, []);
 
+    const processedLeads = useMemo(() => {
+        let filtered = [...leads];
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            filtered = filtered.filter(l =>
+                l.name?.toLowerCase().includes(q) ||
+                l.phone?.toLowerCase().includes(q) ||
+                l.interests?.join(" ").toLowerCase().includes(q)
+            );
+        }
+        if (filterStatus !== "all") {
+            filtered = filtered.filter(l => l.status === filterStatus);
+        }
+        if (startDate) {
+            filtered = filtered.filter(l => new Date(l.createdAt || 0) >= new Date(startDate));
+        }
+        if (endDate) {
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+            filtered = filtered.filter(l => new Date(l.createdAt || 0) <= end);
+        }
+        return filtered.sort((a, b) => {
+            if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
+            if (sortBy === "oldest") return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+            return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+        });
+    }, [leads, searchQuery, filterStatus, sortBy, startDate, endDate]);
+
     return (
         <div className="space-y-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -32,7 +66,6 @@ export default function LeadsPage() {
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Manage and track pre-sales customer inquiries</p>
                 </div>
-                {/* ... rest of the header ... */}
                 <div className="flex gap-2">
                     <button className="p-3 bg-card border border-border text-muted-foreground rounded-xl hover:text-foreground transition-all">
                         <Download className="w-4 h-4" />
@@ -44,20 +77,31 @@ export default function LeadsPage() {
                 </div>
             </div>
 
-            {/* ... search and filter ... */}
-            <div className="flex gap-4 mb-8">
-                <div className="flex-1 relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
-                    <input
-                        placeholder="Search by name, phone or bike..."
-                        className="w-full bg-card border border-border rounded-xl pl-12 pr-6 py-4 text-[10px] font-black uppercase tracking-widest text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                    />
-                </div>
-                <button className="flex items-center gap-2 px-6 bg-card border border-border text-muted-foreground rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-foreground hover:border-border/50 transition-all">
-                    <Filter className="w-4 h-4" />
-                    Filter
-                </button>
-            </div>
+            <AdminTableControls
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                sortOptions={[
+                    { label: "Newest First", value: "newest" },
+                    { label: "Oldest First", value: "oldest" },
+                    { label: "Name A-Z", value: "name" }
+                ]}
+                filterStatus={filterStatus}
+                onFilterChange={setFilterStatus}
+                filterOptions={[
+                    { label: "All Status", value: "all" },
+                    { label: "New", value: "New" },
+                    { label: "Contacted", value: "Contacted" },
+                    { label: "Test Ride", value: "Test Ride" },
+                    { label: "Closed", value: "Closed" }
+                ]}
+                startDate={startDate}
+                onStartDateChange={setStartDate}
+                endDate={endDate}
+                onEndDateChange={setEndDate}
+                placeholder="Search leads by name, phone or bike..."
+            />
 
             <div className="bg-background/90 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[400px]">
                 {loading ? (
@@ -66,7 +110,7 @@ export default function LeadsPage() {
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Syncing CRM Data...</span>
                     </div>
                 ) : (
-                    <LeadsTable leads={leads} />
+                    <LeadsTable leads={processedLeads} />
                 )}
             </div>
         </div>

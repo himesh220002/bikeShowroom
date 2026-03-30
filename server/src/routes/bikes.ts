@@ -52,6 +52,23 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+// Delete bike
+router.delete('/:id', async (req, res) => {
+    try {
+        const bike = await Bike.findByIdAndDelete(req.params.id);
+        if (!bike) return res.status(404).json({ success: false, message: 'Bike not found' });
+
+        // Emit socket event
+        if ((req as any).io) {
+            (req as any).io.emit('inventory_synced', await Bike.find({}));
+        }
+
+        res.json({ success: true, message: 'Bike deleted successfully' });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // Seed initial data
 router.post('/seed', async (req, res) => {
     try {
@@ -62,10 +79,10 @@ router.post('/seed', async (req, res) => {
                 category: "bike",
                 price: "1,82,000 - 1,98,000",
                 colors: [
-                    { name: "Metallic Grey (M)", hex: "#9ca3af", image: "/images/r15m.png", colorOption: "metallic-grey", stock: 5 },
-                    { name: "Racing Blue", hex: "#005aff", image: "/images/r15m.png", colorOption: "racing-blue", stock: 3 },
-                    { name: "Dark Knight", hex: "#18181b", image: "/images/r15m.png", colorOption: "dark-knight", stock: 2 },
-                    { name: "Metallic Red", hex: "#ef4444", image: "/images/r15m.png", colorOption: "metallic-red", stock: 2 }
+                    { name: "Metallic Black (M)", hex: "#000000", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/color/metallic-black.webp", colorOption: "metallic-black", stock: 5 },
+                    { name: "Pearl White", hex: "#ffffff", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/color/pearl.webp", colorOption: "pearl", stock: 3 },
+                    { name: "Racing Blue", hex: "#005aff", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/color/racing-blue.webp", colorOption: "racing-blue", stock: 2 },
+                    { name: "White", hex: "#ffffff", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/color/white.webp", colorOption: "white", stock: 2 }
                 ],
                 specs: [
                     { icon: "Gauge", label: "155cc VVA Engine" },
@@ -84,6 +101,8 @@ router.post('/seed', async (req, res) => {
                     weight: "141 kg",
                     seatHeight: "815 mm",
                     tyres: "100/80-17 (F), 140/70-17 (R)",
+                    topSpeed: "140 kmph",
+                    mileage: "55.2 kmpl",
                     features: ["R-Series DNA", "Bi-Functional LED Headlight", "Traction Control", "Quick Shifter"]
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/",
@@ -117,6 +136,8 @@ router.post('/seed', async (req, res) => {
                     weight: "141 kg",
                     seatHeight: "810 mm",
                     tyres: "100/80-17 (F), 140/70-17 (R)",
+                    topSpeed: "130 kmph",
+                    mileage: "52 kmpl",
                     features: ["USD Front Forks", "Aluminum Swingarm", "VVA Technology", "LED Tail Light"]
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/mt_series/mt15v2/360/",
@@ -148,6 +169,8 @@ router.post('/seed', async (req, res) => {
                     weight: "167 kg",
                     seatHeight: "780 mm",
                     tyres: "110/70-17 (F), 140/70-17 (R)",
+                    topSpeed: "160 kmph",
+                    mileage: "35 kmpl",
                     features: ["Twin Cylinder Engine", "Inverted front forks", "Multi-function LCD instrument cluster"]
                 },
                 brochureUrl: "/brochure/mt03.pdf"
@@ -179,6 +202,8 @@ router.post('/seed', async (req, res) => {
                     weight: "136 kg",
                     seatHeight: "790 mm",
                     tyres: "100/80-17 (F), 140/60-R17 (R)",
+                    topSpeed: "115 kmph",
+                    mileage: "50 kmpl",
                     features: ["Traction Control System", "LED Headlight & Tail Light", "E20 Compatible"]
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-v4-std/360/",
@@ -211,6 +236,8 @@ router.post('/seed', async (req, res) => {
                     weight: "135 kg",
                     seatHeight: "790 mm",
                     tyres: "100/80-17 (F), 140/60-R17 (R)",
+                    topSpeed: "112 kmph",
+                    mileage: "46 kmpl",
                     features: ["Multi-function LCD Cluster", "LED Headlight", "Side Stand Cut-off"]
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-v4-std/360/",
@@ -218,8 +245,8 @@ router.post('/seed', async (req, res) => {
                 brochureUrl: "/brochure/fzs-fi-series.pdf"
             },
             {
-                slug: "fzs-rave",
-                name: "Yamaha FZ-S FI V4 (Cyber Rave)",
+                slug: "fz-rave",
+                name: "Yamaha FZ-Rave",
                 category: "bike",
                 price: "1,29,500 - 1,30,500",
                 colors: [
@@ -227,11 +254,11 @@ router.post('/seed', async (req, res) => {
                 ],
                 specs: [
                     { icon: "Gauge", label: "149cc Fi Engine" },
-                    { icon: "Zap", label: "Cyber Rave Edition" },
+                    { icon: "Zap", label: "Rave Edition" },
                     { icon: "Cpu", label: "Traction Control" }
                 ],
                 tag: "Digital Sensation",
-                description: "The Cyber Rave edition of FZ-S FI V4 is built for the trendsetters. A perfect blend of technology and street presence.",
+                description: "The Rave edition of FZ is built for the trendsetters. A perfect blend of technology and street presence.",
                 fullSpecs: {
                     engine: "149cc, Air-cooled, 4-stroke",
                     power: "12.4 PS",
@@ -242,7 +269,9 @@ router.post('/seed', async (req, res) => {
                     weight: "136 kg",
                     seatHeight: "790 mm",
                     tyres: "100/80-17 (F), 140/60-R17 (R)",
-                    features: ["Traction Control System", "Cyber Rave Special Color", "LED Headlight"]
+                    topSpeed: "115 kmph",
+                    mileage: "50 kmpl",
+                    features: ["Traction Control System", "Rave Special Color", "LED Headlight"]
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
                 threeSixtyImageCount: 37,
@@ -274,6 +303,8 @@ router.post('/seed', async (req, res) => {
                     weight: "139 kg",
                     seatHeight: "810 mm",
                     tyres: "100/80-17 (F), 140/60-R17 (R)",
+                    topSpeed: "115 kmph (Est.)",
+                    mileage: "51 kmpl",
                     features: ["Neo-Retro Design", "Bluetooth Connectivity", "Traction Control"]
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzx/360/",
@@ -305,11 +336,12 @@ router.post('/seed', async (req, res) => {
                     weight: "134 kg",
                     seatHeight: "810 mm",
                     tyres: "110/70-17 (F), 140/70-17 (R)",
+                    topSpeed: "130 kmph",
+                    mileage: "46 kmpl",
                     features: ["Retro LCD Instrument", "LED Headlight & Tail Light", "Assist & Slipper Clutch"]
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/x_series_all/xsr/360/",
                 threeSixtyImageCount: 36,
-                colorBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/xsr_series/xsr155/color/",
                 brochureUrl: "/brochure/xsr155.pdf"
             },
             {
@@ -370,6 +402,8 @@ router.post('/seed', async (req, res) => {
                     weight: "99 kg",
                     seatHeight: "785 mm",
                     tyres: "90/90-12 (F), 110/90-10 (R)",
+                    topSpeed: "91 kmph",
+                    mileage: "60 kmpl",
                     features: ["Hybrid Tech (SMG)", "LED Headlight", "Lightweight Chassis"]
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/rayzr_all/ray-zr-streetrally125fihybrid/360_new/",
@@ -402,11 +436,12 @@ router.post('/seed', async (req, res) => {
                     weight: "99 kg",
                     seatHeight: "780 mm",
                     tyres: "90/90-12 (F), 110/90-10 (R)",
+                    topSpeed: "90 kmph",
+                    mileage: "58 kmpl",
                     features: ["Hybrid Tech", "Classy Design", "Spacious Underseat Storage"]
                 },
                 threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_all/fascino125fi-new/360_new/",
                 threeSixtyImageCount: 40,
-                colorBaseUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_series/fascino125/color/",
                 brochureUrl: "/brochure/fascinoS.pdf"
             }
         ];

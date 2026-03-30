@@ -85,7 +85,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 key="success"
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="w-full bg-zinc-800 rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-12 text-center border border-racing-blue/20 shadow-2xl shadow-racing-blue/10 flex flex-col items-center"
+                                className="w-full bg-zinc-900/80 backdrop-blur-md rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-12 text-center border border-racing-blue/20 shadow-2xl shadow-racing-blue/10 flex flex-col items-center gpu-accelerated"
                             >
                                 <div className="w-20 h-20 md:w-24 md:h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 md:mb-8 shadow-2xl shadow-green-500/40">
                                     <CheckCircle2 className="w-10 h-10 md:w-12 md:h-12 text-white" />
@@ -107,7 +107,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 key="form"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="w-full bg-zinc-900 rounded-[2.5rem] md:rounded-[3.5rem] p-6 sm:p-8 md:p-14 shadow-2xl border border-zinc-800"
+                                className="w-full bg-zinc-900/80 backdrop-blur-md rounded-[2.5rem] md:rounded-[3.5rem] p-6 sm:p-8 md:p-14 shadow-2xl border border-zinc-800 gpu-accelerated"
                             >
                                 <form onSubmit={handleFormSubmit} className="space-y-6 md:space-y-8">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">

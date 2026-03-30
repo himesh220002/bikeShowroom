@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Package, Plus, Loader2, Settings2, Trash2, Edit3, Search } from "lucide-react";
+import { AdminTableControls } from "@/components/ui/AdminTableControls";
 import io from "socket.io-client";
 import { BikeEditModal } from "@/components/features/BikeEditModal";
 import { BikeImage } from "@/components/ui/BikeImage";
@@ -14,6 +15,7 @@ export default function InventoryPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedBike, setSelectedBike] = useState<any | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [sortBy, setSortBy] = useState("name");
 
     const fetchBikes = async () => {
         try {
@@ -81,13 +83,26 @@ export default function InventoryPage() {
         }
     };
 
-    const filteredBikes = bikes.filter(b =>
-        b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.tag.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.category.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const motorcycles = filteredBikes.filter(b => b.category === "bike");
-    const scooters = filteredBikes.filter(b => b.category === "scooty");
+    const processedBikes = useMemo(() => {
+        let filtered = [...bikes];
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            filtered = filtered.filter(b =>
+                b.name.toLowerCase().includes(q) ||
+                b.tag.toLowerCase().includes(q) ||
+                b.category.toLowerCase().includes(q)
+            );
+        }
+        return filtered.sort((a, b) => {
+            if (sortBy === "name") return a.name.localeCompare(b.name);
+            if (sortBy === "price-desc") return Number(b.price) - Number(a.price);
+            if (sortBy === "price-asc") return Number(a.price) - Number(b.price);
+            return 0;
+        });
+    }, [bikes, searchQuery, sortBy]);
+
+    const motorcycles = processedBikes.filter(b => b.category === "bike");
+    const scooters = processedBikes.filter(b => b.category === "scooty");
 
     const renderGrid = (items: any[], title: string) => (
         <div className="space-y-8">
@@ -200,18 +215,19 @@ export default function InventoryPage() {
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Consolidated model-wise stock control</p>
                 </div>
-                <div className="flex items-center gap-4 flex-1 max-w-md">
-                    <div className="relative w-full">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <input
-                            type="text"
-                            placeholder="Search models, tags..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-background border border-border rounded-xl pl-12 pr-4 py-3 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all shadow-xl shadow-black/5"
-                        />
-                    </div>
-                </div>
+                <AdminTableControls
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
+                    sortOptions={[
+                        { label: "Name A-Z", value: "name" },
+                        { label: "Price: High to Low", value: "price-desc" },
+                        { label: "Price: Low to High", value: "price-asc" }
+                    ]}
+                    placeholder="Search models, tags, categories..."
+                    className="flex-1"
+                />
                 <button
                     onClick={() => { setSelectedBike(null); setIsModalOpen(true); }}
                     className="flex items-center gap-2 px-6 py-3 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-racing-blue/20"

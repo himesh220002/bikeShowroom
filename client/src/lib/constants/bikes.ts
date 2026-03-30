@@ -64,8 +64,8 @@ export const BIKES: Bike[] = [
             weight: "141 kg",
             seatHeight: "815 mm",
             tyres: "100/80-17 (F), 140/70-17 (R)",
-            topSpeed: "150 km/h",
-            mileage: "45 kmpl",
+            topSpeed: "140 kmph",
+            mileage: "55.2 kmpl",
             features: ["R-Series DNA", "Bi-Functional LED Headlight", "Traction Control", "Quick Shifter"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/",
@@ -99,8 +99,8 @@ export const BIKES: Bike[] = [
             weight: "141 kg",
             seatHeight: "810 mm",
             tyres: "100/80-17 (F), 140/70-17 (R)",
-            topSpeed: "145 km/h",
-            mileage: "45 kmpl",
+            topSpeed: "130 kmph",
+            mileage: "52 kmpl",
             features: ["USD Front Forks", "Aluminum Swingarm", "VVA Technology", "LED Tail Light"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/mt_series/mt15v2/360/",
@@ -132,8 +132,8 @@ export const BIKES: Bike[] = [
             weight: "167 kg",
             seatHeight: "780 mm",
             tyres: "110/70-17 (F), 140/70-17 (R)",
-            topSpeed: "180 km/h",
-            mileage: "25 kmpl",
+            topSpeed: "160 kmph",
+            mileage: "35 kmpl",
             features: ["Twin Cylinder Engine", "Inverted front forks", "Multi-function LCD instrument cluster"]
         },
         brochureUrl: "/brochure/mt03.pdf"
@@ -165,7 +165,7 @@ export const BIKES: Bike[] = [
             weight: "136 kg",
             seatHeight: "790 mm",
             tyres: "100/80-17 (F), 140/60-R17 (R)",
-            topSpeed: "115 km/h",
+            topSpeed: "115 kmph",
             mileage: "50 kmpl",
             features: ["Traction Control System", "LED Headlight & Tail Light", "E20 Compatible"]
         },
@@ -199,6 +199,8 @@ export const BIKES: Bike[] = [
             weight: "135 kg",
             seatHeight: "790 mm",
             tyres: "100/80-17 (F), 140/60-R17 (R)",
+            topSpeed: "112 kmph",
+            mileage: "46 kmpl",
             features: ["Multi-function LCD Cluster", "LED Headlight", "Side Stand Cut-off"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-v4-std/360/",
@@ -230,6 +232,8 @@ export const BIKES: Bike[] = [
             weight: "136 kg",
             seatHeight: "790 mm",
             tyres: "100/80-17 (F), 140/60-R17 (R)",
+            topSpeed: "115 kmph",
+            mileage: "52 kmpl",
             features: ["Traction Control System", "Rave Special Color", "LED Headlight"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
@@ -262,6 +266,8 @@ export const BIKES: Bike[] = [
             weight: "139 kg",
             seatHeight: "810 mm",
             tyres: "100/80-17 (F), 140/60-R17 (R)",
+            topSpeed: "115 kmph (Est.)",
+            mileage: "51 kmpl",
             features: ["Neo-Retro Design", "Bluetooth Connectivity", "Traction Control"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzx/360/",
@@ -293,6 +299,8 @@ export const BIKES: Bike[] = [
             weight: "134 kg",
             seatHeight: "810 mm",
             tyres: "110/70-17 (F), 140/70-17 (R)",
+            topSpeed: "130 kmph",
+            mileage: "46 kmpl",
             features: ["Retro LCD Instrument", "LED Headlight & Tail Light", "Assist & Slipper Clutch"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/x_series_all/xsr/360/",
@@ -326,8 +334,8 @@ export const BIKES: Bike[] = [
             weight: "126 kg",
             seatHeight: "790 mm",
             tyres: "110/80-14 (Front), 140/70-14 (Rear)",
-            topSpeed: "120 km/h",
-            mileage: "40 kmpl",
+            topSpeed: "120 kmph",
+            mileage: "42 kmpl",
             features: ["Traction Control", "VVA Technology", "Smart Key System"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/aerox_all/aerox155vs/360/",
@@ -360,6 +368,8 @@ export const BIKES: Bike[] = [
             weight: "99 kg",
             seatHeight: "785 mm",
             tyres: "90/90-12 (F), 110/90-10 (R)",
+            topSpeed: "91 kmph",
+            mileage: "60 kmpl",
             features: ["Hybrid Tech (SMG)", "LED Headlight", "Lightweight Chassis"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/rayzr_all/ray-zr-streetrally125fihybrid/360_new/",
@@ -392,6 +402,8 @@ export const BIKES: Bike[] = [
             weight: "99 kg",
             seatHeight: "780 mm",
             tyres: "90/90-12 (F), 110/90-10 (R)",
+            topSpeed: "90 kmph",
+            mileage: "58 kmpl",
             features: ["Hybrid Tech", "Classy Design", "Spacious Underseat Storage"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_all/fascino125fi-new/360_new/",

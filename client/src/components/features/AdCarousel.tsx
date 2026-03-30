@@ -69,11 +69,11 @@ export function AdCarousel() {
 function AdCard({ ad }: { ad: Ad }) {
     return (
         <div className="group flex flex-col space-y-4">
-            <div className="relative aspect-square w-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden bg-muted border border-border shadow-2xl">
+            <div className="relative aspect-square w-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden bg-zinc-900/50 backdrop-blur-md border border-border shadow-2xl gpu-accelerated">
                 {/* Visual content part */}
                 <div className="absolute inset-0 w-full h-full">
                     {/* Blurred background for non-banner types */}
-                    {(ad.type === "Poster" || ad.type === "Video") && (
+                    {(ad.type === "Poster" || ad.type === "Video") && ad.image && (
                         <div className="absolute inset-0 w-full h-full overflow-hidden">
                             <Image
                                 src={ad.image}
@@ -84,15 +84,17 @@ function AdCard({ ad }: { ad: Ad }) {
                             />
                         </div>
                     )}
-                    <Image
-                        src={ad.image}
-                        alt={ad.name}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        className={cn(
-                            "relative z-10 w-full h-full transition-transform duration-700 group-hover:scale-105 object-cover"
-                        )}
-                    />
+                    {ad.image && (
+                        <Image
+                            src={ad.image}
+                            alt={ad.name}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            className={cn(
+                                "relative z-10 w-full h-full transition-transform duration-700 group-hover:scale-105 object-cover"
+                            )}
+                        />
+                    )}
                     <div className="absolute top-6 left-6 z-20">
                         <span className="px-3 py-1 bg-racing-blue text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
                             {ad.type}

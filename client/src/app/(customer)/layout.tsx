@@ -7,10 +7,10 @@ export default function CustomerLayout({
     children: React.ReactNode;
 }) {
     return (
-        <>
+        <div className="min-h-screen fixed-bg dark">
             <Navbar />
             <main className="font-sans">{children}</main>
             <Footer />
-        </>
+        </div>
     );
 }

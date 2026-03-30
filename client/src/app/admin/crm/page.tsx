@@ -1,12 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { CustomersTable } from "@/components/features/CustomersTable";
-import { Download, Filter, Search, Heart, Loader2, Sparkles } from "lucide-react";
+import { Download, Heart, Loader2, Sparkles } from "lucide-react";
+import { AdminTableControls } from "@/components/ui/AdminTableControls";
 
 export default function CRMPage() {
     const [customers, setCustomers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [sortBy, setSortBy] = useState("newest");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
     useEffect(() => {
         const fetchCustomers = async () => {
@@ -23,11 +28,36 @@ export default function CRMPage() {
         fetchCustomers();
     }, []);
 
+    const processedCustomers = useMemo(() => {
+        let filtered = [...customers];
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            filtered = filtered.filter(c =>
+                c.name?.toLowerCase().includes(q) ||
+                c.phone?.toLowerCase().includes(q) ||
+                c.email?.toLowerCase().includes(q)
+            );
+        }
+        if (startDate) {
+            filtered = filtered.filter(c => new Date(c.createdAt || 0) >= new Date(startDate));
+        }
+        if (endDate) {
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+            filtered = filtered.filter(c => new Date(c.createdAt || 0) <= end);
+        }
+        return filtered.sort((a, b) => {
+            if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
+            if (sortBy === "oldest") return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+            return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+        });
+    }, [customers, searchQuery, sortBy, startDate, endDate]);
+
     return (
         <div className="space-y-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter">
+                    <h2 className="text-2xl font-display font-black text-gray-500 uppercase tracking-tighter">
                         CUSTOMER <span className="text-gradient">RELATIONSHIP</span>
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Nurture and track long-term customer satisfaction</p>
@@ -60,20 +90,22 @@ export default function CRMPage() {
                 </div>
             </div>
 
-            {/* Search and Filter */}
-            <div className="flex gap-4 mb-8">
-                <div className="flex-1 relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
-                    <input
-                        placeholder="Search by name, phone or vehicle..."
-                        className="w-full bg-card border border-border rounded-xl pl-12 pr-6 py-4 text-[10px] font-black uppercase tracking-widest text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                    />
-                </div>
-                <button className="flex items-center gap-2 px-6 bg-card border border-border text-muted-foreground rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-foreground hover:border-muted-foreground/30 transition-all">
-                    <Filter className="w-4 h-4" />
-                    Filter
-                </button>
-            </div>
+            <AdminTableControls
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                sortOptions={[
+                    { label: "Newest Joined", value: "newest" },
+                    { label: "Oldest Joined", value: "oldest" },
+                    { label: "Name A-Z", value: "name" }
+                ]}
+                startDate={startDate}
+                onStartDateChange={setStartDate}
+                endDate={endDate}
+                onEndDateChange={setEndDate}
+                placeholder="Search customers by name, phone or email..."
+            />
 
             <div className="bg-background/90 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[400px]">
                 {loading ? (
@@ -82,7 +114,7 @@ export default function CRMPage() {
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Syncing CRM Core...</span>
                     </div>
                 ) : (
-                    <CustomersTable customers={customers} />
+                    <CustomersTable customers={processedCustomers} />
                 )}
             </div>
         </div>

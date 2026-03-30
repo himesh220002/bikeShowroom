@@ -5,10 +5,10 @@
   /* Slate 50 - Main Area */
   --foreground: #101f64;
   /* Slate 950 */
-  --card: #ffffff;
+  --card: #09090b;
   /* Pure White - Components */
   --card-foreground: #020617;
-  --border: #e2e8f0;
+  --border: #14141a;
   /* Slate 200 */
   --muted: #f1f5f9;
   /* Slate 100 */
@@ -71,7 +71,16 @@
   }
 
   .glass {
-    @apply bg-card/60 backdrop-blur-xl border border-border/50 shadow-2xl;
+    @apply bg-card/60 backdrop-blur-md border border-border/50 shadow-2xl;
+  }
+
+  .gpu-accelerated {
+    @apply transform-gpu backface-hidden;
+    perspective: 1000px;
+  }
+
+  .will-change-scroll {
+    will-change: transform, opacity;
   }
 
   .hover-lift {
@@ -79,12 +88,12 @@
   }
 }
 
-.dark .fixed-bg {
-  background-image: linear-gradient(rgba(9, 9, 11, 0.8), rgba(9, 9, 11, 0.8)), url('/images/xsr_green-pc.webp');
+.fixed-bg {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/xsr_green-pc.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  /* Removed background-attachment: fixed as it causes significant scroll lag */
+  background-attachment: fixed;
 }
 
 body {

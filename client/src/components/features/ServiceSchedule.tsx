@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Calendar, Clock, User, Bike, CheckCircle2, AlertCircle, MoreVertical, Search, Filter, Wrench, Loader2, Phone, ShieldAlert, ChevronDown, UserCheck, X, Save } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
+import { AdminTableControls } from "@/components/ui/AdminTableControls";
 
 export function ServiceSchedule() {
     const [jobs, setJobs] = useState<any[]>([]);
@@ -23,6 +24,11 @@ export function ServiceSchedule() {
         technician: ""
     });
     const [updating, setUpdating] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [sortBy, setSortBy] = useState("newest");
+    const [filterStatus, setFilterStatus] = useState("all");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
     const STATUS_OPTIONS = ['booked', 'in-progress', 'completed', 'delivered', 'cancelled'];
     const statusColors: any = {
@@ -144,6 +150,37 @@ export function ServiceSchedule() {
         fetchServices();
     }, []);
 
+    const processedJobs = useMemo(() => {
+        let filtered = [...jobs];
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            filtered = filtered.filter(j =>
+                j.customer?.toLowerCase().includes(q) ||
+                j.phone?.toLowerCase().includes(q) ||
+                j.bikeModel?.toLowerCase().includes(q) ||
+                j.regNumber?.toLowerCase().includes(q) ||
+                j.type?.toLowerCase().includes(q) ||
+                j.technician?.toLowerCase().includes(q)
+            );
+        }
+        if (filterStatus !== "all") {
+            filtered = filtered.filter(j => j.status === filterStatus);
+        }
+        if (startDate) {
+            filtered = filtered.filter(j => new Date(j.time || 0) >= new Date(startDate));
+        }
+        if (endDate) {
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+            filtered = filtered.filter(j => new Date(j.time || 0) <= end);
+        }
+        return filtered.sort((a, b) => {
+            if (sortBy === "name") return (a.customer || "").localeCompare(b.customer || "");
+            if (sortBy === "oldest") return new Date(a.time || 0).getTime() - new Date(b.time || 0).getTime();
+            return new Date(b.time || 0).getTime() - new Date(a.time || 0).getTime();
+        });
+    }, [jobs, searchQuery, filterStatus, sortBy, startDate, endDate]);
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center py-32 gap-4">
@@ -162,15 +199,32 @@ export function ServiceSchedule() {
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Manage daily workshop operations</p>
                 </div>
-                <div className="flex gap-2">
-                    <div className="relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
-                        <input
-                            placeholder="Search jobs..."
-                            className="bg-card border border-border rounded-xl pl-12 pr-6 py-3 text-[10px] font-black uppercase tracking-widest text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                        />
-                    </div>
-                </div>
+                <AdminTableControls
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
+                    sortOptions={[
+                        { label: "Newest Appointment", value: "newest" },
+                        { label: "Oldest Appointment", value: "oldest" },
+                        { label: "Customer Name A-Z", value: "name" }
+                    ]}
+                    filterStatus={filterStatus}
+                    onFilterChange={setFilterStatus}
+                    filterOptions={[
+                        { label: "All Status", value: "all" },
+                        { label: "Booked", value: "booked" },
+                        { label: "In Progress", value: "in-progress" },
+                        { label: "Completed", value: "completed" },
+                        { label: "Delivered", value: "delivered" }
+                    ]}
+                    startDate={startDate}
+                    onStartDateChange={setStartDate}
+                    endDate={endDate}
+                    onEndDateChange={setEndDate}
+                    placeholder="Search workshop jobs by name, reg, bike or tech..."
+                    className="md:w-auto flex-1"
+                />
             </div>
 
             {/* Stats Summary */}
@@ -202,14 +256,14 @@ export function ServiceSchedule() {
                             </tr>
                         </thead>
                         <tbody className="divide-y border-border/50">
-                            {jobs.length === 0 && (
+                            {processedJobs.length === 0 && (
                                 <tr>
                                     <td colSpan={5} className="px-8 py-20 text-center opacity-20 italic text-sm font-medium">
                                         No active jobs in the workshop...
                                     </td>
                                 </tr>
                             )}
-                            {jobs.map((job) => (
+                            {processedJobs.map((job) => (
                                 <tr key={job.id} className="group hover:bg-muted/50 transition-colors">
                                     <td className="px-8 py-6">
                                         <div className="flex flex-col gap-1">

@@ -38,7 +38,7 @@ export function Hero() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="flex items-center gap-3 bg-zinc-800/50 backdrop-blur-md border border-white/10 w-fit px-5 py-2 rounded-full mb-8 shadow-2xl"
+                        className="flex items-center gap-3 bg-zinc-800/50 backdrop-blur-xl border border-white/10 w-fit px-5 py-2 rounded-full mb-8 shadow-2xl"
                     >
                         <div className="p-1 bg-racing-blue rounded-full">
                             <Star className="w-3 h-3 text-white fill-white" />

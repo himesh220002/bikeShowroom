@@ -67,7 +67,7 @@ export function Viewer360Carousel() {
         <div className="relative group/carousel">
             {/* Loading Overlay */}
             {loading && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm rounded-[3rem]">
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-zinc-900/50 backdrop-blur-xl rounded-[3rem]">
                     <Loader2 className="w-8 h-8 text-racing-blue animate-spin" />
                 </div>
             )}
@@ -97,7 +97,7 @@ export function Viewer360Carousel() {
             </div>
 
             {/* Navigation Dots */}
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex gap-2 p-2 bg-black/60 backdrop-blur-lg border border-white/5 rounded-full will-change-transform">
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex gap-2 p-2 bg-black/60 backdrop-blur-xl border border-white/5 rounded-full will-change-transform">
                 {uniqueBikes.map((bike, idx) => (
                     <button
                         key={bike.slug}
