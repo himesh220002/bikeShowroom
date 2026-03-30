@@ -26,6 +26,20 @@ interface Bike {
     colorBaseUrl?: string;
     brochureUrl: string;
     colors: Color[];
+    fullSpecs: {
+        engine: string;
+        power: string;
+        torque: string;
+        transmission: string;
+        brakes: string;
+        fuelCapacity: string;
+        weight: string;
+        seatHeight: string;
+        tyres: string;
+        topSpeed?: string;
+        mileage?: string;
+        features: string[];
+    };
 }
 
 interface BikeEditModalProps {
@@ -46,13 +60,43 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
         threeSixtyUrl: "",
         threeSixtyImageCount: 40,
         brochureUrl: "",
-        colors: [{ name: "", hex: "", image: "", colorOption: "", stock: 0, price: "" }]
+        colors: [{ name: "", hex: "", image: "", colorOption: "", stock: 0, price: "" }],
+        fullSpecs: {
+            engine: "",
+            power: "",
+            torque: "",
+            transmission: "",
+            brakes: "",
+            fuelCapacity: "",
+            weight: "",
+            seatHeight: "",
+            tyres: "",
+            topSpeed: "",
+            mileage: "",
+            features: []
+        }
     });
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         if (bike) {
-            setFormData(bike);
+            setFormData({
+                ...bike,
+                fullSpecs: bike.fullSpecs || {
+                    engine: "",
+                    power: "",
+                    torque: "",
+                    transmission: "",
+                    brakes: "",
+                    fuelCapacity: "",
+                    weight: "",
+                    seatHeight: "",
+                    tyres: "",
+                    topSpeed: "",
+                    mileage: "",
+                    features: []
+                }
+            });
         } else {
             setFormData({
                 name: "",
@@ -65,7 +109,21 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                 threeSixtyImageCount: 40,
                 colorBaseUrl: "",
                 brochureUrl: "",
-                colors: [{ name: "", hex: "", image: "", colorOption: "", stock: 0, price: "" }]
+                colors: [{ name: "", hex: "", image: "", colorOption: "", stock: 0, price: "" }],
+                fullSpecs: {
+                    engine: "",
+                    power: "",
+                    torque: "",
+                    transmission: "",
+                    brakes: "",
+                    fuelCapacity: "",
+                    weight: "",
+                    seatHeight: "",
+                    tyres: "",
+                    topSpeed: "",
+                    mileage: "",
+                    features: []
+                }
             });
         }
     }, [bike, isOpen]);
@@ -205,6 +263,136 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                         className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all resize-none"
                                         placeholder="Detailed description of the model..."
                                     />
+                                </div>
+                            </div>
+
+                            {/* Technical Specifications */}
+                            <div className="p-6 bg-muted/30 rounded-[2rem] border border-border/50">
+                                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-racing-blue mb-6 flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-racing-blue animate-pulse" />
+                                    Technical Specifications
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Engine</label>
+                                        <input
+                                            type="text"
+                                            value={formData.fullSpecs.engine}
+                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, engine: e.target.value } })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="155cc Liquid Cooled"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Power</label>
+                                        <input
+                                            type="text"
+                                            value={formData.fullSpecs.power}
+                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, power: e.target.value } })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="18.4 PS"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Torque</label>
+                                        <input
+                                            type="text"
+                                            value={formData.fullSpecs.torque}
+                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, torque: e.target.value } })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="14.2 Nm"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Transmission</label>
+                                        <input
+                                            type="text"
+                                            value={formData.fullSpecs.transmission}
+                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, transmission: e.target.value } })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="6-speed"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Braking System</label>
+                                        <input
+                                            type="text"
+                                            value={formData.fullSpecs.brakes}
+                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, brakes: e.target.value } })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="Dual Channel ABS"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Fuel Capacity</label>
+                                        <input
+                                            type="text"
+                                            value={formData.fullSpecs.fuelCapacity}
+                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, fuelCapacity: e.target.value } })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="11 Liters"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Weight</label>
+                                        <input
+                                            type="text"
+                                            value={formData.fullSpecs.weight}
+                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, weight: e.target.value } })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="141 kg"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seat Height</label>
+                                        <input
+                                            type="text"
+                                            value={formData.fullSpecs.seatHeight}
+                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, seatHeight: e.target.value } })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="815 mm"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Tyre Size</label>
+                                        <input
+                                            type="text"
+                                            value={formData.fullSpecs.tyres}
+                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, tyres: e.target.value } })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="100/80-17"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Top Speed</label>
+                                        <input
+                                            type="text"
+                                            value={formData.fullSpecs.topSpeed || ""}
+                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, topSpeed: e.target.value } })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="145 km/h"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Mileage</label>
+                                        <input
+                                            type="text"
+                                            value={formData.fullSpecs.mileage || ""}
+                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, mileage: e.target.value } })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="45 kmpl"
+                                        />
+                                    </div>
+                                    <div className="md:col-span-3 space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Key Features (Comma separated)</label>
+                                        <input
+                                            type="text"
+                                            value={formData.fullSpecs.features.join(", ")}
+                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, features: e.target.value.split(",").map(f => f.trim()).filter(f => f !== "") } })}
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                            placeholder="VVA Technology, Traction Control, Quick Shifter"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 

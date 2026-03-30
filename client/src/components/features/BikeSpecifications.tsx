@@ -9,6 +9,10 @@ interface BikeSpecificationsProps {
 }
 
 export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
+    if (!bike || !bike.fullSpecs) {
+        return null;
+    }
+
     const mainSpecs = [
         { label: "Engine", value: bike.fullSpecs.engine, icon: "Gauge" },
         { label: "Max Power", value: bike.fullSpecs.power, icon: "Zap" },
@@ -16,6 +20,8 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
         { label: "Transmission", value: bike.fullSpecs.transmission, icon: "Binary" },
         { label: "Braking System", value: bike.fullSpecs.brakes, icon: "Shield" },
         { label: "Fuel Capacity", value: bike.fullSpecs.fuelCapacity, icon: "Fuel" },
+        ...(bike.fullSpecs.topSpeed ? [{ label: "Top Speed", value: bike.fullSpecs.topSpeed, icon: "Timer" }] : []),
+        ...(bike.fullSpecs.mileage ? [{ label: "Mileage", value: bike.fullSpecs.mileage, icon: "Activity" }] : []),
     ];
 
     const secondarySpecs = [
@@ -78,7 +84,7 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                         <div className="relative z-10">
                             <h4 className="text-xl font-display font-black text-white uppercase tracking-tight mb-6">Key Features</h4>
                             <div className="flex flex-wrap gap-3">
-                                {bike.fullSpecs.features.map((feature: string) => (
+                                {Array.isArray(bike.fullSpecs.features) && bike.fullSpecs.features.map((feature: string) => (
                                     <span key={feature} className="px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black text-white uppercase tracking-widest">
                                         {feature}
                                     </span>

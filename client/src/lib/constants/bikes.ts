@@ -25,6 +25,8 @@ export interface Bike {
         weight: string;
         seatHeight: string;
         tyres: string;
+        topSpeed?: string;
+        mileage?: string;
         features: string[];
     };
     threeSixtyUrl?: string;
@@ -62,6 +64,8 @@ export const BIKES: Bike[] = [
             weight: "141 kg",
             seatHeight: "815 mm",
             tyres: "100/80-17 (F), 140/70-17 (R)",
+            topSpeed: "150 km/h",
+            mileage: "45 kmpl",
             features: ["R-Series DNA", "Bi-Functional LED Headlight", "Traction Control", "Quick Shifter"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/",
@@ -95,6 +99,8 @@ export const BIKES: Bike[] = [
             weight: "141 kg",
             seatHeight: "810 mm",
             tyres: "100/80-17 (F), 140/70-17 (R)",
+            topSpeed: "145 km/h",
+            mileage: "45 kmpl",
             features: ["USD Front Forks", "Aluminum Swingarm", "VVA Technology", "LED Tail Light"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/mt_series/mt15v2/360/",
@@ -126,6 +132,8 @@ export const BIKES: Bike[] = [
             weight: "167 kg",
             seatHeight: "780 mm",
             tyres: "110/70-17 (F), 140/70-17 (R)",
+            topSpeed: "180 km/h",
+            mileage: "25 kmpl",
             features: ["Twin Cylinder Engine", "Inverted front forks", "Multi-function LCD instrument cluster"]
         },
         brochureUrl: "/brochure/mt03.pdf"
@@ -157,6 +165,8 @@ export const BIKES: Bike[] = [
             weight: "136 kg",
             seatHeight: "790 mm",
             tyres: "100/80-17 (F), 140/60-R17 (R)",
+            topSpeed: "115 km/h",
+            mileage: "50 kmpl",
             features: ["Traction Control System", "LED Headlight & Tail Light", "E20 Compatible"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fzs-fi-v4-std/360/",
@@ -196,20 +206,20 @@ export const BIKES: Bike[] = [
         brochureUrl: "/brochure/fzs-fi-series.pdf"
     },
     {
-        slug: "fzs-rave",
-        name: "Yamaha FZ-S FI V4 (Cyber Rave)",
+        slug: "fz-rave",
+        name: "Yamaha FZ-Rave",
         category: "bike",
         price: "1,29,500 - 1,30,500",
         colors: [
-            { name: "Cyber Rave", hex: "#000", image: "/images/fz-rave.png", colorOption: "cyber-rave", stock: 2 }
+            { name: "Rave", hex: "#000", image: "/images/fz-rave.png", colorOption: "rave", stock: 2 }
         ],
         specs: [
             { icon: "Gauge", label: "149cc Fi Engine" },
-            { icon: "Zap", label: "Cyber Rave Edition" },
+            { icon: "Zap", label: "Rave Edition" },
             { icon: "Cpu", label: "Traction Control" }
         ],
         tag: "Digital Sensation",
-        description: "The Cyber Rave edition of FZ-S FI V4 is built for the trendsetters. A perfect blend of technology and street presence.",
+        description: "The Rave edition of FZ-S FI V4 is built for the trendsetters. A perfect blend of technology and street presence.",
         fullSpecs: {
             engine: "149cc, Air-cooled, 4-stroke",
             power: "12.4 PS",
@@ -220,7 +230,7 @@ export const BIKES: Bike[] = [
             weight: "136 kg",
             seatHeight: "790 mm",
             tyres: "100/80-17 (F), 140/60-R17 (R)",
-            features: ["Traction Control System", "Cyber Rave Special Color", "LED Headlight"]
+            features: ["Traction Control System", "Rave Special Color", "LED Headlight"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fz_series_all/fz-rave/360/",
         threeSixtyImageCount: 37,
@@ -316,6 +326,8 @@ export const BIKES: Bike[] = [
             weight: "126 kg",
             seatHeight: "790 mm",
             tyres: "110/80-14 (Front), 140/70-14 (Rear)",
+            topSpeed: "120 km/h",
+            mileage: "40 kmpl",
             features: ["Traction Control", "VVA Technology", "Smart Key System"]
         },
         threeSixtyUrl: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/aerox_all/aerox155vs/360/",

@@ -258,14 +258,14 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                         </div>
                     </motion.div>
                 </div>
-            </div>
+            </div >
 
             {/* Model Name Background Text */}
-            <div className="absolute bottom-0 left-0 right-0 overflow-hidden pointer-events-none select-none -mb-20 opacity-5">
+            < div className="absolute bottom-0 left-0 right-0 overflow-hidden pointer-events-none select-none -mb-20 opacity-5" >
                 <h2 className="text-[25vw] font-black text-white uppercase tracking-tighter leading-none whitespace-nowrap">
                     {bike.name}
                 </h2>
-            </div>
-        </section>
+            </div >
+        </section >
     );
 }

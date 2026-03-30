@@ -15,9 +15,18 @@ export interface ISpec {
 }
 
 export interface IFullSpec {
-    [category: string]: {
-        [label: string]: string;
-    };
+    engine: string;
+    power: string;
+    torque: string;
+    transmission: string;
+    brakes: string;
+    fuelCapacity: string;
+    weight: string;
+    seatHeight: string;
+    tyres: string;
+    topSpeed?: string;
+    mileage?: string;
+    features: string[];
 }
 
 export interface IBike extends Document {
