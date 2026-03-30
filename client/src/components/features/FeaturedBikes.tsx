@@ -94,7 +94,7 @@ export function FeaturedBikes() {
 
                 <div
                     ref={scrollRef}
-                    className="flex gap-6 md:gap-10 overflow-x-auto pb-12 snap-x snap-mandatory scrollbar-hide px-4 md:px-0"
+                    className="flex gap-6 md:gap-10 overflow-x-auto pb-12 snap-x snap-mandatory scrollbar-hide px-4 md:px-0 will-change-transform"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {bikesToShow.map((bike: any, index: number) => {
@@ -113,9 +113,9 @@ export function FeaturedBikes() {
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         whileInView={{ opacity: 1, scale: 1 }}
-                                        viewport={{ once: true, margin: "-50px" }}
-                                        transition={{ duration: 0.5, delay: index * 0.05 }}
-                                        className="group relative bg-zinc-900/40 backdrop-blur-xl rounded-[2.5rem] p-8 h-[550px] border border-zinc-800/50 hover:border-racing-blue/40 transition-all duration-700 shadow-2xl flex flex-col justify-between overflow-hidden"
+                                        viewport={{ once: true, margin: "-100px" }}
+                                        transition={{ duration: 0.4, ease: "easeOut" }}
+                                        className="group relative bg-zinc-900/60 backdrop-blur-md rounded-[2.5rem] p-8 h-[550px] border border-zinc-800/50 hover:border-racing-blue/40 transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden will-change-transform transform-gpu"
                                     >
                                         {/* Dynamic Background Glow */}
                                         <div
@@ -172,10 +172,10 @@ export function FeaturedBikes() {
                                         </div>
 
                                         {/* Oversized Bike Image with Glow Support */}
-                                        <div className="absolute top-[38%] left-1/2 -translate-x-1/2 w-[82%] pointer-events-none transition-all duration-700 ease-out group-hover:scale-110 group-hover:-translate-y-4 z-10">
+                                        <div className="absolute top-[38%] left-1/2 -translate-x-1/2 w-[82%] pointer-events-none transition-all duration-500 ease-out group-hover:scale-110 group-hover:-translate-y-4 z-10 will-change-transform">
                                             <div className="relative">
                                                 <div
-                                                    className="absolute inset-0 blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-1000"
+                                                    className="absolute inset-0 blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-700"
                                                     style={{ backgroundColor: primaryColor.hex }}
                                                 />
                                                 <BikeImage
@@ -184,6 +184,7 @@ export function FeaturedBikes() {
                                                     alt={bike.name}
                                                     width={500}
                                                     height={400}
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                     className="w-full h-auto object-contain drop-shadow-[0_30px_30px_rgba(0,0,0,0.6)] relative z-10"
                                                 />
                                             </div>

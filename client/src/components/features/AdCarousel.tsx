@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Play, ExternalLink, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -74,16 +75,20 @@ function AdCard({ ad }: { ad: Ad }) {
                     {/* Blurred background for non-banner types */}
                     {(ad.type === "Poster" || ad.type === "Video") && (
                         <div className="absolute inset-0 w-full h-full overflow-hidden">
-                            <img
+                            <Image
                                 src={ad.image}
                                 alt=""
-                                className="w-full h-full object-cover blur-3xl opacity-40 scale-110"
+                                fill
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                                className="object-cover blur-3xl opacity-40 scale-110"
                             />
                         </div>
                     )}
-                    <img
+                    <Image
                         src={ad.image}
                         alt={ad.name}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
                         className={cn(
                             "relative z-10 w-full h-full transition-transform duration-700 group-hover:scale-105 object-cover"
                         )}

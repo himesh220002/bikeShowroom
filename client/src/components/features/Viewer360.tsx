@@ -62,7 +62,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
             </div>
 
             {/* Mode Selection Tabs (Top) */}
-            <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 p-1.5 bg-black/40 backdrop-blur-2xl border border-white/5 rounded-2xl z-20">
+            <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 p-1.5 bg-black/60 backdrop-blur-lg border border-white/5 rounded-2xl z-20 will-change-transform">
                 {modes.map((mode) => (
                     <button
                         key={mode.id}
@@ -84,7 +84,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
             </div>
 
             {/* Content Context (Bottom Left) */}
-            <div className="absolute bottom-8 left-8 p-8 bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 rounded-[2.5rem] max-w-xs z-20 shadow-2xl hidden lg:block">
+            <div className="absolute bottom-8 left-8 p-8 bg-zinc-900/90 backdrop-blur-lg border border-zinc-800 rounded-[2.5rem] max-w-xs z-20 shadow-2xl hidden lg:block will-change-transform">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeMode}
@@ -155,7 +155,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="absolute inset-x-2 md:inset-x-10 bottom-2 md:bottom-10 top-16 md:top-20 z-30 bg-zinc-950/98 backdrop-blur-3xl border border-white/5 rounded-[2rem] md:rounded-[3rem] overflow-hidden flex flex-col"
+                        className="absolute inset-x-2 md:inset-x-10 bottom-2 md:bottom-10 top-16 md:top-20 z-30 bg-zinc-950/98 backdrop-blur-lg border border-white/5 rounded-[2rem] md:rounded-[3rem] overflow-hidden flex flex-col will-change-transform"
                     >
                         {/* Header */}
                         <div className="p-5 md:p-10 border-b border-white/5 flex justify-between items-center bg-linear-to-r from-zinc-900/50 to-transparent shrink-0">

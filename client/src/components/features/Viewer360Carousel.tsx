@@ -97,7 +97,7 @@ export function Viewer360Carousel() {
             </div>
 
             {/* Navigation Dots */}
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex gap-2 p-2 bg-black/40 backdrop-blur-xl border border-white/5 rounded-full">
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex gap-2 p-2 bg-black/60 backdrop-blur-lg border border-white/5 rounded-full will-change-transform">
                 {uniqueBikes.map((bike, idx) => (
                     <button
                         key={bike.slug}
@@ -116,14 +116,14 @@ export function Viewer360Carousel() {
             {/* Next/Prev Buttons */}
             <button
                 onClick={prevBike}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-black/40 backdrop-blur-3xl border border-white/5 rounded-full text-white hover:bg-racing-blue hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-black/60 backdrop-blur-lg border border-white/5 rounded-full text-white hover:bg-racing-blue hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100 will-change-transform"
                 aria-label="Previous Bike"
             >
                 <ChevronLeft className="w-8 h-8" />
             </button>
             <button
                 onClick={nextBike}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-black/40 backdrop-blur-3xl border border-white/5 rounded-full text-white hover:bg-racing-blue hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-black/60 backdrop-blur-lg border border-white/5 rounded-full text-white hover:bg-racing-blue hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100 will-change-transform"
                 aria-label="Next Bike"
             >
                 <ChevronRight className="w-8 h-8" />
