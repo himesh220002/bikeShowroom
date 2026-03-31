@@ -22,6 +22,7 @@ import adsRouter from './routes/ads';
 import salesRouter from './routes/sales';
 import customersRouter from './routes/customers';
 import configRouter from './routes/config';
+import sparesRouter from './routes/spares';
 
 import adminAuthRouter from './routes/adminAuthRoutes';
 import bcrypt from 'bcryptjs';
@@ -100,6 +101,7 @@ app.use('/api/ads', adsRouter);
 app.use('/api/sales', salesRouter);
 app.use('/api/customers', customersRouter);
 app.use('/api/config', configRouter);
+app.use('/api/spares', sparesRouter);
 
 app.get('/', (req, res) => {
     res.send('Bike Showroom API is running with Socket.io...');

@@ -2,26 +2,36 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { Package, Plus, Loader2, Settings2, Trash2, Edit3, Search } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
 import io from "socket.io-client";
 import { BikeEditModal } from "@/components/features/BikeEditModal";
+import { SpareEditModal } from "@/components/features/SpareEditModal";
 import { BikeImage } from "@/components/ui/BikeImage";
 
 const socket = io("http://localhost:5000");
 
 export default function InventoryPage() {
     const [bikes, setBikes] = useState<any[]>([]);
+    const [spares, setSpares] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<"bikes" | "spares">("bikes");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedBike, setSelectedBike] = useState<any | null>(null);
+    const [selectedSpare, setSelectedSpare] = useState<any | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState("name");
 
-    const fetchBikes = async () => {
+    const fetchInventory = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/bikes");
-            const data = await res.json();
-            if (data.success) setBikes(data.data);
+            const [bikesRes, sparesRes] = await Promise.all([
+                fetch("http://localhost:5000/api/bikes"),
+                fetch("http://localhost:5000/api/spares")
+            ]);
+            const bikesData = await bikesRes.json();
+            const sparesData = await sparesRes.json();
+            if (bikesData.success) setBikes(bikesData.data);
+            if (sparesData.success) setSpares(sparesData.data);
         } catch (err) {
             console.error("Failed to fetch inventory:", err);
         } finally {
@@ -30,7 +40,7 @@ export default function InventoryPage() {
     };
 
     useEffect(() => {
-        fetchBikes();
+        fetchInventory();
 
         socket.on("inventory_updated", (updatedBike: any) => {
             setBikes((prev) => prev.map(b => b._id === updatedBike._id ? updatedBike : b));
@@ -40,13 +50,18 @@ export default function InventoryPage() {
             setBikes(newBikes);
         });
 
+        socket.on("spares_updated", (newSpares: any[]) => {
+            setSpares(newSpares);
+        });
+
         return () => {
             socket.off("inventory_updated");
             socket.off("inventory_synced");
+            socket.off("spares_updated");
         };
     }, []);
 
-    const handleSave = async (formData: any) => {
+    const handleSaveBike = async (formData: any) => {
         const isEdit = !!formData._id;
         const url = isEdit
             ? `http://localhost:5000/api/bikes/${formData._id}`
@@ -60,11 +75,25 @@ export default function InventoryPage() {
 
         const data = await res.json();
         if (data.success) {
-            if (isEdit) {
-                setBikes(prev => prev.map(b => b._id === data.data._id ? data.data : b));
-            } else {
-                setBikes(prev => [...prev, data.data]);
-            }
+            fetchInventory(); // Refresh all
+        }
+    };
+
+    const handleSaveSpare = async (formData: any) => {
+        const isEdit = !!formData._id;
+        const url = isEdit
+            ? `http://localhost:5000/api/spares/${formData._id}`
+            : "http://localhost:5000/api/spares";
+
+        const res = await fetch(url, {
+            method: isEdit ? "PUT" : "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            fetchInventory(); // Refresh all
         }
     };
 
@@ -75,11 +104,22 @@ export default function InventoryPage() {
                 method: "DELETE"
             });
             const data = await res.json();
-            if (data.success) {
-                setBikes(prev => prev.filter(b => b._id !== id));
-            }
+            if (data.success) fetchInventory();
         } catch (err) {
             console.error("Failed to delete bike:", err);
+        }
+    };
+
+    const deleteSpare = async (id: string) => {
+        if (!confirm("Are you sure you want to delete this spare part?")) return;
+        try {
+            const res = await fetch(`http://localhost:5000/api/spares/${id}`, {
+                method: "DELETE"
+            });
+            const data = await res.json();
+            if (data.success) fetchInventory();
+        } catch (err) {
+            console.error("Failed to delete spare:", err);
         }
     };
 
@@ -114,7 +154,7 @@ export default function InventoryPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {items.map((bike: any) => (
                     <div key={bike._id} className="p-8 bg-card border border-border rounded-[2.5rem] shadow-2xl group hover:border-racing-blue/30 transition-all flex flex-col relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-6 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
+                        <div className="absolute top-0 right-0 p-6 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all z-10">
                             <button
                                 onClick={() => { setSelectedBike(bike); setIsModalOpen(true); }}
                                 className="p-2 bg-racing-blue text-white rounded-xl shadow-lg shadow-racing-blue/20"
@@ -206,14 +246,92 @@ export default function InventoryPage() {
         </div>
     );
 
+    const renderSpares = () => {
+        const filteredSpares = spares.filter(s =>
+            s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            s.bikeId?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            s.category.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-8">
+                {filteredSpares.map((spare: any) => (
+                    <div key={spare._id} className="p-6 bg-card border border-border rounded-[2rem] shadow-xl group hover:border-racing-blue/30 transition-all flex flex-col relative overflow-hidden">
+                        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-10">
+                            <button
+                                onClick={() => { setSelectedSpare(spare); setIsModalOpen(true); }}
+                                className="p-2 bg-racing-blue text-white rounded-lg"
+                            >
+                                <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                                onClick={() => deleteSpare(spare._id)}
+                                className="p-2 bg-red-500 text-white rounded-lg"
+                            >
+                                <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                        </div>
+
+                        <div className="aspect-square bg-background rounded-2xl mb-4 overflow-hidden border border-border p-2">
+                            <img src={spare.image} alt={spare.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform" />
+                        </div>
+
+                        <div className="mb-4">
+                            <span className="text-[8px] font-black uppercase tracking-widest text-racing-blue bg-racing-blue/10 px-2 py-0.5 rounded-full mb-2 inline-block">
+                                {spare.bikeId?.name || "All Bikes"}
+                            </span>
+                            <h4 className="text-lg font-display font-black text-foreground uppercase tracking-tight line-clamp-1">{spare.name}</h4>
+                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{spare.category}</p>
+                        </div>
+
+                        <div className="mt-auto pt-4 border-t border-border/10 flex justify-between items-center">
+                            <div>
+                                <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground block">Price</span>
+                                <span className="text-md font-display font-black text-foreground italic">₹ {spare.price}</span>
+                            </div>
+                            <div className="text-right">
+                                <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground block">Stock</span>
+                                <span className={cn(
+                                    "text-md font-display font-black italic",
+                                    spare.stock > 10 ? "text-green-500" : "text-red-500"
+                                )}>
+                                    {spare.stock}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
     return (
         <div className="space-y-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-display font-black text-gray-500 uppercase tracking-tighter">
-                        VEHICLE <span className="text-gradient">INVENTORY</span>
+                        SHOWROOM <span className="text-gradient">INVENTORY</span>
                     </h2>
-                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Consolidated model-wise stock control</p>
+                    <div className="flex items-center gap-6 mt-2">
+                        <button
+                            onClick={() => setActiveTab("bikes")}
+                            className={cn(
+                                "text-[10px] font-black uppercase tracking-[0.2em] transition-all",
+                                activeTab === "bikes" ? "text-racing-blue" : "text-zinc-500 hover:text-zinc-300"
+                            )}
+                        >
+                            Bikes & Scooters
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("spares")}
+                            className={cn(
+                                "text-[10px] font-black uppercase tracking-[0.2em] transition-all",
+                                activeTab === "spares" ? "text-racing-blue" : "text-zinc-500 hover:text-zinc-300"
+                            )}
+                        >
+                            Genuine Spares
+                        </button>
+                    </div>
                 </div>
                 <AdminTableControls
                     searchQuery={searchQuery}
@@ -225,15 +343,23 @@ export default function InventoryPage() {
                         { label: "Price: High to Low", value: "price-desc" },
                         { label: "Price: Low to High", value: "price-asc" }
                     ]}
-                    placeholder="Search models, tags, categories..."
+                    placeholder={activeTab === "bikes" ? "Search bikes..." : "Search spares..."}
                     className="flex-1"
                 />
                 <button
-                    onClick={() => { setSelectedBike(null); setIsModalOpen(true); }}
+                    onClick={() => {
+                        if (activeTab === "bikes") {
+                            setSelectedBike(null);
+                            setIsModalOpen(true);
+                        } else {
+                            setSelectedSpare(null);
+                            setIsModalOpen(true);
+                        }
+                    }}
                     className="flex items-center gap-2 px-6 py-3 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-racing-blue/20"
                 >
                     <Plus className="w-4 h-4" />
-                    Add Model
+                    {activeTab === "bikes" ? "Add Model" : "Add Spare"}
                 </button>
             </div>
 
@@ -245,18 +371,34 @@ export default function InventoryPage() {
                     </div>
                 ) : (
                     <div className="p-8 space-y-20">
-                        {motorcycles.length > 0 && renderGrid(motorcycles, "Motorcycles")}
-                        {scooters.length > 0 && renderGrid(scooters, "Scooters & Maxi-Scooters")}
+                        {activeTab === "bikes" ? (
+                            <>
+                                {motorcycles.length > 0 && renderGrid(motorcycles, "Motorcycles")}
+                                {scooters.length > 0 && renderGrid(scooters, "Scooters & Maxi-Scooters")}
+                            </>
+                        ) : (
+                            renderSpares()
+                        )}
                     </div>
                 )}
             </div>
 
-            <BikeEditModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                bike={selectedBike}
-                onSave={handleSave}
-            />
+            {activeTab === "bikes" ? (
+                <BikeEditModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    bike={selectedBike}
+                    onSave={handleSaveBike}
+                />
+            ) : (
+                <SpareEditModal
+                    isOpen={isModalOpen}
+                    onClose={() => { setIsModalOpen(false); setSelectedSpare(null); }}
+                    spare={selectedSpare}
+                    bikes={bikes}
+                    onSave={handleSaveSpare}
+                />
+            )}
         </div>
     );
 }

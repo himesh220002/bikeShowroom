@@ -63,7 +63,7 @@ export function FeaturedBikes() {
     };
 
     return (
-        <section id="machines" className="py-32 bg-transparent overflow-hidden border-y border-white/5">
+        <section id="machines" className="py-32 bg-transparent overflow-hidden border-y border-white/5" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
                     <div className="space-y-4">
@@ -111,10 +111,10 @@ export function FeaturedBikes() {
                                     className="block h-full"
                                 >
                                     <motion.div
-                                        initial={{ opacity: 0, scale: 0.95 }}
-                                        whileInView={{ opacity: 1, scale: 1 }}
-                                        viewport={{ once: true, margin: "-100px" }}
-                                        transition={{ duration: 0.4, ease: "easeOut" }}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true, margin: "0px" }}
+                                        transition={{ duration: 0.5, ease: "easeOut" }}
                                         className="group relative bg-zinc-900/70 backdrop-blur-md rounded-[2.5rem] p-8 h-[550px] border border-zinc-800/50 hover:border-racing-blue/40 transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden will-change-transform gpu-accelerated"
                                     >
                                         {/* Dynamic Background Glow */}
