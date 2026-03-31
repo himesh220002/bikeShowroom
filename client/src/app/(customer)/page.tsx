@@ -9,7 +9,7 @@ import { MapPin, Clock, Phone, Info, User } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col bg-zinc-950/40 overflow-x-hidden fixed-bg">
+    <div className="flex flex-col bg-zinc-950/40 overflow-x-hidden">
       <Hero />
 
       {/* <AdCarousel /> */}

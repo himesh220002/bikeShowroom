@@ -13,7 +13,7 @@ export default function AdminLayout({
 
     return (
         <AdminAuth>
-            <div className="flex min-h-screen dark bg-background transition-colors duration-300">
+            <div className="flex min-h-screen bg-background transition-colors duration-300">
                 <AdminSidebar />
                 <main className="flex-1 p-4 md:p-8 overflow-y-auto lg:ml-64 pt-20 lg:pt-8">
                     <div className="max-w-[1600px] mx-auto h-full">
