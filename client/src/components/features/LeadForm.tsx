@@ -30,6 +30,23 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
     const { user } = useAuth();
     const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
     const [response, setResponse] = useState<{ score?: number, message?: string }>({});
+    const [captcha, setCaptcha] = useState({ n1: 0, n2: 0 });
+    const [userCaptcha, setUserCaptcha] = useState("");
+
+    const generateCaptcha = () => {
+        setCaptcha({
+            n1: Math.floor(Math.random() * 9) + 1,
+            n2: Math.floor(Math.random() * 9) + 1
+        });
+        setUserCaptcha("");
+    };
+
+    useState(() => {
+        // Initial captcha generation
+        if (typeof window !== 'undefined') {
+            generateCaptcha();
+        }
+    });
 
     const getInitialNotes = () => {
         if (defaultInterest === "BOOKING") return `I'm interested in booking the ${bikeModel || 'bike'}. Please contact me with details.`;
@@ -57,6 +74,14 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
 
     async function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
+
+        // CAPTCHA Validation
+        if (parseInt(userCaptcha) !== captcha.n1 + captcha.n2) {
+            alert("Security Check: Verification answer is incorrect.");
+            generateCaptcha();
+            return;
+        }
+
         setStatus("submitting");
 
         const formData = new FormData(e.currentTarget);
@@ -96,7 +121,10 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                     {response.score && <span className="block mt-4 text-racing-blue font-black uppercase text-xs tracking-widest">Lead Priority Score: {response.score}</span>}
                                 </p>
                                 <button
-                                    onClick={() => setStatus("idle")}
+                                    onClick={() => {
+                                        setStatus("idle");
+                                        generateCaptcha();
+                                    }}
                                     className="bg-zinc-900 border border-zinc-700 px-10 py-4 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all text-gray-300"
                                 >
                                     New Inquiry
@@ -112,7 +140,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 <form onSubmit={handleFormSubmit} className="space-y-6 md:space-y-8">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 ml-2">Pilot Name</label>
+                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-300 ml-2">Pilot Name</label>
                                             <div className="relative">
                                                 <User className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                                                 <input
@@ -121,12 +149,12 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                     type="text"
                                                     defaultValue={user?.displayName || ""}
                                                     placeholder="Who's riding?"
-                                                    className="w-full bg-zinc-950 border border-zinc-800 focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-4 md:py-5 text-sm font-black text-white transition-all outline-none"
+                                                    className="w-full bg-zinc-200 border border-zinc-800 focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-4 md:py-5 text-sm font-black text-black transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 ml-2">Mobile Number</label>
+                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-300 ml-2">Mobile Number</label>
                                             <div className="relative">
                                                 <Phone className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                                                 <input
@@ -143,12 +171,12 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                         target.value = val;
                                                     }}
                                                     placeholder="Mobile number"
-                                                    className="w-full bg-zinc-950 border border-zinc-800 focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-4 md:py-5 text-sm font-black text-white transition-all outline-none"
+                                                    className="w-full bg-zinc-200 border border-zinc-800 focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-4 md:py-5 text-sm font-black text-black transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
                                         <div className="space-y-2 sm:col-span-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 ml-2">Email Address</label>
+                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-300 ml-2">Email Address</label>
                                             <div className="relative">
                                                 <Send className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 shadow-xl" />
                                                 <input
@@ -157,14 +185,14 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                     type="email"
                                                     defaultValue={user?.email || ""}
                                                     placeholder="email@example.com"
-                                                    className="w-full bg-zinc-950 border border-zinc-800 focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-4 md:py-5 text-sm font-black text-white transition-all outline-none"
+                                                    className="w-full bg-zinc-200 border border-zinc-800 focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-4 md:py-5 text-sm font-black text-black transition-all outline-none"
                                                 />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 ml-2">Interested In</label>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-300 ml-2">Interested In</label>
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                                             {interests.map((item) => (
                                                 <label key={item.id} className="relative group cursor-pointer block w-full">
@@ -191,7 +219,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 ml-2">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-300 ml-2">
                                             Inquiry Notes (Optional)
                                         </label>
                                         <textarea
@@ -200,8 +228,8 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                             value={notes}
                                             onChange={(e) => setNotes(e.target.value)}
                                             placeholder="EMI preferences, test ride schedule..."
-                                            className="w-full bg-zinc-950 border border-zinc-800 focus:border-racing-blue/30 
-                                                rounded-2xl md:rounded-3xl px-6 md:px-8 py-4 md:py-5 text-sm font-black text-white transition-all outline-none
+                                            className="w-full bg-zinc-200 border border-zinc-800 focus:border-racing-blue/30 
+                                                rounded-2xl md:rounded-3xl px-6 md:px-8 py-4 md:py-5 text-sm font-black text-black transition-all outline-none
                                                 resize-y overflow-hidden max-h-[300px]"
                                             onInput={(e) => {
                                                 const target = e.target as HTMLTextAreaElement;
@@ -212,6 +240,28 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                         />
                                     </div>
 
+
+                                    <div className="space-y-4 bg-zinc-950/50 border border-zinc-800/50 rounded-3xl p-6">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-racing-blue">Security Check</label>
+                                                <p className="text-sm font-black text-white italic">What is {captcha.n1} + {captcha.n2} ?</p>
+                                            </div>
+                                            <div className="relative w-full sm:w-32">
+                                                <input
+                                                    required
+                                                    type="number"
+                                                    value={userCaptcha}
+                                                    onChange={(e) => setUserCaptcha(e.target.value)}
+                                                    placeholder="Sum..."
+                                                    className="w-full bg-zinc-200 border border-zinc-800 focus:border-racing-blue/30 rounded-2xl px-6 py-4 text-sm font-black text-black transition-all outline-none text-center"
+                                                />
+                                            </div>
+                                        </div>
+                                        <p className="text-[8px] text-gray-600 font-bold uppercase tracking-widest leading-relaxed">
+                                            To ensure zero-bot interference, please prove your humanity.
+                                        </p>
+                                    </div>
 
                                     <input type="hidden" name="bikeModel" value={bikeModel || ""} />
 
