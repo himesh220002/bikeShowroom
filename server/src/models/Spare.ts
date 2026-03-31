@@ -18,7 +18,7 @@ const SpareSchema: Schema = new Schema({
     price: { type: Number, required: true },
     description: { type: String, required: true },
     image: { type: String, required: true },
-    bikeId: { type: Schema.Types.ObjectId, ref: 'Bike', required: true },
+    bikeId: { type: Schema.Types.ObjectId, ref: 'Bike' },
     category: { type: String, default: 'General' },
     stock: { type: Number, default: 0 },
     status: { type: String, enum: ['In Stock', 'Out of Stock'], default: 'In Stock' }

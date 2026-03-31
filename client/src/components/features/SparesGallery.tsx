@@ -18,9 +18,10 @@ export function SparesGallery() {
         axios.get("http://localhost:5000/api/bikes")
             .then(res => {
                 if (res.data.success) {
-                    setBikes(res.data.data);
-                    // Select first bike by default if none selected
-                    if (res.data.data.length > 0) setSelectedBike(res.data.data[0]);
+                    const fetchedBikes = res.data.data;
+                    setBikes(fetchedBikes);
+                    // Default to 'Common Spares' if it exists or define a placeholder
+                    setSelectedBike({ _id: 'common', name: 'Common Spares' });
                 }
             })
             .catch(err => console.error("Failed to fetch bikes:", err));
@@ -29,7 +30,11 @@ export function SparesGallery() {
     useEffect(() => {
         if (selectedBike) {
             setLoading(true);
-            axios.get(`http://localhost:5000/api/spares?bikeId=${selectedBike._id}`)
+            const url = selectedBike._id === 'common'
+                ? "http://localhost:5000/api/spares?bikeId=common"
+                : `http://localhost:5000/api/spares?bikeId=${selectedBike._id}`;
+
+            axios.get(url)
                 .then(res => {
                     if (res.data.success) setSpares(res.data.data);
                 })
@@ -45,55 +50,73 @@ export function SparesGallery() {
 
     return (
         <div className="space-y-12">
-            {/* Bike Selection Hub */}
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {bikes.map((bike) => (
-                    <button
-                        key={bike._id}
-                        onClick={() => setSelectedBike(bike)}
-                        className={cn(
-                            "group p-4 rounded-3xl border transition-all flex flex-col items-center gap-3",
-                            selectedBike?._id === bike._id
-                                ? "bg-racing-blue/10 border-racing-blue shadow-lg shadow-racing-blue/10"
-                                : "bg-zinc-900/50 border-zinc-800 hover:border-zinc-700"
-                        )}
-                    >
-                        <div className="w-16 h-16 rounded-2xl bg-black/40 p-2 flex items-center justify-center overflow-hidden border border-zinc-800 group-hover:scale-110 transition-transform">
-                            <img
-                                src={bike.colors?.[0]?.image.startsWith('http') ? bike.colors[0].image : `${bike.colorBaseUrl || '/images/bikes/'}${bike.colors?.[0]?.image}`}
-                                alt={bike.name}
-                                className="w-full h-full object-contain"
-                            />
+            {/* Selection Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-white/5">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-racing-blue/10 flex items-center justify-center border border-racing-blue/20">
+                            <Package className="w-6 h-6 text-racing-blue" />
                         </div>
-                        <span className={cn(
-                            "text-[9px] font-black uppercase tracking-widest text-center leading-tight",
-                            selectedBike?._id === bike._id ? "text-racing-blue" : "text-zinc-500 group-hover:text-zinc-300"
-                        )}>
-                            {bike.name}
-                        </span>
-                    </button>
-                ))}
+                        <div>
+                            <h2 className="text-3xl font-display font-black text-white uppercase tracking-tighter italic">
+                                Genuine <span className="text-gradient">Spares</span>
+                            </h2>
+                            <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mt-1">
+                                Factory certified performance parts
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Select Your Machine</label>
+                        <div className="relative group w-full sm:max-w-[350px]">
+                            <select
+                                value={selectedBike?._id || 'common'}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val === 'common') setSelectedBike({ _id: 'common', name: 'Common Spares' });
+                                    else {
+                                        const bike = bikes.find(b => b._id === val);
+                                        if (bike) setSelectedBike(bike);
+                                    }
+                                }}
+                                className="w-full bg-zinc-900/50 border border-zinc-800 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-racing-blue transition-all appearance-none cursor-pointer hover:bg-zinc-900"
+                            >
+                                <option value="common">Common & Universal Spares (Oils, Filters etc.)</option>
+                                <optgroup label="Bikes & Scooters">
+                                    {bikes.map(bike => (
+                                        <option key={bike._id} value={bike._id}>{bike.name}</option>
+                                    ))}
+                                </optgroup>
+                            </select>
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500 group-hover:text-racing-blue transition-colors">
+                                <ChevronRight className="w-4 h-4 rotate-90" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-2 w-full md:max-w-[320px]">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Search Catalog</label>
+                    <div className="relative group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-racing-blue transition-colors" />
+                        <input
+                            placeholder="Search parts, oil, filters..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-zinc-900/50 border border-zinc-800 rounded-2xl pl-12 pr-6 py-4 text-sm text-white focus:outline-none focus:border-racing-blue transition-all"
+                        />
+                    </div>
+                </div>
             </div>
 
             {/* Spares Grid Section */}
             <div className="space-y-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                        <h3 className="text-2xl font-display font-black text-white uppercase tracking-tighter">
-                            GENUINE <span className="text-gradient">SPARES</span> FOR {selectedBike?.name}
+                        <h3 className="text-xl font-display font-black text-white uppercase tracking-tight">
+                            Viewing: <span className="text-racing-blue">{selectedBike?.name}</span>
                         </h3>
-                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.2em] mt-1 italic">
-                            Factory-certified components for maximum performance
-                        </p>
-                    </div>
-                    <div className="relative group w-full md:w-80">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-racing-blue transition-colors" />
-                        <input
-                            placeholder="Search parts, oil, filters..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl pl-12 pr-6 py-4 text-sm text-white focus:outline-none focus:border-racing-blue transition-all"
-                        />
                     </div>
                 </div>
 
@@ -116,8 +139,8 @@ export function SparesGallery() {
                                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
                             >
                                 {filteredSpares.map((spare) => (
-                                    <div key={spare._id} className="group glass border border-white/5 rounded-[2.5rem] p-6 hover:border-racing-blue/30 transition-all flex flex-col">
-                                        <div className="aspect-square rounded-3xl bg-black/40 border border-zinc-800/50 p-6 mb-6 overflow-hidden relative">
+                                    <div key={spare._id} className="group border border-white/20 bg-zinc-900 rounded-[1.5rem] p-3 hover:border-racing-blue/30 transition-all flex flex-col">
+                                        <div className="aspect-square rounded-3xl bg-black/40 border border-zinc-800/50 p-0 mb-6 overflow-hidden relative">
                                             <img
                                                 src={spare.image}
                                                 alt={spare.name}
@@ -140,7 +163,7 @@ export function SparesGallery() {
                                             <h4 className="text-lg font-display font-black text-white uppercase tracking-tight mb-2 group-hover:text-racing-blue transition-colors">
                                                 {spare.name}
                                             </h4>
-                                            <p className="text-[10px] text-zinc-500 font-medium leading-relaxed line-clamp-2">
+                                            <p className="text-[12px] text-zinc-500 font-medium leading-relaxed line-clamp-2">
                                                 {spare.description}
                                             </p>
                                         </div>

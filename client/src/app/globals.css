@@ -24,6 +24,17 @@
   --dark-racing: #0056b3;
 }
 
+.light {
+  --background: #f8fafc;
+  --foreground: #101f64;
+  --card: #ffffff;
+  --card-foreground: #020617;
+  --border: #e2e8f0;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --ring: #3b82f6;
+}
+
 .dark {
   --background: #09090b;
   /* Zinc 950 */

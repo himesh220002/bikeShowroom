@@ -143,11 +143,11 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                                         <Box className="w-3 h-3" /> Compatible Bike
                                     </label>
                                     <select
-                                        required
                                         value={formData.bikeId}
                                         onChange={(e) => setFormData({ ...formData, bikeId: e.target.value })}
                                         className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all appearance-none"
                                     >
+                                        <option value="">Common / Universal (No Bike)</option>
                                         {bikes.map(bike => (
                                             <option key={bike._id} value={bike._id}>{bike.name}</option>
                                         ))}

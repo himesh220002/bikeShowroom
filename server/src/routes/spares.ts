@@ -7,7 +7,9 @@ const router = Router();
 // Create a new spare
 router.post('/', async (req, res) => {
     try {
-        const spare = new Spare(req.body);
+        const spareData = { ...req.body };
+        if (spareData.bikeId === "") spareData.bikeId = null;
+        const spare = new Spare(spareData);
         await spare.save();
 
         const io = (req as any).io;
@@ -26,7 +28,12 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const { bikeId } = req.query;
-        const query = bikeId ? { bikeId } : {};
+        let query = {};
+        if (bikeId === 'common') {
+            query = { bikeId: null };
+        } else if (bikeId) {
+            query = { bikeId };
+        }
         const spares = await Spare.find(query).populate('bikeId').sort({ createdAt: -1 });
         res.json({ success: true, data: spares });
     } catch (error: any) {
@@ -37,7 +44,9 @@ router.get('/', async (req, res) => {
 // Update a spare
 router.put('/:id', async (req, res) => {
     try {
-        const spare = await Spare.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updateData = { ...req.body };
+        if (updateData.bikeId === "") updateData.bikeId = null;
+        const spare = await Spare.findByIdAndUpdate(req.params.id, updateData, { new: true });
         if (!spare) return res.status(404).json({ success: false, message: 'Spare not found' });
 
         const io = (req as any).io;

@@ -173,10 +173,13 @@ export default function InventoryPage() {
                             <div className="w-20 h-20 bg-background border border-border rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-black/5 overflow-hidden p-1">
                                 {bike.colors && bike.colors.length > 0 ? (
                                     <BikeImage
-                                        src={bike.colors[0].image.startsWith('http') || bike.colors[0].image.startsWith('/')
-                                            ? bike.colors[0].image
-                                            : `${bike.colorBaseUrl || '/images/bikes/'}${bike.colors[0].image}`
-                                        }
+                                        src={(() => {
+                                            const img = bike.colors[0].image;
+                                            if (img.startsWith('http') || img.startsWith('/')) return img;
+                                            // Prevent double 'images/' if paths are inconsistent
+                                            const cleanImg = img.startsWith('images/') ? img.replace('images/', '') : img;
+                                            return `${bike.colorBaseUrl || '/images/bikes/'}${cleanImg}`;
+                                        })()}
                                         alt={bike.name}
                                         width={64}
                                         height={64}
