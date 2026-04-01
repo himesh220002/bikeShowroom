@@ -9,6 +9,7 @@ export async function submitLead(formData: FormData) {
         const rawData = {
             name: formData.get("name"),
             phone: formData.get("phone"),
+            email: formData.get("email") || undefined,
             interests: formData.getAll("interest"),
             message: formData.get("message") || undefined,
         };

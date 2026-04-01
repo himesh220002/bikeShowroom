@@ -8,6 +8,7 @@ import io from "socket.io-client";
 import { BikeEditModal } from "@/components/features/BikeEditModal";
 import { SpareEditModal } from "@/components/features/SpareEditModal";
 import { BikeImage } from "@/components/ui/BikeImage";
+import { cleanImageUrl } from "@/lib/utils/url";
 
 const socket = io("http://localhost:5000");
 
@@ -174,11 +175,11 @@ export default function InventoryPage() {
                                 {bike.colors && bike.colors.length > 0 ? (
                                     <BikeImage
                                         src={(() => {
-                                            const img = bike.colors[0].image;
+                                            const img = cleanImageUrl(bike.colors[0].image);
                                             if (img.startsWith('http') || img.startsWith('/')) return img;
                                             // Prevent double 'images/' if paths are inconsistent
                                             const cleanImg = img.startsWith('images/') ? img.replace('images/', '') : img;
-                                            return `${bike.colorBaseUrl || '/images/bikes/'}${cleanImg}`;
+                                            return `${cleanImageUrl(bike.colorBaseUrl) || '/images/bikes/'}${cleanImg}`;
                                         })()}
                                         alt={bike.name}
                                         width={64}
@@ -276,7 +277,7 @@ export default function InventoryPage() {
                         </div>
 
                         <div className="aspect-square bg-background rounded-2xl mb-4 overflow-hidden border border-border p-2">
-                            <img src={spare.image} alt={spare.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform" />
+                            <img src={cleanImageUrl(spare.image)} alt={spare.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform" />
                         </div>
 
                         <div className="mb-4">

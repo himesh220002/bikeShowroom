@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { X, Upload, Loader2, Package, Tag, Info, DollarSign, Box } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils/cn";
+import { cleanImageUrl } from "@/lib/utils/url";
 
 interface SpareEditModalProps {
     isOpen: boolean;
@@ -178,7 +179,7 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                                     <input
                                         required
                                         value={formData.image}
-                                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                                        onChange={(e) => setFormData({ ...formData, image: cleanImageUrl(e.target.value) })}
                                         placeholder="https://... or /images/spares/..."
                                         className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
                                     />

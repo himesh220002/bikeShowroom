@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { BikeImage } from "@/components/ui/BikeImage";
+import { BoxRevealImage } from "@/components/ui/BoxRevealImage";
 
 interface BikeDetailsHeroProps {
     bike: any;
@@ -222,14 +223,10 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                         className="relative hidden lg:block"
                     >
                         <div className="absolute inset-0 bg-racing-blue/20 blur-[150px] opacity-20 -z-10" />
-                        <BikeImage
+                        <BoxRevealImage
                             src={color.image}
-                            fallbackSrc={bike.threeSixtyUrl ? `${bike.threeSixtyUrl.replace('360/', 'color/')}${color.colorOption}.webp` : undefined}
                             alt={bike.name}
-                            width={800}
-                            height={600}
-                            className="w-full h-auto object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.6)]"
-                            priority
+                            className="w-full h-auto"
                         />
 
                         {/* Interactive floating specs */}

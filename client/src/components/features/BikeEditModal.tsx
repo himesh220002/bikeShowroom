@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { X, Plus, Trash2, Check, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { cleanImageUrl } from "@/lib/utils/url";
 
 interface Color {
     name: string;
@@ -77,6 +78,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
         }
     });
     const [saving, setSaving] = useState(false);
+    const [featuresInput, setFeaturesInput] = useState("");
 
     useEffect(() => {
         if (bike) {
@@ -97,6 +99,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                     features: []
                 }
             });
+            setFeaturesInput(bike.fullSpecs?.features?.join(", ") || "");
         } else {
             setFormData({
                 name: "",
@@ -140,6 +143,18 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
             setSaving(false);
         }
     };
+
+    const handleFeaturesChange = (value: string) => {
+        setFeaturesInput(value);
+        const features = value.split(",")
+            .map(f => f.trim())
+            .filter(f => f !== "");
+        setFormData(prev => ({
+            ...prev,
+            fullSpecs: { ...prev.fullSpecs, features }
+        }));
+    };
+
 
     const addColor = () => {
         setFormData({
@@ -387,8 +402,8 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Key Features (Comma separated)</label>
                                         <input
                                             type="text"
-                                            value={formData.fullSpecs.features.join(", ")}
-                                            onChange={(e) => setFormData({ ...formData, fullSpecs: { ...formData.fullSpecs, features: e.target.value.split(",").map(f => f.trim()).filter(f => f !== "") } })}
+                                            value={featuresInput}
+                                            onChange={(e) => handleFeaturesChange(e.target.value)}
                                             className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
                                             placeholder="VVA Technology, Traction Control, Quick Shifter"
                                         />
@@ -408,7 +423,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                         <input
                                             type="text"
                                             value={formData.threeSixtyUrl}
-                                            onChange={(e) => setFormData({ ...formData, threeSixtyUrl: e.target.value })}
+                                            onChange={(e) => setFormData({ ...formData, threeSixtyUrl: cleanImageUrl(e.target.value) })}
                                             className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
                                             placeholder="https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/"
                                         />
@@ -419,7 +434,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                         <input
                                             type="text"
                                             value={formData.colorBaseUrl}
-                                            onChange={(e) => setFormData({ ...formData, colorBaseUrl: e.target.value })}
+                                            onChange={(e) => setFormData({ ...formData, colorBaseUrl: cleanImageUrl(e.target.value) })}
                                             className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
                                             placeholder="https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/color/"
                                         />
@@ -439,7 +454,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                         <input
                                             type="text"
                                             value={formData.brochureUrl}
-                                            onChange={(e) => setFormData({ ...formData, brochureUrl: e.target.value })}
+                                            onChange={(e) => setFormData({ ...formData, brochureUrl: cleanImageUrl(e.target.value) })}
                                             className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
                                             placeholder="e.g. /brochure/r15.pdf"
                                         />
@@ -520,7 +535,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                                         required
                                                         type="text"
                                                         value={color.image}
-                                                        onChange={(e) => updateColor(index, 'image', e.target.value)}
+                                                        onChange={(e) => updateColor(index, 'image', cleanImageUrl(e.target.value))}
                                                         className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
                                                         placeholder="e.g. /images/r15m.png (local) or direct path"
                                                     />

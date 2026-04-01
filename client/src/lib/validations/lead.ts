@@ -7,6 +7,7 @@ export const LeadSchema = z.object({
     phone: z.string()
         .regex(/^[6-9]\d{9}$/, "Please enter a valid 10-digit Indian mobile number"),
     interests: z.array(z.string()).min(1, "Please select at least one interest"),
+    email: z.string().email("Enter a valid email address").optional().or(z.literal("")),
     message: z.string().max(500, "Message must be under 500 characters").optional(),
 });
 
