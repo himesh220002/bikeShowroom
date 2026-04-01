@@ -44,13 +44,13 @@ export default function ServicePage() {
                     <div className="lg:col-span-12 xl:col-span-5 space-y-12">
                         <ServiceBooking />
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
                             {[
                                 { icon: Wrench, label: "Certified", value: "Technicians" },
                                 { icon: Shield, label: "Official", value: "Warranty" },
                                 { icon: Zap, label: "Quick", value: "Turnaround" }
                             ].map((stat, i) => (
-                                <div key={i} className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-[2rem] text-center hover:border-racing-blue/20 transition-all group">
+                                <div key={i} className="p-3 md:p-6 bg-zinc-900/30 border border-zinc-800 rounded-[2rem] text-center hover:border-racing-blue/20 transition-all group">
                                     <stat.icon className="w-6 h-6 text-racing-blue mx-auto mb-4 group-hover:scale-110 transition-transform" />
                                     <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500 block mb-1">{stat.label}</span>
                                     <span className="text-sm font-black text-white uppercase tracking-tighter italic">{stat.value}</span>

@@ -2,6 +2,7 @@
 
 import { Wrench, Bike, Calendar, Package, MoreVertical, Phone, MessageSquare, Users, Clock, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { ExportButton } from "@/components/ui/ExportButton";
 
 export interface ServiceBooking {
     _id: string;
@@ -47,103 +48,121 @@ export function ServicesTable({ services }: ServicesTableProps) {
     };
 
     return (
-        <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-                <thead>
-                    <tr className="border-b border-border">
-                        <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Booking Info</th>
-                        <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Vehicle</th>
-                        <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Schedule</th>
-                        <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {services.map((service) => (
-                        <tr key={service._id} className="border-b border-border/30 group hover:bg-muted/30 transition-colors">
-                            <td className="py-6 px-4">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center border border-border">
-                                        <Users className="w-5 h-5 text-muted-foreground" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-black text-foreground">{service.name}</p>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <Phone className="w-3 h-3 text-muted-foreground/60" />
-                                            <span className="text-[10px] font-bold text-muted-foreground">{service.phone}</span>
+        <div className="space-y-4">
+            <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-racing-blue/10 rounded-lg">
+                        <Wrench className="w-5 h-5 text-racing-blue" />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Service Queue</h3>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase">{services.length} Scheduled Appointments</p>
+                    </div>
+                </div>
+                <ExportButton
+                    data={services}
+                    filename="Yamaha_Services_Report"
+                    sheetName="Services"
+                />
+            </div>
+            <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="border-b border-border">
+                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Booking Info</th>
+                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Vehicle</th>
+                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Schedule</th>
+                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {services.map((service) => (
+                            <tr key={service._id} className="border-b border-border/30 group hover:bg-muted/30 transition-colors">
+                                <td className="py-6 px-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center border border-border">
+                                            <Users className="w-5 h-5 text-muted-foreground" />
                                         </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="py-6 px-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-racing-blue/10 rounded-lg">
-                                        <Bike className="w-4 h-4 text-racing-blue" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-black text-foreground uppercase tracking-tighter">{service.bikeModel}</p>
-                                        <p className="text-[10px] font-bold text-muted-foreground uppercase">{service.serviceType}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="py-6 px-4">
-                                <div className="flex flex-col gap-1">
-                                    <div className="flex items-center gap-2 text-foreground">
-                                        <Calendar className="w-3.5 h-3.5" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">
-                                            {service.appointmentDate}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-muted-foreground">
-                                        <Clock className="w-3.5 h-3.5" />
-                                        <span className="text-[10px] font-bold">{service.appointmentTime}</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="py-6 px-4 text-right">
-                                <div className="flex flex-col items-end gap-2">
-                                    <div className="flex gap-2">
-                                        <button className="p-2 rounded-xl border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 group/btn transition-all">
-                                            <MessageSquare className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
-                                        </button>
-                                        <button className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all">
-                                            <Phone className="w-4 h-4 text-green-600 dark:text-green-400 group-hover/btn:scale-110 transition-transform" />
-                                        </button>
-                                    </div>
-                                    <div className="relative group/status w-full flex justify-end">
-                                        <span className={cn(
-                                            "flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all cursor-pointer",
-                                            statusColors[service.status as keyof typeof statusColors] || "bg-muted text-muted-foreground border-border"
-                                        )}>
-                                            {service.status.replace('-', ' ')}
-                                            <ChevronDown className="w-3 h-3 transition-transform group-hover/status:rotate-180" />
-                                        </span>
-                                        <div className="absolute top-full right-0 pt-2 hidden group-hover/status:block z-50">
-                                            <div className="flex flex-col bg-card border border-border rounded-xl shadow-2xl overflow-hidden w-40">
-                                                {STATUS_OPTIONS.map((opt) => (
-                                                    <button
-                                                        key={opt}
-                                                        onClick={() => updateStatus(service._id, opt)}
-                                                        className="px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground hover:text-foreground border-b border-border/50 last:border-0"
-                                                    >
-                                                        {opt.replace('-', ' ')}
-                                                    </button>
-                                                ))}
+                                        <div>
+                                            <p className="text-sm font-black text-foreground">{service.name}</p>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <Phone className="w-3 h-3 text-muted-foreground/60" />
+                                                <span className="text-[10px] font-bold text-muted-foreground">{service.phone}</span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                    {services.length === 0 && (
-                        <tr>
-                            <td colSpan={4} className="py-20 text-center opacity-30 italic text-sm font-medium text-muted-foreground">
-                                No workshop bookings in the queue...
-                            </td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+                                </td>
+                                <td className="py-6 px-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-racing-blue/10 rounded-lg">
+                                            <Bike className="w-4 h-4 text-racing-blue" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-black text-foreground uppercase tracking-tighter">{service.bikeModel}</p>
+                                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{service.serviceType}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="py-6 px-4">
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-2 text-foreground">
+                                            <Calendar className="w-3.5 h-3.5" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest">
+                                                {service.appointmentDate}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                            <Clock className="w-3.5 h-3.5" />
+                                            <span className="text-[10px] font-bold">{service.appointmentTime}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="py-6 px-4 text-right">
+                                    <div className="flex flex-col items-end gap-2">
+                                        <div className="flex gap-2">
+                                            <button className="p-2 rounded-xl border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 group/btn transition-all">
+                                                <MessageSquare className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
+                                            </button>
+                                            <button className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all">
+                                                <Phone className="w-4 h-4 text-green-600 dark:text-green-400 group-hover/btn:scale-110 transition-transform" />
+                                            </button>
+                                        </div>
+                                        <div className="relative group/status w-full flex justify-end">
+                                            <span className={cn(
+                                                "flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all cursor-pointer",
+                                                statusColors[service.status as keyof typeof statusColors] || "bg-muted text-muted-foreground border-border"
+                                            )}>
+                                                {service.status.replace('-', ' ')}
+                                                <ChevronDown className="w-3 h-3 transition-transform group-hover/status:rotate-180" />
+                                            </span>
+                                            <div className="absolute top-full right-0 pt-2 hidden group-hover/status:block z-50">
+                                                <div className="flex flex-col bg-card border border-border rounded-xl shadow-2xl overflow-hidden w-40">
+                                                    {STATUS_OPTIONS.map((opt) => (
+                                                        <button
+                                                            key={opt}
+                                                            onClick={() => updateStatus(service._id, opt)}
+                                                            className="px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground hover:text-foreground border-b border-border/50 last:border-0"
+                                                        >
+                                                            {opt.replace('-', ' ')}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                        {services.length === 0 && (
+                            <tr>
+                                <td colSpan={4} className="py-20 text-center opacity-30 italic text-sm font-medium text-muted-foreground">
+                                    No workshop bookings in the queue...
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }

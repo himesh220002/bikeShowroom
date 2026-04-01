@@ -9,6 +9,7 @@ import { BikeEditModal } from "@/components/features/BikeEditModal";
 import { SpareEditModal } from "@/components/features/SpareEditModal";
 import { BikeImage } from "@/components/ui/BikeImage";
 import { cleanImageUrl } from "@/lib/utils/url";
+import { ExportButton } from "@/components/ui/ExportButton";
 
 const socket = io("http://localhost:5000");
 
@@ -152,7 +153,7 @@ export default function InventoryPage() {
                 {title}
                 <span className="px-2 py-0.5 bg-racing-blue/10 rounded text-[10px]">{items.length} Models</span>
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {items.map((bike: any) => (
                     <div key={bike._id} className="p-8 bg-card border border-border rounded-[2.5rem] shadow-2xl group hover:border-racing-blue/30 transition-all flex flex-col relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-6 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all z-10">
@@ -170,7 +171,7 @@ export default function InventoryPage() {
                             </button>
                         </div>
 
-                        <div className="flex justify-between items-start mb-6">
+                        <div className="flex justify-between items-start mb-2">
                             <div className="w-20 h-20 bg-background border border-border rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-black/5 overflow-hidden p-1">
                                 {bike.colors && bike.colors.length > 0 ? (
                                     <BikeImage
@@ -203,7 +204,7 @@ export default function InventoryPage() {
                             {bike.tag}
                         </div>
 
-                        <div className="space-y-4 pt-6 border-t border-border/10 flex-1">
+                        <div className="space-y-4 border-t border-border/10 flex-1">
                             <div className="flex flex-wrap gap-2">
                                 {bike.colors.map((color: any, idx: number) => (
                                     <div
@@ -212,10 +213,12 @@ export default function InventoryPage() {
                                         title={`${color.name}: ${color.stock} in stock`}
                                     >
                                         <div
-                                            className="w-2.5 h-2.5 rounded-full border border-white/20"
+                                            className="w-3.5 h-3.5 rounded-full border border-white/20"
                                             style={{ backgroundColor: color.hex }}
                                         />
-                                        <span className="text-[12px] font-black uppercase tracking-widest text-foreground/70">{color.stock}</span>
+                                        <span className="text-[12px] ">{color.name}</span>
+                                        <span className="text-[14px] font-black uppercase tracking-widest text-foreground/70">{color.stock}</span>
+
                                     </div>
                                 ))}
                             </div>
@@ -320,8 +323,8 @@ export default function InventoryPage() {
                         <button
                             onClick={() => setActiveTab("bikes")}
                             className={cn(
-                                "text-[10px] font-black uppercase tracking-[0.2em] transition-all",
-                                activeTab === "bikes" ? "text-racing-blue" : "text-zinc-500 hover:text-zinc-300"
+                                "text-[10px] font-black uppercase tracking-[0.2em] transition-all p-2 rounded-lg bg-cyan-100",
+                                activeTab === "bikes" ? "text-racing-blue bg-white border-b-5 border-blue-900 border-rounded-lg" : "text-zinc-500 hover:text-zinc-800"
                             )}
                         >
                             Bikes & Scooters
@@ -329,8 +332,8 @@ export default function InventoryPage() {
                         <button
                             onClick={() => setActiveTab("spares")}
                             className={cn(
-                                "text-[10px] font-black uppercase tracking-[0.2em] transition-all",
-                                activeTab === "spares" ? "text-racing-blue" : "text-zinc-500 hover:text-zinc-300"
+                                "text-[10px] font-black uppercase tracking-[0.2em] transition-all p-2 rounded-lg bg-cyan-100",
+                                activeTab === "spares" ? "text-racing-blue bg-white border-b-5 border-blue-900 border-rounded-lg" : "text-zinc-500 hover:text-zinc-800"
                             )}
                         >
                             Genuine Spares
@@ -350,21 +353,32 @@ export default function InventoryPage() {
                     placeholder={activeTab === "bikes" ? "Search bikes..." : "Search spares..."}
                     className="flex-1"
                 />
-                <button
-                    onClick={() => {
-                        if (activeTab === "bikes") {
-                            setSelectedBike(null);
-                            setIsModalOpen(true);
-                        } else {
-                            setSelectedSpare(null);
-                            setIsModalOpen(true);
-                        }
-                    }}
-                    className="flex items-center gap-2 px-6 py-3 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-racing-blue/20"
-                >
-                    <Plus className="w-4 h-4" />
-                    {activeTab === "bikes" ? "Add Model" : "Add Spare"}
-                </button>
+                <div className="flex items-center gap-4">
+                    <ExportButton
+                        data={activeTab === "bikes" ? processedBikes : spares.filter(s =>
+                            s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            s.bikeId?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            s.category.toLowerCase().includes(searchQuery.toLowerCase())
+                        )}
+                        filename={`Yamaha_${activeTab === "bikes" ? "Inventory" : "Spares"}_Report`}
+                        sheetName={activeTab === "bikes" ? "Bikes" : "Spares"}
+                    />
+                    <button
+                        onClick={() => {
+                            if (activeTab === "bikes") {
+                                setSelectedBike(null);
+                                setIsModalOpen(true);
+                            } else {
+                                setSelectedSpare(null);
+                                setIsModalOpen(true);
+                            }
+                        }}
+                        className="flex items-center gap-2 px-6 py-3 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-racing-blue/20"
+                    >
+                        <Plus className="w-4 h-4" />
+                        {activeTab === "bikes" ? "Add Model" : "Add Spare"}
+                    </button>
+                </div>
             </div>
 
             <div className="bg-background/90 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[400px]">

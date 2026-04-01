@@ -58,17 +58,17 @@ export function SparesGallery() {
                             <Package className="w-6 h-6 text-racing-blue" />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-display font-black text-white uppercase tracking-tighter italic">
+                            <h2 className="text-2xl md:text-3xl font-display font-black text-white uppercase tracking-tighter italic">
                                 Genuine <span className="text-gradient">Spares</span>
                             </h2>
-                            <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mt-1">
+                            <p className="text-[8px] md:text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] mt-1">
                                 Factory certified performance parts
                             </p>
                         </div>
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Select Your Machine</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-300 ml-1">Select Your Machine</label>
                         <div className="relative group w-full sm:max-w-[350px]">
                             <select
                                 value={selectedBike?._id || 'common'}
@@ -97,7 +97,7 @@ export function SparesGallery() {
                 </div>
 
                 <div className="flex flex-col gap-2 w-full md:max-w-[320px]">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Search Catalog</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-300 ml-1">Search Catalog</label>
                     <div className="relative group">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-racing-blue transition-colors" />
                         <input

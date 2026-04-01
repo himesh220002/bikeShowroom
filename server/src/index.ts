@@ -72,6 +72,24 @@ mongoose.connect(MONGO_URI)
             });
             console.log('Admin password initialized');
         }
+
+        // Seed showroom contact info if not exists
+        const showroomPhone = await Config.findOne({ key: 'showroomPhone' });
+        if (!showroomPhone) {
+            await Config.create({
+                key: 'showroomPhone',
+                value: '7004100062',
+                description: 'Showroom WhatsApp Contact Number'
+            });
+        }
+        const showroomEmail = await Config.findOne({ key: 'showroomEmail' });
+        if (!showroomEmail) {
+            await Config.create({
+                key: 'showroomEmail',
+                value: 'choudharyyamaha.ktr@gmail.com',
+                description: 'Showroom Contact Email'
+            });
+        }
     })
     .catch((err) => console.error('MongoDB connection error:', err));
 

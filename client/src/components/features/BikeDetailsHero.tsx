@@ -56,7 +56,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                         </div>
 
                         <div className="mb-10">
-                            <h1 className="text-3xl md:text-6xl font-display font-black text-white uppercase tracking-tighter leading-none mb-4">
+                            <h1 className="text-3xl md:text-4xl font-display font-black text-white uppercase tracking-tighter leading-none mb-4">
                                 {bike.name} <br />
                                 <span className="text-racing-blue">{color.name}</span>
                             </h1>

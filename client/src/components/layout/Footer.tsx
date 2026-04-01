@@ -9,7 +9,7 @@ export function Footer() {
     return (
         <footer className="bg-zinc-950/80 backdrop-blur-md pt-24 pb-12 border-t border-zinc-900">
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-16 lg:gap-12">
                     {/* Brand Meta */}
                     <div className="space-y-8">
                         <Link href="/" className="flex items-center gap-4 group">
@@ -30,12 +30,12 @@ export function Footer() {
                                 </span>
                             </div>
                         </Link>
-                        <p className="text-sm text-gray-400 leading-relaxed font-medium">
+                        <p className="text-sm text-gray-400 text-center leading-relaxed font-medium">
                             Choudhary Yamaha - Your definitive Yamaha destination in Katihar. Engineering thrill,
                             delivering excellence, and building a community of riders
                             since 2012.
                         </p>
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 justify-center">
                             {[
                                 { Icon: Facebook, url: "https://www.facebook.com/ChoudharyYamaha/" },
                                 { Icon: Instagram, url: "https://www.instagram.com/choudharyyamaha/" },
@@ -56,13 +56,13 @@ export function Footer() {
 
                     {/* Discovery */}
                     <div className="lg:ml-12">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 mb-8">
+                        <h4 className="text-[10px] font-black text-center xl:text-left uppercase tracking-[0.3em] text-gray-600 mb-8">
                             Showroom Discovery
                         </h4>
                         <ul className="space-y-4">
                             {["R-Series", "MT-Series", "FZ-Series", "Aerox 155", "Scooters"].map((item) => (
                                 <li key={item}>
-                                    <Link href="/#bikes" className="text-sm font-black text-white hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center gap-2 group">
+                                    <Link href="/#bikes" className="text-sm font-black text-white hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
                                         <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         {item}
                                     </Link>
@@ -73,13 +73,13 @@ export function Footer() {
 
                     {/* Operations */}
                     <div>
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 mb-8">
+                        <h4 className="text-[10px] font-black text-center xl:text-left uppercase tracking-[0.3em] text-gray-600 mb-8">
                             Services & Support
                         </h4>
                         <ul className="space-y-4">
                             {["Book A Service", "Finance / EMI", "Insurance Sync", "Genuine Spares", "Exchange Valuation"].map((item) => (
                                 <li key={item}>
-                                    <Link href="/#inquiry" className="text-sm font-black text-white hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center gap-2 group">
+                                    <Link href="/#inquiry" className="text-sm font-black text-white hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
                                         <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         {item}
                                     </Link>
@@ -90,7 +90,7 @@ export function Footer() {
 
                     {/* Local Headquarters */}
                     <div className="space-y-8">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 mb-8">
+                        <h4 className="text-[10px] font-black uppercase text-center xl:text-left tracking-[0.3em] text-gray-600 mb-8">
                             Our Headquarters
                         </h4>
                         <div className="space-y-6">
@@ -109,6 +109,14 @@ export function Footer() {
                                 </div>
                                 <div className="text-sm font-black text-white">
                                     +91 7004100062
+                                </div>
+                            </div>
+                            <div className="flex gap-4 text-center xl:text-left justify-center xl:justify-start">
+                                <div className="w-10 h-10 rounded-xl bg-racing-blue/5 flex items-center justify-center shrink-0">
+                                    <Mail className="w-5 h-5 text-racing-blue" />
+                                </div>
+                                <div className="text-sm font-black text-white flex items-center">
+                                    choudharyyamaha.ktr@gmail.com
                                 </div>
                             </div>
                             <div className="flex gap-4">
