@@ -11,6 +11,12 @@ export interface IInquiry extends Document {
     score: number;
     heat: string;
     source: string;
+    followUpDate?: Date;
+    assignedAgent?: string;
+    escalationLevel?: 'Normal' | 'Urgent' | 'Management';
+    conversionProbability?: number;
+    adminNotes?: string;
+    lastActivityDate?: Date;
 }
 
 const InquirySchema: Schema = new Schema({
@@ -24,6 +30,12 @@ const InquirySchema: Schema = new Schema({
     score: { type: Number, default: 0 },
     heat: { type: String, default: 'Cold' },
     source: { type: String, default: 'Web Inquiry' },
+    followUpDate: { type: Date },
+    assignedAgent: { type: String },
+    escalationLevel: { type: String, enum: ['Normal', 'Urgent', 'Management'], default: 'Normal' },
+    conversionProbability: { type: Number, default: 0 },
+    adminNotes: { type: String },
+    lastActivityDate: { type: Date, default: Date.now },
 }, {
     timestamps: true,
     collection: 'inquiries'

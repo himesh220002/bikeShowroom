@@ -2,20 +2,24 @@
 
 :root {
   --background: #f8fafc;
-  /* Slate 50 - Main Area */
-  --foreground: #101f64;
-  /* Slate 950 */
-  --card: #09090b;
-  /* Pure White - Components */
+  --foreground: #020617;
+  --card: #ffffff;
   --card-foreground: #020617;
-  --border: #14141a;
-  /* Slate 200 */
+  --popover: #ffffff;
+  --popover-foreground: #020617;
+  --primary: #004da1;
+  --primary-foreground: #f8fafc;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
   --muted: #f1f5f9;
-  /* Slate 100 */
   --muted-foreground: #64748b;
-  /* Slate 500 */
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
   --ring: #3b82f6;
-  /* Blue 500 */
 
   /* Brand Colors */
   --yamaha-blue: #004da1;
@@ -26,29 +30,28 @@
 
 .light {
   --background: #f8fafc;
-  --foreground: #101f64;
+  --foreground: #020617;
   --card: #ffffff;
   --card-foreground: #020617;
   --border: #e2e8f0;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
   --ring: #3b82f6;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.05);
 }
 
 .dark {
   --background: #000000;
-  /* Zinc 950 */
   --foreground: #fafafa;
-  /* Zinc 50 */
   --card: #09090b;
   --card-foreground: #fafafa;
   --border: #27272a;
-  /* Zinc 800 */
   --muted: #18181b;
-  /* Zinc 900 */
   --muted-foreground: #a1a1aa;
-  /* Zinc 400 */
   --ring: #2563eb;
+  --glass-bg: rgba(9, 9, 11, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.05);
 }
 
 @theme inline {
@@ -60,6 +63,8 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-ring: var(--ring);
+  --color-glass-bg: var(--glass-bg);
+  --color-glass-border: var(--glass-border);
 
   --color-yamaha-blue: var(--yamaha-blue);
   --color-racing-blue: var(--racing-blue);
@@ -82,7 +87,7 @@
   }
 
   .glass {
-    @apply bg-card/60 backdrop-blur-md border border-border/50 shadow-2xl;
+    @apply bg-glass-bg backdrop-blur-md border border-glass-border shadow-2xl;
   }
 
   .gpu-accelerated {

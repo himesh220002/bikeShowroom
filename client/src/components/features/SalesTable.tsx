@@ -41,7 +41,8 @@ export function SalesTable({ sales }: SalesTableProps) {
                         <tr className="border-b border-border">
                             <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Customer</th>
                             <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Vehicle Details</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Sale Value</th>
+                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Sale Value / Payment</th>
+                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Document / Agent</th>
                             <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">Timestamp</th>
                         </tr>
                     </thead>
@@ -71,9 +72,24 @@ export function SalesTable({ sales }: SalesTableProps) {
                                     </div>
                                 </td>
                                 <td className="py-6 px-4">
-                                    <div className="flex items-center gap-1.5 text-racing-blue font-display font-black italic">
-                                        <IndianRupee className="w-3.5 h-3.5" />
-                                        {Number(sale.salePrice).toLocaleString('en-IN')}
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-1.5 text-racing-blue font-display font-black italic">
+                                            <IndianRupee className="w-3.5 h-3.5" />
+                                            {Number(sale.salePrice).toLocaleString('en-IN')}
+                                        </div>
+                                        <span className="text-[8px] font-black uppercase bg-muted/50 px-1.5 py-0.5 rounded border border-border w-fit">
+                                            {sale.paymentMethod || "Cash"}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td className="py-6 px-4">
+                                    <div className="flex flex-col gap-1">
+                                        <p className="text-[10px] font-black text-foreground uppercase tracking-widest">
+                                            INV: {sale.invoiceNumber || "NON-TAX"}
+                                        </p>
+                                        <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-60">
+                                            BY: {sale.salesperson || "Showroom Manager"}
+                                        </p>
                                     </div>
                                 </td>
                                 <td className="py-6 px-4 text-right">

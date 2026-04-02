@@ -147,7 +147,7 @@ export function AdManager() {
         <div className="space-y-8 text-foreground">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-display font-black text-gray-200 uppercase tracking-tighter">
+                    <h2 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter">
                         AD <span className="text-gradient">MANAGEMENT</span>
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Control your showroom's digital footprint</p>
@@ -164,11 +164,11 @@ export function AdManager() {
             </div>
 
             {isAdding && (
-                <div className="bg-background/90 border border-border rounded-[2.5rem] p-8 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-500">
+                <div className="bg-card border border-border rounded-[2.5rem] p-8 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-500">
                     <div className="flex justify-between items-center mb-8">
-                        <h3 className="text-xl font-display font-black uppercase tracking-tighter text-white">Create New Campaign</h3>
+                        <h3 className="text-xl font-display font-black uppercase tracking-tighter text-foreground">Create New Campaign</h3>
                         <button onClick={() => { setIsAdding(false); resetForm(); }} className="p-2 hover:bg-muted rounded-full transition-colors">
-                            <X className="w-5 h-5" />
+                            <X className="w-5 h-5 text-foreground" />
                         </button>
                     </div>
 
@@ -267,7 +267,7 @@ export function AdManager() {
             )}
 
             {/* Campaign List */}
-            <div className="bg-background/90 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl">
+            <div className="bg-card border border-border rounded-[2.5rem] overflow-hidden shadow-2xl">
                 <div className="p-8 border-b border-border flex justify-between items-center bg-muted/30">
                     <span className="text-[10px] font-black uppercase tracking-widest text-racing-blue">Active Streams</span>
                     <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{campaigns.length} Total Campaigns</span>
@@ -300,7 +300,7 @@ export function AdManager() {
                                     <img src={camp.image} alt={camp.name} className="w-full h-full object-cover" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-lg font-display font-black text-white uppercase tracking-tight">{camp.name}</h4>
+                                    <h4 className="text-lg font-display font-black text-foreground uppercase tracking-tight">{camp.name}</h4>
                                     <div className="flex items-center gap-4">
                                         <span className="text-[9px] font-black uppercase tracking-widest text-racing-blue">{camp.type}</span>
                                         <span className="w-1 h-1 rounded-full bg-border" />

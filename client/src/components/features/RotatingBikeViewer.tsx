@@ -177,22 +177,22 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-full cursor-grab active:cursor-grabbing select-none flex items-center justify-center bg-zinc-950 overflow-hidden"
+            className="relative w-full h-full cursor-grab active:cursor-grabbing select-none flex items-center justify-center bg-background overflow-hidden"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
         >
             {loading && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-zinc-950/90 backdrop-blur-md">
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-background/90 backdrop-blur-md">
                     <Loader2 className="w-12 h-12 text-racing-blue animate-spin mb-6" />
-                    <div className="w-64 h-1 bg-zinc-900 rounded-full overflow-hidden mb-4">
+                    <div className="w-64 h-1 bg-muted rounded-full overflow-hidden mb-4">
                         <motion.div
                             className="h-full bg-racing-blue shadow-[0_0_10px_rgba(0,123,255,0.5)]"
                             initial={{ width: 0 }}
                             animate={{ width: `${loadProgress}%` }}
                         />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-foreground">
                         Caching High-Res Stream... {loadProgress}%
                     </p>
                 </div>
@@ -213,9 +213,9 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
             </div>
 
             {/* UI Overlays */}
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-3 rounded-2xl pointer-events-none z-20">
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-card/10 backdrop-blur-xl border border-border px-6 py-3 rounded-2xl pointer-events-none z-20">
                 <Rotate3d className="w-4 h-4 text-racing-blue" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Hold & Drag to Explore</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Hold & Drag to Explore</span>
             </div>
 
             <div className="absolute top-12 right-12 z-20">
@@ -226,7 +226,7 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
                         }
                         setIsAutoRotating(!isAutoRotating);
                     }}
-                    className="hidden flex items-center justify-center w-10 h-10 bg-zinc-900/50 border border-zinc-800 rounded-xl text-racing-blue hover:bg-racing-blue hover:text-white transition-all shadow-lg"
+                    className="hidden flex items-center justify-center w-10 h-10 bg-muted/50 border border-border rounded-xl text-racing-blue hover:bg-racing-blue hover:text-white transition-all shadow-lg"
                 >
                     {isAutoRotating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
                 </button>

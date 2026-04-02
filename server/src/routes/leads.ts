@@ -78,4 +78,19 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.put('/:id', async (req, res) => {
+    try {
+        const lead = await Inquiry.findByIdAndUpdate(
+            req.params.id,
+            { $set: req.body },
+            { new: true }
+        );
+        if (!lead) return res.status(404).json({ success: false, message: 'Lead not found' });
+
+        res.json({ success: true, data: lead });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 export default router;

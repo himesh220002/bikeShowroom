@@ -60,7 +60,7 @@ export function FeaturedBikes() {
     };
 
     return (
-        <section id="machines" className="py-32 bg-transparent overflow-hidden border-y border-white/5" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
+        <section id="machines" className="py-32 bg-transparent overflow-hidden border-y border-border" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
                     <div className="space-y-4">
@@ -68,7 +68,7 @@ export function FeaturedBikes() {
                             <Zap className="w-3 h-3" />
                             Premium Lineup
                         </div>
-                        <h2 className="text-3xl md:text-7xl font-display font-black text-white uppercase tracking-tighter">
+                        <h2 className="text-3xl md:text-7xl font-display font-black text-foreground uppercase tracking-tighter">
                             FEATURED <span className="text-racing-blue">MACHINES</span>
                         </h2>
                     </div>
@@ -76,7 +76,7 @@ export function FeaturedBikes() {
                     <div className="flex gap-4">
                         <button
                             onClick={() => scroll('left')}
-                            className="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white hover:border-racing-blue transition-all group active:scale-95"
+                            className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center text-foreground hover:border-racing-blue transition-all group active:scale-95"
                         >
                             <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
                         </button>
@@ -110,13 +110,13 @@ export function FeaturedBikes() {
                         { icon: Bike, title: "Swift Valuations", desc: "Digital exchange scoring" },
                         { icon: Phone, title: "Expert Support", desc: "Certified Technicians" }
                     ].map((item, i) => (
-                        <div key={item.title} className="bg-zinc-900/50 p-6 rounded-3xl border border-zinc-800 flex items-center gap-5 group hover:border-racing-blue/20 transition-all">
+                        <div key={item.title} className="bg-muted/50 p-6 rounded-3xl border border-border flex items-center gap-5 group hover:border-racing-blue/20 transition-all">
                             <div className="w-12 h-12 bg-racing-blue/10 rounded-2xl flex items-center justify-center shrink-0">
                                 <item.icon className="w-6 h-6 text-racing-blue" />
                             </div>
                             <div>
-                                <h5 className="font-display font-black text-white text-sm uppercase tracking-tight">{item.title}</h5>
-                                <p className="text-[10px] text-gray-500 font-medium leading-relaxed">{item.desc}</p>
+                                <h5 className="font-display font-black text-foreground text-sm uppercase tracking-tight">{item.title}</h5>
+                                <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">{item.desc}</p>
                             </div>
                         </div>
                     ))}

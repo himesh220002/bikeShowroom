@@ -195,7 +195,7 @@ export function ServiceSchedule() {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-display font-black text-gray-400 uppercase tracking-tighter">
+                    <h2 className="text-2xl font-display font-black text-foreground/70 uppercase tracking-tighter">
                         SERVICE <span className="text-gradient">SCHEDULE</span>
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Manage daily workshop operations</p>
@@ -274,7 +274,7 @@ export function ServiceSchedule() {
                                             </div>
                                             <div className={cn(
                                                 "flex items-center gap-1.5 px-2 py-0.5 rounded-lg border w-fit",
-                                                job.priority === "High" ? "bg-red-500/10 text-red-500 border-red-500/20" : "bg-zinc-500/10 text-zinc-500 border-zinc-500/20"
+                                                job.priority === "High" ? "bg-red-500/10 text-red-500 border-red-500/20" : "bg-muted/30 text-muted-foreground border-border/50"
                                             )}>
                                                 <ShieldAlert className="w-2.5 h-2.5" />
                                                 <span className="text-[8px] font-black uppercase tracking-widest">{job.priority}</span>
@@ -492,7 +492,7 @@ export function ServiceSchedule() {
                                         <button
                                             type="submit"
                                             disabled={updating}
-                                            className="flex-1 bg-racing-blue text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-racing-blue/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                                            className="flex-1 bg-primary text-primary-foreground py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50"
                                         >
                                             {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                             {updating ? "Saving Changes..." : "Save Job Details"}

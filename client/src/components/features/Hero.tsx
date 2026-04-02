@@ -14,7 +14,7 @@ export function Hero() {
     const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
 
     return (
-        <section ref={ref} className="relative min-h-[90vh] flex items-center overflow-hidden bg-zinc-900/40 pt-20 md:pt-28">
+        <section ref={ref} className="relative min-h-[90vh] flex items-center overflow-hidden bg-black pt-20 md:pt-28">
             {/* Immersive Background - Optimized for Scroll Performance */}
             <motion.div
                 style={{ y }}
@@ -25,11 +25,11 @@ export function Hero() {
                     alt="Choudhary Yamaha Showroom"
                     fill
                     sizes="100vw"
-                    className="object-cover object-center scale-110 opacity-60"
+                    className="object-cover object-center scale-110 opacity-60 dark:opacity-60"
                     priority
                 />
-                <div className="absolute inset-0 bg-linear-to-b from-zinc-900/90 via-zinc-900/40 to-zinc-900" />
-                <div className="absolute inset-0 bg-linear-to-r from-zinc-900 via-zinc-900/50 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-b from-black/90 via-black/40 to-black" />
+                <div className="absolute inset-0 bg-linear-to-r from-black via-black/50 to-transparent" />
             </motion.div>
 
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12 md:py-24">
@@ -38,12 +38,12 @@ export function Hero() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="flex items-center gap-3 bg-zinc-800/50 backdrop-blur-xl border border-white/10 w-fit px-5 py-2 rounded-full mb-8 shadow-2xl"
+                        className="flex items-center gap-3 bg-white/5 backdrop-blur-xl border border-white/10 w-fit px-5 py-2 rounded-full mb-8 shadow-2xl"
                     >
                         <div className="p-1 bg-racing-blue rounded-full">
                             <Star className="w-3 h-3 text-white fill-white" />
                         </div>
-                        <span className="text-gray-300 text-[10px] font-black uppercase tracking-[0.3em]">
+                        <span className="text-gray-400 text-[10px] font-black uppercase tracking-[0.3em]">
                             The Call of the Blue • Authorized Yamaha Dealer
                         </span>
                     </motion.div>
@@ -64,7 +64,7 @@ export function Hero() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-lg md:text-xl text-gray-300 mb-12 max-w-xl leading-relaxed font-medium"
+                        className="text-lg md:text-xl text-gray-400 mb-12 max-w-xl leading-relaxed font-medium"
                     >
                         Experience the absolute pinnacle of Yamaha performance at Choudhary Yamaha.
                         Engineered for thrill, built for excellence.
@@ -80,7 +80,7 @@ export function Hero() {
                             Explore Lineup
                             <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <a href="/service" className="w-full sm:w-auto bg-zinc-800/80 hover:bg-zinc-800 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all border border-zinc-700/50 shadow-2xl flex items-center justify-center gap-3">
+                        <a href="/service" className="w-full sm:w-auto bg-white/5 hover:bg-white/10 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all border border-white/10 shadow-2xl flex items-center justify-center gap-3">
                             <Activity className="w-4 h-4 text-racing-blue" />
                             Book Service
                         </a>
@@ -130,7 +130,7 @@ export function Hero() {
             </div>
 
             {/* Bottom Gradient for Smooth Transition */}
-            <div className="absolute bottom-0 left-0 w-full h-40 bg-linear-to-t from-zinc-950 to-transparent z-10" />
+            <div className="absolute bottom-0 left-0 w-full h-40 bg-linear-to-t from-black to-transparent z-10" />
         </section>
     );
 }

@@ -56,13 +56,13 @@ export function AdminTableControls({
                     placeholder={placeholder}
                     value={searchQuery}
                     onChange={(e) => onSearchChange(e.target.value)}
-                    className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all shadow-lg shadow-black/5"
+                    className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all shadow-lg shadow-muted-foreground/5"
                 />
             </div>
 
             {/* Date Range Picker (Optional) */}
             {onStartDateChange && onEndDateChange && (
-                <div className="flex items-center gap-2 bg-background border border-border rounded-xl px-4 py-2 shadow-lg shadow-black/5">
+                <div className="flex items-center gap-2 bg-background border border-border rounded-xl px-4 py-2 shadow-lg shadow-muted-foreground/5">
                     <div className="flex items-center gap-2 group/date">
                         <Calendar className="w-3.5 h-3.5 text-muted-foreground group-focus-within/date:text-racing-blue transition-colors" />
                         <div className="flex items-center gap-1">
@@ -97,7 +97,7 @@ export function AdminTableControls({
                 <select
                     value={sortBy}
                     onChange={(e) => onSortChange(e.target.value)}
-                    className="w-full appearance-none bg-background border border-border rounded-xl pl-4 pr-10 py-2.5 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer hover:border-racing-blue/50 transition-all shadow-lg shadow-black/5"
+                    className="w-full appearance-none bg-background border border-border rounded-xl pl-4 pr-10 py-2.5 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer hover:border-racing-blue/50 transition-all shadow-lg shadow-muted-foreground/5"
                 >
                     {sortOptions.map((opt) => (
                         <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -112,7 +112,7 @@ export function AdminTableControls({
                     <select
                         value={filterStatus}
                         onChange={(e) => onFilterChange(e.target.value)}
-                        className="w-full appearance-none bg-background border border-border rounded-xl pl-4 pr-10 py-2.5 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer hover:border-racing-blue/50 transition-all shadow-lg shadow-black/5"
+                        className="w-full appearance-none bg-background border border-border rounded-xl pl-4 pr-10 py-2.5 text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer hover:border-racing-blue/50 transition-all shadow-lg shadow-muted-foreground/5"
                     >
                         {filterOptions.map((opt) => (
                             <option key={opt.value} value={opt.value}>{opt.label}</option>

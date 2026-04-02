@@ -78,20 +78,20 @@ export function ServiceBooking() {
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full bg-zinc-900 rounded-[3rem] p-12 text-center border border-racing-blue/20 shadow-2xl flex flex-col items-center"
+                className="w-full bg-card rounded-[3rem] p-12 text-center border border-racing-blue/20 shadow-2xl flex flex-col items-center"
             >
                 <div className="w-20 h-20 bg-racing-blue/10 rounded-full flex items-center justify-center mb-6">
                     <CheckCircle2 className="w-10 h-10 text-racing-blue" />
                 </div>
-                <h3 className="text-3xl font-display font-black text-white uppercase tracking-tighter mb-4">
+                <h3 className="text-3xl font-display font-black text-foreground uppercase tracking-tighter mb-4">
                     Booking Confirmed!
                 </h3>
-                <p className="text-gray-400 text-sm max-w-sm mb-8 font-medium">
+                <p className="text-muted-foreground text-sm max-w-sm mb-8 font-medium">
                     Your service request for {formData.bikeModel} has been sent. Our team will contact you at {formData.phone} shortly.
                 </p>
                 <button
                     onClick={() => { setSubmitted(false); setStep(1); }}
-                    className="px-8 py-4 bg-zinc-800 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-700 transition-all"
+                    className="px-8 py-4 bg-muted text-foreground rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-muted/80 transition-all border border-border"
                 >
                     New Booking
                 </button>
@@ -101,9 +101,9 @@ export function ServiceBooking() {
 
     return (
         <div className="w-full max-w-4xl mx-auto">
-            <div className="bg-zinc-900 rounded-[1.5rem] md:rounded-[3rem] p-4 md:p-8 md:p-14 border border-zinc-800 shadow-2xl relative overflow-hidden">
+            <div className="bg-card rounded-[1.5rem] md:rounded-[3rem] p-4 md:p-8 md:p-14 border border-border shadow-2xl relative overflow-hidden">
                 {/* Progress Bar */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-zinc-800">
+                <div className="absolute top-0 left-0 w-full h-1 bg-muted">
                     <motion.div
                         className="h-full bg-racing-blue shadow-[0_0_10px_rgba(0,123,255,0.5)]"
                         animate={{ width: `${(step / 3) * 100}%` }}
@@ -113,13 +113,13 @@ export function ServiceBooking() {
                 <div className="flex justify-between items-center mb-12">
                     <div>
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-2 block">Service Center</span>
-                        <h2 className="text-3xl md:text-4xl font-display font-black text-white uppercase tracking-tighter">
+                        <h2 className="text-3xl md:text-4xl font-display font-black text-foreground uppercase tracking-tighter">
                             SCHEDULE <span className="text-gradient">SERVICE</span>
                         </h2>
                     </div>
                     <div className="text-right">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Step</span>
-                        <div className="text-2xl font-display font-black text-white italic">{step}/3</div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Step</span>
+                        <div className="text-2xl font-display font-black text-foreground italic">{step}/3</div>
                     </div>
                 </div>
 
@@ -143,19 +143,19 @@ export function ServiceBooking() {
                                                 "p-6 rounded-2xl border text-left transition-all group",
                                                 serviceType === opt.id
                                                     ? "bg-racing-blue/10 border-racing-blue"
-                                                    : "bg-black/50 border-zinc-800 hover:border-zinc-700"
+                                                    : "bg-background/50 border-border hover:border-racing-blue/30"
                                             )}
                                         >
                                             <div className="flex items-center gap-4">
                                                 <div className={cn(
                                                     "w-12 h-12 rounded-xl flex items-center justify-center transition-colors",
-                                                    serviceType === opt.id ? "bg-racing-blue text-white" : "bg-zinc-900 text-gray-500 group-hover:text-white"
+                                                    serviceType === opt.id ? "bg-racing-blue text-white" : "bg-muted text-muted-foreground group-hover:text-foreground"
                                                 )}>
                                                     <opt.icon className="w-6 h-6" />
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-sm font-black text-white uppercase tracking-widest mb-1">{opt.label}</h4>
-                                                    <p className="text-[10px] text-gray-400 font-medium">{opt.desc}</p>
+                                                    <h4 className="text-sm font-black text-foreground uppercase tracking-widest mb-1">{opt.label}</h4>
+                                                    <p className="text-[10px] text-muted-foreground font-medium">{opt.desc}</p>
                                                 </div>
                                             </div>
                                         </button>
@@ -185,7 +185,7 @@ export function ServiceBooking() {
                                             <div className="p-2 bg-racing-blue/10 rounded-xl">
                                                 <User className="w-4 h-4 text-racing-blue" />
                                             </div>
-                                            <h4 className="text-[10px] font-black text-white uppercase tracking-widest">Select from Your Garage</h4>
+                                            <h4 className="text-[10px] font-black text-foreground uppercase tracking-widest">Select from Your Garage</h4>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             {userBikes.map((bike) => (
@@ -197,7 +197,7 @@ export function ServiceBooking() {
                                                         "p-4 rounded-xl border text-left transition-all",
                                                         formData.regNumber === bike.registrationNumber
                                                             ? "bg-racing-blue border-racing-blue text-white shadow-lg shadow-racing-blue/20"
-                                                            : "bg-black/50 border-zinc-800 text-gray-400 hover:border-zinc-700"
+                                                            : "bg-background border-border text-muted-foreground hover:border-racing-blue/30"
                                                     )}
                                                 >
                                                     <p className="text-[10px] font-black uppercase tracking-tight mb-1">{bike.bikeModel}</p>
@@ -216,36 +216,36 @@ export function ServiceBooking() {
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-4">Bike Model</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">Bike Model</label>
                                             <input
                                                 required
                                                 value={formData.bikeModel}
                                                 onChange={(e) => setFormData(p => ({ ...p, bikeModel: e.target.value }))}
                                                 placeholder="e.g. R15M V4"
-                                                className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-4 text-white text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                                className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all"
                                             />
                                         </div>
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-center ml-4">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Registration Number</label>
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Registration Number</label>
                                                 {!formData.regNumber && <span className="text-[8px] font-black text-racing-blue/60 uppercase tracking-widest bg-racing-blue/5 px-2 py-0.5 rounded-full">Optional for New Bikes</span>}
                                             </div>
                                             <input
                                                 value={formData.regNumber}
                                                 onChange={(e) => setFormData(p => ({ ...p, regNumber: e.target.value }))}
                                                 placeholder="e.g. BR 11 XY 0000 or 'NEW BIKE'"
-                                                className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-4 text-white text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                                className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-4">Additional Notes</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">Additional Notes</label>
                                         <textarea
                                             value={formData.notes}
                                             onChange={(e) => setFormData(p => ({ ...p, notes: e.target.value }))}
                                             placeholder="Describe any specific issues..."
                                             rows={3}
-                                            className="w-full bg-black/50 border border-zinc-800 rounded-3xl px-6 py-4 text-white text-sm focus:outline-none focus:border-racing-blue transition-all resize-none"
+                                            className="w-full bg-background border border-border rounded-3xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all resize-none"
                                         />
                                     </div>
                                 </div>
@@ -253,7 +253,7 @@ export function ServiceBooking() {
                                     <button
                                         type="button"
                                         onClick={() => setStep(1)}
-                                        className="py-5 bg-zinc-800 text-white rounded-2xl font-black text-xs md:text-sm uppercase tracking-[0.2em] hover:bg-zinc-700 transition-all w-full"
+                                        className="py-5 bg-muted text-foreground border border-border rounded-2xl font-black text-xs md:text-sm uppercase tracking-[0.2em] hover:bg-muted/80 transition-all w-full"
                                     >
                                         Back
                                     </button>
@@ -278,17 +278,17 @@ export function ServiceBooking() {
                             >
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-4">Full Name</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">Full Name</label>
                                         <input
                                             required
                                             value={formData.name}
                                             onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))}
                                             placeholder="Your Name"
-                                            className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-4 text-white text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                            className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-4">Phone Number</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">Phone Number</label>
                                         <input
                                             required
                                             type="tel"
@@ -301,27 +301,27 @@ export function ServiceBooking() {
                                                 }
                                             }}
                                             placeholder="10-digit mobile number"
-                                            className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-4 text-white text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                            className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-4">Preferred Date</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">Preferred Date</label>
                                         <input
                                             required
                                             type="date"
                                             value={formData.appointmentDate}
                                             onChange={(e) => setFormData(p => ({ ...p, appointmentDate: e.target.value }))}
-                                            className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-4 text-white text-sm focus:outline-none focus:border-racing-blue transition-all [color-scheme:dark]"
+                                            className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all [color-scheme:dark]"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-4">Preferred Time</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">Preferred Time</label>
                                         <input
                                             required
                                             type="time"
                                             value={formData.appointmentTime}
                                             onChange={(e) => setFormData(p => ({ ...p, appointmentTime: e.target.value }))}
-                                            className="w-full bg-black/50 border border-zinc-800 rounded-2xl px-6 py-4 text-white text-sm focus:outline-none focus:border-racing-blue transition-all [color-scheme:dark]"
+                                            className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all [color-scheme:dark]"
                                         />
                                     </div>
                                 </div>
@@ -330,7 +330,7 @@ export function ServiceBooking() {
                                     <button
                                         type="button"
                                         onClick={() => setStep(2)}
-                                        className="py-5 bg-zinc-800 text-white rounded-2xl font-black text-xs md:text-sm uppercase tracking-[0.2em] hover:bg-zinc-700 transition-all w-full"
+                                        className="py-5 bg-muted text-foreground border border-border rounded-2xl font-black text-xs md:text-sm uppercase tracking-[0.2em] hover:bg-muted/80 transition-all w-full"
                                     >
                                         Back
                                     </button>
@@ -346,11 +346,11 @@ export function ServiceBooking() {
                                     </button>
                                 </div>
                                 <div className="p-6 bg-racing-blue/10 border border-racing-blue/20 rounded-2xl">
-                                    <div className="flex items-center gap-3 text-white mb-2">
+                                    <div className="flex items-center gap-3 text-foreground mb-2">
                                         <Clock className="w-4 h-4 text-racing-blue" />
                                         <span className="text-xs font-black uppercase tracking-widest">Fast Track Protocol</span>
                                     </div>
-                                    <p className="text-[10px] text-gray-400 font-medium">
+                                    <p className="text-[10px] text-muted-foreground font-medium">
                                         Our workshop manager will call you within 12 to 24 hours of submission to confirm your preferred time slot and pickup options.
                                     </p>
                                 </div>

@@ -128,13 +128,13 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 key="success"
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="w-full bg-zinc-900/80 backdrop-blur-md rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-12 text-center border border-racing-blue/20 shadow-2xl shadow-racing-blue/10 flex flex-col items-center gpu-accelerated"
+                                className="w-full bg-card/80 backdrop-blur-md rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-12 text-center border border-racing-blue/20 shadow-2xl shadow-racing-blue/10 flex flex-col items-center gpu-accelerated"
                             >
                                 <div className="w-20 h-20 md:w-24 md:h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 md:mb-8 shadow-2xl shadow-green-500/40">
                                     <CheckCircle2 className="w-10 h-10 md:w-12 md:h-12 text-white" />
                                 </div>
-                                <h3 className="text-3xl md:text-4xl font-display font-black text-white mb-4 uppercase tracking-tighter">Inquiry Logged!</h3>
-                                <p className="text-gray-400 mb-8 md:mb-10 max-w-sm font-medium leading-relaxed font-sans text-sm">
+                                <h3 className="text-3xl md:text-4xl font-display font-black text-foreground mb-4 uppercase tracking-tighter">Inquiry Logged!</h3>
+                                <p className="text-muted-foreground mb-8 md:mb-10 max-w-sm font-medium leading-relaxed font-sans text-sm">
                                     Wait for the thrill. Our specialists at Choudhary Yamaha will reach out shortly.
                                     {response.score && <span className="block mt-4 text-racing-blue font-black uppercase text-xs tracking-widest">Lead Priority Score: {response.score}</span>}
                                 </p>
@@ -143,7 +143,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                         setStatus("idle");
                                         generateCaptcha();
                                     }}
-                                    className="bg-zinc-900 border border-zinc-700 px-10 py-4 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all text-gray-300"
+                                    className="bg-card border border-border px-10 py-4 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-muted transition-all text-foreground"
                                 >
                                     New Inquiry
                                 </button>
@@ -153,7 +153,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 key="form"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="w-full bg-zinc-900/80 backdrop-blur-md rounded-[2.5rem] md:rounded-[3.5rem] p-4 sm:p-6 md:p-10 lg:p-14 shadow-2xl border border-zinc-800 gpu-accelerated"
+                                className="w-full bg-card/80 backdrop-blur-md rounded-[2.5rem] md:rounded-[3.5rem] p-4 sm:p-6 md:p-10 lg:p-14 shadow-2xl border border-border gpu-accelerated"
                             >
                                 <form onSubmit={handleFormSubmit} className="space-y-4 md:space-y-6">
                                     {errors.server && (
@@ -165,26 +165,26 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-300 ml-2">Pilot Name</label>
+                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-2">Pilot Name</label>
                                             <div className="relative">
-                                                <User className={cn("absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors", errors.name ? "text-red-500" : "text-gray-500")} />
+                                                <User className={cn("absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors", errors.name ? "text-red-500" : "text-muted-foreground")} />
                                                 <input
                                                     name="name"
                                                     type="text"
                                                     defaultValue={user?.displayName || ""}
                                                     placeholder="Who's riding?"
                                                     className={cn(
-                                                        "w-full bg-zinc-200 border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-3 md:py-4 text-sm font-black text-black transition-all outline-none",
-                                                        errors.name ? "border-red-500 bg-red-50" : "border-zinc-800"
+                                                        "w-full bg-background border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-3 md:py-4 text-sm font-black text-foreground transition-all outline-none",
+                                                        errors.name ? "border-red-500 bg-red-50" : "border-border"
                                                     )}
                                                 />
                                             </div>
                                             {errors.name && <p className="text-[9px] text-red-500 font-black uppercase ml-2 tracking-tighter">{errors.name}</p>}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-300 ml-2">Mobile Number</label>
+                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-2">Mobile Number</label>
                                             <div className="relative">
-                                                <Phone className={cn("absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors", errors.phone ? "text-red-500" : "text-gray-500")} />
+                                                <Phone className={cn("absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors", errors.phone ? "text-red-500" : "text-muted-foreground")} />
                                                 <input
                                                     name="phone"
                                                     type="tel"
@@ -199,25 +199,25 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                     }}
                                                     placeholder="Mobile number"
                                                     className={cn(
-                                                        "w-full bg-zinc-200 border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-3 md:py-4 text-sm font-black text-black transition-all outline-none",
-                                                        errors.phone ? "border-red-500 bg-red-50" : "border-zinc-800"
+                                                        "w-full bg-background border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-3 md:py-4 text-sm font-black text-foreground transition-all outline-none",
+                                                        errors.phone ? "border-red-500 bg-red-50" : "border-border"
                                                     )}
                                                 />
                                             </div>
                                             {errors.phone && <p className="text-[9px] text-red-500 font-black uppercase ml-2 tracking-tighter">{errors.phone}</p>}
                                         </div>
                                         <div className="space-y-2 sm:col-span-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-300 ml-2">Email Address<span className="text-gray-600">(optional)</span></label>
+                                            <label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-2">Email Address<span className="text-muted-foreground/60">(optional)</span></label>
                                             <div className="relative">
-                                                <Send className={cn("absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors", errors.email ? "text-red-500" : "text-gray-500 shadow-xl")} />
+                                                <Send className={cn("absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors", errors.email ? "text-red-500" : "text-muted-foreground shadow-xl")} />
                                                 <input
                                                     name="email"
                                                     type="email"
                                                     defaultValue={user?.email || ""}
                                                     placeholder="email@example.com (optional)"
                                                     className={cn(
-                                                        "w-full bg-zinc-200 border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-3 md:py-4 text-sm font-black text-black transition-all outline-none",
-                                                        errors.email ? "border-red-500 bg-red-50" : "border-zinc-800"
+                                                        "w-full bg-background border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-3 md:py-4 text-sm font-black text-foreground transition-all outline-none",
+                                                        errors.email ? "border-red-500 bg-red-50" : "border-border"
                                                     )}
                                                 />
                                             </div>
@@ -226,7 +226,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                     </div>
 
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-300 ml-2">Interested In</label>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-2">Interested In</label>
                                         <div className={cn(
                                             "grid grid-cols-4 md:grid-cols-6 gap-1 sm:gap-2 justify-items-center transition-colors p-1 rounded-3xl",
                                             errors.interest && "border border-red-500/50 bg-red-500/5"
@@ -240,8 +240,8 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                         value={item.label}
                                                         defaultChecked={isItemSelected(item)}
                                                     />
-                                                    <div className="px-1 py-2 sm:px-2 sm:py-3 rounded-xl bg-zinc-950 border border-zinc-800 peer-checked:border-racing-blue/30 peer-checked:bg-racing-blue/10 transition-all flex flex-col gap-1 items-center justify-center text-center h-full min-h-[50px]">
-                                                        <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tight text-gray-300 peer-checked:text-racing-blue transition-colors leading-tight">
+                                                    <div className="px-1 py-2 sm:px-2 sm:py-3 rounded-xl bg-background border border-border peer-checked:border-racing-blue/30 peer-checked:bg-racing-blue/10 transition-all flex flex-col gap-1 items-center justify-center text-center h-full min-h-[50px]">
+                                                        <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tight text-foreground peer-checked:text-racing-blue transition-colors leading-tight">
                                                             {item.label}
                                                         </span>
                                                         {(item.bonus || (bikeModel && isItemSelected(item))) && (
@@ -257,7 +257,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-300 ml-2">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-2">
                                             Inquiry Notes (Optional)
                                         </label>
                                         <textarea
@@ -266,8 +266,8 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                             value={notes}
                                             onChange={(e) => setNotes(e.target.value)}
                                             placeholder="EMI preferences, test ride schedule..."
-                                            className="w-full bg-zinc-200 border border-zinc-800 focus:border-racing-blue/30 
-                                                rounded-2xl md:rounded-3xl px-6 md:px-8 py-3 md:py-4 text-sm font-black text-black transition-all outline-none
+                                            className="w-full bg-background border border-border focus:border-racing-blue/30 
+                                                rounded-2xl md:rounded-3xl px-6 md:px-8 py-3 md:py-4 text-sm font-black text-foreground transition-all outline-none
                                                 resize-y overflow-hidden max-h-[150px]"
                                             onInput={(e) => {
                                                 const target = e.target as HTMLTextAreaElement;
@@ -279,13 +279,13 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                     </div>
 
                                     <div className={cn(
-                                        "space-y-3 bg-zinc-950/50 border rounded-3xl p-4 md:p-6 transition-colors",
-                                        errors.captcha ? "border-red-500/50 bg-red-500/5" : "border-zinc-800/50"
+                                        "space-y-3 bg-muted/50 border rounded-3xl p-4 md:p-6 transition-colors",
+                                        errors.captcha ? "border-red-500/50 bg-red-500/5" : "border-border/50"
                                     )}>
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                             <div className="space-y-1">
                                                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-racing-blue">Security Check</label>
-                                                <p className="text-sm font-black text-white italic">What is {captcha.n1} + {captcha.n2} ?</p>
+                                                <p className="text-sm font-black text-foreground italic">What is {captcha.n1} + {captcha.n2} ?</p>
                                             </div>
                                             <div className="relative w-full sm:w-28">
                                                 <input
@@ -294,8 +294,8 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                     onChange={(e) => setUserCaptcha(e.target.value)}
                                                     placeholder="Sum..."
                                                     className={cn(
-                                                        "w-full bg-zinc-200 border shadow-inner focus:border-racing-blue/30 rounded-2xl px-4 py-3 text-sm font-black text-black transition-all outline-none text-center",
-                                                        errors.captcha ? "border-red-500 bg-red-50" : "border-zinc-800"
+                                                        "w-full bg-background border shadow-inner focus:border-racing-blue/30 rounded-2xl px-4 py-3 text-sm font-black text-foreground transition-all outline-none text-center",
+                                                        errors.captcha ? "border-red-500 bg-red-50" : "border-border"
                                                     )}
                                                 />
                                             </div>
@@ -328,7 +328,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                         )}
                                     </button>
 
-                                    <p className="text-[8px] text-gray-400 font-black text-center uppercase tracking-[0.2em] px-4 md:px-8 leading-relaxed opacity-70">
+                                    <p className="text-[8px] text-muted-foreground font-black text-center uppercase tracking-[0.2em] px-4 md:px-8 leading-relaxed opacity-70">
                                         Data secured with Choudhary Yamaha Encryption.
                                         By submitting, you agree to our digital terms.
                                     </p>

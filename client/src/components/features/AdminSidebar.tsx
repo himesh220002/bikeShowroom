@@ -68,7 +68,7 @@ export function AdminSidebar() {
             {/* Backdrop for mobile */}
             {isOpen && (
                 <div
-                    className="lg:hidden fixed inset-0 bg-zinc-950/80 backdrop-blur-md z-[70]"
+                    className="lg:hidden fixed inset-0 bg-background/80 backdrop-blur-md z-[70]"
                     onClick={() => setIsOpen(false)}
                 />
             )}

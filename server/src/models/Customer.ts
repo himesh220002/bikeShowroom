@@ -6,6 +6,11 @@ export interface ICustomer extends Document {
     email?: string;
     googleId?: string;
     avatar?: string;
+    address?: string;
+    preferredContact?: 'Phone' | 'WhatsApp' | 'Email';
+    lifetimeValue?: number;
+    feedbackScore?: number;
+    nextServiceDue?: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -16,6 +21,11 @@ const CustomerSchema: Schema = new Schema({
     email: { type: String },
     googleId: { type: String },
     avatar: { type: String },
+    address: { type: String },
+    preferredContact: { type: String, enum: ['Phone', 'WhatsApp', 'Email'], default: 'Phone' },
+    lifetimeValue: { type: Number, default: 0 },
+    feedbackScore: { type: Number, default: 0 },
+    nextServiceDue: { type: Date },
 }, {
     timestamps: true,
     collection: 'customers'

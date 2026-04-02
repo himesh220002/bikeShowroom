@@ -35,13 +35,13 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
     const color = bike.colors[selectedColorIndex];
 
     return (
-        <section className="relative min-h-screen bg-zinc-950 pb-20 overflow-hidden">
+        <section className="relative min-h-screen bg-background pb-20 overflow-hidden">
             {/* Background elements */}
             <div
                 className="absolute top-0 right-0 w-1/2 h-screen blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 transition-colors duration-1000"
                 style={{ backgroundColor: `${color.hex}22` || 'rgba(0,123,255,0.05)' }}
             />
-            <div className="absolute bottom-0 left-0 w-1/3 h-screen bg-zinc-900/50 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-1/3 h-screen bg-muted/20 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 md:pt-32">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -56,7 +56,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                         </div>
 
                         <div className="mb-10">
-                            <h1 className="text-3xl md:text-4xl font-display font-black text-white uppercase tracking-tighter leading-none mb-4">
+                            <h1 className="text-3xl md:text-4xl font-display font-black text-foreground uppercase tracking-tighter leading-none mb-4">
                                 {bike.name} <br />
                                 <span className="text-racing-blue">{color.name}</span>
                             </h1>
@@ -83,7 +83,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                             {/* Color Selector */}
                             {bike.colors.length > 1 && (
                                 <div className="mt-8 flex flex-col gap-3">
-                                    <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Available Colors</span>
+                                    <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Available Colors</span>
                                     <div className="flex gap-4">
                                         {bike.colors.map((c: any, index: number) => (
                                             <button
@@ -91,7 +91,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                                 onClick={() => setSelectedColorIndex(index)}
                                                 className={cn(
                                                     "w-8 h-8 rounded-full border-2 transition-all p-1",
-                                                    index === selectedColorIndex ? "border-racing-blue scale-110" : "border-transparent border-white/20 hover:border-white/40"
+                                                    index === selectedColorIndex ? "border-racing-blue scale-110" : "border-transparent border-foreground/10 hover:border-foreground/20"
                                                 )}
                                                 title={c.name}
                                             >
@@ -106,7 +106,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                             )}
                         </div>
 
-                        <p className="text-sm md:text-xl text-gray-400 font-medium leading-relaxed max-w-xl mb-4 md:mb-10">
+                        <p className="text-sm md:text-xl text-muted-foreground font-medium leading-relaxed max-w-xl mb-4 md:mb-10">
                             {bike.description}
                         </p>
 
@@ -116,23 +116,23 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                 { label: "Mileage", value: bike.fullSpecs?.mileage || "45 kmpl", icon: Shield },
                                 { label: "Weight", value: bike.fullSpecs?.weight || "141 kg", icon: Clock },
                             ].map((fact, i) => (
-                                <div key={i} className="flex flex-col p-4 bg-zinc-900/40 border border-zinc-800/50 rounded-2xl backdrop-blur-sm">
+                                <div key={i} className="flex flex-col p-4 bg-muted/40 border border-border/50 rounded-2xl backdrop-blur-sm">
                                     <div className="flex items-center gap-2 mb-2">
                                         <fact.icon className="w-3 h-3 text-racing-blue" />
-                                        <span className="text-[8px] text-gray-500 font-black uppercase tracking-widest">{fact.label}</span>
+                                        <span className="text-[8px] text-muted-foreground font-black uppercase tracking-widest">{fact.label}</span>
                                     </div>
-                                    <span className="text-sm md:text-lg font-display font-black text-white italic">{fact.value}</span>
+                                    <span className="text-sm md:text-lg font-display font-black text-foreground italic">{fact.value}</span>
                                 </div>
                             ))}
                         </div>
 
                         <div className="flex flex-wrap gap-6 mb-8 items-center">
                             <div className="flex flex-col">
-                                <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">
+                                <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">
                                     {color.price ? "Price" : "Starting From"}
                                 </span>
-                                <span className="text-2xl lg:text-4xl font-display font-black text-white tracking-tighter italic">₹ {color.price || bike.price}*</span>
-                                <span className="text-[8px] text-gray-600 font-bold uppercase mt-1">*Ex-Showroom Price</span>
+                                <span className="text-2xl lg:text-4xl font-display font-black text-foreground tracking-tighter italic">₹ {color.price || bike.price}*</span>
+                                <span className="text-[8px] text-muted-foreground/60 font-bold uppercase mt-1">*Ex-Showroom Price</span>
                             </div>
 
                             <div className="h-12 w-px bg-zinc-800 hidden sm:block" />
@@ -140,7 +140,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                             <div className="flex gap-4 items-center">
                                 <div className="flex -space-x-2">
                                     {[1, 2].map(i => (
-                                        <div key={i} className="w-8 h-8 rounded-full border-2 border-zinc-950 bg-zinc-800 flex items-center justify-center overflow-hidden">
+                                        <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-muted flex items-center justify-center overflow-hidden">
                                             <div className="w-full h-full bg-racing-blue/10 flex items-center justify-center">
                                                 <Star className="w-3 h-3 text-racing-blue fill-current" />
                                             </div>
@@ -151,7 +151,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                     <div className="flex text-yellow-500">
                                         {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-2 h-2 fill-current" />)}
                                     </div>
-                                    <span className="text-[8px] text-gray-400 font-bold uppercase tracking-widest">500+ Reviews</span>
+                                    <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-widest">500+ Reviews</span>
                                 </div>
                             </div>
                         </div>
@@ -167,8 +167,8 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                 </div>
                                 <div>
                                     <h4 className="text-[10px] font-black text-racing-blue uppercase tracking-widest mb-1">Color Out of Stock</h4>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-loose">
-                                        This colour is not available at the moment. Please contact the dealer to <span className="text-white">pre-order</span> this bike colour for you.
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-loose">
+                                        This colour is not available at the moment. Please contact the dealer to <span className="text-foreground">pre-order</span> this bike colour for you.
                                     </p>
                                 </div>
                             </motion.div>
@@ -183,7 +183,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                 className={cn(
                                     "group px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 transition-all transform active:scale-95 shadow-2xl",
                                     color.stock === 0
-                                        ? "bg-zinc-900 border border-racing-blue/50 text-racing-blue hover:bg-zinc-800 shadow-racing-blue/5"
+                                        ? "bg-background border border-racing-blue/50 text-racing-blue hover:bg-muted shadow-racing-blue/5"
                                         : "bg-racing-blue text-white hover:bg-dark-racing shadow-racing-blue/20"
                                 )}
                             >
@@ -195,7 +195,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                     if (onAction) onAction("EMI");
                                     else document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
                                 }}
-                                className="group bg-zinc-900 border border-zinc-800 text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:bg-zinc-800 transition-all transform active:scale-95"
+                                className="group bg-muted border border-border text-foreground px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:bg-muted/80 transition-all transform active:scale-95"
                             >
                                 Finance Options
                                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -206,7 +206,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                     download={bike.brochureUrl.startsWith('/')}
                                     target={bike.brochureUrl.startsWith('/') ? undefined : "_blank"}
                                     rel={bike.brochureUrl.startsWith('/') ? undefined : "noopener noreferrer"}
-                                    className="px-6 md:px-10 py-5 bg-zinc-900/50 text-gray-400 border border-zinc-800/50 rounded-2xl font-black uppercase tracking-widest text-[11px] md:text-xs hover:border-white/20 hover:text-white transition-all transform active:scale-95 flex items-center justify-center gap-3 sm:col-span-2 lg:col-auto"
+                                    className="px-6 md:px-10 py-5 bg-muted/50 text-muted-foreground border border-border/50 rounded-2xl font-black uppercase tracking-widest text-[11px] md:text-xs hover:border-foreground/20 hover:text-foreground transition-all transform active:scale-95 flex items-center justify-center gap-3 sm:col-span-2 lg:col-auto"
                                 >
                                     <Download className="w-4 h-4" />
                                     Brochure
@@ -230,26 +230,26 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                         />
 
                         {/* Interactive floating specs */}
-                        <div className="absolute -top-10 -right-10 bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 p-4 rounded-3xl hidden md:block">
+                        <div className="absolute -top-10 -right-10 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
                                     <Shield className="w-5 h-5 text-racing-blue" />
                                 </div>
                                 <div>
-                                    <p className="text-[8px] text-gray-500 font-black uppercase mb-1">Warranty</p>
-                                    <p className="text-xs text-white font-bold uppercase">2 Years Standard</p>
+                                    <p className="text-[8px] text-muted-foreground font-black uppercase mb-1">Warranty</p>
+                                    <p className="text-xs text-foreground font-bold uppercase">2 Years Standard</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="absolute -bottom-10 -left-10 bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 p-4 rounded-3xl hidden md:block">
+                        <div className="absolute -bottom-10 -left-10 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
                                     <Clock className="w-5 h-5 text-racing-blue" />
                                 </div>
                                 <div>
-                                    <p className="text-[8px] text-gray-500 font-black uppercase mb-1">Fast Delivery</p>
-                                    <p className="text-xs text-white font-bold uppercase">Within 7 Days</p>
+                                    <p className="text-[8px] text-muted-foreground font-black uppercase mb-1">Fast Delivery</p>
+                                    <p className="text-xs text-foreground font-bold uppercase">Within 7 Days</p>
                                 </div>
                             </div>
                         </div>
@@ -259,7 +259,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
 
             {/* Model Name Background Text */}
             < div className="absolute bottom-0 left-0 right-0 overflow-hidden pointer-events-none select-none -mb-20 opacity-5" >
-                <h2 className="text-[25vw] font-black text-white uppercase tracking-tighter leading-none whitespace-nowrap">
+                <h2 className="text-[25vw] font-black text-foreground uppercase tracking-tighter leading-none whitespace-nowrap">
                     {bike.name}
                 </h2>
             </div >

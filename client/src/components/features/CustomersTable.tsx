@@ -4,12 +4,18 @@ import { useState, useEffect } from "react";
 import { API_URL } from "@/lib/config";
 import { useRouter } from "next/navigation";
 import { ExportButton } from "@/components/ui/ExportButton";
+import { CustomerEditModal } from "./CustomerEditModal";
 
 interface CustomerCRM {
     _id: string;
     name: string;
     phone: string;
     email?: string;
+    address?: string;
+    preferredContact?: string;
+    lifetimeValue?: number;
+    feedbackScore?: number;
+    nextServiceDue?: string;
     lastSale: {
         bikeName: string;
         variant: string;
@@ -32,6 +38,11 @@ interface CustomersTableProps {
 export function CustomersTable({ customers }: CustomersTableProps) {
     const router = useRouter();
     const [config, setConfig] = useState<any>(null);
+    const [editingCustomer, setEditingCustomer] = useState<CustomerCRM | null>(null);
+
+    const refreshData = () => {
+        window.location.reload();
+    };
 
     useEffect(() => {
         const fetchConfig = async () => {
@@ -110,7 +121,9 @@ Reply to this message to schedule your service or ask any questions!`;
                     <thead>
                         <tr className="border-b border-border">
                             <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Customer</th>
+                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contact Pref</th>
                             <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Last Purchase</th>
+                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">LTV / Score</th>
                             <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Service Status</th>
                             <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">Actions</th>
                         </tr>
@@ -135,8 +148,18 @@ Reply to this message to schedule your service or ask any questions!`;
                                                 <Phone className="w-3 h-3 text-muted-foreground/60 group-hover/phone:text-racing-blue" />
                                                 <span className="text-[10px] font-bold text-muted-foreground group-hover/phone:text-racing-blue">{customer.phone}</span>
                                             </div>
+                                            {customer.address && (
+                                                <p className="text-[8px] font-bold text-muted-foreground/60 uppercase mt-1 line-clamp-1 max-w-[150px]">
+                                                    {customer.address}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
+                                </td>
+                                <td className="py-6 px-4">
+                                    <span className="text-[10px] font-black text-foreground uppercase tracking-widest bg-muted/50 px-2 py-1 rounded border border-border">
+                                        {customer.preferredContact || "Phone"}
+                                    </span>
                                 </td>
                                 <td className="py-6 px-4">
                                     {customer.lastSale ? (
@@ -155,6 +178,26 @@ Reply to this message to schedule your service or ask any questions!`;
                                     ) : (
                                         <span className="text-[10px] text-muted-foreground italic">No sales record</span>
                                     )}
+                                </td>
+                                <td className="py-6 px-4">
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-1 text-racing-blue font-black italic text-xs">
+                                            ₹{(customer.lifetimeValue || 0).toLocaleString('en-IN')}
+                                        </div>
+                                        {customer.feedbackScore !== undefined && (
+                                            <div className="flex items-center gap-0.5">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <div
+                                                        key={i}
+                                                        className={cn(
+                                                            "w-1.5 h-1.5 rounded-full",
+                                                            i < (customer.feedbackScore || 0) ? "bg-amber-400" : "bg-muted"
+                                                        )}
+                                                    />
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </td>
                                 <td className="py-6 px-4">
                                     <div className="flex flex-col gap-1">
@@ -190,7 +233,11 @@ Reply to this message to schedule your service or ask any questions!`;
                                         >
                                             <MessageSquare className="w-4 h-4 text-green-600 dark:text-green-400 group-hover/btn:scale-110 transition-transform" />
                                         </button>
-                                        <button className="p-2 rounded-xl border border-border hover:bg-foreground/10 hover:border-foreground/50 group/btn transition-all" title="View Detailed History">
+                                        <button
+                                            onClick={() => setEditingCustomer(customer)}
+                                            className="p-2 rounded-xl border border-border hover:bg-foreground/10 hover:border-foreground/50 group/btn transition-all"
+                                            title="Edit Customer Profile"
+                                        >
                                             <History className="w-4 h-4 text-muted-foreground group-hover/btn:scale-110 transition-transform" />
                                         </button>
                                     </div>
@@ -200,6 +247,15 @@ Reply to this message to schedule your service or ask any questions!`;
                     </tbody>
                 </table>
             </div>
+
+            {editingCustomer && (
+                <CustomerEditModal
+                    customer={editingCustomer}
+                    isOpen={!!editingCustomer}
+                    onClose={() => setEditingCustomer(null)}
+                    onUpdate={refreshData}
+                />
+            )}
         </div>
     );
 }

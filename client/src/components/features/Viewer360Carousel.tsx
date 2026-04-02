@@ -66,9 +66,8 @@ export function Viewer360Carousel() {
 
     return (
         <div className="relative group/carousel">
-            {/* Loading Overlay */}
             {loading && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center bg-zinc-900/50 backdrop-blur-xl rounded-[3rem]">
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-card/50 backdrop-blur-xl rounded-[3rem]">
                     <Loader2 className="w-8 h-8 text-racing-blue animate-spin" />
                 </div>
             )}
@@ -82,7 +81,7 @@ export function Viewer360Carousel() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                     >
-                        <h4 className="text-4xl font-display font-black text-white/10 uppercase tracking-tighter leading-none mb-2">
+                        <h4 className="text-4xl font-display font-black text-foreground/10 uppercase tracking-tighter leading-none mb-2">
                             {currentBike.name}
                         </h4>
                         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue/40">
@@ -98,7 +97,7 @@ export function Viewer360Carousel() {
             </div>
 
             {/* Navigation Dots */}
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex gap-2 p-2 bg-black/60 backdrop-blur-xl border border-white/5 rounded-full will-change-transform">
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex gap-2 p-2 bg-card/60 backdrop-blur-xl border border-border rounded-full will-change-transform">
                 {uniqueBikes.map((bike, idx) => (
                     <button
                         key={bike.slug}
@@ -107,7 +106,7 @@ export function Viewer360Carousel() {
                             "w-2 h-2 rounded-full transition-all",
                             currentIndex === idx
                                 ? "bg-racing-blue w-8"
-                                : "bg-white/20 hover:bg-white/40"
+                                : "bg-muted hover:bg-muted-foreground/40"
                         )}
                         title={bike.name}
                     />
@@ -117,14 +116,14 @@ export function Viewer360Carousel() {
             {/* Next/Prev Buttons */}
             <button
                 onClick={prevBike}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-black/60 backdrop-blur-lg border border-white/5 rounded-full text-white hover:bg-racing-blue hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100 will-change-transform"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-card/60 backdrop-blur-lg border border-border rounded-full text-foreground hover:bg-racing-blue hover:text-white hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100 will-change-transform"
                 aria-label="Previous Bike"
             >
                 <ChevronLeft className="w-8 h-8" />
             </button>
             <button
                 onClick={nextBike}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-black/60 backdrop-blur-lg border border-white/5 rounded-full text-white hover:bg-racing-blue hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100 will-change-transform"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-card/60 backdrop-blur-lg border border-border rounded-full text-foreground hover:bg-racing-blue hover:text-white hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100 will-change-transform"
                 aria-label="Next Bike"
             >
                 <ChevronRight className="w-8 h-8" />

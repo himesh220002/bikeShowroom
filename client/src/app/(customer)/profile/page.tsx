@@ -198,16 +198,16 @@ export default function ProfilePage() {
                                 )}
                             </div>
                             <div>
-                                <h1 className="text-4xl md:text-5xl font-display font-black text-white uppercase tracking-tighter leading-tight">
+                                <h1 className="text-4xl md:text-5xl font-display font-black text-foreground uppercase tracking-tighter leading-tight">
                                     My <span className="text-racing-blue">Garage</span>
                                 </h1>
                                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">{user.displayName}</p>
-                                    <div className="w-1 h-1 bg-white/20 rounded-full hidden sm:block" />
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">{user.email}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{user.displayName}</p>
+                                    <div className="w-1 h-1 bg-border rounded-full hidden sm:block" />
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">{user.email}</p>
                                     {user.phone && (
                                         <>
-                                            <div className="w-1 h-1 bg-white/20 rounded-full hidden sm:block" />
+                                            <div className="w-1 h-1 bg-border rounded-full hidden sm:block" />
                                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-racing-blue/80">{user.phone}</p>
                                         </>
                                     )}
@@ -220,7 +220,7 @@ export default function ProfilePage() {
                                 onClick={() => setIsEditingProfile(!isEditingProfile)}
                                 className={cn(
                                     "flex-1 lg:flex-none px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
-                                    isEditingProfile ? "bg-zinc-800 text-white border border-white/10" : "bg-white/5 text-white border border-white/10 hover:bg-white/10"
+                                    isEditingProfile ? "bg-muted text-foreground border border-border" : "bg-foreground/5 text-foreground border border-border hover:bg-foreground/10"
                                 )}
                             >
                                 {isEditingProfile ? <X className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
@@ -228,7 +228,7 @@ export default function ProfilePage() {
                             </button>
                             <button
                                 onClick={() => setIsAdding(!isAdding)}
-                                className="flex-1 lg:flex-none bg-racing-blue hover:bg-racing-blue/90 text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 flex items-center justify-center gap-2 shadow-xl shadow-racing-blue/30"
+                                className="flex-1 lg:flex-none bg-racing-blue text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 flex items-center justify-center gap-2 shadow-xl shadow-racing-blue/30"
                             >
                                 {isAdding ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                                 {isAdding ? "Cancel" : "Add Bike"}
@@ -246,40 +246,40 @@ export default function ProfilePage() {
                             >
                                 <form onSubmit={handleUpdateProfile} className="glass p-8 rounded-[2.5rem] border border-racing-blue/30 shadow-2xl space-y-8 max-w-4xl mx-auto">
                                     <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-xl font-display font-black text-white uppercase tracking-tighter flex items-center gap-3">
+                                        <h3 className="text-xl font-display font-black text-foreground uppercase tracking-tighter flex items-center gap-3">
                                             <User className="w-6 h-6 text-racing-blue" />
                                             Personal Information
                                         </h3>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Full Name</label>
+                                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Full Name</label>
                                             <input
                                                 required
                                                 type="text"
-                                                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:border-racing-blue transition-all"
+                                                className="w-full bg-background border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
                                                 value={profileFormData.displayName}
                                                 onChange={(e) => setProfileFormData({ ...profileFormData, displayName: e.target.value })}
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Email Address</label>
+                                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Email Address</label>
                                             <input
                                                 required
                                                 type="email"
-                                                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:border-racing-blue transition-all"
+                                                className="w-full bg-background border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
                                                 value={profileFormData.email}
                                                 onChange={(e) => setProfileFormData({ ...profileFormData, email: e.target.value })}
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">Phone Number</label>
+                                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Phone Number</label>
                                             <input
                                                 required
                                                 type="tel"
                                                 pattern="[0-9]{10}"
                                                 maxLength={10}
-                                                className="w-full bg-zinc-950 border border-white/10 rounded-xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:border-racing-blue transition-all"
+                                                className="w-full bg-background border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
                                                 value={profileFormData.phone}
                                                 onChange={(e) => {
                                                     const val = e.target.value.replace(/[^0-9]/g, '');
@@ -589,7 +589,7 @@ export default function ProfilePage() {
                                                                                         <div key={idx} className="p-4 rounded-2xl bg-muted/30 border border-border/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
                                                                                             <div className="flex items-center gap-4">
                                                                                                 <div className="w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center">
-                                                                                                    <CheckCircle2 className={cn("w-5 h-5", (svc.status === 'delivered' || svc.status === 'completed') ? "text-green-500" : "text-muted-foreground")} />
+                                                                                                    <CheckCircle2 className={cn("w-5 h-5", (svc.status === 'delivered' || svc.status === 'completed') ? "text-success" : "text-muted-foreground")} />
                                                                                                 </div>
                                                                                                 <div>
                                                                                                     <p className="text-[10px] font-black text-foreground uppercase tracking-widest mb-1">{svc.serviceType}</p>

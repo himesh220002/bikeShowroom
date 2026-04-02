@@ -29,7 +29,7 @@ const promotions = [
 
 export function LocalPromotions() {
     return (
-        <section className="py-24 bg-zinc-950">
+        <section className="py-24 bg-background">
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                     <div>
@@ -37,11 +37,11 @@ export function LocalPromotions() {
                             <span className="w-8 h-1 bg-racing-blue rounded-full" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue">Exclusive Offers</span>
                         </div>
-                        <h2 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter">
+                        <h2 className="text-4xl md:text-6xl font-display font-black text-foreground uppercase tracking-tighter">
                             KATIHAR <br /><span className="text-gradient">DEALS HUB</span>
                         </h2>
                     </div>
-                    <p className="max-w-md text-gray-400 font-medium text-sm leading-relaxed">
+                    <p className="max-w-md text-muted-foreground font-medium text-sm leading-relaxed">
                         Choudhary Yamaha brings you the best Yamaha deals in Bihar. From exchange bonuses to easy finance, we make your dream ride accessible.
                     </p>
                 </div>
@@ -54,7 +54,7 @@ export function LocalPromotions() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: idx * 0.2 }}
-                            className="group relative h-[400px] rounded-[3rem] overflow-hidden border border-zinc-900 shadow-2xl"
+                            className="group relative h-[400px] rounded-[3rem] overflow-hidden border border-border shadow-2xl"
                         >
                             {/* Background Image */}
                             <div

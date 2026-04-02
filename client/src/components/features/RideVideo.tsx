@@ -30,7 +30,7 @@ export function RideVideo() {
     return (
         <section
             ref={containerRef}
-            className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden bg-black/40 border-y border-white/5"
+            className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden bg-black border-y border-white/10"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -53,7 +53,7 @@ export function RideVideo() {
                 </video>
 
                 {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950/50" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
             </motion.div>
 
             {/* Content Overlay */}
@@ -69,7 +69,7 @@ export function RideVideo() {
                     <h3 className="text-4xl md:text-7xl font-display font-black text-white uppercase tracking-tighter mb-6">
                         PURE <span className="text-racing-blue italic">RACING</span> DNA
                     </h3>
-                    <p className="text-sm md:text-lg text-gray-300 font-medium max-w-xl leading-relaxed">
+                    <p className="text-sm md:text-lg text-gray-400 font-medium max-w-xl leading-relaxed">
                         Experience the adrenaline of the Yamaha R15 on the streets of Katihar. Engineered for the track, built for the city—celebrating 70 years of Yamaha’s legacy of performance and innovation.
                     </p>
                 </motion.div>
@@ -79,7 +79,7 @@ export function RideVideo() {
             <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 flex items-center gap-4 z-20">
                 <button
                     onClick={toggleMute}
-                    className="group w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-racing-blue transition-all"
+                    className="group w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-racing-blue hover:text-white transition-all"
                     title={isMuted ? "Unmute" : "Mute"}
                 >
                     {isMuted ? (

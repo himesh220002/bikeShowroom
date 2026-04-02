@@ -13,6 +13,8 @@ export interface IService extends Document {
     technicianName?: string;
     appointmentDate: string;
     appointmentTime: string;
+    estimatedCompletionTime?: string;
+    statusHistory?: { status: string; timestamp: Date; notes?: string }[];
     bookedAt?: Date;
     startedAt?: Date;
     completedAt?: Date;
@@ -38,6 +40,12 @@ const ServiceSchema: Schema = new Schema({
     technicianName: { type: String },
     appointmentDate: { type: String, required: true },
     appointmentTime: { type: String, required: true },
+    estimatedCompletionTime: { type: String },
+    statusHistory: [{
+        status: { type: String, required: true },
+        timestamp: { type: Date, default: Date.now },
+        notes: { type: String }
+    }],
     bookedAt: { type: Date, default: Date.now },
     startedAt: { type: Date },
     completedAt: { type: Date },

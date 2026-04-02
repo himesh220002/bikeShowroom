@@ -46,7 +46,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
     ];
 
     return (
-        <div className="relative max-w-[1400px] mx-auto h-[600px] md:h-[700px] bg-zinc-950 rounded-[3rem] overflow-hidden border border-zinc-900 shadow-2xl group/viewer">
+        <div className="relative max-w-[1400px] mx-auto h-[600px] md:h-[700px] bg-background rounded-[3rem] overflow-hidden border border-border shadow-2xl group/viewer">
             {/* Main 3D View (Custom Rotating Viewer) */}
             <div className="absolute inset-0 z-0">
                 {activeMode === "360" ? (
@@ -55,14 +55,14 @@ export function Viewer360({ bike }: { bike: Bike }) {
                         imageCount={bike.threeSixtyImageCount}
                     />
                 ) : (
-                    <div className="w-full h-full bg-zinc-950 flex items-center justify-center opacity-20">
-                        <Rotate3d className="w-32 h-32 text-white animate-pulse" />
+                    <div className="w-full h-full bg-background flex items-center justify-center opacity-20">
+                        <Rotate3d className="w-32 h-32 text-foreground animate-pulse" />
                     </div>
                 )}
             </div>
 
             {/* Mode Selection Tabs (Top) */}
-            <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 p-1.5 bg-black/60 backdrop-blur-lg border border-white/5 rounded-2xl z-20 will-change-transform">
+            <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 p-1.5 bg-card/60 backdrop-blur-lg border border-border/5 rounded-2xl z-20 will-change-transform">
                 {modes.map((mode) => (
                     <button
                         key={mode.id}
@@ -74,7 +74,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
                             "flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
                             activeMode === mode.id
                                 ? "bg-racing-blue text-white shadow-lg shadow-racing-blue/20"
-                                : "text-gray-500 hover:text-white hover:bg-white/5"
+                                : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                         )}
                     >
                         <mode.icon className="w-4 h-4" />
@@ -84,7 +84,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
             </div>
 
             {/* Content Context (Bottom Left) */}
-            <div className="absolute bottom-8 left-8 p-8 bg-zinc-900/90 backdrop-blur-lg border border-zinc-800 rounded-[2.5rem] max-w-xs z-20 shadow-2xl hidden lg:block will-change-transform">
+            <div className="absolute bottom-8 left-8 p-8 bg-card/90 backdrop-blur-lg border border-border rounded-[2.5rem] max-w-xs z-20 shadow-2xl hidden lg:block will-change-transform">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeMode}
@@ -100,13 +100,13 @@ export function Viewer360({ bike }: { bike: Bike }) {
                                     {modes.find(m => m.id === activeMode)?.label}
                                 </span>
                             </div>
-                            <h3 className="text-2xl font-display font-black text-white uppercase tracking-tighter leading-none">
+                            <h3 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter leading-none">
                                 {activeMode === "360" && <>EXPLORE <br />EVERY <span className="text-gradient">ANGLE</span></>}
                                 {activeMode === "sound" && <>THRILL OF <br />THE <span className="text-gradient">ENGINE</span></>}
                                 {activeMode === "tech" && <>DIGITAL <br /><span className="text-gradient">COMMAND</span></>}
                             </h3>
                         </div>
-                        <p className="text-[11px] text-gray-400 font-medium leading-relaxed">
+                        <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">
                             {activeMode === "360" && `Immerse yourself in 360 virtual reality. Experience the ${bike.name} in its full glory.`}
                             {activeMode === "sound" && "Experience the raw power. Listen to the signature Yamaha exhaust note recorded live."}
                             {activeMode === "tech" && "Interact with the next-gen TFT console. Experience connected features and ride modes."}
@@ -122,7 +122,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-sm pointer-events-none"
+                        className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-sm pointer-events-none"
                     >
                         <div className="flex items-center gap-4 pointer-events-auto">
                             <button
@@ -155,17 +155,17 @@ export function Viewer360({ bike }: { bike: Bike }) {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="absolute inset-x-2 md:inset-x-10 bottom-2 md:bottom-10 top-16 md:top-20 z-30 bg-zinc-950/98 backdrop-blur-lg border border-white/5 rounded-[2rem] md:rounded-[3rem] overflow-hidden flex flex-col will-change-transform"
+                        className="absolute inset-x-2 md:inset-x-10 bottom-2 md:bottom-10 top-16 md:top-20 z-30 bg-background/98 backdrop-blur-lg border border-border/5 rounded-[2rem] md:rounded-[3rem] overflow-hidden flex flex-col will-change-transform"
                     >
                         {/* Header */}
-                        <div className="p-5 md:p-10 border-b border-white/5 flex justify-between items-center bg-linear-to-r from-zinc-900/50 to-transparent shrink-0">
+                        <div className="p-5 md:p-10 border-b border-border/5 flex justify-between items-center bg-linear-to-r from-muted/50 to-transparent shrink-0">
                             <div>
                                 <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue mb-1 md:mb-2 block">Yamaha {bike.name} DNA</span>
-                                <h4 className="text-2xl md:text-4xl font-display font-black text-white uppercase tracking-tighter leading-none">{bike.name} TECH</h4>
+                                <h4 className="text-2xl md:text-4xl font-display font-black text-foreground uppercase tracking-tighter leading-none">{bike.name} TECH</h4>
                             </div>
                             <button
                                 onClick={() => setActiveMode("360")}
-                                className="w-9 h-9 md:w-12 md:h-12 bg-white/5 rounded-full flex items-center justify-center text-white hover:bg-racing-blue transition-all group"
+                                className="w-9 h-9 md:w-12 md:h-12 bg-foreground/5 rounded-full flex items-center justify-center text-foreground hover:bg-racing-blue hover:text-white transition-all group"
                             >
                                 <X className="w-4 h-4 md:w-6 md:h-6 group-hover:rotate-90 transition-transform" />
                             </button>
@@ -179,8 +179,8 @@ export function Viewer360({ bike }: { bike: Bike }) {
                             `}</style>
 
                             {/* Center: Main Gauge cluster */}
-                            <div className="flex-[3] flex flex-col justify-center items-center p-4 md:p-10 relative bg-linear-to-b from-white/[0.02] to-transparent shrink-0">
-                                <div className="relative w-48 h-48 md:w-80 md:h-80 rounded-full border-4 md:border-8 border-zinc-900 shadow-[0_0_100px_rgba(0,123,255,0.15)] flex items-center justify-center overflow-hidden group">
+                            <div className="flex-[3] flex flex-col justify-center items-center p-4 md:p-10 relative bg-linear-to-b from-foreground/[0.02] to-transparent shrink-0">
+                                <div className="relative w-48 h-48 md:w-80 md:h-80 rounded-full border-4 md:border-8 border-muted shadow-[0_0_100px_rgba(0,123,255,0.15)] flex items-center justify-center overflow-hidden group">
                                     {/* RPM Ring */}
                                     <motion.div
                                         className="absolute inset-4 border-4 border-dashed border-racing-blue/30 rounded-full"
@@ -207,7 +207,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
                                             key={gear}
                                             initial={{ opacity: 0, scale: 0.5 }}
                                             animate={{ opacity: 1, scale: 1 }}
-                                            className="text-6xl md:text-8xl font-display font-black text-white italic -mb-2 md:-mb-4 block"
+                                            className="text-6xl md:text-8xl font-display font-black text-foreground italic -mb-2 md:-mb-4 block"
                                         >
                                             <AnimatedNumber value={springSpeed} />
                                         </motion.span>
@@ -216,7 +216,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
                                             onClick={toggleGear}
                                             className="mt-4 px-6 py-2 bg-racing-blue/20 rounded-lg border border-racing-blue/40 cursor-pointer hover:bg-racing-blue/40 transition-all select-none"
                                         >
-                                            <span className="text-xl md:text-3xl font-display font-black text-white underline decoration-racing-blue/40 decoration-4 underline-offset-8 uppercase tracking-widest italic group-hover:text-racing-blue transition-colors">
+                                            <span className="text-xl md:text-3xl font-display font-black text-foreground underline decoration-racing-blue/40 decoration-4 underline-offset-8 uppercase tracking-widest italic group-hover:text-racing-blue transition-colors">
                                                 G{gear}
                                             </span>
                                         </div>
@@ -228,13 +228,13 @@ export function Viewer360({ bike }: { bike: Bike }) {
                                         transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
                                     />
                                 </div>
-                                <p className="mt-8 text-[10px] text-gray-400 font-black uppercase tracking-widest text-center">
+                                <p className="mt-8 text-[10px] text-muted-foreground font-black uppercase tracking-widest text-center">
                                     Real-time Telemetry Active • 256-bit Encryption
                                 </p>
                             </div>
 
                             {/* Right: Technical Specifications (Scrollable) */}
-                            <div className="flex-[2] p-6 md:p-12 overflow-y-auto scrollbar-hide border-l border-white/5 bg-black/20">
+                            <div className="flex-[2] p-6 md:p-12 overflow-y-auto scrollbar-hide border-l border-border/5 bg-foreground/5">
                                 <div className="space-y-4 md:space-y-6">
                                     {[
                                         { label: "Engine Type", value: "155cc LC4V SOHC VVA", detail: "Variable Valve Actuation" },
@@ -249,21 +249,21 @@ export function Viewer360({ bike }: { bike: Bike }) {
                                             initial={{ opacity: 0, x: 20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: i * 0.1 }}
-                                            className="bg-zinc-900/50 p-4 md:p-6 rounded-xl md:rounded-2xl border border-white/5 hover:border-racing-blue/30 transition-all group"
+                                            className="bg-card/50 p-4 md:p-6 rounded-xl md:rounded-2xl border border-border/5 hover:border-racing-blue/30 transition-all group"
                                         >
                                             <div className="flex justify-between items-start mb-1">
-                                                <span className="text-[8px] md:text-[9px] font-black text-gray-500 uppercase tracking-widest">{spec.label}</span>
+                                                <span className="text-[8px] md:text-[9px] font-black text-muted-foreground uppercase tracking-widest">{spec.label}</span>
                                                 <div className="w-1.5 h-1.5 rounded-full bg-racing-blue opacity-50 group-hover:opacity-100 transition-opacity" />
                                             </div>
-                                            <div className="text-white font-display font-black text-sm md:text-lg tracking-tight uppercase leading-tight">{spec.value}</div>
+                                            <div className="text-foreground font-display font-black text-sm md:text-lg tracking-tight uppercase leading-tight">{spec.value}</div>
                                             <div className="text-[8px] md:text-[9px] text-racing-blue/60 font-black uppercase tracking-widest mt-1">{spec.detail}</div>
                                         </motion.div>
                                     ))}
 
                                     <div className="p-6 bg-racing-blue/5 rounded-2xl border border-racing-blue/20">
-                                        <h5 className="text-[10px] font-black text-white uppercase tracking-widest mb-3">Vehicle Diagnostics</h5>
+                                        <h5 className="text-[10px] font-black text-foreground uppercase tracking-widest mb-3">Vehicle Diagnostics</h5>
                                         <div className="flex gap-4">
-                                            <div className="flex-1 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                            <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
                                                 <motion.div className="h-full bg-racing-blue" initial={{ width: "0%" }} animate={{ width: "82%" }} transition={{ duration: 1.5 }} />
                                             </div>
                                             <span className="text-[10px] font-black text-racing-blue leading-none">82% TEMP</span>

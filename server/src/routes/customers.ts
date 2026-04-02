@@ -47,4 +47,19 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.put('/:id', async (req, res) => {
+    try {
+        const customer = await Customer.findByIdAndUpdate(
+            req.params.id,
+            { $set: req.body },
+            { new: true }
+        );
+        if (!customer) return res.status(404).json({ success: false, message: 'Customer not found' });
+
+        res.json({ success: true, data: customer });
+    } catch (error: any) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+
 export default router;

@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { Wrench, Bike, Calendar, Package, MoreVertical, Phone, MessageSquare, Users, Clock, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { API_URL } from "@/lib/config";
 import { ExportButton } from "@/components/ui/ExportButton";
+import { ServiceStatusModal } from "./ServiceStatusModal";
 
 export interface ServiceBooking {
     _id: string;
@@ -13,10 +15,13 @@ export interface ServiceBooking {
     regNumber: string;
     serviceType: string;
     status: 'booked' | 'in-progress' | 'completed' | 'delivered' | 'cancelled';
+    priority?: 'High' | 'Normal';
     technicianName?: string;
+    estimatedCompletionTime?: string;
     appointmentDate: string;
     appointmentTime: string;
     createdAt: string;
+    statusHistory?: any[];
 }
 
 interface ServicesTableProps {
@@ -34,6 +39,11 @@ const statusColors = {
 };
 
 export function ServicesTable({ services }: ServicesTableProps) {
+    const [statusModal, setStatusModal] = useState<{ service: ServiceBooking, status: string } | null>(null);
+
+    const refreshData = () => {
+        window.location.reload();
+    };
     const updateStatus = async (id: string, status: string) => {
         try {
             const res = await fetch(`${API_URL}/services/${id}/status`, {
@@ -95,12 +105,18 @@ export function ServicesTable({ services }: ServicesTableProps) {
                                 </td>
                                 <td className="py-6 px-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-racing-blue/10 rounded-lg">
+                                        <div className="p-2 bg-racing-blue/10 rounded-lg shrink-0">
                                             <Bike className="w-4 h-4 text-racing-blue" />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-black text-foreground uppercase tracking-tighter">{service.bikeModel}</p>
+                                            <div className="flex items-center gap-1.5">
+                                                <p className="text-sm font-black text-foreground uppercase tracking-tighter whitespace-nowrap">{service.bikeModel}</p>
+                                                {service.priority === 'High' && (
+                                                    <span className="text-[8px] font-black uppercase text-red-500 bg-red-500/10 border border-red-500/20 px-1 py-0.5 rounded">VIP</span>
+                                                )}
+                                            </div>
                                             <p className="text-[10px] font-bold text-muted-foreground uppercase">{service.serviceType}</p>
+                                            <p className="text-[9px] font-black text-racing-blue/80 uppercase tracking-widest mt-0.5">{service.regNumber}</p>
                                         </div>
                                     </div>
                                 </td>
@@ -108,7 +124,7 @@ export function ServicesTable({ services }: ServicesTableProps) {
                                     <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-2 text-foreground">
                                             <Calendar className="w-3.5 h-3.5" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest">
+                                            <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
                                                 {service.appointmentDate}
                                             </span>
                                         </div>
@@ -116,6 +132,11 @@ export function ServicesTable({ services }: ServicesTableProps) {
                                             <Clock className="w-3.5 h-3.5" />
                                             <span className="text-[10px] font-bold">{service.appointmentTime}</span>
                                         </div>
+                                        {service.estimatedCompletionTime && (
+                                            <span className="text-[8px] font-black text-amber-600 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded w-fit mt-1">
+                                                EST: {service.estimatedCompletionTime}
+                                            </span>
+                                        )}
                                     </div>
                                 </td>
                                 <td className="py-6 px-4 text-right">
@@ -141,7 +162,7 @@ export function ServicesTable({ services }: ServicesTableProps) {
                                                     {STATUS_OPTIONS.map((opt) => (
                                                         <button
                                                             key={opt}
-                                                            onClick={() => updateStatus(service._id, opt)}
+                                                            onClick={() => setStatusModal({ service, status: opt })}
                                                             className="px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground hover:text-foreground border-b border-border/50 last:border-0"
                                                         >
                                                             {opt.replace('-', ' ')}

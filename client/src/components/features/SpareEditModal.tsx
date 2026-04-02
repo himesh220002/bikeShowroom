@@ -80,28 +80,28 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="relative w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-[2.5rem] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+                    className="relative w-full max-w-4xl bg-card border border-border rounded-[2.5rem] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
                 >
                     {/* Header */}
-                    <div className="px-8 py-6 border-b border-zinc-900 flex justify-between items-center shrink-0">
+                    <div className="px-8 py-6 border-b border-border flex justify-between items-center shrink-0">
                         <div>
-                            <h2 className="text-2xl font-display font-black text-white uppercase tracking-tighter">
+                            <h2 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter">
                                 {spare ? "Edit" : "Add New"} <span className="text-racing-blue">Spare Part</span>
                             </h2>
-                            <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1">Genuine Parts Inventory Control</p>
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-1">Genuine Parts Inventory Control</p>
                         </div>
-                        <button onClick={onClose} className="p-2 hover:bg-zinc-900 rounded-full transition-colors">
-                            <X className="w-6 h-6 text-zinc-500" />
+                        <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors">
+                            <X className="w-6 h-6 text-muted-foreground" />
                         </button>
                     </div>
 
                     {/* Form Content */}
                     <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                        <form id="spare-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 text-white">
+                        <form id="spare-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 text-foreground">
                             {/* Left Column: Basic Info */}
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">
+                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">
                                         <Package className="w-3 h-3" /> Part Name
                                     </label>
                                     <input
@@ -109,24 +109,24 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         placeholder="e.g. Yamalube 4T Engine Oil"
-                                        className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                        className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">
+                                        <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">
                                             <Tag className="w-3 h-3" /> Part Number
                                         </label>
                                         <input
                                             value={formData.partNumber}
                                             onChange={(e) => setFormData({ ...formData, partNumber: e.target.value })}
                                             placeholder="PN-123456"
-                                            className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                            className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">
+                                        <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">
                                             <DollarSign className="w-3 h-3" /> Price (₹)
                                         </label>
                                         <input
@@ -134,19 +134,19 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                                             type="number"
                                             value={formData.price}
                                             onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                            className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">
+                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">
                                         <Box className="w-3 h-3" /> Compatible Bike
                                     </label>
                                     <select
                                         value={formData.bikeId}
                                         onChange={(e) => setFormData({ ...formData, bikeId: e.target.value })}
-                                        className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all appearance-none"
+                                        className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all appearance-none"
                                     >
                                         <option value="">Common / Universal (No Bike)</option>
                                         {bikes.map(bike => (
@@ -156,7 +156,7 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">
+                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">
                                         <Info className="w-3 h-3" /> Description
                                     </label>
                                     <textarea
@@ -165,7 +165,7 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                         placeholder="Detailed specifications and usage info..."
-                                        className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all resize-none"
+                                        className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all resize-none"
                                     />
                                 </div>
                             </div>
@@ -173,7 +173,7 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                             {/* Right Column: Media & Inventory */}
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">
+                                    <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">
                                         <Upload className="w-3 h-3" /> Part Image URL
                                     </label>
                                     <input
@@ -181,10 +181,10 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                                         value={formData.image}
                                         onChange={(e) => setFormData({ ...formData, image: cleanImageUrl(e.target.value) })}
                                         placeholder="https://... or /images/spares/..."
-                                        className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                        className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
                                     />
                                     {formData.image && (
-                                        <div className="mt-4 aspect-video rounded-2xl border border-zinc-800 overflow-hidden bg-black/40 flex items-center justify-center p-4">
+                                        <div className="mt-4 aspect-video rounded-2xl border border-border overflow-hidden bg-muted/30 flex items-center justify-center p-4">
                                             <img src={formData.image} alt="Preview" className="max-w-full max-h-full object-contain" onError={(e) => { (e.target as any).src = "https://placehold.co/600x400/18181b/ffffff?text=Invalid+Image+URL" }} />
                                         </div>
                                     )}
@@ -192,20 +192,20 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">Initial Stock</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Initial Stock</label>
                                         <input
                                             type="number"
                                             value={formData.stock}
                                             onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                            className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">Status</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Status</label>
                                         <select
                                             value={formData.status}
                                             onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                            className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
                                         >
                                             <option value="In Stock">In Stock</option>
                                             <option value="Out of Stock">Out of Stock</option>
@@ -214,12 +214,12 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-2">Category</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Category</label>
                                     <input
                                         value={formData.category}
                                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                         placeholder="e.g. Engine, Electronics, Body"
-                                        className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                        className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
                                     />
                                 </div>
                             </div>
@@ -227,11 +227,11 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                     </div>
 
                     {/* Footer */}
-                    <div className="px-8 py-6 border-t border-zinc-900 bg-zinc-900/30 flex justify-between items-center shrink-0">
+                    <div className="px-8 py-6 border-t border-border bg-muted/30 flex justify-between items-center shrink-0">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors"
+                            className="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
                         >
                             Cancel
                         </button>

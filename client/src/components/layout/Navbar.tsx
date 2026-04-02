@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useAuth } from "@/context/AuthContext";
 import { LogIn, User as UserIcon, LogOut, ChevronDown } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export function Navbar() {
     const pathname = usePathname();
@@ -37,7 +38,7 @@ export function Navbar() {
         <nav className={cn(
             "fixed top-0 w-full z-50 transition-all duration-500 py-4",
             (isScrolled || isAdmin || isService || pathname === "/") ? "glass shadow-lg shadow-black/5" : "bg-transparent",
-            isAdmin && "lg:left-64 lg:w-[calc(100%-16rem)] border-b border-border/50"
+            isAdmin && "lg:left-64 lg:w-[calc(100%-16rem)] border-b border-border"
         )}>
             <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center">
@@ -54,7 +55,7 @@ export function Navbar() {
                             />
                         </div>
                         <div className="flex flex-col gap-0 md:gap-1">
-                            <span className="text-base md:text-xl font-display font-black tracking-tighter text-white leading-none">
+                            <span className="text-base md:text-xl font-display font-black tracking-tighter text-foreground leading-none">
                                 CHOUDHARY YAMAHA
                             </span>
                             <span className="text-[10px] uppercase font-black tracking-[0.3em] text-racing-blue -mt-0.5">
@@ -69,7 +70,7 @@ export function Navbar() {
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-300 hover:text-racing-blue transition-colors relative group"
+                                className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-racing-blue transition-colors relative group"
                             >
                                 {link.name}
                                 <span className={cn(
@@ -84,10 +85,12 @@ export function Navbar() {
                     <div className="hidden xl:flex items-center gap-4">
                         <Link
                             href="tel:+917004100062"
-                            className="p-3 rounded-full hover:bg-zinc-800 transition-colors group border border-transparent hover:border-zinc-700"
+                            className="p-3 rounded-full hover:bg-muted transition-colors group border border-transparent hover:border-border"
                         >
-                            <Phone className="w-4 h-4 text-gray-400 group-hover:text-racing-blue" />
+                            <Phone className="w-4 h-4 text-muted-foreground group-hover:text-racing-blue" />
                         </Link>
+
+                        <ThemeToggle />
 
                         {loading ? (
                             <div className="w-10 h-10 rounded-full bg-zinc-800 animate-pulse" />
@@ -95,7 +98,7 @@ export function Navbar() {
                             <div className="relative">
                                 <button
                                     onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                    className="flex items-center gap-2 p-1 pr-3 bg-zinc-800/50 hover:bg-zinc-800 rounded-full border border-zinc-700 transition-all group"
+                                    className="flex items-center gap-2 p-1 pr-3 bg-card hover:bg-muted rounded-full border border-border transition-all group"
                                 >
                                     <div className="w-8 h-8 rounded-full overflow-hidden border border-racing-blue/50">
                                         {user.avatar ? (
@@ -106,8 +109,8 @@ export function Navbar() {
                                             </div>
                                         )}
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">{user.displayName.split(' ')[0]}</span>
-                                    <ChevronDown className={cn("w-3 h-3 text-gray-400 transition-transform", isProfileOpen && "rotate-180")} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{user.displayName.split(' ')[0]}</span>
+                                    <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", isProfileOpen && "rotate-180")} />
                                 </button>
 
                                 <AnimatePresence>
@@ -116,9 +119,9 @@ export function Navbar() {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 10 }}
-                                            className="absolute right-0 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl py-2 z-50 overflow-hidden"
+                                            className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-2xl shadow-2xl py-2 z-50 overflow-hidden"
                                         >
-                                            <Link href="/profile" className="flex items-center gap-3 px-4 py-3 hover:bg-zinc-800 text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-racing-blue transition-colors">
+                                            <Link href="/profile" className="flex items-center gap-3 px-4 py-3 hover:bg-muted text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors">
                                                 <UserIcon className="w-4 h-4" /> My Garage
                                             </Link>
                                             <button
@@ -167,7 +170,7 @@ export function Navbar() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="xl:hidden absolute top-full left-0 w-full bg-zinc-900/95 backdrop-blur-xl border-t border-zinc-800 shadow-2xl"
+                        className="xl:hidden absolute top-full left-0 w-full bg-card/95 backdrop-blur-xl border-t border-border shadow-2xl"
                     >
                         <div className="p-8 space-y-6">
                             {navLinks.map((link, idx) => (
@@ -180,7 +183,7 @@ export function Navbar() {
                                     <Link
                                         href={link.href}
                                         onClick={() => setIsOpen(false)}
-                                        className="block text-xl font-display font-black text-white uppercase tracking-tight py-3 border-b border-zinc-800"
+                                        className="block text-xl font-display font-black text-foreground uppercase tracking-tight py-3 border-b border-border"
                                     >
                                         {link.name}
                                     </Link>
@@ -188,10 +191,10 @@ export function Navbar() {
                             ))}
                             <div className="pt-4 space-y-4">
                                 {loading ? (
-                                    <div className="h-14 bg-zinc-800 rounded-3xl animate-pulse" />
+                                    <div className="h-14 bg-muted rounded-3xl animate-pulse" />
                                 ) : user ? (
                                     <div className="space-y-4">
-                                        <div className="flex items-center gap-4 p-4 bg-zinc-800/50 rounded-3xl border border-zinc-700">
+                                        <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-3xl border border-border">
                                             <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-racing-blue">
                                                 {user.avatar ? (
                                                     <Image src={user.avatar} alt={user.displayName} width={48} height={48} className="object-cover" />
@@ -202,14 +205,14 @@ export function Navbar() {
                                                 )}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-black text-white uppercase tracking-wider">{user.displayName}</span>
+                                                <span className="text-sm font-black text-foreground uppercase tracking-wider">{user.displayName}</span>
                                                 <Link href="/profile" onClick={() => setIsOpen(false)} className="text-[10px] font-black text-racing-blue uppercase tracking-[0.2em] mt-0.5">View Garage</Link>
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <button
                                                 onClick={() => { logout(); setIsOpen(false); }}
-                                                className="bg-zinc-800 py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px] text-red-500 border border-zinc-700"
+                                                className="bg-muted py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px] text-red-500 border border-border"
                                             >
                                                 <LogOut className="w-4 h-4 mr-2" /> Sign Out
                                             </button>
@@ -227,7 +230,7 @@ export function Navbar() {
                                         <Link
                                             href="/login"
                                             onClick={() => setIsOpen(false)}
-                                            className="bg-zinc-800 py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px] text-white border border-zinc-700"
+                                            className="bg-muted py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px] text-foreground border border-border"
                                         >
                                             <LogIn className="w-4 h-4 mr-2" /> Sign In
                                         </Link>
@@ -243,7 +246,7 @@ export function Navbar() {
                                 <Link
                                     href="tel:+917004100062"
                                     onClick={() => setIsOpen(false)}
-                                    className="block w-full text-center py-4 bg-zinc-800/30 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 border border-zinc-700/30"
+                                    className="block w-full text-center py-4 bg-muted/30 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground border border-border/30"
                                 >
                                     Contact Dealer: +91 70041 00062
                                 </Link>

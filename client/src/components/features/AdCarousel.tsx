@@ -45,7 +45,7 @@ export function AdCarousel() {
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between mb-10">
                     <div>
-                        <h2 className="text-2xl md:text-5xl font-display font-black text-white uppercase tracking-tighter italic">
+                        <h2 className="text-2xl md:text-5xl font-display font-black text-foreground uppercase tracking-tighter italic">
                             Yamaha Highlights <span className="text-racing-blue">& Events</span>
                         </h2>
                         <div className="h-1 w-16 md:w-24 bg-racing-blue mt-2 rounded-full" />
@@ -70,7 +70,7 @@ export function AdCarousel() {
 function AdCard({ ad }: { ad: Ad }) {
     return (
         <div className="group flex flex-col space-y-4">
-            <div className="relative aspect-square w-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden bg-zinc-900/50 backdrop-blur-md border border-border shadow-2xl gpu-accelerated">
+            <div className="relative aspect-square w-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden bg-muted/50 backdrop-blur-md border border-border shadow-2xl gpu-accelerated">
                 {/* Visual content part */}
                 <div className="absolute inset-0 w-full h-full">
                     {/* Blurred background for non-banner types */}
@@ -110,7 +110,7 @@ function AdCard({ ad }: { ad: Ad }) {
                         Choudhary Yamaha Exclusive
                     </span>
                 </div>
-                <h3 className="text-xl md:text-2xl font-display font-black text-white uppercase tracking-tight leading-none line-clamp-1">
+                <h3 className="text-xl md:text-2xl font-display font-black text-foreground uppercase tracking-tight leading-none line-clamp-1">
                     {ad.name}
                 </h3>
                 {ad.description && (
@@ -122,7 +122,7 @@ function AdCard({ ad }: { ad: Ad }) {
                     <a
                         href={ad.link}
                         target="_blank"
-                        className="inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-racing-blue hover:text-white transition-all shadow-xl hover:-translate-y-1"
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-foreground text-background rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-racing-blue hover:text-white transition-all shadow-xl hover:-translate-y-1"
                     >
                         {ad.type === "Video" ? <Play className="w-4 h-4 fill-current" /> : <ExternalLink className="w-4 h-4" />}
                         {ad.type === "Video" ? "Watch Review" : "Explore"}

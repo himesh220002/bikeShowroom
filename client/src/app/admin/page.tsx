@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { BarChart2, Users, Package, Calendar, TrendingUp, Bell, Rocket, Wrench, ChevronDown, ShoppingCart, Search } from "lucide-react";
+import { BarChart2, Users, Package, Calendar, TrendingUp, Bell, Rocket, Wrench, ChevronDown, ShoppingCart, Search, Clock } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { LeadsTable, type Lead } from "@/components/features/LeadsTable";
 import { ServicesTable, type ServiceBooking } from "@/components/features/ServicesTable";
@@ -145,6 +145,10 @@ export default function AdminDashboard() {
         { label: "Workshop Queue", value: services.length.toString(), icon: Wrench, change: "Live", trend: "up", tab: "services" as const },
         { label: "Inventory", value: totalStock.toString(), icon: Package, change: "Stable", trend: "neutral", href: "/admin/inventory" },
     ];
+
+    const conversionRate = leads.length > 0 ? Math.round((sales.length / leads.length) * 100) : 0;
+    const totalRevenue = sales.reduce((acc, sale) => acc + Number(sale.salePrice || 0), 0);
+    const avgServiceTime = "2.4 Days"; // Placeholder for turnaround time logic
 
     // Data Filtering & Sorting Logic
     const processedLeads = useMemo(() => {
@@ -301,6 +305,45 @@ export default function AdminDashboard() {
                         <p className="text-4xl font-display font-black text-foreground italic tracking-tighter">{stat.value}</p>
                     </button>
                 ))}
+            </div>
+
+            {/* Management Hub Section */}
+            <div className="p-12 bg-racing-blue rounded-[3.5rem] shadow-2xl shadow-racing-blue/20 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 -skew-x-12 translate-x-1/4 pointer-events-none transition-transform group-hover:translate-x-1/3 duration-700" />
+                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+                    <div>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2 bg-white/10 rounded-lg">
+                                <BarChart2 className="w-5 h-5 text-white" />
+                            </div>
+                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/70">Management Hub / KPIs</h2>
+                        </div>
+                        <h3 className="text-4xl font-display font-black text-white uppercase tracking-tighter leading-none mb-4">
+                            SHOWROOM <span className="text-white/50">PERFORMANCE</span>
+                        </h3>
+                        <p className="text-xs text-white/60 font-bold uppercase tracking-widest leading-relaxed">
+                            Real-time conversion metrics and operational efficiency tracking for leadership.
+                        </p>
+                    </div>
+
+                    <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        {[
+                            { label: "Conversion Rate", value: `${conversionRate}%`, icon: TrendingUp, desc: "Leads to Sales" },
+                            { label: "Service Turnaround", value: avgServiceTime, icon: Clock, desc: "Avg. Duration" },
+                            { label: "Total Revenue", value: `₹${(totalRevenue / 100000).toFixed(2)}L`, icon: ShoppingCart, desc: "Lifetime Sales" }
+                        ].map((kpi) => (
+                            <div key={kpi.label} className="bg-white/10 backdrop-blur-md border border-white/10 rounded-3xl p-6 hover:bg-white/20 transition-all">
+                                <div className="flex items-center justify-between mb-4">
+                                    <kpi.icon className="w-5 h-5 text-white" />
+                                    <span className="text-[8px] font-black uppercase text-white/50 tracking-widest">Active KPI</span>
+                                </div>
+                                <p className="text-2xl font-display font-black text-white italic mb-1 uppercase tracking-tighter">{kpi.value}</p>
+                                <p className="text-[9px] font-black uppercase text-white/70 tracking-widest">{kpi.label}</p>
+                                <p className="text-[7px] font-bold uppercase text-white/40 tracking-widest mt-1">{kpi.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             <div className="bg-card border border-border rounded-[3rem] shadow-2xl relative overflow-hidden">
