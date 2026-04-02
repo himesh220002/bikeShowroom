@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Upload, Link as LinkIcon, Eye, Trash2, Plus, Loader2, X, Image as ImageIcon, CheckCircle2, GripVertical } from "lucide-react";
+import { API_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
 import { motion, Reorder } from "framer-motion";
 
@@ -35,7 +36,7 @@ export function AdManager() {
 
     const fetchAds = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/ads");
+            const res = await fetch(`${API_URL}/ads`);
             const data = await res.json();
             if (data.success) setCampaigns(data.data);
         } catch (err) {
@@ -71,7 +72,7 @@ export function AdManager() {
         formData.append('status', 'Active');
 
         try {
-            const res = await fetch("http://localhost:5000/api/ads", {
+            const res = await fetch(`${API_URL}/ads`, {
                 method: "POST",
                 body: formData
             });
@@ -98,7 +99,7 @@ export function AdManager() {
         }));
 
         try {
-            await fetch("http://localhost:5000/api/ads/reorder", {
+            await fetch(`${API_URL}/ads/reorder`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ads: reorderData })
@@ -112,7 +113,7 @@ export function AdManager() {
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this campaign?")) return;
         try {
-            const res = await fetch(`http://localhost:5000/api/ads/${id}`, {
+            const res = await fetch(`${API_URL}/ads/${id}`, {
                 method: "DELETE"
             });
             const data = await res.json();

@@ -4,6 +4,7 @@ import { CheckCircle2, MoreVertical, Phone, MessageSquare, Users } from "lucide-
 import { cn } from "@/lib/utils/cn";
 import { BIKES } from "@/lib/constants/bikes";
 import { useState, useEffect } from "react";
+import { API_URL } from "@/lib/config";
 import { ExportButton } from "@/components/ui/ExportButton";
 
 export interface Lead {
@@ -27,7 +28,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
     useEffect(() => {
         const fetchConfig = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/config");
+                const res = await fetch(`${API_URL}/config`);
                 const data = await res.json();
                 if (data.success) setConfig(data.data);
             } catch (err) {

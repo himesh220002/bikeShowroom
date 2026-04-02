@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { Calendar, Clock, User, Bike, CheckCircle2, AlertCircle, MoreVertical, Search, Filter, Wrench, Loader2, Phone, ShieldAlert, ChevronDown, UserCheck, X, Save } from "lucide-react";
+import { API_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
@@ -58,7 +59,7 @@ export function ServiceSchedule() {
         e.preventDefault();
         setUpdating(true);
         try {
-            const res = await fetch(`http://localhost:5000/api/services/${editingJob.id}`, {
+            const res = await fetch(`${API_URL}/services/${editingJob.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -102,7 +103,7 @@ export function ServiceSchedule() {
 
     const updateStatus = async (id: string, status: string) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/services/${id}/status`, {
+            const res = await fetch(`${API_URL}/services/${id}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status })
@@ -123,7 +124,7 @@ export function ServiceSchedule() {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/services");
+                const res = await fetch(`${API_URL}/services`);
                 const data = await res.json();
                 if (data.success) {
                     const formatted = data.data.map((s: any) => ({

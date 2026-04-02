@@ -3,6 +3,7 @@
 import { useParams, notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import { Shield, Loader2 } from "lucide-react";
+import { API_URL } from "@/lib/config";
 import { BIKES } from "@/lib/constants/bikes";
 import { BikeDetailsHero } from "@/components/features/BikeDetailsHero";
 import { BikeSpecifications } from "@/components/features/BikeSpecifications";
@@ -22,7 +23,7 @@ export default function BikePage() {
     useEffect(() => {
         const fetchBike = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/bikes/slug/${slug}`);
+                const res = await fetch(`${API_URL}/bikes/slug/${slug}`);
                 const data = await res.json();
                 if (data.success) {
                     setBike(data.data);

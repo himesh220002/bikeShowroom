@@ -9,11 +9,12 @@ import { LeadsTableHot, type Lead as HotLead } from "@/components/features/Leads
 import { SalesTable } from "@/components/features/SalesTable";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
 import io from "socket.io-client";
+import { API_BASE_URL, API_URL } from "@/lib/config";
 import { motion, AnimatePresence } from "framer-motion";
 import { SaleForm } from "@/components/features/SaleForm";
 import { useRouter } from "next/navigation";
 
-const socket = io("http://localhost:5000");
+const socket = io(API_BASE_URL);
 
 export default function AdminDashboard() {
     const [leads, setLeads] = useState<Lead[]>([]);
@@ -34,11 +35,11 @@ export default function AdminDashboard() {
     const fetchData = async () => {
         try {
             const [leadsRes, servicesRes, qualifiedRes, bikesRes, salesRes] = await Promise.all([
-                fetch("http://localhost:5000/api/leads"),
-                fetch("http://localhost:5000/api/services"),
-                fetch("http://localhost:5000/api/qualified-leads"),
-                fetch("http://localhost:5000/api/bikes"),
-                fetch("http://localhost:5000/api/sales")
+                fetch(`${API_URL}/leads`),
+                fetch(`${API_URL}/services`),
+                fetch(`${API_URL}/qualified-leads`),
+                fetch(`${API_URL}/bikes`),
+                fetch(`${API_URL}/sales`)
             ]);
 
             const leadsData = await leadsRes.json();

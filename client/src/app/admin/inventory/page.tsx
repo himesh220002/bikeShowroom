@@ -5,13 +5,14 @@ import { Package, Plus, Loader2, Settings2, Trash2, Edit3, Search } from "lucide
 import { cn } from "@/lib/utils/cn";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
 import io from "socket.io-client";
+import { API_BASE_URL, API_URL } from "@/lib/config";
 import { BikeEditModal } from "@/components/features/BikeEditModal";
 import { SpareEditModal } from "@/components/features/SpareEditModal";
 import { BikeImage } from "@/components/ui/BikeImage";
 import { cleanImageUrl } from "@/lib/utils/url";
 import { ExportButton } from "@/components/ui/ExportButton";
 
-const socket = io("http://localhost:5000");
+const socket = io(API_BASE_URL);
 
 export default function InventoryPage() {
     const [bikes, setBikes] = useState<any[]>([]);
@@ -27,8 +28,8 @@ export default function InventoryPage() {
     const fetchInventory = async () => {
         try {
             const [bikesRes, sparesRes] = await Promise.all([
-                fetch("http://localhost:5000/api/bikes"),
-                fetch("http://localhost:5000/api/spares")
+                fetch(`${API_URL}/bikes`),
+                fetch(`${API_URL}/spares`)
             ]);
             const bikesData = await bikesRes.json();
             const sparesData = await sparesRes.json();
@@ -66,8 +67,8 @@ export default function InventoryPage() {
     const handleSaveBike = async (formData: any) => {
         const isEdit = !!formData._id;
         const url = isEdit
-            ? `http://localhost:5000/api/bikes/${formData._id}`
-            : "http://localhost:5000/api/bikes";
+            ? `${API_URL}/bikes/${formData._id}`
+            : `${API_URL}/bikes`;
 
         const res = await fetch(url, {
             method: isEdit ? "PUT" : "POST",
@@ -84,8 +85,8 @@ export default function InventoryPage() {
     const handleSaveSpare = async (formData: any) => {
         const isEdit = !!formData._id;
         const url = isEdit
-            ? `http://localhost:5000/api/spares/${formData._id}`
-            : "http://localhost:5000/api/spares";
+            ? `${API_URL}/spares/${formData._id}`
+            : `${API_URL}/spares`;
 
         const res = await fetch(url, {
             method: isEdit ? "PUT" : "POST",
@@ -102,7 +103,7 @@ export default function InventoryPage() {
     const deleteBike = async (id: string) => {
         if (!confirm("Are you sure you want to delete this model?")) return;
         try {
-            const res = await fetch(`http://localhost:5000/api/bikes/${id}`, {
+            const res = await fetch(`${API_URL}/bikes/${id}`, {
                 method: "DELETE"
             });
             const data = await res.json();
@@ -115,7 +116,7 @@ export default function InventoryPage() {
     const deleteSpare = async (id: string) => {
         if (!confirm("Are you sure you want to delete this spare part?")) return;
         try {
-            const res = await fetch(`http://localhost:5000/api/spares/${id}`, {
+            const res = await fetch(`${API_URL}/spares/${id}`, {
                 method: "DELETE"
             });
             const data = await res.json();

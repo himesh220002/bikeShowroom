@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ShoppingCart, User, Phone, CheckCircle2, Loader2, IndianRupee, Bike } from "lucide-react";
+import { API_URL } from "@/lib/config";
 
 interface SaleFormProps {
     bikes: any[];
@@ -22,7 +23,7 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch("http://localhost:5000/api/sales", {
+            const res = await fetch(`${API_URL}/sales`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),

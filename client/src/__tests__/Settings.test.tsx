@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import SettingsPage from '@/app/admin/settings/page';
 import { act } from 'react';
+import { API_URL } from '@/lib/config';
 
 describe('SettingsPage', () => {
     const mockSettings = {
@@ -71,7 +72,7 @@ describe('SettingsPage', () => {
 
         await waitFor(() => {
             expect(global.fetch).toHaveBeenCalledWith(
-                "http://localhost:5000/api/config",
+                `${API_URL}/config`,
                 expect.objectContaining({
                     method: "POST",
                     body: JSON.stringify({

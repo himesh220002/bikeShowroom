@@ -6,6 +6,7 @@ import { Viewer360 } from "./Viewer360";
 import { BIKES, type Bike } from "@/lib/constants/bikes";
 import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
+import { API_URL } from "@/lib/config";
 
 export function Viewer360Carousel() {
     const [bikes, setBikes] = useState<Bike[]>(BIKES);
@@ -15,7 +16,7 @@ export function Viewer360Carousel() {
     useEffect(() => {
         async function fetchBikes() {
             try {
-                const res = await fetch("http://localhost:5000/api/bikes");
+                const res = await fetch(`${API_URL}/bikes`);
                 const data = await res.json();
                 if (data.success) {
                     // Merge backend bikes into static BIKES to ensure latest 360 URLs are used

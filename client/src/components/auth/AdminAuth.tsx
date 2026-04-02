@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Lock, ShieldAlert, Loader2, ArrowRight } from "lucide-react";
+import { API_URL } from "@/lib/config";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
@@ -59,7 +60,7 @@ export function AdminAuth({ children }: AdminAuthProps) {
         setError("");
 
         try {
-            const res = await fetch("http://localhost:5000/api/admin/auth/login", {
+            const res = await fetch(`${API_URL}/admin/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ password }),

@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
+import { API_URL } from "@/lib/config";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wrench, Calendar, Clock, Bike, Package, CheckCircle2, ChevronRight, User } from "lucide-react";
@@ -38,7 +39,7 @@ export function ServiceBooking() {
             }));
 
             // Fetch user's registered bikes
-            axios.get("http://localhost:5000/api/user-bikes", { withCredentials: true })
+            axios.get(`${API_URL}/user-bikes`, { withCredentials: true })
                 .then(res => {
                     if (res.data.success) {
                         setUserBikes(res.data.data);

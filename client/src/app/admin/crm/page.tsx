@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { CustomersTable } from "@/components/features/CustomersTable";
+import { API_URL } from "@/lib/config";
 import { Download, Heart, Loader2, Sparkles } from "lucide-react";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
 
@@ -16,7 +17,7 @@ export default function CRMPage() {
     useEffect(() => {
         const fetchCustomers = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/customers");
+                const res = await fetch(`${API_URL}/customers`);
                 const data = await res.json();
                 if (data.success) setCustomers(data.data);
             } catch (err) {

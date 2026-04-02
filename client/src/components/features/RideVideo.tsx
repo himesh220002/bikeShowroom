@@ -70,8 +70,7 @@ export function RideVideo() {
                         PURE <span className="text-racing-blue italic">RACING</span> DNA
                     </h3>
                     <p className="text-sm md:text-lg text-gray-300 font-medium max-w-xl leading-relaxed">
-                        Experience the adrenaline of the Yamaha R15 on the streets of Katihar.
-                        Engineered for the track, built for the city.
+                        Experience the adrenaline of the Yamaha R15 on the streets of Katihar. Engineered for the track, built for the city—celebrating 70 years of Yamaha’s legacy of performance and innovation.
                     </p>
                 </motion.div>
             </div>

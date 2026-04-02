@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Save, Phone, Mail, Loader2, CheckCircle2, MapPin, Lock, ShieldCheck, AlertCircle } from "lucide-react";
+import { API_URL } from "@/lib/config";
 
 export default function SettingsPage() {
     const [settings, setSettings] = useState({
@@ -27,7 +28,7 @@ export default function SettingsPage() {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/config");
+                const res = await fetch(`${API_URL}/config`);
                 const data = await res.json();
                 if (data.success) {
                     setSettings({
@@ -51,7 +52,7 @@ export default function SettingsPage() {
         setSaving(true);
         setSuccess(false);
         try {
-            const res = await fetch("http://localhost:5000/api/config", {
+            const res = await fetch(`${API_URL}/config`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ settings }),
@@ -86,7 +87,7 @@ export default function SettingsPage() {
 
         setSecuritySaving(true);
         try {
-            const res = await fetch("http://localhost:5000/api/admin/auth/change-password", {
+            const res = await fetch(`${API_URL}/admin/auth/change-password`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
+import { API_URL } from "@/lib/config";
 import { Bike, Calendar, Clock, Plus, Trash2, Wrench, AlertCircle, ChevronRight, CheckCircle2, Edit3, Save, X, User, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils/cn";
@@ -66,7 +67,7 @@ export default function ProfilePage() {
 
     const fetchBikes = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/user-bikes", { withCredentials: true });
+            const res = await axios.get(`${API_URL}/user-bikes`, { withCredentials: true });
             if (res.data.success) {
                 setBikes(res.data.data);
             }
@@ -79,7 +80,7 @@ export default function ProfilePage() {
 
     const fetchOfficialBikes = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/bikes");
+            const res = await axios.get(`${API_URL}/bikes`);
             if (res.data.success) {
                 setOfficialBikes(res.data.data);
             }
@@ -90,7 +91,7 @@ export default function ProfilePage() {
 
     const fetchServiceHistory = async (id: string) => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/user-bikes/${id}/services`, { withCredentials: true });
+            const res = await axios.get(`${API_URL}/user-bikes/${id}/services`, { withCredentials: true });
             if (res.data.success) {
                 setBikeServices(prev => ({ ...prev, [id]: res.data.data }));
             }
@@ -102,7 +103,7 @@ export default function ProfilePage() {
     const handleUpdateOdometer = async (id: string) => {
         if (!newOdometer || isNaN(Number(newOdometer))) return;
         try {
-            const res = await axios.patch(`http://localhost:5000/api/user-bikes/${id}/odometer`, { mileage: Number(newOdometer) }, { withCredentials: true });
+            const res = await axios.patch(`${API_URL}/user-bikes/${id}/odometer`, { mileage: Number(newOdometer) }, { withCredentials: true });
             if (res.data.success) {
                 setBikes(bikes.map(b => b._id === id ? { ...b, mileage: Number(newOdometer) } : b));
                 setIsUpdatingOdometer(null);
@@ -123,7 +124,7 @@ export default function ProfilePage() {
     const handleAddBike = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const res = await axios.post("http://localhost:5000/api/user-bikes", formData, { withCredentials: true });
+            const res = await axios.post(`${API_URL}/user-bikes`, formData, { withCredentials: true });
             if (res.data.success) {
                 setBikes([res.data.data, ...bikes]);
                 setIsAdding(false);
@@ -145,7 +146,7 @@ export default function ProfilePage() {
     const handleDeleteBike = async (id: string) => {
         if (!confirm("Are you sure you want to remove this bike from your garage?")) return;
         try {
-            const res = await axios.delete(`http://localhost:5000/api/user-bikes/${id}`, { withCredentials: true });
+            const res = await axios.delete(`${API_URL}/user-bikes/${id}`, { withCredentials: true });
             if (res.data.success) {
                 setBikes(bikes.filter(b => b._id !== id));
             }
@@ -158,7 +159,7 @@ export default function ProfilePage() {
         e.preventDefault();
         setUpdatingProfile(true);
         try {
-            const res = await axios.put("http://localhost:5000/api/auth/profile", profileFormData, { withCredentials: true });
+            const res = await axios.put(`${API_URL}/auth/profile`, profileFormData, { withCredentials: true });
             if (res.data.success) {
                 await refreshUser();
                 setIsEditingProfile(false);

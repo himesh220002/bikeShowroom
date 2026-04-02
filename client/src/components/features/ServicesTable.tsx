@@ -2,6 +2,7 @@
 
 import { Wrench, Bike, Calendar, Package, MoreVertical, Phone, MessageSquare, Users, Clock, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { API_URL } from "@/lib/config";
 import { ExportButton } from "@/components/ui/ExportButton";
 
 export interface ServiceBooking {
@@ -35,7 +36,7 @@ const statusColors = {
 export function ServicesTable({ services }: ServicesTableProps) {
     const updateStatus = async (id: string, status: string) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/services/${id}/status`, {
+            const res = await fetch(`${API_URL}/services/${id}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status })

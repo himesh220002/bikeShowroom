@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, ChevronRight, Package, Info, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import axios from "axios";
+import { API_URL } from "@/lib/config";
 
 export function SparesGallery() {
     const [bikes, setBikes] = useState<any[]>([]);
@@ -15,7 +16,7 @@ export function SparesGallery() {
 
     useEffect(() => {
         // Fetch bikes for selection
-        axios.get("http://localhost:5000/api/bikes")
+        axios.get(`${API_URL}/bikes`)
             .then(res => {
                 if (res.data.success) {
                     const fetchedBikes = res.data.data;
@@ -31,8 +32,8 @@ export function SparesGallery() {
         if (selectedBike) {
             setLoading(true);
             const url = selectedBike._id === 'common'
-                ? "http://localhost:5000/api/spares?bikeId=common"
-                : `http://localhost:5000/api/spares?bikeId=${selectedBike._id}`;
+                ? `${API_URL}/spares?bikeId=common`
+                : `${API_URL}/spares?bikeId=${selectedBike._id}`;
 
             axios.get(url)
                 .then(res => {

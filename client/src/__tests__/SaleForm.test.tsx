@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { SaleForm } from '@/components/features/SaleForm';
+import { API_URL } from '@/lib/config';
 
 describe('SaleForm', () => {
     const mockBikes = [
@@ -67,7 +68,7 @@ describe('SaleForm', () => {
 
         await waitFor(() => {
             expect(global.fetch).toHaveBeenCalledWith(
-                "http://localhost:5000/api/sales",
+                `${API_URL}/sales`,
                 expect.objectContaining({
                     method: "POST",
                     body: JSON.stringify({

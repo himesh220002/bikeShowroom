@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { API_URL } from "@/lib/config";
 import { Play, ExternalLink, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -21,7 +22,7 @@ export function AdCarousel() {
     useEffect(() => {
         const fetchAds = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/ads");
+                const res = await fetch(`${API_URL}/ads`);
                 const data = await res.json();
                 if (data.success) {
                     setAds(data.data

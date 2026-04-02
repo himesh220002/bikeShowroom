@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_URL } from '@/lib/config';
 
 interface User {
     _id: string;
@@ -32,7 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const refreshUser = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/auth/me', { withCredentials: true });
+            const res = await axios.get(`${API_URL}/auth/me`, { withCredentials: true });
             if (res.data.success) {
                 setUser(res.data.data);
             } else {
@@ -50,12 +51,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const login = () => {
-        window.location.href = 'http://localhost:5000/api/auth/google';
+        window.location.href = `${API_URL}/auth/google`;
     };
 
     const loginLocal = async (data: any) => {
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/login', data, { withCredentials: true });
+            const res = await axios.post(`${API_URL}/auth/login`, data, { withCredentials: true });
             if (res.data.success) {
                 setUser(res.data.data);
                 return { success: true };
@@ -68,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const register = async (data: any) => {
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/register', data, { withCredentials: true });
+            const res = await axios.post(`${API_URL}/auth/register`, data, { withCredentials: true });
             if (res.data.success) {
                 setUser(res.data.data);
                 return { success: true };
@@ -81,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const logout = async () => {
         try {
-            await axios.get('http://localhost:5000/api/auth/logout', { withCredentials: true });
+            await axios.get(`${API_URL}/auth/logout`, { withCredentials: true });
             setUser(null);
             window.location.href = '/';
         } catch (err) {

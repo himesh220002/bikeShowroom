@@ -1,8 +1,10 @@
 "use server";
 
+import { API_URL } from "@/lib/config";
+
 export async function submitServiceBooking(data: any) {
     try {
-        const response = await fetch("http://localhost:5000/api/services", {
+        const response = await fetch(`${API_URL}/services`, {
             // Actually, I'll add a service endpoint to the server next.
             method: "POST",
             headers: { "Content-Type": "application/json" },

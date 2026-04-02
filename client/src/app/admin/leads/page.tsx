@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { LeadsTable } from "@/components/features/LeadsTable";
+import { API_URL } from "@/lib/config";
 import { Download, Plus, Loader2 } from "lucide-react";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
 
@@ -17,7 +18,7 @@ export default function LeadsPage() {
     useEffect(() => {
         const fetchLeads = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/leads");
+                const res = await fetch(`${API_URL}/leads`);
                 const data = await res.json();
                 if (data.success) setLeads(data.data);
             } catch (err) {
