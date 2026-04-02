@@ -118,7 +118,11 @@ router.put('/profile', protect, async (req: any, res) => {
 // @desc    Logout user
 // @route   GET /api/auth/logout
 router.get('/logout', (req: any, res) => {
-    res.clearCookie('token');
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true',
+        sameSite: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true' ? 'none' : 'lax',
+    });
     res.json({ success: true, message: 'Logged out' });
 });
 
