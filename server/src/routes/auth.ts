@@ -27,7 +27,8 @@ router.post('/register', async (req, res) => {
         const token = generateToken(user._id as string);
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true',
+            sameSite: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true' ? 'none' : 'lax',
             maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
         });
 
@@ -47,7 +48,8 @@ router.post('/login', (req, res, next) => {
         const token = generateToken(user._id as string);
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true',
+            sameSite: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true' ? 'none' : 'lax',
             maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
         });
 
@@ -63,17 +65,18 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 // @route   GET /api/auth/google/callback
 router.get(
     '/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login' }),
+    passport.authenticate('google', { failureRedirect: `${process.env.CLIENT_URL}/login` }),
     (req, res) => {
         const user = req.user as any;
         const token = generateToken(user._id as string);
 
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true',
+            sameSite: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true' ? 'none' : 'lax',
             maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
         });
-        res.redirect('http://localhost:3000/profile');
+        res.redirect(`${process.env.CLIENT_URL}/profile`);
     }
 );
 

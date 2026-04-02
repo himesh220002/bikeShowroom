@@ -29,6 +29,7 @@ import bcrypt from 'bcryptjs';
 import Config from './models/Config';
 
 const app = express();
+app.set('trust proxy', 1); // Enable trust proxy for Render/load balancers
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
@@ -52,7 +53,10 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'yamaha_secret_session',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } // Set to true in production
+    cookie: {
+        secure: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true',
+        sameSite: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true' ? 'none' : 'lax'
+    }
 }));
 
 // Initialize Passport

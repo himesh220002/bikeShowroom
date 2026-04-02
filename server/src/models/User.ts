@@ -24,7 +24,7 @@ const UserSchema: Schema = new Schema({
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     authProvider: { type: String, enum: ['google', 'local'], default: 'google' },
     createdAt: { type: Date, default: Date.now },
-});
+}).index({ googleId: 1 }, { unique: true, sparse: true });
 
 // Hash password before saving
 UserSchema.pre<IUser>('save', async function (next) {
