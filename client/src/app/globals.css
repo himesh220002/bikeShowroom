@@ -117,6 +117,8 @@
   will-change: transform;
 }
 
+/* Removed backdrop-filter restriction for mobile to allow blurred backgrounds as requested */
+/* 
 @media (pointer: coarse),
 (max-width: 768px) {
 
@@ -129,6 +131,7 @@
     background-color: rgba(9, 9, 11, 0.9) !important;
   }
 }
+*/
 
 body {
   background: var(--background);

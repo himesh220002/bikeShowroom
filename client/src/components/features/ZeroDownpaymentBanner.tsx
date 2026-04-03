@@ -19,19 +19,19 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
                 className="max-w-[1600px] mx-auto relative min-h-[600px] rounded-[1.5rem] md:rounded-[4rem] overflow-hidden border border-border shadow-2xl group"
             >
                 {/* Full Background Image */}
-                <div className="absolute inset-0">
+                <div className="absolute inset-0 bg-zinc-950">
                     <Image
                         src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2070&auto=format&fit=crop"
                         alt="Zero Downpayment Finance Offer"
                         fill
                         sizes="100vw"
                         unoptimized={true}
-                        className="object-cover object-center transition-transform duration-1000 group-hover:scale-105"
+                        className="object-cover object-center transition-transform duration-1000 group-hover:scale-105 opacity-40"
                     />
-                    {/* Dark Overlays - Adjusted for better visibility */}
-                    <div className="absolute inset-0 bg-background/40" />
-                    <div className="absolute inset-0 bg-linear-to-r from-background via-background/20 to-transparent" />
-                    <div className="absolute inset-0 bg-linear-to-t from-background/60 via-transparent to-transparent" />
+                    {/* Hardcoded Dark Overlays */}
+                    <div className="absolute inset-0 bg-zinc-950/40" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/60 via-transparent to-transparent" />
                 </div>
 
                 <div className="relative z-10 h-full flex items-center p-8 md:p-20">
@@ -59,8 +59,8 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
                                 ZERO <br />
                                 <span className="text-racing-blue">DOWNPAYMENT</span>
                             </h2>
-                            <p className="text-lg md:text-2xl text-foreground font-medium mb-12 max-w-xl leading-relaxed">
-                                Get your hands on the <span className="text-foreground font-black">{bikeName}</span> without any upfront cost. Our flexible financing solutions make ownership effortless.
+                            <p className="text-lg md:text-2xl text-zinc-300 font-medium mb-12 max-w-xl leading-relaxed">
+                                Get your hands on the <span className="text-white font-black">{bikeName}</span> without any upfront cost. Our flexible financing solutions make ownership effortless.
                             </p>
                         </motion.div>
 
@@ -82,7 +82,7 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
                                     <div className="w-8 h-8 rounded-xl bg-racing-blue/20 flex items-center justify-center shrink-0">
                                         <CheckCircle2 className="w-4 h-4 text-racing-blue" />
                                     </div>
-                                    <span className="text-xs text-foreground font-bold uppercase tracking-tight">{benefit}</span>
+                                    <span className="text-xs text-zinc-300 font-bold uppercase tracking-tight">{benefit}</span>
                                 </motion.div>
                             ))}
                         </div>
@@ -96,7 +96,7 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
                                 if (onApply) onApply();
                                 else document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
                             }}
-                            className="group bg-foreground text-background px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-sm flex items-center gap-4 hover:bg-racing-blue hover:text-white transition-all transform active:scale-95 shadow-2xl"
+                            className="group bg-white text-zinc-950 px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-sm flex items-center gap-4 hover:bg-racing-blue hover:text-white transition-all transform active:scale-95 shadow-2xl"
                         >
                             Apply For Finance
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
@@ -106,7 +106,7 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
 
                 {/* Decorative Background Element */}
                 <div className="absolute top-1/2 right-12 -translate-y-1/2 opacity-[0.04] pointer-events-none select-none hidden lg:block">
-                    <div className="text-[30rem] font-black text-foreground leading-none tracking-tighter italic">
+                    <div className="text-[30rem] font-black text-white leading-none tracking-tighter italic">
                         0%
                     </div>
                 </div>

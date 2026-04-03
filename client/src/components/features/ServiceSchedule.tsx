@@ -30,14 +30,40 @@ export function ServiceSchedule() {
     const [filterStatus, setFilterStatus] = useState("all");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [tempRemarks, setTempRemarks] = useState<{ [key: string]: string }>({});
+    const [savingRemark, setSavingRemark] = useState<string | null>(null);
 
-    const STATUS_OPTIONS = ['booked', 'in-progress', 'completed', 'delivered', 'cancelled'];
+    const isAtRisk = (timeStr: string, dateStr: string, status: string) => {
+        if (status !== 'booked') return false;
+        try {
+            const [time, modifier] = timeStr.split(' ');
+            let [hoursStr, minutesStr] = time.split(':');
+            let hours = parseInt(hoursStr, 10);
+            const minutes = parseInt(minutesStr, 10);
+
+            if (modifier === 'PM' && hours < 12) hours += 12;
+            if (modifier === 'AM' && hours === 12) hours = 0;
+
+            const appointmentDate = new Date(dateStr);
+            appointmentDate.setHours(hours, minutes, 0, 0);
+
+            const now = new Date();
+            const diffInMinutes = (now.getTime() - appointmentDate.getTime()) / (1000 * 60);
+
+            return diffInMinutes > 30;
+        } catch (e) {
+            return false;
+        }
+    };
+
+    const STATUS_OPTIONS = ['booked', 'in-progress', 'completed', 'delivered', 'cancelled', 'deferred'];
     const statusColors: any = {
         'booked': "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
         'in-progress': "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
         'completed': "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20",
         'delivered': "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
         'cancelled': "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
+        'deferred': "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
     };
 
     const handleEdit = (job: any) => {
@@ -121,6 +147,35 @@ export function ServiceSchedule() {
         }
     };
 
+    const handleSaveRemark = async (id: string) => {
+        const remark = tempRemarks[id];
+        if (remark === undefined) return;
+
+        setSavingRemark(id);
+        try {
+            const res = await fetch(`${API_URL}/services/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ notes: remark })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setJobs(prev => prev.map(job =>
+                    job.id === id ? { ...job, notes: remark } : job
+                ));
+                const newTemp = { ...tempRemarks };
+                delete newTemp[id];
+                setTempRemarks(newTemp);
+            } else {
+                alert("Failed to save remark: " + data.error);
+            }
+        } catch (err) {
+            console.error("Error saving remark:", err);
+        } finally {
+            setSavingRemark(null);
+        }
+    };
+
     useEffect(() => {
         const fetchServices = async () => {
             try {
@@ -136,9 +191,11 @@ export function ServiceSchedule() {
                         bike: `${s.bikeModel} (${s.regNumber})`,
                         type: s.serviceType,
                         time: s.appointmentTime || "Not Set",
+                        date: s.appointmentDate || "",
                         status: s.status, // already lowercase from backend
                         priority: s.priority || "Normal",
-                        technician: s.technicianName || "Unassigned"
+                        technician: s.technicianName || "Unassigned",
+                        notes: s.notes || ""
                     }));
                     setJobs(formatted);
                 }
@@ -161,7 +218,8 @@ export function ServiceSchedule() {
                 j.bikeModel?.toLowerCase().includes(q) ||
                 j.regNumber?.toLowerCase().includes(q) ||
                 j.type?.toLowerCase().includes(q) ||
-                j.technician?.toLowerCase().includes(q)
+                j.technician?.toLowerCase().includes(q) ||
+                j.notes?.toLowerCase().includes(q)
             );
         }
         if (filterStatus !== "all") {
@@ -229,16 +287,43 @@ export function ServiceSchedule() {
             </div>
 
             {/* Stats Summary */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {[
-                    { label: "Today's Jobs", value: jobs.length.toString(), color: "text-foreground" },
-                    { label: "In-Progress", value: jobs.filter(j => j.status === "in-progress").length.toString(), color: "text-blue-600 dark:text-blue-400" },
-                    { label: "Completed", value: jobs.filter(j => j.status === "completed").length.toString(), color: "text-green-600 dark:text-green-400" },
-                    { label: "Booked", value: jobs.filter(j => j.status === "booked").length.toString(), color: "text-amber-600 dark:text-amber-400" },
+                    {
+                        label: "Today's Jobs",
+                        value: jobs.filter(j => j.status !== 'cancelled').length.toString(),
+                        color: "text-foreground",
+                        sub: "Active + Delivered + Pending"
+                    },
+                    {
+                        label: "Active",
+                        value: jobs.filter(j => j.status === "in-progress" || j.status === "completed").length.toString(),
+                        color: "text-blue-600 dark:text-blue-400",
+                        sub: "In Workshop"
+                    },
+                    {
+                        label: "Delivered",
+                        value: jobs.filter(j => j.status === "delivered").length.toString(),
+                        color: "text-purple-600 dark:text-purple-400",
+                        sub: "Handed Over"
+                    },
+                    {
+                        label: "Pending",
+                        value: jobs.filter(j => j.status === "booked").length.toString(),
+                        color: "text-amber-600 dark:text-amber-400",
+                        sub: "Waiting to Start"
+                    },
+                    {
+                        label: "Cancelled",
+                        value: jobs.filter(j => j.status === "cancelled" || j.status === "deferred").length.toString(),
+                        color: "text-red-600 dark:text-red-400",
+                        sub: "Not Proceeded"
+                    },
                 ].map((stat) => (
-                    <div key={stat.label} className="p-6 bg-card border border-border rounded-[2rem] text-center">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground block mb-2">{stat.label}</span>
-                        <span className={cn("text-3xl font-display font-black italic", stat.color)}>{stat.value}</span>
+                    <div key={stat.label} className="p-4 bg-card border border-border rounded-[1.5rem] text-center flex flex-col justify-center gap-1 group hover:border-racing-blue/30 transition-all">
+                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-racing-blue transition-colors">{stat.label}</span>
+                        <span className={cn("text-2xl font-display font-black italic leading-none", stat.color)}>{stat.value}</span>
+                        <span className="text-[7px] font-bold uppercase tracking-widest text-muted-foreground/50">{stat.sub}</span>
                     </div>
                 ))}
             </div>
@@ -252,6 +337,7 @@ export function ServiceSchedule() {
                                 <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Time & Priority</th>
                                 <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Customer & Vehicle</th>
                                 <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Service & Tech</th>
+                                <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Service Remarks</th>
                                 <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Status</th>
                                 <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground text-right">Action</th>
                             </tr>
@@ -271,6 +357,11 @@ export function ServiceSchedule() {
                                             <div className="flex items-center gap-2">
                                                 <Clock className="w-3.5 h-3.5 text-racing-blue" />
                                                 <span className="text-sm font-black text-foreground italic">{job.time}</span>
+                                                {isAtRisk(job.time, job.date, job.status) && (
+                                                    <span className="px-2 py-0.5 bg-red-500 text-white text-[7px] font-black uppercase tracking-widest rounded-full animate-pulse shadow-lg shadow-red-500/20">
+                                                        AT RISK
+                                                    </span>
+                                                )}
                                             </div>
                                             <div className={cn(
                                                 "flex items-center gap-1.5 px-2 py-0.5 rounded-lg border w-fit",
@@ -310,6 +401,32 @@ export function ServiceSchedule() {
                                                 </div>
                                                 <span className="text-[10px] font-black text-foreground/70 uppercase tracking-tighter">{job.technician}</span>
                                             </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <div className="flex items-center gap-2 max-w-[200px] group/remark">
+                                            <div className="relative flex-1">
+                                                <input
+                                                    type="text"
+                                                    value={tempRemarks[job.id] !== undefined ? tempRemarks[job.id] : (job.notes || "")}
+                                                    onChange={(e) => setTempRemarks({ ...tempRemarks, [job.id]: e.target.value })}
+                                                    placeholder="Add special instructions..."
+                                                    className="w-full bg-transparent border-b border-transparent hover:border-border focus:border-racing-blue focus:outline-none text-[14px] font-medium py-1 transition-all placeholder:text-muted-foreground/30"
+                                                />
+                                            </div>
+                                            {(tempRemarks[job.id] !== undefined && tempRemarks[job.id] !== job.notes) && (
+                                                <button
+                                                    onClick={() => handleSaveRemark(job.id)}
+                                                    disabled={savingRemark === job.id}
+                                                    className="p-1.5 bg-green-500/10  text-green-500 rounded-lg hover:bg-green-500 hover:text-white transition-all transform active:scale-95 disabled:opacity-50"
+                                                >
+                                                    {savingRemark === job.id ? (
+                                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                                    ) : (
+                                                        <Save className="w-3 h-3" />
+                                                    )}
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                     <td className="px-8 py-6">

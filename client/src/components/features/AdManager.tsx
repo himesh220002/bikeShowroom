@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Upload, Link as LinkIcon, Eye, Trash2, Plus, Loader2, X, Image as ImageIcon, CheckCircle2, GripVertical } from "lucide-react";
+import { Upload, Link as LinkIcon, Eye, Trash2, Plus, Loader2, X, Image as ImageIcon, CheckCircle2, GripVertical, Edit3 } from "lucide-react";
 import { API_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
 import { motion, Reorder } from "framer-motion";
@@ -22,6 +22,7 @@ export function AdManager() {
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAdding, setIsAdding] = useState(false);
+    const [editingAd, setEditingAd] = useState<Campaign | null>(null);
 
     // Form state
     const [name, setName] = useState("");
@@ -60,7 +61,8 @@ export function AdManager() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!image || !name || !link) return;
+        if (!name || !link) return;
+        if (!editingAd && !image) return;
 
         setUploading(true);
         const formData = new FormData();
@@ -68,22 +70,30 @@ export function AdManager() {
         formData.append('type', type);
         formData.append('link', link);
         formData.append('description', description);
-        formData.append('image', image);
-        formData.append('status', 'Active');
+        if (image) formData.append('image', image);
+        formData.append('status', editingAd?.status || 'Active');
 
         try {
-            const res = await fetch(`${API_URL}/ads`, {
-                method: "POST",
+            const url = editingAd ? `${API_URL}/ads/${editingAd._id}` : `${API_URL}/ads`;
+            const method = editingAd ? "PUT" : "POST";
+
+            const res = await fetch(url, {
+                method,
                 body: formData
             });
             const data = await res.json();
             if (data.success) {
-                setCampaigns([data.data, ...campaigns]);
+                if (editingAd) {
+                    setCampaigns(campaigns.map(c => c._id === editingAd._id ? data.data : c));
+                } else {
+                    setCampaigns([data.data, ...campaigns]);
+                }
                 setIsAdding(false);
+                setEditingAd(null);
                 resetForm();
             }
         } catch (err) {
-            console.error("Upload failed:", err);
+            console.error("Operation failed:", err);
         } finally {
             setUploading(false);
         }
@@ -132,6 +142,17 @@ export function AdManager() {
         setDescription("");
         setImage(null);
         setPreviewUrl(null);
+        setEditingAd(null);
+    };
+
+    const startEditing = (ad: Campaign) => {
+        setEditingAd(ad);
+        setName(ad.name);
+        setType(ad.type);
+        setLink(ad.link);
+        setDescription(ad.description || "");
+        setPreviewUrl(ad.image);
+        setIsAdding(true);
     };
 
     if (loading) {
@@ -166,7 +187,9 @@ export function AdManager() {
             {isAdding && (
                 <div className="bg-card border border-border rounded-[2.5rem] p-8 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-500">
                     <div className="flex justify-between items-center mb-8">
-                        <h3 className="text-xl font-display font-black uppercase tracking-tighter text-foreground">Create New Campaign</h3>
+                        <h3 className="text-xl font-display font-black uppercase tracking-tighter text-foreground">
+                            {editingAd ? `Edit Campaign: ${editingAd.name}` : "Create New Campaign"}
+                        </h3>
                         <button onClick={() => { setIsAdding(false); resetForm(); }} className="p-2 hover:bg-muted rounded-full transition-colors">
                             <X className="w-5 h-5 text-foreground" />
                         </button>
@@ -223,11 +246,11 @@ export function AdManager() {
 
                             <button
                                 type="submit"
-                                disabled={uploading || !image}
+                                disabled={uploading || (!editingAd && !image)}
                                 className="w-full py-4 bg-racing-blue text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-racing-blue/20 hover:bg-dark-racing transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                             >
                                 {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                                {uploading ? "Broadcasting..." : "Launch Campaign"}
+                                {uploading ? (editingAd ? "Updating..." : "Broadcasting...") : (editingAd ? "Save Changes" : "Launch Campaign")}
                             </button>
                         </div>
 
@@ -333,6 +356,12 @@ export function AdManager() {
                                     >
                                         <Eye className="w-4 h-4" />
                                     </a>
+                                    <button
+                                        onClick={() => startEditing(camp)}
+                                        className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-xl hover:bg-blue-500 hover:text-white transition-all text-blue-600/60 transition-all"
+                                    >
+                                        <Edit3 className="w-4 h-4" />
+                                    </button>
                                     <button
                                         onClick={() => handleDelete(camp._id)}
                                         className="p-3 bg-red-500/5 border border-red-500/10 rounded-xl hover:bg-red-500 hover:text-white transition-all text-red-600/60 transition-all"

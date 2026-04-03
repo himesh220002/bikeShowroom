@@ -86,12 +86,13 @@ router.put('/:id/status', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const { name, phone, ...updateData } = req.body;
+        const updateFields: any = { ...updateData };
+        if (name !== undefined) updateFields.name = name;
+        if (phone !== undefined) updateFields.phone = phone;
 
-        // If name or phone is changed, we should ideally update the customer record too
-        // but for now we'll just update the service record which contains these as de-normalized fields.
         const service = await Service.findByIdAndUpdate(
             req.params.id,
-            { ...updateData, name, phone },
+            updateFields,
             { new: true }
         ).populate('customerId');
 

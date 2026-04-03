@@ -446,14 +446,14 @@ export default function ProfilePage() {
                                                                 <Bike className="w-48 h-48 text-foreground rotate-12" />
                                                             </div>
                                                             <div className="relative z-10 flex flex-col md:flex-row justify-between gap-6">
-                                                                <div className="flex gap-6">
-                                                                    <div className="w-24 h-24 rounded-2xl bg-muted border border-border flex items-center justify-center p-2 overflow-hidden relative">
+                                                                <div className="flex flex-col sm:flex-row gap-6">
+                                                                    <div className="w-full sm:w-48 aspect-square rounded-2xl bg-muted border border-border flex items-center justify-center p-2 overflow-hidden relative mx-auto sm:mx-0">
                                                                         {bike.bikeImage ? (
                                                                             <Image
                                                                                 src={bike.bikeImage}
                                                                                 alt={bike.bikeModel}
-                                                                                width={96}
-                                                                                height={96}
+                                                                                width={200}
+                                                                                height={200}
                                                                                 className="object-contain w-full h-full transform group-hover:scale-110 transition-transform"
                                                                             />
                                                                         ) : (
@@ -525,7 +525,7 @@ export default function ProfilePage() {
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="flex flex-col justify-between items-end">
+                                                                <div className="flex flex-row md:flex-col justify-between items-center md:items-end w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-0 border-border/50">
                                                                     <div className="text-right">
                                                                         <span className="text-[9px] font-black text-racing-blue uppercase tracking-widest block mb-1">Next Service Due</span>
                                                                         <div className="flex items-center gap-2">
@@ -701,7 +701,7 @@ export default function ProfilePage() {
                                 <div className="space-y-6">
                                     <div>
                                         <p className="text-[10px] font-black text-racing-blue uppercase tracking-widest mb-3">Free Service Schedule</p>
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
                                             {[
                                                 { label: "1st SVS", km: "1,000 KM", days: "30 Days" },
                                                 { label: "2nd SVS", km: "5,000 KM", days: "150 Days" },

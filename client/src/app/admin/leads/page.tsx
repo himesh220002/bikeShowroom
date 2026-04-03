@@ -5,28 +5,31 @@ import { LeadsTable } from "@/components/features/LeadsTable";
 import { API_URL } from "@/lib/config";
 import { Download, Plus, Loader2 } from "lucide-react";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
+import { LeadAddModal } from "@/components/features/LeadAddModal";
 
 export default function LeadsPage() {
     const [leads, setLeads] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState("newest");
     const [filterStatus, setFilterStatus] = useState("all");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
 
+    const fetchLeads = async () => {
+        try {
+            const res = await fetch(`${API_URL}/leads`);
+            const data = await res.json();
+            if (data.success) setLeads(data.data);
+        } catch (err) {
+            console.error("Failed to fetch leads:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchLeads = async () => {
-            try {
-                const res = await fetch(`${API_URL}/leads`);
-                const data = await res.json();
-                if (data.success) setLeads(data.data);
-            } catch (err) {
-                console.error("Failed to fetch leads:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchLeads();
     }, []);
 
@@ -71,7 +74,10 @@ export default function LeadsPage() {
                     <button className="p-3 bg-card border border-border text-muted-foreground rounded-xl hover:text-foreground transition-all">
                         <Download className="w-4 h-4" />
                     </button>
-                    <button className="flex items-center gap-2 px-6 py-3 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-racing-blue/20">
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="flex items-center gap-2 px-6 py-3 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-racing-blue/20"
+                    >
                         <Plus className="w-4 h-4" />
                         Add Lead
                     </button>
@@ -114,6 +120,12 @@ export default function LeadsPage() {
                     <LeadsTable leads={processedLeads} />
                 )}
             </div>
+
+            <LeadAddModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onUpdate={fetchLeads}
+            />
         </div>
     );
 }

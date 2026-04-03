@@ -97,22 +97,12 @@ export function LeadEditModal({ lead, isOpen, onClose, onUpdate }: LeadEditModal
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Assigned Agent</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2 text-racing-blue">Scheduled Visit / Test Ride</label>
                             <input
-                                type="text"
-                                value={formData.assignedAgent}
-                                onChange={(e) => setFormData({ ...formData, assignedAgent: e.target.value })}
-                                placeholder="Agent Name"
-                                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-xs font-bold text-foreground outline-none focus:border-racing-blue/30 transition-all"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Follow-up Date</label>
-                            <input
-                                type="date"
-                                value={formData.followUpDate}
+                                type="datetime-local"
+                                value={formData.followUpDate ? new Date(formData.followUpDate).toISOString().slice(0, 16) : ""}
                                 onChange={(e) => setFormData({ ...formData, followUpDate: e.target.value })}
                                 className="w-full bg-background border border-border rounded-xl px-4 py-3 text-xs font-bold text-foreground outline-none focus:border-racing-blue/30 transition-all"
                             />
@@ -120,12 +110,12 @@ export function LeadEditModal({ lead, isOpen, onClose, onUpdate }: LeadEditModal
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Lead Score (0-100)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Lead Score (0-10)</label>
                         <div className="flex items-center gap-4">
                             <input
                                 type="range"
                                 min="0"
-                                max="100"
+                                max="10"
                                 value={formData.score}
                                 onChange={(e) => setFormData({ ...formData, score: parseInt(e.target.value) })}
                                 className="flex-1 accent-racing-blue"

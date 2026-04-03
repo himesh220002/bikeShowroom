@@ -8,7 +8,7 @@ export interface IService extends Document {
     notes?: string;
     name: string;
     phone: string;
-    status: 'booked' | 'in-progress' | 'completed' | 'delivered' | 'cancelled';
+    status: 'booked' | 'in-progress' | 'completed' | 'delivered' | 'cancelled' | 'deferred';
     priority: 'High' | 'Normal';
     technicianName?: string;
     appointmentDate: string;
@@ -33,7 +33,7 @@ const ServiceSchema: Schema = new Schema({
     phone: { type: String, required: true },
     status: {
         type: String,
-        enum: ['booked', 'in-progress', 'completed', 'delivered', 'cancelled'],
+        enum: ['booked', 'in-progress', 'completed', 'delivered', 'cancelled', 'deferred'],
         default: 'booked'
     },
     priority: { type: String, enum: ['High', 'Normal'], default: 'Normal' },

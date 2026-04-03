@@ -87,6 +87,39 @@ router.post('/reorder', async (req, res) => {
     }
 });
 
+// Update campaign
+router.put('/:id', upload.single('image'), async (req, res) => {
+    try {
+        const { name, type, link, status, description } = req.body;
+        const updateData: any = { name, type, link, status, description };
+
+        if (req.file) {
+            // New image uploaded
+            updateData.image = `/images/ads/${req.file.filename}`;
+
+            // Cleanup old image
+            const oldAd = await Ad.findById(req.params.id);
+            if (oldAd && oldAd.image) {
+                const oldPath = path.join(__dirname, '../../../client/public', oldAd.image);
+                if (fs.existsSync(oldPath)) {
+                    fs.unlinkSync(oldPath);
+                }
+            }
+        }
+
+        const ad = await Ad.findByIdAndUpdate(
+            req.params.id,
+            { $set: updateData },
+            { new: true }
+        );
+
+        if (!ad) return res.status(404).json({ success: false, message: 'Ad not found' });
+        res.json({ success: true, data: ad });
+    } catch (error: any) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+
 // Delete campaign
 router.delete('/:id', async (req, res) => {
     try {

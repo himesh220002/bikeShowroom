@@ -240,8 +240,8 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                         value={item.label}
                                                         defaultChecked={isItemSelected(item)}
                                                     />
-                                                    <div className="px-1 py-2 sm:px-2 sm:py-3 rounded-xl bg-background border border-border peer-checked:border-racing-blue/30 peer-checked:bg-racing-blue/10 transition-all flex flex-col gap-1 items-center justify-center text-center h-full min-h-[50px]">
-                                                        <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tight text-foreground peer-checked:text-racing-blue transition-colors leading-tight">
+                                                    <div className="px-1 py-2 sm:px-2 sm:py-3 rounded-xl bg-background border border-border peer-checked:border-racing-blue/90 peer-checked:bg-racing-blue/20 transition-all flex flex-col gap-1 items-center justify-center text-center h-full min-h-[50px]">
+                                                        <span className="text-[10px] sm:text-[14px] font-black uppercase tracking-tight text-foreground peer-checked:text-racing-blue transition-colors leading-tight">
                                                             {item.label}
                                                         </span>
                                                         {(item.bonus || (bikeModel && isItemSelected(item))) && (
@@ -257,7 +257,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-2">
+                                        <label className="text-[12px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-2">
                                             Inquiry Notes (Optional)
                                         </label>
                                         <textarea
@@ -285,7 +285,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                             <div className="space-y-1">
                                                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-racing-blue">Security Check</label>
-                                                <p className="text-sm font-black text-foreground italic">What is {captcha.n1} + {captcha.n2} ?</p>
+                                                <p className="text-[14px] md:text-[20px] font-black text-foreground italic">What is {captcha.n1} + {captcha.n2} = ?</p>
                                             </div>
                                             <div className="relative w-full sm:w-28">
                                                 <input
@@ -300,7 +300,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                 />
                                             </div>
                                         </div>
-                                        {errors.captcha && <p className="text-[9px] text-red-500 font-black uppercase tracking-tighter">{errors.captcha}</p>}
+                                        {errors.captcha && <p className="text-[12px] text-red-500 font-black uppercase tracking-tighter">{errors.captcha}</p>}
                                         <p className="text-[8px] text-gray-600 font-bold uppercase tracking-widest leading-relaxed">
                                             To ensure zero-bot interference, please prove your humanity.
                                         </p>

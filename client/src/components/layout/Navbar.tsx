@@ -156,7 +156,7 @@ export function Navbar() {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="xl:hidden p-2 text-gray-300 bg-zinc-800/50 rounded-xl backdrop-blur-md border border-zinc-700/50"
+                        className="xl:hidden p-2.5 text-white bg-zinc-900/80 rounded-xl backdrop-blur-lg border border-white/10 shadow-xl"
                     >
                         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
@@ -170,9 +170,13 @@ export function Navbar() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="xl:hidden absolute top-full left-0 w-full bg-card/95 backdrop-blur-xl border-t border-border shadow-2xl"
+                        className="xl:hidden absolute top-full left-0 w-full bg-background/95 backdrop-blur-2xl border-t border-border shadow-2xl"
                     >
                         <div className="p-8 space-y-6">
+                            <div className="flex items-center justify-between pb-4 border-b border-border">
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Interface Theme</span>
+                                <ThemeToggle />
+                            </div>
                             {navLinks.map((link, idx) => (
                                 <motion.div
                                     key={link.name}

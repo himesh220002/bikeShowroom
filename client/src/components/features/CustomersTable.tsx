@@ -146,7 +146,7 @@ Reply to this message to schedule your service or ask any questions!`;
                                                 onClick={() => handleCall(customer)}
                                             >
                                                 <Phone className="w-3 h-3 text-muted-foreground/60 group-hover/phone:text-racing-blue" />
-                                                <span className="text-[10px] font-bold text-muted-foreground group-hover/phone:text-racing-blue">{customer.phone}</span>
+                                                <span className="text-[14px] font-bold text-muted-foreground group-hover/phone:text-racing-blue">{customer.phone}</span>
                                             </div>
                                             {customer.address && (
                                                 <p className="text-[8px] font-bold text-muted-foreground/60 uppercase mt-1 line-clamp-1 max-w-[150px]">

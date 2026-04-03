@@ -411,7 +411,7 @@ export default function AdminDashboard() {
                             className={cn(
                                 "flex items-center gap-3 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all",
                                 activeTab === tab.id
-                                    ? "bg-background text-foreground shadow-lg border border-border/50"
+                                    ? "bg-gray-200 text-foreground shadow-lg border border-border/50"
                                     : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                             )}
                             style={activeTab === tab.id ? { boxShadow: `0 10px 30px -10px ${tab.color}20` } : {}}
