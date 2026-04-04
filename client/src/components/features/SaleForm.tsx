@@ -50,7 +50,7 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-8 bg-card border border-border rounded-[2.5rem] shadow-2xl space-y-8">
+        <form onSubmit={handleSubmit} className="p-4 md:p-8 bg-card border border-border rounded-[2.5rem] shadow-2xl space-y-8">
             <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 bg-racing-blue/10 rounded-2xl">
                     <ShoppingCart className="w-6 h-6 text-racing-blue" />

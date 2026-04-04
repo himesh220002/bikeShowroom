@@ -7,6 +7,14 @@ jest.mock('@/lib/actions/leadActions', () => ({
     submitLead: jest.fn(),
 }));
 
+// Mock the AuthContext
+jest.mock('@/context/AuthContext', () => ({
+    useAuth: () => ({
+        user: null,
+        loading: false
+    }),
+}));
+
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
     motion: {
@@ -14,6 +22,7 @@ jest.mock('framer-motion', () => ({
     },
     AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
+
 
 describe('LeadForm', () => {
     beforeEach(() => {
@@ -48,8 +57,20 @@ describe('LeadForm', () => {
         fireEvent.change(screen.getByPlaceholderText("Who's riding?"), { target: { value: 'John Doe' } });
         fireEvent.change(screen.getByPlaceholderText("Mobile number"), { target: { value: '9876543210' } });
 
+        // Select an interest
+        fireEvent.click(screen.getByText("R15 Series"));
+
+        // Solve Captcha
+        const captchaText = screen.getByText(/What is \d+ \+ \d+ = \?/).textContent;
+        const matches = captchaText?.match(/(\d+) \+ (\d+)/);
+        if (matches) {
+            const sum = parseInt(matches[1]) + parseInt(matches[2]);
+            fireEvent.change(screen.getByPlaceholderText("Sum..."), { target: { value: sum.toString() } });
+        }
+
         const submitButton = screen.getByText("INITIATE INQUIRY");
         fireEvent.click(submitButton);
+
 
         await waitFor(() => {
             expect(submitLead).toHaveBeenCalled();
@@ -69,12 +90,25 @@ describe('LeadForm', () => {
         fireEvent.change(screen.getByPlaceholderText("Who's riding?"), { target: { value: 'John Doe' } });
         fireEvent.change(screen.getByPlaceholderText("Mobile number"), { target: { value: '9876543210' } });
 
+        // Select an interest
+        fireEvent.click(screen.getByText("R15 Series"));
+
+        // Solve Captcha
+        const captchaText = screen.getByText(/What is \d+ \+ \d+ = \?/).textContent;
+        const matches = captchaText?.match(/(\d+) \+ (\d+)/);
+        if (matches) {
+            const sum = parseInt(matches[1]) + parseInt(matches[2]);
+            fireEvent.change(screen.getByPlaceholderText("Sum..."), { target: { value: sum.toString() } });
+        }
+
         fireEvent.click(screen.getByText("INITIATE INQUIRY"));
 
+
         await waitFor(() => {
-            expect(window.alert).toHaveBeenCalledWith('Validation error');
+            expect(screen.getByText('Validation error')).toBeInTheDocument();
         });
     });
+
 
     it('auto-selects interest based on bikeModel prop', () => {
         render(<LeadForm bikeModel="Yamaha R15 V4" />);

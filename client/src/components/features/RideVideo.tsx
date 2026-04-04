@@ -30,7 +30,7 @@ export function RideVideo() {
     return (
         <section
             ref={containerRef}
-            className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden bg-black border-y border-white/10"
+            className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden bg-black"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >

@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ChevronRight, Zap } from "lucide-react";
 import { API_URL } from "@/lib/config";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 export default function ProductsPage() {
     const [liveBikes, setLiveBikes] = useState<any[]>([]);
@@ -76,17 +77,30 @@ export default function ProductsPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-zinc-950 pt-32 pb-24 flex items-center justify-center">
-                <div className="text-white text-xl animate-pulse">Loading machines...</div>
+            <div className="min-h-screen bg-zinc-950 pt-24 md:pt-32 pb-24">
+                <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="mb-20 space-y-4">
+                        <Skeleton className="h-6 w-32 rounded-full" />
+                        <Skeleton className="h-12 w-64 rounded-xl" />
+                        <Skeleton className="h-4 w-full max-w-2xl" />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[1, 2, 3].map((i) => (
+                            <Skeleton key={i} className="aspect-[4/5] rounded-[3rem]" />
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-zinc-950 pt-32 pb-24">
+        <div className="min-h-screen bg-zinc-950 pt-24 md:pt-32 pb-24">
+
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="mb-20 space-y-4">
+                <div className="mb-10 md:mb-20 space-y-4">
+
                     <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-racing-blue/10 text-racing-blue text-[10px] font-black uppercase tracking-widest w-fit">
                         <Zap className="w-3 h-3" />
                         Yamaha Lineup
@@ -100,7 +114,8 @@ export default function ProductsPage() {
                 </div>
 
                 {/* Categories */}
-                <div className="space-y-32">
+                <div className="space-y-16 md:space-y-32">
+
                     {categoriesWithBikes.map((category) => (
                         <section key={category.id} className="space-y-12">
                             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">

@@ -1,0 +1,12 @@
+PASS src/__tests__/Settings.test.tsx
+  SettingsPage
+    ✓ renders loading state initially (28 ms)
+    ✓ renders settings after fetching (32 ms)
+    ✓ updates settings on input change (20 ms)
+    ✓ saves settings successfully (37 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        0.841 s, estimated 1 s
+Ran all test suites matching src/__tests__/Settings.test.tsx.

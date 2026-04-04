@@ -181,45 +181,47 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="min-h-screen bg-background pt-24 lg:pt-32 pb-20">
+        <div className="min-h-screen bg-background pt-20 lg:pt-32 pb-20">
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="glass p-6 sm:p-12 rounded-[2rem] sm:rounded-[3rem] border border-border/50 relative overflow-hidden">
+                <div className="glass p-4 sm:p-12 rounded-[2rem] sm:rounded-[3rem] border border-border/50 relative overflow-hidden">
+
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-racing-blue/5 to-transparent pointer-events-none" />
 
-                    <header className="mb-12 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 relative z-10 p-2">
-                        <div className="flex items-center gap-6">
-                            <div className="w-24 h-24 rounded-3xl overflow-hidden border-2 border-racing-blue shadow-2xl shadow-racing-blue/20 shrink-0">
+                    <header className="mb-8 md:mb-12 flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-6 relative z-10 p-1 sm:p-2">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-6">
+                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-racing-blue shadow-2xl shadow-racing-blue/20 shrink-0">
                                 {user.avatar ? (
                                     <Image src={user.avatar} alt={user.displayName} width={96} height={96} className="object-cover w-full h-full" />
                                 ) : (
                                     <div className="w-full h-full bg-muted flex items-center justify-center">
-                                        <Bike className="w-10 h-10 text-racing-blue" />
+                                        <Bike className="w-8 h-8 sm:w-10 sm:h-10 text-racing-blue" />
                                     </div>
                                 )}
                             </div>
-                            <div>
-                                <h1 className="text-4xl md:text-5xl font-display font-black text-foreground uppercase tracking-tighter leading-tight">
+                            <div className="flex-1">
+                                <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-black text-foreground uppercase tracking-tighter leading-tight">
                                     My <span className="text-racing-blue">Garage</span>
                                 </h1>
-                                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
+                                <div className="flex flex-col sm:flex-row flex-wrap items-center sm:items-start gap-x-4 gap-y-1 mt-2">
                                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{user.displayName}</p>
                                     <div className="w-1 h-1 bg-border rounded-full hidden sm:block" />
                                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">{user.email}</p>
                                     {user.phone && (
-                                        <>
+                                        <div className="flex items-center gap-2">
                                             <div className="w-1 h-1 bg-border rounded-full hidden sm:block" />
                                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-racing-blue/80">{user.phone}</p>
-                                        </>
+                                        </div>
                                     )}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap gap-4 w-full lg:w-auto">
+
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full lg:w-auto">
                             <button
                                 onClick={() => setIsEditingProfile(!isEditingProfile)}
                                 className={cn(
-                                    "flex-1 lg:flex-none px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                                    "px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
                                     isEditingProfile ? "bg-muted text-foreground border border-border" : "bg-foreground/5 text-foreground border border-border hover:bg-foreground/10"
                                 )}
                             >
@@ -228,12 +230,13 @@ export default function ProfilePage() {
                             </button>
                             <button
                                 onClick={() => setIsAdding(!isAdding)}
-                                className="flex-1 lg:flex-none bg-racing-blue text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 flex items-center justify-center gap-2 shadow-xl shadow-racing-blue/30"
+                                className="bg-racing-blue text-white px-6 py-3.5 sm:px-10 sm:py-4 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 flex items-center justify-center gap-2 shadow-xl shadow-racing-blue/30"
                             >
                                 {isAdding ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                                 {isAdding ? "Cancel" : "Add Bike"}
                             </button>
                         </div>
+
                     </header>
 
                     <AnimatePresence>
@@ -441,13 +444,14 @@ export default function ProfilePage() {
 
                                                 return (
                                                     <div key={bike._id} className="glass rounded-[1.5rem] sm:rounded-[2.5rem] border border-border hover:border-racing-blue/50 transition-all group overflow-hidden relative">
-                                                        <div className="p-8">
+                                                        <div className="p-4 sm:p-8">
+
                                                             <div className="absolute -right-10 -top-10 opacity-5 group-hover:opacity-10 transition-opacity">
                                                                 <Bike className="w-48 h-48 text-foreground rotate-12" />
                                                             </div>
-                                                            <div className="relative z-10 flex flex-col md:flex-row justify-between gap-6">
-                                                                <div className="flex flex-col sm:flex-row gap-6">
-                                                                    <div className="w-full sm:w-48 aspect-square rounded-2xl bg-muted border border-border flex items-center justify-center p-2 overflow-hidden relative mx-auto sm:mx-0">
+                                                            <div className="relative z-10 flex flex-col md:flex-row justify-between gap-4 sm:gap-6">
+                                                                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                                                                    <div className="w-full sm:w-40 md:w-48 aspect-square rounded-xl sm:rounded-2xl bg-muted border border-border flex items-center justify-center p-2 overflow-hidden relative mx-auto sm:mx-0">
                                                                         {bike.bikeImage ? (
                                                                             <Image
                                                                                 src={bike.bikeImage}
@@ -457,14 +461,15 @@ export default function ProfilePage() {
                                                                                 className="object-contain w-full h-full transform group-hover:scale-110 transition-transform"
                                                                             />
                                                                         ) : (
-                                                                            <Bike className="w-12 h-12 text-racing-blue" />
+                                                                            <Bike className="w-10 h-10 text-racing-blue" />
                                                                         )}
                                                                     </div>
-                                                                    <div>
-                                                                        <div className="flex items-center gap-3 mb-1">
-                                                                            <h3 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter">{bike.bikeModel}</h3>
+                                                                    <div className="flex-1 text-center sm:text-left">
+
+                                                                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                                                                            <h3 className="text-xl sm:text-2xl font-display font-black text-foreground uppercase tracking-tighter">{bike.bikeModel}</h3>
                                                                             <span className={cn(
-                                                                                "text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg border",
+                                                                                "text-[7px] sm:text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg border",
                                                                                 isOverdueByDistance ? "bg-red-500/10 text-red-500 border-red-500/20" :
                                                                                     isDueByDistance ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" :
                                                                                         "bg-racing-blue/10 text-racing-blue border-racing-blue/20"
@@ -472,8 +477,9 @@ export default function ProfilePage() {
                                                                                 {isOverdueByDistance ? "Overdue" : isDueByDistance ? "Due Soon" : "Active"}
                                                                             </span>
                                                                         </div>
+
                                                                         <p className={cn(
-                                                                            "text-[10px] font-black uppercase tracking-widest flex items-center gap-2",
+                                                                            "text-[9px] sm:text-[10px] font-black uppercase tracking-widest flex items-center justify-center sm:justify-start gap-2",
                                                                             bike.registrationNumber ? "text-muted-foreground" : "text-racing-blue"
                                                                         )}>
                                                                             {bike.registrationNumber ? (
@@ -486,7 +492,8 @@ export default function ProfilePage() {
                                                                                 </>
                                                                             )}
                                                                         </p>
-                                                                        <div className="flex items-center gap-6 mt-4">
+                                                                        <div className="flex items-center justify-center sm:justify-start gap-6 mt-4">
+
                                                                             <div className="flex flex-col">
                                                                                 <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Purchased</span>
                                                                                 <span className="text-xs font-bold text-foreground/80">{new Date(bike.purchaseDate).toLocaleDateString()}</span>
@@ -525,19 +532,20 @@ export default function ProfilePage() {
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="flex flex-row md:flex-col justify-between items-center md:items-end w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-0 border-border/50">
-                                                                    <div className="text-right">
+                                                                <div className="flex flex-row md:flex-col justify-between items-center md:items-end w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-0 border-border/50 gap-4">
+                                                                    <div className="text-left md:text-right">
                                                                         <span className="text-[9px] font-black text-racing-blue uppercase tracking-widest block mb-1">Next Service Due</span>
-                                                                        <div className="flex items-center gap-2">
+                                                                        <div className="flex items-center md:justify-end gap-2">
                                                                             <Calendar className="w-4 h-4 text-racing-blue" />
-                                                                            <div className="flex flex-col items-end">
-                                                                                <span className="text-xl font-display font-black text-foreground italic">{bike.nextServiceDate ? new Date(bike.nextServiceDate).toLocaleDateString() : 'TBD'}</span>
+                                                                            <div className="flex flex-col items-start md:items-end">
+                                                                                <span className="text-lg sm:text-xl font-display font-black text-foreground italic">{bike.nextServiceDate ? new Date(bike.nextServiceDate).toLocaleDateString() : 'TBD'}</span>
                                                                                 {bike.nextServiceKm && (
                                                                                     <span className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.1em]">or {bike.nextServiceKm} KM</span>
                                                                                 )}
                                                                             </div>
                                                                         </div>
                                                                     </div>
+
                                                                     <button
                                                                         onClick={() => handleDeleteBike(bike._id)}
                                                                         className="text-red-500/50 hover:text-red-500 transition-colors p-2 hover:bg-red-500/10 rounded-lg"
@@ -579,23 +587,24 @@ export default function ProfilePage() {
                                                                         >
                                                                             <div className="pt-6 space-y-4">
                                                                                 {!bikeServices[bike._id] ? (
-                                                                                    <div className="flex items-center gap-2 py-4 italic text-[10px] text-muted-foreground uppercase tracking-widest">
+                                                                                    <div className="flex items-center gap-2 py-4 italic text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-widest">
                                                                                         <Clock className="w-3 h-3 animate-spin" /> Retrieving logs...
                                                                                     </div>
                                                                                 ) : bikeServices[bike._id].length === 0 ? (
-                                                                                    <p className="py-4 italic text-[10px] text-muted-foreground uppercase tracking-widest">No service records found for this registration.</p>
+                                                                                    <p className="py-4 italic text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-widest">No service records found for this registration.</p>
                                                                                 ) : (
                                                                                     bikeServices[bike._id].map((svc, idx) => (
-                                                                                        <div key={idx} className="p-4 rounded-2xl bg-muted/30 border border-border/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                                                                            <div className="flex items-center gap-4">
-                                                                                                <div className="w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center">
-                                                                                                    <CheckCircle2 className={cn("w-5 h-5", (svc.status === 'delivered' || svc.status === 'completed') ? "text-success" : "text-muted-foreground")} />
+                                                                                        <div key={idx} className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                                                                            <div className="flex items-center gap-3 sm:gap-4">
+                                                                                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-background border border-border flex items-center justify-center shrink-0">
+                                                                                                    <CheckCircle2 className={cn("w-4 h-4 sm:w-5 sm:h-5", (svc.status === 'delivered' || svc.status === 'completed') ? "text-success" : "text-muted-foreground")} />
                                                                                                 </div>
                                                                                                 <div>
-                                                                                                    <p className="text-[10px] font-black text-foreground uppercase tracking-widest mb-1">{svc.serviceType}</p>
-                                                                                                    <p className="text-[9px] font-bold text-muted-foreground uppercase">{new Date(svc.appointmentDate).toDateString()}</p>
+                                                                                                    <p className="text-[9px] sm:text-[10px] font-black text-foreground uppercase tracking-widest mb-0.5 sm:mb-1">{svc.serviceType}</p>
+                                                                                                    <p className="text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase">{new Date(svc.appointmentDate).toDateString()}</p>
                                                                                                 </div>
                                                                                             </div>
+
                                                                                             <div className="flex items-center gap-6">
                                                                                                 <div className="text-right hidden md:block">
                                                                                                     <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Technician</span>

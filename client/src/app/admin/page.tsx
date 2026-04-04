@@ -308,7 +308,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Management Hub Section */}
-            <div className="p-12 bg-racing-blue rounded-[3.5rem] shadow-2xl shadow-racing-blue/20 relative overflow-hidden group">
+            <div className="p-2 md:p-6 xl:p-12 bg-racing-blue rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl shadow-racing-blue/20 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 -skew-x-12 translate-x-1/4 pointer-events-none transition-transform group-hover:translate-x-1/3 duration-700" />
                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
                     <div>
@@ -349,7 +349,7 @@ export default function AdminDashboard() {
             <div className="bg-card border border-border rounded-[3rem] shadow-2xl relative overflow-hidden">
                 <button
                     onClick={() => setIsSaleFormOpen(!isSaleFormOpen)}
-                    className="w-full p-10 flex items-center justify-between hover:bg-muted/30 transition-all text-left"
+                    className="w-full p-4 md:p-6 xl:p-10 flex items-center justify-between hover:bg-muted/30 transition-all text-left"
                 >
                     <div className="relative z-10 flex items-center gap-6">
                         <div className="w-12 h-12 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
@@ -375,8 +375,8 @@ export default function AdminDashboard() {
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                         >
-                            <div className="px-10 pb-10">
-                                <div className="p-8 bg-background/50 border border-border/50 rounded-[2rem]">
+                            <div className="px-1 lg:px-4 xl:px-10 pb-10">
+                                <div className=" px-0 md:px-4 xl:p-8 bg-background/50 border border-border/50 rounded-[2rem]">
                                     <SaleForm
                                         bikes={bikes}
                                         onSaleComplete={() => {
@@ -392,7 +392,7 @@ export default function AdminDashboard() {
                 </AnimatePresence>
             </div>
 
-            <div id="data-tabs" className="p-1 px-1.5 bg-card border border-border rounded-[3rem] overflow-hidden shadow-2xl">
+            <div id="data-tabs" className="p-1 pb-4 px-1.5 bg-card border border-border rounded-[1.5rem] md:rounded-[3rem] overflow-hidden shadow-2xl">
                 {/* Integrated Tabs Header */}
                 <div className="flex flex-wrap gap-2 p-3 bg-muted/30 border-b border-border">
                     {[
@@ -411,7 +411,7 @@ export default function AdminDashboard() {
                             className={cn(
                                 "flex items-center gap-3 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all",
                                 activeTab === tab.id
-                                    ? "bg-gray-200 text-foreground shadow-lg border border-border/50"
+                                    ? "bg-gray-300 text-gray-800 shadow-lg border border-border/50"
                                     : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                             )}
                             style={activeTab === tab.id ? { boxShadow: `0 10px 30px -10px ${tab.color}20` } : {}}

@@ -19,7 +19,7 @@ export function SalesTable({ sales }: SalesTableProps) {
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center m-6">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-racing-blue/10 rounded-lg">
                         <ShoppingCart className="w-5 h-5 text-racing-blue" />

@@ -5,6 +5,7 @@ import { useRef, useEffect, useState } from "react";
 import { BIKES } from "@/lib/constants/bikes";
 import { BikeCard } from "./BikeCard";
 import { API_URL } from "@/lib/config";
+import { Skeleton } from "../ui/Skeleton";
 
 export function FeaturedBikes() {
     const [liveBikes, setLiveBikes] = useState<any[]>([]);
@@ -30,17 +31,17 @@ export function FeaturedBikes() {
 
     if (loading) {
         return (
-            <section id="machines" className="py-24 relative overflow-hidden bg-transparent">
+            <section id="machines" className="py-12 md:py-24 relative overflow-hidden bg-transparent">
                 <div className="max-w-7xl mx-auto px-4 md:px-8">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                         <div className="space-y-4">
-                            <div className="h-4 w-32 bg-muted animate-pulse rounded-full" />
-                            <div className="h-12 w-64 bg-muted animate-pulse rounded-2xl" />
+                            <Skeleton className="h-4 w-32 rounded-full" />
+                            <Skeleton className="h-12 w-64 rounded-2xl" />
                         </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="aspect-[4/5] bg-muted animate-pulse rounded-[3rem]" />
+                            <Skeleton key={i} className="aspect-[4/5] rounded-[3rem]" />
                         ))}
                     </div>
                 </div>
@@ -60,20 +61,21 @@ export function FeaturedBikes() {
     };
 
     return (
-        <section id="machines" className="py-32 bg-transparent overflow-hidden border-y border-border" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
+        <section id="machines" className="py-12 lg:py-32 bg-transparent overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-8">
+
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-racing-blue/10 text-racing-blue text-[10px] font-black uppercase tracking-widest w-fit">
                             <Zap className="w-3 h-3" />
                             Premium Lineup
                         </div>
-                        <h2 className="text-3xl md:text-7xl font-display font-black text-foreground uppercase tracking-tighter">
+                        <h2 className="text-3xl md:text-5xl  xl:text-7xl font-display font-black text-white uppercase tracking-tighter">
                             FEATURED <span className="text-racing-blue">MACHINES</span>
                         </h2>
                     </div>
 
-                    <div className="flex gap-4">
+                    <div className="hidden sm:flex gap-4">
                         <button
                             onClick={() => scroll('left')}
                             className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center text-foreground hover:border-racing-blue transition-all group active:scale-95"
@@ -91,13 +93,13 @@ export function FeaturedBikes() {
 
                 <div
                     ref={scrollRef}
-                    className="flex gap-6 md:gap-10 overflow-x-auto pb-12 snap-x snap-mandatory scrollbar-hide px-4 md:px-0 will-change-transform"
+                    className="flex gap-8 overflow-x-auto pb-12 snap-x snap-mandatory scrollbar-hide will-change-transform"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {bikesToShow.map((bike: any, index: number) => (
                         <div
                             key={bike.slug || bike._id}
-                            className="w-[100%] sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.33rem)] flex-shrink-0 snap-center"
+                            className="w-[100%] sm:w-[calc(50%-1rem)] xl:w-[calc(33.333%-1.33rem)] flex-shrink-0 snap-center"
                         >
                             <BikeCard bike={bike} index={index} />
                         </div>

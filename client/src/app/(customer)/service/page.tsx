@@ -5,13 +5,15 @@ import { Wrench, Shield, Zap, MessageSquare } from "lucide-react";
 export default function ServicePage() {
     return (
         <div className="min-h-screen bg-zinc-950 pt-20 md:pt-32 pb-24 relative overflow-hidden">
+
             {/* Background Decorative Elements */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-racing-blue/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-racing-blue/5 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Hero Header */}
-                <div className="mb-20">
+                <div className="mb-10 md:mb-20">
+
                     <div className="flex items-center gap-3 mb-6">
                         <span className="w-12 h-1 bg-racing-blue rounded-full shadow-[0_0_10px_rgba(37,99,235,0.5)]" />
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue">Premium Support Hub</span>

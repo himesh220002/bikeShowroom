@@ -15,9 +15,9 @@ export default function AdminLayout({
         <AdminAuth>
             <div className="flex min-h-screen bg-background transition-colors duration-300">
                 <AdminSidebar />
-                <main className="flex-1 p-4 md:p-8 overflow-y-auto lg:ml-64 pt-20 lg:pt-8">
+                <main className="flex-1 p-0 md:p-8 overflow-y-auto xl:ml-64 pt-16 md:pt-20 xl:pt-8">
                     <div className="max-w-[1600px] mx-auto h-full">
-                        <div className={`${theme} min-h-full p-4 md:p-8 bg-zinc-200 dark:bg-zinc-800 rounded-[2rem] border border-border/50 shadow-2xl transition-colors duration-300`}>
+                        <div className={`${theme} min-h-full p-2 md:p-8 bg-zinc-200 dark:bg-zinc-800 md:rounded-[2rem] border border-border/50 shadow-2xl transition-colors duration-300`}>
                             {children}
                         </div>
                     </div>

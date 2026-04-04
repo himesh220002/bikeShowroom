@@ -36,10 +36,15 @@ describe('LoginPage', () => {
             register: mockRegister,
         });
 
-        // Mock window.location
+        // Mock window.location for navigation
+        const location = new URL('http://localhost') as any;
+        location.assign = jest.fn();
+        location.replace = jest.fn();
         delete (window as any).location;
-        window.location = { href: '' } as any;
+        window.location = location;
     });
+
+
 
     it('renders login options initially', () => {
         render(<LoginPage />);

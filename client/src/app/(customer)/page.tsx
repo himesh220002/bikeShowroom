@@ -20,7 +20,7 @@ export default function Home() {
       <RideVideo />
 
       {/* 360 Experience Section */}
-      <section id="explore" className="py-24 bg-zinc-900/60 backdrop-blur-sm overflow-hidden border-y border-white/5">
+      <section id="explore" className="py-24 bg-zinc-900/60 backdrop-blur-sm overflow-hidden">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">

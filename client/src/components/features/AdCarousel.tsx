@@ -45,7 +45,7 @@ export function AdCarousel() {
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between mb-10">
                     <div>
-                        <h2 className="text-2xl md:text-5xl font-display font-black text-foreground uppercase tracking-tighter italic">
+                        <h2 className="text-2xl md:text-5xl font-display font-black text-white uppercase tracking-tighter italic">
                             Yamaha Highlights <span className="text-racing-blue">& Events</span>
                         </h2>
                         <div className="h-1 w-16 md:w-24 bg-racing-blue mt-2 rounded-full" />

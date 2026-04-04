@@ -43,7 +43,7 @@ export function AdminSidebar() {
     return (
         <>
             {/* Mobile Header */}
-            <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-card border-b border-border z-[80] px-6 flex items-center justify-between shadow-sm">
+            <header className="xl:hidden fixed top-0 left-0 right-0 h-16 bg-card border-b border-border z-[80] px-6 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-3">
                     <div className="relative w-8 h-8">
                         <Image
@@ -68,13 +68,13 @@ export function AdminSidebar() {
             {/* Backdrop for mobile */}
             {isOpen && (
                 <div
-                    className="lg:hidden fixed inset-0 bg-background/80 backdrop-blur-md z-[70]"
+                    className="xl:hidden fixed inset-0 bg-background/80 backdrop-blur-md z-[70]"
                     onClick={() => setIsOpen(false)}
                 />
             )}
 
             <aside className={cn(
-                "w-64 bg-card border-r border-border flex flex-col fixed left-0 top-0 py-20 h-screen z-[75] transition-transform duration-500 ease-in-out lg:translate-x-0",
+                "w-64 bg-card border-r border-border flex flex-col fixed left-0 top-0 py-20 h-screen z-[75] transition-transform duration-500 ease-in-out xl:translate-x-0",
                 isOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 <div className="px-8 mb-12">

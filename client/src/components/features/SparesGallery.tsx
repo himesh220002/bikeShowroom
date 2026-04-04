@@ -59,7 +59,7 @@ export function SparesGallery() {
                             <Package className="w-6 h-6 text-racing-blue" />
                         </div>
                         <div>
-                            <h2 className="text-2xl md:text-3xl font-display font-black text-foreground uppercase tracking-tighter italic">
+                            <h2 className="text-2xl md:text-3xl font-display font-black text-white uppercase tracking-tighter italic">
                                 Genuine <span className="text-gradient">Spares</span>
                             </h2>
                             <p className="text-[8px] md:text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] mt-1">
@@ -81,7 +81,7 @@ export function SparesGallery() {
                                         if (bike) setSelectedBike(bike);
                                     }
                                 }}
-                                className="w-full bg-muted/50 border border-border rounded-2xl px-6 py-4 text-sm text-foreground focus:outline-none focus:border-racing-blue transition-all appearance-none cursor-pointer hover:bg-muted"
+                                className="w-full bg-muted/80 border border-border rounded-2xl px-6 py-4 text-sm text-foreground focus:outline-none focus:border-racing-blue transition-all appearance-none cursor-pointer hover:bg-muted"
                             >
                                 <option value="common">Common & Universal Spares (Oils, Filters etc.)</option>
                                 <optgroup label="Bikes & Scooters">
@@ -105,7 +105,7 @@ export function SparesGallery() {
                             placeholder="Search parts, oil, filters..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-muted/50 border border-border rounded-2xl pl-12 pr-6 py-4 text-sm text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                            className="w-full bg-muted/80 border border-border rounded-2xl pl-12 pr-6 py-4 text-sm text-foreground focus:outline-none focus:border-racing-blue transition-all"
                         />
                     </div>
                 </div>
@@ -115,7 +115,7 @@ export function SparesGallery() {
             <div className="space-y-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                        <h3 className="text-xl font-display font-black text-foreground uppercase tracking-tight">
+                        <h3 className="text-xl font-display font-black text-white uppercase tracking-tight">
                             Viewing: <span className="text-racing-blue">{selectedBike?.name}</span>
                         </h3>
                     </div>

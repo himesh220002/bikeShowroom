@@ -8,17 +8,16 @@ import { submitLead } from "@/lib/actions/leadActions";
 import { useAuth } from "@/context/AuthContext";
 
 const interests = [
-    { id: "R15", label: "R15 Series", score: 0 },
-    { id: "MT", label: "MT-15 V2", score: 0 },
-    { id: "FZ", label: "FZ Series", score: 0 },
-    { id: "AEROX", label: "Aerox 155", score: 0 },
-    { id: "XSR", label: "XSR 155", score: 0 },
-    { id: "SCOOTER", label: "RayZR / Fascino", score: 0 },
-    { id: "SERVICE", label: "Service Request", score: 0 },
+    { id: "R15", label: "R15 Series", score: 10 },
+    { id: "MT", label: "MT Series", score: 9 },
+    { id: "FZ", label: "FZ Series", score: 8 },
+    { id: "AEROX", label: "Aerox 155", score: 9 },
+    { id: "XSR", label: "XSR 155", score: 9 },
+    { id: "SCOOTER", label: "RayZR / Fascino", score: 7 },
+    { id: "SERVICE", label: "Service Request", score: 6 },
     { id: "EMI", label: "EMI / Finance", bonus: "+50 Score" },
-    { id: "EXCHANGE", label: "Exchange / Value", bonus: "+45 Score" },
-    { id: "BOOKING", label: "Booking Request", score: 0 },
-    { id: "PRE-ORDER", label: "Pre-order", score: 0 }
+    { id: "BOOKING", label: "Booking Request", score: 8 },
+    { id: "PRE-ORDER", label: "Pre-order", score: 5 }
 ];
 
 interface LeadFormProps {
@@ -228,7 +227,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                     <div className="space-y-3">
                                         <label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground ml-2">Interested In</label>
                                         <div className={cn(
-                                            "grid grid-cols-4 md:grid-cols-6 gap-1 sm:gap-2 justify-items-center transition-colors p-1 rounded-3xl",
+                                            "grid grid-cols-5 lg:grid-cols-3 xl:grid-cols-6 gap-1 sm:gap-2 justify-items-center transition-colors p-1 rounded-3xl",
                                             errors.interest && "border border-red-500/50 bg-red-500/5"
                                         )}>
                                             {interests.map((item) => (
@@ -241,7 +240,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                         defaultChecked={isItemSelected(item)}
                                                     />
                                                     <div className="px-1 py-2 sm:px-2 sm:py-3 rounded-xl bg-background border border-border peer-checked:border-racing-blue/90 peer-checked:bg-racing-blue/20 transition-all flex flex-col gap-1 items-center justify-center text-center h-full min-h-[50px]">
-                                                        <span className="text-[10px] sm:text-[14px] font-black uppercase tracking-tight text-foreground peer-checked:text-racing-blue transition-colors leading-tight">
+                                                        <span className="text-[10px] sm:text-[14px] lg:text-[12px] xl:text-[14px] font-black uppercase tracking-tight text-foreground peer-checked:text-racing-blue transition-colors leading-tight">
                                                             {item.label}
                                                         </span>
                                                         {(item.bonus || (bikeModel && isItemSelected(item))) && (

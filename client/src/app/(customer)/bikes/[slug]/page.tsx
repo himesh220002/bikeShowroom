@@ -84,7 +84,7 @@ export default function BikePage() {
 
                 {/* 360 Viewer Section */}
                 {bike.threeSixtyUrl && bike.threeSixtyImageCount && bike.threeSixtyImageCount > 35 && (
-                    <section className="py-24 bg-zinc-900 border-y border-white/5">
+                    <section className="py-24 bg-zinc-900">
                         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="text-center mb-16">
                                 <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
@@ -122,11 +122,11 @@ export default function BikePage() {
                                     <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
                                         Take the First Step
                                     </h2>
-                                    <h3 className="text-5xl md:text-6xl font-display font-black text-white mb-8 uppercase tracking-tighter leading-none">
+                                    <h3 className="text-3xl md:text-6xl font-display font-black text-white mb-8 uppercase tracking-tighter leading-none">
                                         READY TO RIDE THE <br />
                                         <span className="text-racing-blue">{bike.name}?</span>
                                     </h3>
-                                    <p className="text-lg text-gray-400 mb-12 max-w-xl font-medium leading-relaxed">
+                                    <p className="text-md sm:text-lg text-gray-400 mb-12 max-w-xl font-medium leading-relaxed">
                                         Experience the thrill of Yamaha's engineering. Book a test ride at Choudhary Yamaha and feel the difference for yourself.
                                     </p>
                                 </div>
@@ -146,7 +146,7 @@ export default function BikePage() {
                                             { text: "Priority Service Slot", highlight: "Save Time" },
                                             { text: "Free First Service", highlight: "Zero Cost" }
                                         ].map((item, i) => (
-                                            <div key={i} className="flex flex-col gap-1">
+                                            <div key={i} className="flex flex-col justify-center sm:justify-start sm:items-start items-center gap-1">
                                                 <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-300 font-bold uppercase tracking-tight">
                                                     <div className="w-1.5 h-1.5 bg-racing-blue rounded-full shrink-0" />
                                                     {item.text}

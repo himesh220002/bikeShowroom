@@ -111,7 +111,7 @@ export function Footer() {
                                     +91 7004100062
                                 </div>
                             </div>
-                            <div className="flex gap-4 text-center xl:text-left justify-center xl:justify-start">
+                            <div className="flex gap-4 text-center xl:text-left">
                                 <div className="w-10 h-10 rounded-xl bg-racing-blue/5 flex items-center justify-center shrink-0">
                                     <Mail className="w-5 h-5 text-racing-blue" />
                                 </div>
