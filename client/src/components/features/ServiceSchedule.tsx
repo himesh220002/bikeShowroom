@@ -20,6 +20,7 @@ export function ServiceSchedule() {
         bikeModel: "",
         regNumber: "",
         serviceType: "",
+        appointmentDate: "",
         appointmentTime: "",
         priority: "Normal",
         technician: ""
@@ -58,10 +59,10 @@ export function ServiceSchedule() {
 
     const STATUS_OPTIONS = ['booked', 'in-progress', 'completed', 'delivered', 'cancelled', 'deferred'];
     const statusColors: any = {
-        'booked': "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
-        'in-progress': "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+        'booked': "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+        'in-progress': "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
         'completed': "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20",
-        'delivered': "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+        'delivered': "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
         'cancelled': "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
         'deferred': "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
     };
@@ -74,6 +75,7 @@ export function ServiceSchedule() {
             bikeModel: job.bikeModel,
             regNumber: job.regNumber,
             serviceType: job.type,
+            appointmentDate: job.date,
             appointmentTime: job.time,
             priority: job.priority,
             technician: job.technician === "Unassigned" ? "" : job.technician
@@ -94,6 +96,7 @@ export function ServiceSchedule() {
                     bikeModel: editForm.bikeModel,
                     regNumber: editForm.regNumber,
                     serviceType: editForm.serviceType,
+                    appointmentDate: editForm.appointmentDate,
                     appointmentTime: editForm.appointmentTime,
                     priority: editForm.priority,
                     technicianName: editForm.technician
@@ -111,6 +114,7 @@ export function ServiceSchedule() {
                         regNumber: updated.regNumber,
                         bike: `${updated.bikeModel} (${updated.regNumber})`,
                         type: updated.serviceType,
+                        date: updated.appointmentDate,
                         time: updated.appointmentTime,
                         priority: updated.priority,
                         technician: updated.technicianName || "Unassigned"
@@ -195,7 +199,8 @@ export function ServiceSchedule() {
                         status: s.status, // already lowercase from backend
                         priority: s.priority || "Normal",
                         technician: s.technicianName || "Unassigned",
-                        notes: s.notes || ""
+                        notes: s.notes || "",
+                        deliveredAt: s.deliveredAt || null
                     }));
                     setJobs(formatted);
                 }
@@ -233,10 +238,31 @@ export function ServiceSchedule() {
             end.setHours(23, 59, 59, 999);
             filtered = filtered.filter(j => new Date(j.time || 0) <= end);
         }
+        const statusOrder = ['booked', 'in-progress', 'completed', 'delivered', 'cancelled', 'deferred'];
         return filtered.sort((a, b) => {
             if (sortBy === "name") return (a.customer || "").localeCompare(b.customer || "");
-            if (sortBy === "oldest") return new Date(a.time || 0).getTime() - new Date(b.time || 0).getTime();
-            return new Date(b.time || 0).getTime() - new Date(a.time || 0).getTime();
+
+            // Primary sort for 'newest' (which is now Status + Time)
+            if (sortBy === "newest") {
+                const statusDiff = statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+                if (statusDiff !== 0) return statusDiff;
+
+                // Secondary sort: Time
+                const dateA = new Date(`${a.date} ${a.time}`).getTime();
+                const dateB = new Date(`${b.date} ${b.time}`).getTime();
+                return dateA - dateB;
+            }
+
+            if (sortBy === "oldest") {
+                const dateA = new Date(`${a.date} ${a.time}`).getTime();
+                const dateB = new Date(`${b.date} ${b.time}`).getTime();
+                return dateA - dateB;
+            }
+
+            // Fallback: Newest first (time based)
+            const dateA = new Date(`${a.date || 0} ${a.time || 0}`).getTime();
+            const dateB = new Date(`${b.date || 0} ${b.time || 0}`).getTime();
+            return dateB - dateA;
         });
     }, [jobs, searchQuery, filterStatus, sortBy, startDate, endDate]);
 
@@ -253,7 +279,7 @@ export function ServiceSchedule() {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-display font-black text-foreground/70 uppercase tracking-tighter">
+                    <h2 className="text-2xl font-display font-black text-gray-400 uppercase tracking-tighter">
                         SERVICE <span className="text-gradient">SCHEDULE</span>
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Manage daily workshop operations</p>
@@ -264,7 +290,7 @@ export function ServiceSchedule() {
                     sortBy={sortBy}
                     onSortChange={setSortBy}
                     sortOptions={[
-                        { label: "Newest Appointment", value: "newest" },
+                        { label: "Status & Queue", value: "newest" },
                         { label: "Oldest Appointment", value: "oldest" },
                         { label: "Customer Name A-Z", value: "name" }
                     ]}
@@ -275,7 +301,9 @@ export function ServiceSchedule() {
                         { label: "Booked", value: "booked" },
                         { label: "In Progress", value: "in-progress" },
                         { label: "Completed", value: "completed" },
-                        { label: "Delivered", value: "delivered" }
+                        { label: "Delivered", value: "delivered" },
+                        { label: "Cancelled", value: "cancelled" },
+                        { label: "Deferred", value: "deferred" }
                     ]}
                     startDate={startDate}
                     onStartDateChange={setStartDate}
@@ -287,45 +315,63 @@ export function ServiceSchedule() {
             </div>
 
             {/* Stats Summary */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                {[
-                    {
-                        label: "Today's Jobs",
-                        value: jobs.filter(j => j.status !== 'cancelled').length.toString(),
-                        color: "text-foreground",
-                        sub: "Active + Delivered + Pending"
-                    },
-                    {
-                        label: "Active",
-                        value: jobs.filter(j => j.status === "in-progress" || j.status === "completed").length.toString(),
-                        color: "text-blue-600 dark:text-blue-400",
-                        sub: "In Workshop"
-                    },
-                    {
-                        label: "Delivered",
-                        value: jobs.filter(j => j.status === "delivered").length.toString(),
-                        color: "text-purple-600 dark:text-purple-400",
-                        sub: "Handed Over"
-                    },
-                    {
-                        label: "Pending",
-                        value: jobs.filter(j => j.status === "booked").length.toString(),
-                        color: "text-amber-600 dark:text-amber-400",
-                        sub: "Waiting to Start"
-                    },
-                    {
-                        label: "Cancelled",
-                        value: jobs.filter(j => j.status === "cancelled" || j.status === "deferred").length.toString(),
-                        color: "text-red-600 dark:text-red-400",
-                        sub: "Not Proceeded"
-                    },
-                ].map((stat) => (
-                    <div key={stat.label} className="p-4 bg-card border border-border rounded-[1.5rem] text-center flex flex-col justify-center gap-1 group hover:border-racing-blue/30 transition-all">
-                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-racing-blue transition-colors">{stat.label}</span>
-                        <span className={cn("text-2xl font-display font-black italic leading-none", stat.color)}>{stat.value}</span>
-                        <span className="text-[7px] font-bold uppercase tracking-widest text-muted-foreground/50">{stat.sub}</span>
-                    </div>
-                ))}
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                {(() => {
+                    const today = new Date().toISOString().split('T')[0];
+                    const isToday = (dateStr: string) => dateStr === today;
+                    const deliveredToday = (j: any) => {
+                        if (j.status !== 'delivered') return false;
+                        if (j.deliveredAt) {
+                            return new Date(j.deliveredAt).toISOString().split('T')[0] === today;
+                        }
+                        return j.date === today;
+                    };
+
+                    return [
+                        {
+                            label: "Today's Intake",
+                            value: jobs.filter(j => isToday(j.date)).length.toString(),
+                            color: "text-foreground",
+                            sub: "Today's Frequency"
+                        },
+                        {
+                            label: "Active Workshop",
+                            value: jobs.filter(j => j.status === "in-progress" || j.status === "completed").length.toString(),
+                            color: "text-blue-600 dark:text-blue-400",
+                            sub: "In-Shop Snapshot"
+                        },
+                        {
+                            label: "Awaiting Today",
+                            value: jobs.filter(j => isToday(j.date) && j.status === "booked").length.toString(),
+                            color: "text-amber-600 dark:text-amber-400",
+                            sub: "Waiting to Arrive"
+                        },
+                        {
+                            label: "Delivered Today",
+                            value: jobs.filter(j => deliveredToday(j)).length.toString(),
+                            color: "text-emerald-600 dark:text-emerald-400",
+                            sub: "Completed & Handed Over"
+                        },
+                        {
+                            label: "Deferred Today",
+                            value: jobs.filter(j => isToday(j.date) && j.status === "deferred").length.toString(),
+                            color: "text-slate-600 dark:text-slate-400",
+                            sub: "Rescheduled Today"
+                        },
+                        {
+                            label: "Loss Today",
+                            value: jobs.filter(j => isToday(j.date) && j.status === "cancelled").length.toString(),
+                            color: "text-red-600 dark:text-red-400",
+                            sub: "Cancelled Today"
+                        },
+                    ].map((stat) => (
+                        <div key={stat.label} className="p-4 bg-card border border-border rounded-[1.5rem] text-center flex flex-col justify-center gap-1 group hover:border-racing-blue/30 transition-all">
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-racing-blue transition-colors">{stat.label}</span>
+                            <span className={cn("text-2xl font-display font-black italic leading-none", stat.color)}>{stat.value}</span>
+                            <span className="text-[7px] font-bold uppercase tracking-widest text-muted-foreground/50">{stat.sub}</span>
+                        </div>
+                    ));
+                })()}
             </div>
 
             {/* Job List */}
@@ -568,6 +614,35 @@ export function ServiceSchedule() {
                                                     type="text"
                                                     value={editForm.serviceType}
                                                     onChange={(e) => setEditForm({ ...editForm, serviceType: e.target.value })}
+                                                    className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-3.5 text-xs font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Appointment Date</label>
+                                            <div className="relative group">
+                                                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-racing-blue transition-colors" />
+                                                <input
+                                                    type="date"
+                                                    value={editForm.appointmentDate}
+                                                    onChange={(e) => setEditForm({ ...editForm, appointmentDate: e.target.value })}
+                                                    className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-3.5 text-xs font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all [color-scheme:dark]"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Appointment Time</label>
+                                            <div className="relative group">
+                                                <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-racing-blue transition-colors" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="e.g. 10:30 AM"
+                                                    value={editForm.appointmentTime}
+                                                    onChange={(e) => setEditForm({ ...editForm, appointmentTime: e.target.value })}
                                                     className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-3.5 text-xs font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
                                                     required
                                                 />

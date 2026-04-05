@@ -117,7 +117,7 @@ export default function ProductsPage() {
                 <div className="space-y-16 md:space-y-32">
 
                     {categoriesWithBikes.map((category) => (
-                        <section key={category.id} className="space-y-12">
+                        <section key={category.id} id={category.id} className="space-y-12">
                             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
                                 <div className="space-y-2">
                                     <h2 className="text-2xl md:text-4xl font-display font-black text-white uppercase tracking-tight">

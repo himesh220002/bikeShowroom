@@ -60,11 +60,17 @@ export function Footer() {
                             Showroom Discovery
                         </h4>
                         <ul className="space-y-4">
-                            {["R-Series", "MT-Series", "FZ-Series", "Aerox 155", "Scooters"].map((item) => (
-                                <li key={item}>
-                                    <Link href="/#bikes" className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
+                            {[
+                                { name: "R-Series", href: "/products#sport" },
+                                { name: "MT-Series", href: "/products#sport" },
+                                { name: "FZ-Series", href: "/products#street" },
+                                { name: "Aerox 155", href: "/products#scooters" },
+                                { name: "Scooters", href: "/products#scooters" }
+                            ].map((item) => (
+                                <li key={item.name}>
+                                    <Link href={item.href} className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
                                         <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        {item}
+                                        {item.name}
                                     </Link>
                                 </li>
                             ))}
@@ -77,11 +83,16 @@ export function Footer() {
                             Services & Support
                         </h4>
                         <ul className="space-y-4">
-                            {["Book A Service", "Finance / EMI", "Insurance Sync", "Genuine Spares", "Exchange Valuation"].map((item) => (
-                                <li key={item}>
-                                    <Link href="/#inquiry" className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
+                            {[
+                                { name: "Book A Service", href: "/service#booking" },
+                                { name: "Finance / EMI", href: "/#inquiry" },
+                                { name: "Insurance Sync", href: "/#inquiry" },
+                                { name: "Genuine Spares", href: "/service#spares" }
+                            ].map((item) => (
+                                <li key={item.name}>
+                                    <Link href={item.href} className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
                                         <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        {item}
+                                        {item.name}
                                     </Link>
                                 </li>
                             ))}

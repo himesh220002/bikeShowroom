@@ -43,7 +43,7 @@ export default function ServicePage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
                     {/* Left Side: Booking & Stats */}
-                    <div className="lg:col-span-12 xl:col-span-5 space-y-12">
+                    <div id="booking" className="lg:col-span-12 xl:col-span-5 space-y-12">
                         <ServiceBooking />
 
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
@@ -62,7 +62,7 @@ export default function ServicePage() {
                     </div>
 
                     {/* Right Side: Spare Parts Discovery */}
-                    <div className="lg:col-span-12 xl:col-span-7 space-y-12">
+                    <div id="spares" className="lg:col-span-12 xl:col-span-7 space-y-12">
                         <div className="p-1 px-4 bg-racing-blue/10 border border-racing-blue/20 rounded-full w-fit mb-4">
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue">Genuine Accessories & Parts</span>
                         </div>
