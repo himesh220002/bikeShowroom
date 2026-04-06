@@ -244,7 +244,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                             placeholder="EMI preferences, test ride schedule..."
                                             className="w-full bg-background border border-border focus:border-racing-blue/30 
                                                 rounded-2xl md:rounded-3xl px-6 md:px-8 py-3 md:py-4 text-sm font-black text-foreground transition-all outline-none
-                                                resize-y overflow-hidden max-h-[150px]"
+                                                resize-y overflow-hidden max-h-[250px]"
                                             onInput={(e) => {
                                                 const target = e.target as HTMLTextAreaElement;
                                                 target.style.height = "auto";
