@@ -5,7 +5,8 @@ import { Viewer360Carousel } from "@/components/features/Viewer360Carousel";
 import { AdCarousel } from "@/components/features/AdCarousel";
 import { RideVideo } from "@/components/features/RideVideo";
 import { BIKES } from "@/lib/constants/bikes";
-import { MapPin, Clock, Phone, Info, User } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
+import { MapPin, Clock, Phone, Info, User, ShieldCheck, Award, Zap } from "lucide-react";
 
 export default function Home() {
   return (
@@ -18,6 +19,42 @@ export default function Home() {
 
       <AdCarousel />
       <RideVideo />
+
+      {/* Trust Signals Section */}
+      <section className="py-24 bg-zinc-950 border-y border-zinc-900 overflow-hidden">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              {
+                icon: ShieldCheck,
+                title: "Authorized & Trusted",
+                desc: "100% Genuine Yamaha spares and certified showroom expertise since 2004.",
+                color: "text-blue-500"
+              },
+              {
+                icon: Zap,
+                title: "Expert Service",
+                desc: "Yamaha-trained technicians ensuring peak performance for every ride.",
+                color: "text-racing-blue"
+              },
+              {
+                icon: Award,
+                title: "Customer First",
+                desc: "Seamless documentation and priority support for our elite rider community.",
+                color: "text-amber-500"
+              }
+            ].map((item, i) => (
+              <div key={i} className="flex flex-col items-center text-center p-8 bg-zinc-900/50 rounded-[3rem] border border-white/5 hover:border-racing-blue/20 transition-all group">
+                <div className={cn("w-16 h-16 rounded-2xl bg-zinc-950 flex items-center justify-center mb-6 border border-zinc-800 group-hover:border-racing-blue/50 transition-all", item.color)}>
+                  <item.icon className="w-8 h-8" />
+                </div>
+                <h4 className="text-sm font-black uppercase tracking-[0.2em] text-white mb-4">{item.title}</h4>
+                <p className="text-gray-500 text-xs font-bold leading-relaxed tracking-wider uppercase opacity-80">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* 360 Experience Section */}
       <section id="explore" className="py-24 bg-zinc-900/60 backdrop-blur-sm overflow-hidden">

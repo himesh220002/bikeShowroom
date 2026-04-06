@@ -17,6 +17,12 @@ export interface IInquiry extends Document {
     conversionProbability?: number;
     adminNotes?: string;
     lastActivityDate?: Date;
+    // UTM Tracking
+    utmSource?: string;
+    utmMedium?: string;
+    utmCampaign?: string;
+    utmContent?: string;
+    utmTerm?: string;
 }
 
 const InquirySchema: Schema = new Schema({
@@ -36,6 +42,12 @@ const InquirySchema: Schema = new Schema({
     conversionProbability: { type: Number, default: 0 },
     adminNotes: { type: String },
     lastActivityDate: { type: Date, default: Date.now },
+    // UTM Fields
+    utmSource: { type: String },
+    utmMedium: { type: String },
+    utmCampaign: { type: String },
+    utmContent: { type: String },
+    utmTerm: { type: String },
 }, {
     timestamps: true,
     collection: 'inquiries'

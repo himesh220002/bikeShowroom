@@ -12,6 +12,11 @@ export async function submitLead(formData: FormData) {
             email: formData.get("email") || undefined,
             interests: formData.getAll("interest"),
             message: formData.get("message") || undefined,
+            utmSource: formData.get("utm_source") || undefined,
+            utmMedium: formData.get("utm_medium") || undefined,
+            utmCampaign: formData.get("utm_campaign") || undefined,
+            utmContent: formData.get("utm_content") || undefined,
+            utmTerm: formData.get("utm_term") || undefined,
         };
 
         // 2. Validate with Zod (The "No Errors Walk Under Our Vision" Gate)

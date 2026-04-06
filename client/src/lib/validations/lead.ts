@@ -9,6 +9,11 @@ export const LeadSchema = z.object({
     interests: z.array(z.string()).min(1, "Please select at least one interest"),
     email: z.string().email("Enter a valid email address").optional().or(z.literal("")),
     message: z.string().max(500, "Message must be under 500 characters").optional(),
+    utmSource: z.string().optional(),
+    utmMedium: z.string().optional(),
+    utmCampaign: z.string().optional(),
+    utmContent: z.string().optional(),
+    utmTerm: z.string().optional(),
 });
 
 export type LeadInput = z.infer<typeof LeadSchema>;
