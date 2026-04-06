@@ -78,7 +78,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
                         )}
                     >
                         <mode.icon className="w-4 h-4" />
-                        <span className="hidden sm:inline">{mode.label}</span>
+                        <span className="hidden sm:inline z-10">{mode.label}</span>
                     </button>
                 ))}
             </div>
@@ -100,8 +100,8 @@ export function Viewer360({ bike }: { bike: Bike }) {
                                     {modes.find(m => m.id === activeMode)?.label}
                                 </span>
                             </div>
-                            <h3 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter leading-none">
-                                {activeMode === "360" && <>EXPLORE <br />EVERY <span className="text-gradient">ANGLE</span></>}
+                            <h3 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter leading-none z-30 relative">
+                                {activeMode === "360" && <>{bike.name} <br />360° <span className="text-gradient">VIEW</span></>}
                                 {activeMode === "sound" && <>THRILL OF <br />THE <span className="text-gradient">ENGINE</span></>}
                                 {activeMode === "tech" && <>DIGITAL <br /><span className="text-gradient">COMMAND</span></>}
                             </h3>

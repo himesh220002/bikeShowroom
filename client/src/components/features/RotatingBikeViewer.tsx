@@ -2,22 +2,14 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, useSpring, useTransform } from "framer-motion";
-import { Rotate3d, Loader2, Play, Pause } from "lucide-react";
-import { cn } from "@/lib/utils/cn";
-
-// const TOTAL_IMAGES = 40;
-// const BASE_URL = "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/r_series_all/r15v4/360/";
+import { Loader2, Rotate3d, Play, Pause } from "lucide-react";
 
 // ----------------------------------------------------------------------------
 // ImageFrame: Handles individual frame rendering and cross-fading logic
 // ----------------------------------------------------------------------------
 function ImageFrame({ id, smoothIndex, loaded, baseUrl, totalImages }: { id: number; smoothIndex: any; loaded: boolean; baseUrl: string; totalImages: number }) {
-    // Calculate opacity based on relative distance to this frame
     const opacity = useTransform(smoothIndex, (latestValue: number) => {
-        // Normalize the floating index to stay within the range
         const normalizedLatest = ((latestValue - 1) % totalImages + totalImages) % totalImages + 1;
-
-        // Math.round can return 0.5 -> 1 or 40.5 -> 41. We must wrap back to 1.
         let rounded = Math.round(normalizedLatest);
         if (rounded > totalImages) rounded = 1;
         if (rounded < 1) rounded = totalImages;
@@ -40,6 +32,69 @@ function ImageFrame({ id, smoothIndex, loaded, baseUrl, totalImages }: { id: num
 }
 
 // ----------------------------------------------------------------------------
+// InfiniteGrid: Professional architectural background (Max Visibility)
+// ----------------------------------------------------------------------------
+function InfiniteGrid() {
+    return (
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-background">
+            {/* Major "CM" Scale (40px Grid H & V) - High contrast for light mode */}
+            <div
+                className="absolute inset-0 opacity-[0.45] dark:opacity-[0.15]"
+                style={{
+                    backgroundImage: `
+                        linear-gradient(to right, #000 1.5px, transparent 1.5px),
+                        linear-gradient(to bottom, #000 1.5px, transparent 1.5px)
+                    `,
+                    backgroundSize: '40px 40px',
+                    maskImage: 'radial-gradient(circle at center, black 60%, transparent 98%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black 60%, transparent 98%)',
+                }}
+            />
+            {/* Major Grid White Inversion for Dark Theme */}
+            <div
+                className="absolute inset-0 hidden dark:block opacity-[0.15]"
+                style={{
+                    backgroundImage: `
+                        linear-gradient(to right, #fff 1px, transparent 1px),
+                        linear-gradient(to bottom, #fff 1px, transparent 1px)
+                    `,
+                    backgroundSize: '40px 40px',
+                    maskImage: 'radial-gradient(circle at center, black 60%, transparent 98%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black 60%, transparent 98%)',
+                }}
+            />
+
+            {/* Minor "MM" Scale (10px Grid H & V) - Precision detailing */}
+            <div
+                className="absolute inset-0 opacity-[0.25] dark:opacity-[0.08]"
+                style={{
+                    backgroundImage: `
+                        linear-gradient(to right, #000 0.5px, transparent 0.5px),
+                        linear-gradient(to bottom, #000 0.5px, transparent 0.5px)
+                    `,
+                    backgroundSize: '10px 10px',
+                    maskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
+                }}
+            />
+            {/* Minor Grid White Inversion for Dark Theme */}
+            <div
+                className="absolute inset-0 hidden dark:block opacity-[0.08]"
+                style={{
+                    backgroundImage: `
+                        linear-gradient(to right, #fff 0.5px, transparent 0.5px),
+                        linear-gradient(to bottom, #fff 0.5px, transparent 0.5px)
+                    `,
+                    backgroundSize: '10px 10px',
+                    maskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
+                }}
+            />
+        </div>
+    );
+}
+
+// ----------------------------------------------------------------------------
 // Main Component
 // ----------------------------------------------------------------------------
 export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: string; imageCount?: number }) {
@@ -51,7 +106,6 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
     const [isAutoRotating, setIsAutoRotating] = useState(false);
     const [hasBeenInView, setHasBeenInView] = useState(false);
 
-    // smoothIndex follows targetIndex with physics for better "120fps feel"
     const smoothIndex = useSpring(1, {
         stiffness: 80,
         damping: 40,
@@ -64,7 +118,6 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
     const lastIndex = useRef(1);
     const framesMoved = useRef(0);
 
-    // Intersection Observer to trigger loading only when in view
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
@@ -83,12 +136,10 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
         return () => observer.disconnect();
     }, []);
 
-    // Sync spring to target state
     useEffect(() => {
         smoothIndex.set(targetIndex);
     }, [targetIndex, smoothIndex]);
 
-    // Preload all assets
     useEffect(() => {
         if (!hasBeenInView) return;
 
@@ -104,7 +155,6 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
 
                 if (loadedCount === TOTAL_IMAGES) {
                     setLoading(false);
-                    // Single full rotation on initial load
                     setTimeout(() => {
                         framesMoved.current = 0;
                         setIsAutoRotating(true);
@@ -114,7 +164,6 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
         }
     }, [hasBeenInView, baseUrl]);
 
-    // Auto-rotation (Relative turns)
     useEffect(() => {
         if (!isAutoRotating || loading) return;
 
@@ -124,7 +173,7 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
                     setIsAutoRotating(false);
                 } else {
                     framesMoved.current++;
-                    setTargetIndex((prev) => prev + 1); // Continuous for smooth spring animation
+                    setTargetIndex((prev) => prev + 1);
                 }
             }
         }, 60);
@@ -147,11 +196,8 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
 
         const rect = containerRef.current.getBoundingClientRect();
         const deltaX = e.clientX - startX.current;
-
         const pixelsPerFrame = rect.width / (TOTAL_IMAGES * 1.5);
         const moveFrames = Math.floor(deltaX / pixelsPerFrame);
-
-        // Use continuous index movement
         setTargetIndex(lastIndex.current - moveFrames);
     };
 
@@ -162,7 +208,6 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
         }
     };
 
-    // Track rounded display index for the UI
     const [displayIndex, setDisplayIndex] = useState(1);
     useEffect(() => {
         return smoothIndex.on("change", (latestVal) => {
@@ -182,8 +227,11 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
         >
+            {/* Background Grid - z-0 */}
+            <InfiniteGrid />
+
             {loading && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-background/90 backdrop-blur-md">
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-30 bg-background/90 backdrop-blur-md">
                     <Loader2 className="w-12 h-12 text-racing-blue animate-spin mb-6" />
                     <div className="w-64 h-1 bg-muted rounded-full overflow-hidden mb-4">
                         <motion.div
@@ -198,8 +246,8 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
                 </div>
             )}
 
-            {/* Interpolated Image Stack */}
-            <div className="relative w-full max-w-4xl aspect-[16/9] flex items-center justify-center">
+            {/* Image Stack - z-10 (Between grid and text) */}
+            <div className="relative w-full max-w-4xl aspect-[16/9] flex items-center justify-center z-10 pointer-events-none">
                 {Array.from({ length: TOTAL_IMAGES }, (_, i) => i + 1).map((i) => (
                     <ImageFrame
                         key={i}
@@ -212,7 +260,7 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
                 ))}
             </div>
 
-            {/* UI Overlays */}
+            {/* Interaction Helper - z-20 (Always on top) */}
             <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-card/10 backdrop-blur-xl border border-border px-6 py-3 rounded-2xl pointer-events-none z-20">
                 <Rotate3d className="w-4 h-4 text-racing-blue" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Hold & Drag to Explore</span>
@@ -222,7 +270,7 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
                 <button
                     onClick={() => {
                         if (!isAutoRotating) {
-                            framesMoved.current = 0; // reset every time you resume
+                            framesMoved.current = 0;
                         }
                         setIsAutoRotating(!isAutoRotating);
                     }}

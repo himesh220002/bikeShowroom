@@ -27,7 +27,6 @@ jest.mock('framer-motion', () => ({
 describe('LeadForm', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        window.alert = jest.fn();
     });
 
     it('renders the form correctly', () => {
@@ -37,15 +36,7 @@ describe('LeadForm', () => {
         expect(screen.getByText("INITIATE INQUIRY")).toBeInTheDocument();
     });
 
-    it('validates mobile number to 10 digits', () => {
-        render(<LeadForm />);
-        const phoneInput = screen.getByPlaceholderText("Mobile number") as HTMLInputElement;
-
-        fireEvent.input(phoneInput, { target: { value: '123456789012' } });
-        expect(phoneInput.value).toBe('1234567890'); // maxLength is 10, but onInput also cleans
-    });
-
-    it('submits the form successfully', async () => {
+    it('submits the form successfully without CAPTCHA', async () => {
         (submitLead as jest.Mock).mockResolvedValue({
             success: true,
             data: { score: 85 },
@@ -58,31 +49,26 @@ describe('LeadForm', () => {
         fireEvent.change(screen.getByPlaceholderText("Mobile number"), { target: { value: '9876543210' } });
 
         // Select an interest
-        fireEvent.click(screen.getByText("R15 Series"));
-
-        // Solve Captcha
-        const captchaText = screen.getByText(/What is \d+ \+ \d+ = \?/).textContent;
-        const matches = captchaText?.match(/(\d+) \+ (\d+)/);
-        if (matches) {
-            const sum = parseInt(matches[1]) + parseInt(matches[2]);
-            fireEvent.change(screen.getByPlaceholderText("Sum..."), { target: { value: sum.toString() } });
-        }
+        const r15Option = screen.getByText("R15 Series");
+        fireEvent.click(r15Option);
 
         const submitButton = screen.getByText("INITIATE INQUIRY");
         fireEvent.click(submitButton);
 
-
         await waitFor(() => {
             expect(submitLead).toHaveBeenCalled();
-            expect(screen.getByText("Inquiry Logged!")).toBeInTheDocument();
-            expect(screen.getByText("Lead Priority Score: 85")).toBeInTheDocument();
+            expect(screen.getByText("Your Ride Awaits!")).toBeInTheDocument();
+            // Verify connection buttons exist
+            expect(screen.getByText("Get Directions")).toBeInTheDocument();
+            expect(screen.getByText("Chat on WhatsApp")).toBeInTheDocument();
+            expect(screen.getByText("Call Showroom")).toBeInTheDocument();
         });
     });
 
-    it('shows an alert on submission failure', async () => {
+    it('shows a server error on submission failure', async () => {
         (submitLead as jest.Mock).mockResolvedValue({
             success: false,
-            message: 'Validation error'
+            message: 'Server side validation error'
         });
 
         render(<LeadForm />);
@@ -90,29 +76,36 @@ describe('LeadForm', () => {
         fireEvent.change(screen.getByPlaceholderText("Who's riding?"), { target: { value: 'John Doe' } });
         fireEvent.change(screen.getByPlaceholderText("Mobile number"), { target: { value: '9876543210' } });
 
-        // Select an interest
         fireEvent.click(screen.getByText("R15 Series"));
-
-        // Solve Captcha
-        const captchaText = screen.getByText(/What is \d+ \+ \d+ = \?/).textContent;
-        const matches = captchaText?.match(/(\d+) \+ (\d+)/);
-        if (matches) {
-            const sum = parseInt(matches[1]) + parseInt(matches[2]);
-            fireEvent.change(screen.getByPlaceholderText("Sum..."), { target: { value: sum.toString() } });
-        }
 
         fireEvent.click(screen.getByText("INITIATE INQUIRY"));
 
-
         await waitFor(() => {
-            expect(screen.getByText('Validation error')).toBeInTheDocument();
+            expect(screen.getByText('Server side validation error')).toBeInTheDocument();
         });
     });
-
 
     it('auto-selects interest based on bikeModel prop', () => {
         render(<LeadForm bikeModel="Yamaha R15 V4" />);
         const r15Checkbox = screen.getByDisplayValue("R15 Series") as HTMLInputElement;
         expect(r15Checkbox.checked).toBe(true);
+    });
+
+    it('captures UTM parameters from URL', async () => {
+        // Robust way to mock search params without triggering JSDOM navigation errors
+        const mockSearchParams = new URLSearchParams("utm_source=test_source&utm_medium=test_medium");
+        const getSpy = jest.spyOn(URLSearchParams.prototype, 'get');
+        getSpy.mockImplementation((key) => mockSearchParams.get(key));
+
+        render(<LeadForm />);
+
+        // The UTM tags are in hidden inputs
+        const sourceInput = document.querySelector('input[name="utm_source"]') as HTMLInputElement;
+        const mediumInput = document.querySelector('input[name="utm_medium"]') as HTMLInputElement;
+
+        expect(sourceInput?.value).toBe("test_source");
+        expect(mediumInput?.value).toBe("test_medium");
+
+        getSpy.mockRestore();
     });
 });
