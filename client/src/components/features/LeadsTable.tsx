@@ -83,20 +83,23 @@ export function LeadsTable({ leads }: LeadsTableProps) {
 
     const handleWhatsApp = (lead: Lead) => {
         const bikeName = lead.interests[0];
-        let brochureUrl = "";
+        let brochurePageUrl = "";
+        let bike = null;
 
         // Use manually selected brochure if available
         const selected = selectedBrochure[lead._id || lead.id || ""];
         if (selected) {
-            const bike = BIKES.find(b => b.name === selected || b.slug === selected);
-            brochureUrl = bike?.brochureUrl || "";
+            bike = BIKES.find(b => b.name === selected || b.slug === selected);
         } else {
             // Fallback to auto-calculation based on first interest
-            const bike = BIKES.find(b =>
+            bike = BIKES.find(b =>
                 b.name.toLowerCase() === bikeName?.toLowerCase() ||
                 b.slug === bikeName?.toLowerCase().replace(/\s+/g, '-')
             );
-            brochureUrl = bike?.brochureUrl || "";
+        }
+
+        if (bike && bike.brochureUrl) {
+            brochurePageUrl = `${window.location.origin}/brochure/${bike.slug}`;
         }
 
         const { showroomPhone, showroomEmail, showroomAddress, showroomMap } = config || {};
@@ -105,8 +108,8 @@ export function LeadsTable({ leads }: LeadsTableProps) {
 
         const intro = `Hello! Thank you for reaching out to Choudhary Yamaha.\n\nWe have received your inquiry and we’re excited to assist you.\nOur showroom details are as follows:`;
         const showroomDetails = `\n\n🏍️ Choudhary Yamaha Showroom\nAddress: ${showroomAddress || "Manihari Mor, Mirchaibari, Katihar"}\nContact: ${displayPhone}\nEmail: ${displayEmail}\n${showroomMap ? `Map: ${showroomMap}` : ""}`;
-        const visitInvite = `\n\nWe invite you to visit our showroom to experience the Yamaha ${bikeName || "bikes"} and other models in person.\nYou can also book a free test ride at your convenience and connect directly with our team for guidance.`;
-        const brochurePart = brochureUrl ? `\n\nPlease find attached our latest Yamaha brochure (PDF) with detailed specifications, features, and offers.\n${brochureUrl}` : "";
+        const visitInvite = `\n\nWe invite you to visit our showroom to experience the Yamaha ${bikeName || "bikes"} and other models in person.\nYou can also book a free test ride and connect directly with our team for guidance.`;
+        const brochurePart = brochurePageUrl ? `\n\nClick the link below for the official PDF brochure with full specs and features:\n${brochurePageUrl}` : "";
         const footer = `\n\nWe look forward to welcoming you soon at Choudhary Yamaha!`;
 
         const message = intro + showroomDetails + visitInvite + brochurePart + footer;

@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/context/AuthContext";
+import Script from "next/script";
 
 export default function RootLayout({
   children,
@@ -22,6 +23,20 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
       <body className="antialiased bg-background text-foreground overflow-x-hidden">
+        {/* Google Analytics */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=G-QHG9MD28EF`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-QHG9MD28EF');
+          `}
+        </Script>
+
         <AuthProvider>
           <ThemeProvider>
             {children}

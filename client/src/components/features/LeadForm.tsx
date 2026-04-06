@@ -30,24 +30,6 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
     const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
     const [response, setResponse] = useState<{ score?: number, message?: string }>({});
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [captcha, setCaptcha] = useState({ n1: 0, n2: 0 });
-    const [userCaptcha, setUserCaptcha] = useState("");
-
-    const generateCaptcha = () => {
-        setCaptcha({
-            n1: Math.floor(Math.random() * 9) + 1,
-            n2: Math.floor(Math.random() * 9) + 1
-        });
-        setUserCaptcha("");
-    };
-
-    useState(() => {
-        // Initial captcha generation
-        if (typeof window !== 'undefined') {
-            generateCaptcha();
-        }
-    });
-
     const getInitialNotes = () => {
         if (defaultInterest === "BOOKING") return `I'm interested in booking the ${bikeModel || 'bike'}. Please contact me with details.`;
         if (defaultInterest === "EMI") return `I'm interested in finance options for the ${bikeModel || 'bike'}.`;
@@ -89,10 +71,6 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
         if (email && !/\S+@\S+\.\S+/.test(email)) newErrors.email = "Enter a valid email address.";
         if (interest.length === 0) newErrors.interest = "Select at least one interest.";
 
-        // CAPTCHA Validation
-        if (parseInt(userCaptcha) !== captcha.n1 + captcha.n2) {
-            newErrors.captcha = "Verification answer is incorrect.";
-        }
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -140,7 +118,6 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 <button
                                     onClick={() => {
                                         setStatus("idle");
-                                        generateCaptcha();
                                     }}
                                     className="bg-card border border-border px-10 py-4 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-muted transition-all text-foreground"
                                 >
@@ -277,33 +254,6 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                         />
                                     </div>
 
-                                    <div className={cn(
-                                        "space-y-3 bg-muted/50 border rounded-3xl p-4 md:p-6 transition-colors",
-                                        errors.captcha ? "border-red-500/50 bg-red-500/5" : "border-border/50"
-                                    )}>
-                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                            <div className="space-y-1">
-                                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-racing-blue">Security Check</label>
-                                                <p className="text-[14px] md:text-[20px] font-black text-foreground italic">What is {captcha.n1} + {captcha.n2} = ?</p>
-                                            </div>
-                                            <div className="relative w-full sm:w-28">
-                                                <input
-                                                    type="number"
-                                                    value={userCaptcha}
-                                                    onChange={(e) => setUserCaptcha(e.target.value)}
-                                                    placeholder="Sum..."
-                                                    className={cn(
-                                                        "w-full bg-background border shadow-inner focus:border-racing-blue/30 rounded-2xl px-4 py-3 text-sm font-black text-foreground transition-all outline-none text-center",
-                                                        errors.captcha ? "border-red-500 bg-red-50" : "border-border"
-                                                    )}
-                                                />
-                                            </div>
-                                        </div>
-                                        {errors.captcha && <p className="text-[12px] text-red-500 font-black uppercase tracking-tighter">{errors.captcha}</p>}
-                                        <p className="text-[8px] text-gray-600 font-bold uppercase tracking-widest leading-relaxed">
-                                            To ensure zero-bot interference, please prove your humanity.
-                                        </p>
-                                    </div>
 
                                     <input type="hidden" name="bikeModel" value={bikeModel || ""} />
 
