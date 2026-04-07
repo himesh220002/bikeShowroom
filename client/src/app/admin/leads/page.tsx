@@ -65,8 +65,8 @@ export default function LeadsPage() {
         <div className="space-y-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter">
-                        SALES <span className="text-gradient">LEADS</span>
+                    <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
+                        SALES LEADS
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Manage and track pre-sales customer inquiries</p>
                 </div>

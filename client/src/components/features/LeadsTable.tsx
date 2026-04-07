@@ -28,9 +28,11 @@ export interface Lead {
 
 interface LeadsTableProps {
     leads: Lead[];
+    onUpdate?: () => void;
 }
 
-export function LeadsTable({ leads }: LeadsTableProps) {
+export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
+
     const [config, setConfig] = useState<any>(null);
     const [editingLead, setEditingLead] = useState<Lead | null>(null);
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -49,8 +51,9 @@ export function LeadsTable({ leads }: LeadsTableProps) {
     const currentLeads = leads.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     const refreshLeads = () => {
-        window.location.reload();
+        if (onUpdate) onUpdate();
     };
+
 
     const handleUpdateLead = async (id: string, updates: Partial<Lead>) => {
         try {

@@ -21,14 +21,17 @@ export interface Lead {
 
 interface LeadsTableHotProps {
     leads: Lead[];
+    onUpdate?: () => void;
 }
 
-export function LeadsTableHot({ leads }: LeadsTableHotProps) {
+
+export function LeadsTableHot({ leads, onUpdate }: LeadsTableHotProps) {
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
     const refreshLeads = () => {
-        window.location.reload();
+        if (onUpdate) onUpdate();
     };
+
 
     const handleDiscardLead = async (id: string) => {
         if (!window.confirm("Are you sure you want to discard this hot lead? This action cannot be undone.")) return;

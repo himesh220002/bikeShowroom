@@ -17,7 +17,10 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
         bikeId: "",
         variant: "",
         salePrice: "",
+        chassisNumber: "",
+        engineNumber: "",
     });
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -36,7 +39,10 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                     bikeId: "",
                     variant: "",
                     salePrice: "",
+                    chassisNumber: "",
+                    engineNumber: "",
                 });
+
                 onSaleComplete();
                 alert("🎉 Sale recorded successfully! Inventory updated.");
             } else {
@@ -156,7 +162,36 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                                 />
                             </div>
                         </div>
+
+                        {/* Structural Filling Section */}
+                        <div className="grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-border/50">
+                            <div className="group">
+                                <label htmlFor="chassisNumber" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Chassis Number</label>
+                                <input
+                                    id="chassisNumber"
+                                    type="text"
+                                    required
+                                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[12px] font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all uppercase"
+                                    value={formData.chassisNumber}
+                                    onChange={(e) => setFormData({ ...formData, chassisNumber: e.target.value.toUpperCase() })}
+                                    placeholder="Enter Chassis No."
+                                />
+                            </div>
+                            <div className="group">
+                                <label htmlFor="engineNumber" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Engine Number</label>
+                                <input
+                                    id="engineNumber"
+                                    type="text"
+                                    required
+                                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[12px] font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all uppercase"
+                                    value={formData.engineNumber}
+                                    onChange={(e) => setFormData({ ...formData, engineNumber: e.target.value.toUpperCase() })}
+                                    placeholder="Enter Engine No."
+                                />
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
 

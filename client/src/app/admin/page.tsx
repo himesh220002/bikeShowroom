@@ -61,8 +61,21 @@ export default function AdminDashboard() {
     };
 
     useEffect(() => {
+        // Handle URL parameters for cross-linking
+        const params = new URLSearchParams(window.location.search);
+        const urlTab = params.get('tab');
+        const urlSearch = params.get('search');
+
+        if (urlTab && ["leads", "services", "hot", "sales"].includes(urlTab)) {
+            setActiveTab(urlTab as any);
+        }
+        if (urlSearch) {
+            setSearchQuery(urlSearch);
+        }
+
         // 1. Fetch initial data
         fetchData();
+
 
         // 2. Listen for Socket events
         socket.on("new_lead", (newLead: Lead) => {
@@ -263,8 +276,8 @@ export default function AdminDashboard() {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
-                    <h1 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter italic">
-                        Admin <span className="text-gradient">Command Center</span>
+                    <h1 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter italic">
+                        Admin Command Center
                     </h1>
                     <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] mt-1">Unified Intelligence & Workshop Management</p>
                 </div>
@@ -400,7 +413,8 @@ export default function AdminDashboard() {
                         { id: "leads", label: "Pre-Sales Inquiries", icon: Users, color: "#007bff" }, // racing-blue
                         { id: "hot", label: "Hot Leads 🔥", icon: Rocket, color: "#f97316" }, // orange-500
                         { id: "services", label: "Post-Sales Services", icon: Wrench, color: "#007bff" },
-                        { id: "sales", label: "Sales CRM", icon: ShoppingCart, color: "#22c55e" } // green-500
+                        { id: "sales", label: "Sales Ledger", icon: ShoppingCart, color: "#22c55e" } // green-500
+
                     ].map((tab) => (
                         <button
                             key={tab.id}
@@ -491,10 +505,11 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                 ) : (
-                    activeTab === "leads" ? <LeadsTable leads={processedLeads} /> :
-                        activeTab === "hot" ? <LeadsTableHot leads={processedHotLeads} /> :
-                            activeTab === "services" ? <ServicesTable services={processedServices} /> :
+                    activeTab === "leads" ? <LeadsTable leads={processedLeads} onUpdate={fetchData} /> :
+                        activeTab === "hot" ? <LeadsTableHot leads={processedHotLeads} onUpdate={fetchData} /> :
+                            activeTab === "services" ? <ServicesTable services={processedServices} onUpdate={fetchData} /> :
                                 <div className="p-8"><SalesTable sales={processedSales} /></div>
+
                 )}
             </div>
         </div>

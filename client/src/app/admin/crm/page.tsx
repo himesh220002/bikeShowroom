@@ -22,20 +22,28 @@ export default function CRMPage() {
     const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
     const router = useRouter();
 
+    const fetchCustomers = async () => {
+        try {
+            const res = await fetch(`${API_URL}/customers`);
+            const data = await res.json();
+            if (data.success) setCustomers(data.data);
+        } catch (err) {
+            console.error("Failed to fetch CRM data:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchCustomers = async () => {
-            try {
-                const res = await fetch(`${API_URL}/customers`);
-                const data = await res.json();
-                if (data.success) setCustomers(data.data);
-            } catch (err) {
-                console.error("Failed to fetch CRM data:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
+        // Handle URL search param for cross-linking
+        const params = new URLSearchParams(window.location.search);
+        const urlSearch = params.get('search');
+        if (urlSearch) setSearchQuery(urlSearch);
+
         fetchCustomers();
     }, []);
+
+
 
     const processedCustomers = useMemo(() => {
         let filtered = [...customers];
@@ -71,9 +79,10 @@ export default function CRMPage() {
                         <BarChart3 className="w-6 h-6 text-racing-blue" />
                     </div>
                     <div>
-                        <h2 className="text-3xl font-display font-black text-foreground uppercase tracking-tighter italic">
-                            Customer <span className="text-racing-blue">CRM</span>
+                        <h2 className="text-3xl font-display font-black text-gradient uppercase tracking-tighter italic">
+                            Relationship CRM
                         </h2>
+
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">Nurturing Relationships • Driving Growth</p>
                     </div>
                 </div>
@@ -142,7 +151,9 @@ export default function CRMPage() {
                         isCampaignMode={isCampaignMode}
                         selectedCustomers={selectedCustomers}
                         onSelectionChange={setSelectedCustomers}
+                        onUpdate={fetchCustomers}
                     />
+
                 )}
             </div>
 

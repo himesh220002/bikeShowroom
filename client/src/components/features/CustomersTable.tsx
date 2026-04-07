@@ -1,4 +1,5 @@
-import { User, Phone, Bike, Calendar, Wrench, MessageSquare, History, PlusCircle, MoreVertical } from "lucide-react";
+import { User, Phone, Bike, Calendar, Wrench, MessageSquare, History, PlusCircle, MoreVertical, ShoppingCart } from "lucide-react";
+
 import { cn } from "@/lib/utils/cn";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,14 +38,18 @@ interface CustomersTableProps {
     isCampaignMode?: boolean;
     selectedCustomers?: string[];
     onSelectionChange?: (ids: string[]) => void;
+    onUpdate?: () => void;
 }
+
 
 export function CustomersTable({
     customers,
     isCampaignMode,
     selectedCustomers = [],
-    onSelectionChange
+    onSelectionChange,
+    onUpdate
 }: CustomersTableProps) {
+
     const router = useRouter();
     const [config, setConfig] = useState<any>(null);
     const [editingCustomer, setEditingCustomer] = useState<CustomerCRM | null>(null);
@@ -52,8 +57,9 @@ export function CustomersTable({
 
 
     const refreshData = () => {
-        window.location.reload();
+        if (onUpdate) onUpdate();
     };
+
 
     useEffect(() => {
         const fetchConfig = async () => {
@@ -239,12 +245,16 @@ Reply to this message to schedule your service or ask any questions!`;
                                             <p className="text-sm font-black text-foreground uppercase tracking-tighter">{customer.lastSale.bikeName}</p>
                                             <div className="flex items-center gap-2 mt-1">
                                                 <Bike className="w-3 h-3 text-racing-blue" />
-                                                <span className="text-[10px] font-bold text-muted-foreground">
+                                                <span
+                                                    className="text-[10px] font-bold text-muted-foreground hover:text-racing-blue cursor-pointer transition-colors"
+                                                    onClick={() => window.location.href = `/admin?tab=sales&search=${customer.phone}`}
+                                                >
                                                     Purchased {new Date(customer.lastSale.saleDate).toLocaleDateString('en-IN', {
                                                         month: 'short',
                                                         year: 'numeric'
                                                     })}
                                                 </span>
+
                                             </div>
                                         </div>
                                     ) : (
@@ -357,6 +367,14 @@ Reply to this message to schedule your service or ask any questions!`;
                                                                 <History className="w-3.5 h-3.5" />
                                                                 History & Profile
                                                             </button>
+                                                            <button
+                                                                onClick={() => { window.location.href = `/admin?tab=sales&search=${customer.phone}`; setOpenMenuId(null); }}
+                                                                className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-green-500/10 transition-colors text-green-600 flex items-center gap-3 border-t border-border/30"
+                                                            >
+                                                                <ShoppingCart className="w-3.5 h-3.5" />
+                                                                Sales Ledger
+                                                            </button>
+
                                                         </motion.div>
                                                     </>
                                                 )}

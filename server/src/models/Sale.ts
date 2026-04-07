@@ -11,7 +11,10 @@ export interface ISale extends Document {
     saleDate: Date;
     paymentMethod?: 'Cash' | 'Finance' | 'EMI' | 'UPI';
     invoiceNumber?: string;
+    chassisNumber?: string;
+    engineNumber?: string;
     salesperson?: string;
+
     deliveryDate?: Date;
     warrantyStart?: Date;
     warrantyEnd?: Date;
@@ -30,7 +33,10 @@ const SaleSchema: Schema = new Schema({
     saleDate: { type: Date, default: Date.now },
     paymentMethod: { type: String, enum: ['Cash', 'Finance', 'EMI', 'UPI'], default: 'Cash' },
     invoiceNumber: { type: String },
+    chassisNumber: { type: String },
+    engineNumber: { type: String },
     salesperson: { type: String },
+
     deliveryDate: { type: Date },
     warrantyStart: { type: Date },
     warrantyEnd: { type: Date },

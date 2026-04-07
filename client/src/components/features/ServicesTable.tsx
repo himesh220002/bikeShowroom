@@ -27,7 +27,9 @@ export interface ServiceBooking {
 
 interface ServicesTableProps {
     services: ServiceBooking[];
+    onUpdate?: () => void;
 }
+
 
 const STATUS_OPTIONS = ['booked', 'in-progress', 'completed', 'delivered', 'cancelled'];
 
@@ -39,13 +41,15 @@ const statusColors = {
     'cancelled': "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
 };
 
-export function ServicesTable({ services }: ServicesTableProps) {
+export function ServicesTable({ services, onUpdate }: ServicesTableProps) {
+
     const [statusModal, setStatusModal] = useState<{ service: ServiceBooking, status: string } | null>(null);
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
     const refreshData = () => {
-        window.location.reload();
+        if (onUpdate) onUpdate();
     };
+
     const updateStatus = async (id: string, status: string) => {
         try {
             const res = await fetch(`${API_URL}/services/${id}/status`, {
