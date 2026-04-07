@@ -4,6 +4,7 @@ import { CheckCircle2, MoreVertical, Phone, MessageSquare, Users, Edit3, Save, C
 import { cn } from "@/lib/utils/cn";
 import { BIKES } from "@/lib/constants/bikes";
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { API_URL } from "@/lib/config";
 import { ExportButton } from "@/components/ui/ExportButton";
 import { LeadEditModal } from "./LeadEditModal";
@@ -142,17 +143,18 @@ export function LeadsTable({ leads }: LeadsTableProps) {
     };
 
     return (
-        <div className="w-full space-y-4">
-            <div className="flex justify-between items-center m-6">
+        <div className="w-full space-y-3">
+            <div className="flex justify-between items-center m-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-racing-blue/10 rounded-lg">
-                        <Users className="w-5 h-5 text-racing-blue" />
+                    <div className="p-1.5 bg-racing-blue/10 rounded-lg">
+                        <Users className="w-4 h-4 text-racing-blue" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Active Leads</h3>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase">{leads.length} Prospective Customers</p>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-foreground">Active Leads</h3>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">{leads.length} Prospective Customers</p>
                     </div>
                 </div>
+
                 <ExportButton
                     data={leads}
                     filename="Yamaha_Leads_Report"
@@ -163,18 +165,20 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="border-b border-border">
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Prospect</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Interest</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Follow-up / Schedule</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Remarks / Response</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">Actions</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Prospect</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Interest</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Follow-up / Schedule</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Remarks / Response</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Status</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground text-right">Actions</th>
                         </tr>
+
                     </thead>
                     <tbody>
                         {currentLeads.map((lead) => (
                             <tr key={lead._id || lead.id} className="border-b border-border/30 group hover:bg-muted/30 transition-colors">
-                                <td className="py-6 px-4">
+                                <td className="py-4 px-4">
+
                                     <div className="flex items-center gap-4">
                                         <div className="flex flex-col items-center">
                                             <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center border border-border">
@@ -207,15 +211,16 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                                             )}
                                         </div>
                                         <div>
-                                            <p className="text-sm font-black text-foreground">{lead.name}</p>
+                                            <p className="text-[13px] font-black text-foreground leading-tight">{lead.name}</p>
                                             <div
-                                                className="flex items-center gap-2 mt-1 cursor-pointer hover:text-racing-blue transition-colors group/phone"
+                                                className="flex items-center gap-1.5 mt-0.5 cursor-pointer hover:text-racing-blue transition-colors group/phone"
                                                 onClick={() => handleCall(lead)}
                                             >
-                                                <Phone className="w-3 h-3 text-muted-foreground/60 group-hover/phone:text-racing-blue" />
-                                                <span className="text-[14px] font-bold text-muted-foreground group-hover/phone:text-racing-blue">{lead.phone}</span>
+                                                <Phone className="w-2.5 h-2.5 text-muted-foreground/60 group-hover/phone:text-racing-blue" />
+                                                <span className="text-[12px] font-bold text-muted-foreground group-hover/phone:text-racing-blue">{lead.phone}</span>
                                             </div>
                                         </div>
+
                                     </div>
                                 </td>
                                 <td className="py-6 px-4">
@@ -227,7 +232,8 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                                         ))}
                                     </div>
                                 </td>
-                                <td className="py-6 px-4">
+                                <td className="py-4 px-4">
+
                                     <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-2 group/date relative">
                                             {lead.followUpDate ? (
@@ -248,7 +254,8 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                                         </div>
                                     </div>
                                 </td>
-                                <td className="py-6 px-4">
+                                <td className="py-4 px-4">
+
                                     <div className="flex items-center gap-2">
                                         <textarea
                                             value={editingRemarks[lead._id || lead.id || ""] ?? lead.adminNotes ?? ""}
@@ -282,7 +289,8 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                                     </div>
 
                                 </td>
-                                <td className="py-6 px-2 lg:px-4 w-[150px]">
+                                <td className="py-4 px-2 lg:px-4 w-[150px]">
+
                                     <span className={cn(
                                         "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border",
                                         lead.status === "New" ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" :
@@ -293,45 +301,42 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                                         {lead.status}
                                     </span>
                                 </td>
-                                <td className="py-6 px-4 text-right">
-                                    <div className="flex flex-wrap justify-end gap-2">
-                                        <button
-                                            onClick={() => handleWhatsApp(lead)}
-                                            className="p-2 rounded-xl border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 group/btn transition-all"
-                                            title="Send WhatsApp Brochure"
-                                        >
-                                            <MessageSquare className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
-                                        </button>
-                                        <button
-                                            onClick={() => handleCall(lead)}
-                                            className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all"
-                                            title="Call Prospect"
-                                        >
-                                            <Phone className="w-4 h-4 text-green-400 group-hover/btn:scale-110 transition-transform" />
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setEscalationData({
-                                                    inquiryId: lead._id || lead.id,
-                                                    name: lead.name,
-                                                    phone: lead.phone,
-                                                    interests: lead.interests,
-                                                    adminNotes: lead.adminNotes
-                                                });
-                                                setIsAddModalOpen(true);
-                                            }}
-                                            className="p-2 rounded-xl border border-border hover:bg-orange-500/10 hover:border-orange-500/50 group/escalate transition-all"
-                                            title="Escalate to Hot Lead"
-                                        >
-                                            <UserPlus className="w-4 h-4 text-orange-500 group-hover:escalate:scale-110 transition-transform" />
-                                        </button>
-                                        <button
-                                            onClick={() => setEditingLead(lead)}
-                                            className="p-2 rounded-xl border border-border hover:bg-muted/30 transition-all"
-                                            title="Edit Lead Details"
-                                        >
-                                            <Edit3 className="w-4 h-4 text-muted-foreground hover:text-foreground" />
-                                        </button>
+                                <td className="py-4 px-4 text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                        {/* Desktop-only Quick Actions */}
+                                        <div className="hidden md:flex items-center gap-2">
+                                            <button
+                                                onClick={() => handleWhatsApp(lead)}
+                                                className="p-2 rounded-xl border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 group/btn transition-all"
+                                                title="Send WhatsApp Brochure"
+                                            >
+                                                <MessageSquare className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleCall(lead)}
+                                                className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all"
+                                                title="Call Prospect"
+                                            >
+                                                <Phone className="w-4 h-4 text-green-400 group-hover/btn:scale-110 transition-transform" />
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setEscalationData({
+                                                        inquiryId: lead._id || lead.id,
+                                                        name: lead.name,
+                                                        phone: lead.phone,
+                                                        interests: lead.interests,
+                                                        adminNotes: lead.adminNotes
+                                                    });
+                                                    setIsAddModalOpen(true);
+                                                }}
+                                                className="p-2 rounded-xl border border-border hover:bg-orange-500/10 hover:border-orange-500/50 group/escalate transition-all"
+                                                title="Escalate to Hot Lead"
+                                            >
+                                                <UserPlus className="w-4 h-4 text-orange-500 group-hover:escalate:scale-110 transition-transform" />
+                                            </button>
+                                        </div>
+
                                         <div className="relative">
                                             <button
                                                 onClick={() => setOpenMenuId(openMenuId === (lead._id || lead.id) ? null : (lead._id || lead.id || null))}
@@ -343,34 +348,81 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                                                 <MoreVertical className="w-4 h-4 text-muted-foreground" />
                                             </button>
 
-                                            {openMenuId === (lead._id || lead.id) && (
-                                                <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-2xl shadow-2xl z-50 py-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                                                    <div className="px-4 py-2 border-b border-border/50 mb-1">
-                                                        <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Select Brochure</p>
-                                                        <select
-                                                            className="w-full mt-1 bg-transparent border-none text-[10px] font-bold text-foreground outline-none cursor-pointer"
-                                                            value={selectedBrochure[lead._id || lead.id || ""] || ""}
-                                                            onChange={(e) => {
-                                                                setSelectedBrochure({ ...selectedBrochure, [lead._id || lead.id || ""]: e.target.value });
-                                                            }}
+                                            <AnimatePresence>
+                                                {openMenuId === (lead._id || lead.id) && (
+                                                    <>
+                                                        <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                                                        <motion.div
+                                                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                            className="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-2xl shadow-2xl z-50 py-2 overflow-hidden"
                                                         >
-                                                            <option value="">Default (Interest)</option>
-                                                            {BIKES.map(b => (
-                                                                <option key={b.slug} value={b.name}>{b.name}</option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => handleDiscardLead(lead._id || lead.id || "")}
-                                                        className="w-full px-4 py-2 text-[10px] font-black uppercase tracking-widest text-left hover:bg-red-500/10 transition-colors text-red-500/80 hover:text-red-500"
-                                                    >
-                                                        Discard Lead
-                                                    </button>
-                                                </div>
-                                            )}
+                                                            {/* Mobile-only consolidated actions */}
+                                                            <div className="md:hidden border-b border-border/50 mb-1 pb-1">
+                                                                <button
+                                                                    onClick={() => { handleWhatsApp(lead); setOpenMenuId(null); }}
+                                                                    className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-racing-blue/10 transition-colors text-racing-blue flex items-center gap-3"
+                                                                >
+                                                                    <MessageSquare className="w-3.5 h-3.5" />
+                                                                    WhatsApp Brochure
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => { handleCall(lead); setOpenMenuId(null); }}
+                                                                    className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-green-500/10 transition-colors text-green-600 flex items-center gap-3"
+                                                                >
+                                                                    <Phone className="w-3.5 h-3.5" />
+                                                                    Call Customer
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setEscalationData({ inquiryId: lead._id || lead.id, name: lead.name, phone: lead.phone, interests: lead.interests, adminNotes: lead.adminNotes });
+                                                                        setIsAddModalOpen(true);
+                                                                        setOpenMenuId(null);
+                                                                    }}
+                                                                    className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-orange-500/10 transition-colors text-orange-500 flex items-center gap-3"
+                                                                >
+                                                                    <UserPlus className="w-3.5 h-3.5" />
+                                                                    Escalate Lead
+                                                                </button>
+                                                            </div>
+
+                                                            <div className="px-4 py-2 border-b border-border/50 mb-1">
+                                                                <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-1">Select Brochure</p>
+                                                                <select
+                                                                    className="w-full bg-muted border border-border rounded-lg px-2 py-1.5 text-[10px] font-bold text-foreground outline-none cursor-pointer"
+                                                                    value={selectedBrochure[lead._id || lead.id || ""] || ""}
+                                                                    onChange={(e) => {
+                                                                        setSelectedBrochure({ ...selectedBrochure, [lead._id || lead.id || ""]: e.target.value });
+                                                                    }}
+                                                                >
+                                                                    <option value="">Default (Interest)</option>
+                                                                    {BIKES.map(b => (
+                                                                        <option key={b.slug} value={b.name}>{b.name}</option>
+                                                                    ))}
+                                                                </select>
+                                                            </div>
+                                                            <button
+                                                                onClick={() => { setEditingLead(lead); setOpenMenuId(null); }}
+                                                                className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground flex items-center gap-3"
+                                                            >
+                                                                <Edit3 className="w-3.5 h-3.5" />
+                                                                Edit Lead
+                                                            </button>
+                                                            <button
+                                                                onClick={() => { handleDiscardLead(lead._id || lead.id || ""); setOpenMenuId(null); }}
+                                                                className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-red-500/10 transition-colors text-red-500/80 hover:text-red-500 mt-1 border-t border-border/30 flex items-center gap-3"
+                                                            >
+                                                                Discard Lead
+                                                            </button>
+                                                        </motion.div>
+                                                    </>
+                                                )}
+                                            </AnimatePresence>
                                         </div>
                                     </div>
                                 </td>
+
                             </tr>
                         ))}
                         {leads.length === 0 && (

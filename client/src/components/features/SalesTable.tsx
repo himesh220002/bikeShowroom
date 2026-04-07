@@ -18,17 +18,18 @@ export function SalesTable({ sales }: SalesTableProps) {
     }
 
     return (
-        <div className="space-y-4">
-            <div className="flex justify-between items-center m-6">
+        <div className="space-y-3">
+            <div className="flex justify-between items-center m-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-racing-blue/10 rounded-lg">
-                        <ShoppingCart className="w-5 h-5 text-racing-blue" />
+                    <div className="p-1.5 bg-racing-blue/10 rounded-lg">
+                        <ShoppingCart className="w-4 h-4 text-racing-blue" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Sales Ledger</h3>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase">{sales.length} Completed Transactions</p>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-foreground">Sales Ledger</h3>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">{sales.length} Completed Transactions</p>
                     </div>
                 </div>
+
                 <ExportButton
                     data={sales}
                     filename="Yamaha_Sales_Report"
@@ -39,39 +40,45 @@ export function SalesTable({ sales }: SalesTableProps) {
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="border-b border-border">
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Customer</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Vehicle Details</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Sale Value / Payment</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Document / Agent</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">Timestamp</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Customer</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Vehicle Details</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Sale Value / Payment</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Document / Agent</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground text-right">Timestamp</th>
                         </tr>
+
                     </thead>
                     <tbody>
                         {sales.map((sale) => (
                             <tr key={sale._id} className="border-b border-border/30 group hover:bg-muted/30 transition-colors">
-                                <td className="py-6 px-4">
+                                <td className="py-4 px-4">
+
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center border border-border">
                                             <User className="w-5 h-5 text-muted-foreground" />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-black text-foreground">{sale.customerName}</p>
-                                            <p className="text-[10px] font-bold text-muted-foreground">{sale.customerPhone}</p>
+                                            <p className="text-[13px] font-black text-foreground leading-tight">{sale.customerName}</p>
+                                            <p className="text-[10px] font-bold text-muted-foreground mt-0.5">{sale.customerPhone}</p>
                                         </div>
+
                                     </div>
                                 </td>
-                                <td className="py-6 px-4">
+                                <td className="py-4 px-4">
+
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 bg-racing-blue/10 rounded-lg">
                                             <Bike className="w-4 h-4 text-racing-blue" />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-black text-foreground uppercase tracking-tighter">{sale.bikeName}</p>
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{sale.variant}</p>
+                                            <p className="text-[13px] font-black text-foreground uppercase tracking-tighter leading-tight">{sale.bikeName}</p>
+                                            <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-80">{sale.variant}</p>
                                         </div>
+
                                     </div>
                                 </td>
-                                <td className="py-6 px-4">
+                                <td className="py-4 px-4">
+
                                     <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-1.5 text-racing-blue font-display font-black italic">
                                             <IndianRupee className="w-3.5 h-3.5" />
@@ -82,7 +89,8 @@ export function SalesTable({ sales }: SalesTableProps) {
                                         </span>
                                     </div>
                                 </td>
-                                <td className="py-6 px-4">
+                                <td className="py-4 px-4">
+
                                     <div className="flex flex-col gap-1">
                                         <p className="text-[10px] font-black text-foreground uppercase tracking-widest">
                                             INV: {sale.invoiceNumber || "NON-TAX"}
@@ -92,7 +100,8 @@ export function SalesTable({ sales }: SalesTableProps) {
                                         </p>
                                     </div>
                                 </td>
-                                <td className="py-6 px-4 text-right">
+                                <td className="py-2 px-4 text-right">
+
                                     <div className="flex items-center justify-end gap-2 text-muted-foreground">
                                         <Calendar className="w-3.5 h-3.5" />
                                         <span className="text-[10px] font-bold uppercase tracking-widest">

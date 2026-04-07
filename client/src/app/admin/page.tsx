@@ -146,9 +146,8 @@ export default function AdminDashboard() {
         { label: "Inventory", value: totalStock.toString(), icon: Package, change: "Stable", trend: "neutral", href: "/admin/inventory" },
     ];
 
-    const conversionRate = leads.length > 0 ? Math.round((sales.length / leads.length) * 100) : 0;
-    const totalRevenue = sales.reduce((acc, sale) => acc + Number(sale.salePrice || 0), 0);
-    const avgServiceTime = "2.4 Days"; // Placeholder for turnaround time logic
+    // Navigation to Insights
+    const goToInsights = () => router.push("/admin/crm/insights");
 
     // Data Filtering & Sorting Logic
     const processedLeads = useMemo(() => {
@@ -261,21 +260,22 @@ export default function AdminDashboard() {
     }, [sales, searchQuery, sortBy, startDate, endDate]);
 
     return (
-        <div className="space-y-12">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div className="space-y-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
-                    <h1 className="text-4xl font-display font-black text-foreground uppercase tracking-tighter">
-                        Admin <span className="text-gradient">COMMAND CENTER</span>
+                    <h1 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter italic">
+                        Admin <span className="text-gradient">Command Center</span>
                     </h1>
-                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-2">Unified Dashboard for Inquiries and Workshop Bookings</p>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] mt-1">Unified Intelligence & Workshop Management</p>
                 </div>
-                <div className="flex items-center gap-4 bg-card/50 border border-border px-6 py-3 rounded-2xl">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Neural Sink Active</span>
+                <div className="flex items-center gap-3 bg-card/50 border border-border px-4 py-2 rounded-xl">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-foreground">Sync Active</span>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
                 {stats.map((stat) => (
                     <button
                         key={stat.label}
@@ -287,79 +287,80 @@ export default function AdminDashboard() {
                                 router.push(stat.href);
                             }
                         }}
-                        className="p-8 bg-card border border-border rounded-[2.5rem] shadow-2xl group hover:border-racing-blue/50 transition-all text-left w-full hover:scale-[1.02] active:scale-[0.98]"
+                        className="p-6 bg-card border border-border rounded-[2rem] shadow-xl group hover:border-racing-blue/50 transition-all text-left w-full hover:scale-[1.02] active:scale-[0.98]"
                     >
-                        <div className="flex justify-between items-start mb-6">
-                            <div className="w-12 h-12 bg-muted border border-border rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-transform">
-                                <stat.icon className="w-6 h-6 text-racing-blue" />
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="w-10 h-10 bg-muted border border-border rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
+                                <stat.icon className="w-5 h-5 text-racing-blue" />
                             </div>
                             <span className={cn(
-                                "text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg",
+                                "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg",
                                 stat.trend === "up" ? "text-green-400 bg-green-500/10 border border-green-500/10" :
                                     stat.trend === "down" ? "text-red-400 bg-red-500/10 border border-red-500/10" : "text-muted-foreground bg-muted"
                             )}>
                                 {stat.change}
                             </span>
                         </div>
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">{stat.label}</h3>
-                        <p className="text-4xl font-display font-black text-foreground italic tracking-tighter">{stat.value}</p>
+                        <h3 className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">{stat.label}</h3>
+                        <p className="text-2xl font-display font-black text-foreground italic tracking-tighter">{stat.value}</p>
                     </button>
+
                 ))}
             </div>
 
-            {/* Management Hub Section */}
-            <div className="p-2 md:p-6 xl:p-12 bg-racing-blue rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl shadow-racing-blue/20 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 -skew-x-12 translate-x-1/4 pointer-events-none transition-transform group-hover:translate-x-1/3 duration-700" />
-                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
-                    <div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2 bg-white/10 rounded-lg">
-                                <BarChart2 className="w-5 h-5 text-white" />
-                            </div>
-                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/70">Management Hub / KPIs</h2>
+            {/* Intelligence & Analytics Entry */}
+            <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-racing-blue to-blue-600 rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
+                <div
+                    onClick={goToInsights}
+                    className="relative flex flex-col md:flex-row items-center justify-between p-6 md:p-8 bg-card border border-border rounded-[2rem] shadow-xl hover:border-racing-blue/40 transition-all cursor-pointer overflow-hidden group/card"
+                >
+                    <div className="absolute top-0 right-0 w-1/4 h-full bg-racing-blue/5 -skew-x-12 translate-x-1/2 pointer-events-none group-hover/card:translate-x-1/3 transition-transform duration-700" />
+
+                    <div className="flex items-center gap-6 mb-6 md:mb-0 relative z-10">
+                        <div className="w-14 h-14 bg-racing-blue/10 rounded-2xl flex items-center justify-center shadow-inner group-hover/card:scale-105 transition-transform duration-500">
+                            <TrendingUp className="w-7 h-7 text-racing-blue animate-pulse" />
                         </div>
-                        <h3 className="text-4xl font-display font-black text-white uppercase tracking-tighter leading-none mb-4">
-                            SHOWROOM <span className="text-white/50">PERFORMANCE</span>
-                        </h3>
-                        <p className="text-xs text-white/60 font-bold uppercase tracking-widest leading-relaxed">
-                            Real-time conversion metrics and operational efficiency tracking for leadership.
-                        </p>
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-racing-blue animate-ping" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-racing-blue">Management Intelligence</span>
+                            </div>
+                            <h2 className="text-xl font-display font-black text-foreground uppercase tracking-tighter italic leading-none">
+                                Performance <span className="text-gradient">Insights</span>
+                            </h2>
+                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-1">Conversion • Revenue • Velocity Feed</p>
+                        </div>
                     </div>
 
-                    <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        {[
-                            { label: "Conversion Rate", value: `${conversionRate}%`, icon: TrendingUp, desc: "Leads to Sales" },
-                            { label: "Service Turnaround", value: avgServiceTime, icon: Clock, desc: "Avg. Duration" },
-                            { label: "Total Revenue", value: `₹${(totalRevenue / 100000).toFixed(2)}L`, icon: ShoppingCart, desc: "Lifetime Sales" }
-                        ].map((kpi) => (
-                            <div key={kpi.label} className="bg-white/10 backdrop-blur-md border border-white/10 rounded-3xl p-6 hover:bg-white/20 transition-all">
-                                <div className="flex items-center justify-between mb-4">
-                                    <kpi.icon className="w-5 h-5 text-white" />
-                                    <span className="text-[8px] font-black uppercase text-white/50 tracking-widest">Active KPI</span>
-                                </div>
-                                <p className="text-2xl font-display font-black text-white italic mb-1 uppercase tracking-tighter">{kpi.value}</p>
-                                <p className="text-[9px] font-black uppercase text-white/70 tracking-widest">{kpi.label}</p>
-                                <p className="text-[7px] font-bold uppercase text-white/40 tracking-widest mt-1">{kpi.desc}</p>
-                            </div>
-                        ))}
+                    <div className="flex items-center gap-4 relative z-10">
+                        <div className="hidden lg:flex flex-col items-end mr-6 opacity-30 group-hover/card:opacity-100 transition-opacity">
+                            <span className="text-[8px] font-black uppercase tracking-widest leading-none">Visual Reports</span>
+                            <span className="text-[8px] font-black uppercase tracking-widest mt-0.5">Live Feed</span>
+                        </div>
+                        <button className="flex items-center gap-2 px-8 py-3.5 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-racing-blue/20 group-hover/card:shadow-racing-blue/40 transition-all active:scale-95 group-hover/card:translate-x-1">
+                            <BarChart2 className="w-4 h-4" />
+                            Analyze Full
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-card border border-border rounded-[3rem] shadow-2xl relative overflow-hidden">
+            <div className="bg-card border border-border rounded-[2rem] shadow-xl relative overflow-hidden">
                 <button
                     onClick={() => setIsSaleFormOpen(!isSaleFormOpen)}
-                    className="w-full p-4 md:p-6 xl:p-10 flex items-center justify-between hover:bg-muted/30 transition-all text-left"
+                    className="w-full p-4 md:p-6 flex items-center justify-between hover:bg-muted/30 transition-all text-left"
                 >
-                    <div className="relative z-10 flex items-center gap-6">
-                        <div className="w-12 h-12 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
-                            <TrendingUp className={cn("w-6 h-6 text-racing-blue transition-transform duration-500", isSaleFormOpen && "rotate-90")} />
+                    <div className="relative z-10 flex items-center gap-4">
+                        <div className="w-10 h-10 bg-racing-blue/10 rounded-xl flex items-center justify-center">
+                            <TrendingUp className={cn("w-5 h-5 text-racing-blue transition-transform duration-500", isSaleFormOpen && "rotate-90")} />
                         </div>
                         <div>
-                            <h3 className="text-xl font-display font-black text-foreground uppercase tracking-tighter">Record New Sale</h3>
-                            <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Add to CRM & Auto-Subtract from Inventory</p>
+                            <h3 className="text-lg font-display font-black text-foreground uppercase tracking-tighter">Record New Sale</h3>
+                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Auto-Subtract from Inventory</p>
                         </div>
                     </div>
+
                     <div className={cn("w-10 h-10 rounded-full border border-border flex items-center justify-center transition-all", isSaleFormOpen ? "bg-racing-blue text-white border-racing-blue" : "text-muted-foreground")}>
                         <motion.div animate={{ rotate: isSaleFormOpen ? 180 : 0 }}>
                             <ChevronDown className="w-5 h-5" />

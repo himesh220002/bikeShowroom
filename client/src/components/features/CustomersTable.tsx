@@ -1,6 +1,7 @@
-import { User, Phone, Bike, Calendar, Wrench, MessageSquare, History, PlusCircle } from "lucide-react";
+import { User, Phone, Bike, Calendar, Wrench, MessageSquare, History, PlusCircle, MoreVertical } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { API_URL } from "@/lib/config";
 import { useRouter } from "next/navigation";
 import { ExportButton } from "@/components/ui/ExportButton";
@@ -47,6 +48,8 @@ export function CustomersTable({
     const router = useRouter();
     const [config, setConfig] = useState<any>(null);
     const [editingCustomer, setEditingCustomer] = useState<CustomerCRM | null>(null);
+    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
 
     const refreshData = () => {
         window.location.reload();
@@ -107,15 +110,15 @@ Reply to this message to schedule your service or ask any questions!`;
     }
 
     return (
-        <div className="space-y-4">
-            <div className="flex justify-between items-center m-6">
+        <div className="space-y-3">
+            <div className="flex justify-between items-center m-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-racing-blue/10 rounded-lg">
-                        <User className="w-5 h-5 text-racing-blue" />
+                    <div className="p-1.5 bg-racing-blue/10 rounded-lg">
+                        <User className="w-4 h-4 text-racing-blue" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Customer Database</h3>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase">{customers.length} Verified Owners</p>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-foreground">Customer Database</h3>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">{customers.length} Verified Owners</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -128,7 +131,7 @@ Reply to this message to schedule your service or ask any questions!`;
                                     onSelectionChange?.(customers.map(c => c._id));
                                 }
                             }}
-                            className="px-4 py-2 bg-muted border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted/50 transition-all"
+                            className="px-3 py-1.5 bg-muted border border-border rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-muted/50 transition-all"
                         >
                             {selectedCustomers.length === customers.length ? "Deselect All" : "Select All"}
                         </button>
@@ -140,12 +143,13 @@ Reply to this message to schedule your service or ask any questions!`;
                     />
                 </div>
             </div>
+
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="border-b border-border text-center">
                             {isCampaignMode && (
-                                <th className="py-6 px-4 w-[50px]">
+                                <th className="py-4 px-4 w-[50px]">
                                     <input
                                         type="checkbox"
                                         checked={selectedCustomers.length === customers.length && customers.length > 0}
@@ -160,13 +164,14 @@ Reply to this message to schedule your service or ask any questions!`;
                                     />
                                 </th>
                             )}
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Customer</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contact Pref</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Last Purchase</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">LTV / Score</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Service Status</th>
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">Actions</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Customer</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Contact Pref</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Last Purchase</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">LTV / Score</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Service Status</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground text-right">Actions</th>
                         </tr>
+
                     </thead>
                     <tbody>
                         {customers.map((customer) => (
@@ -178,7 +183,8 @@ Reply to this message to schedule your service or ask any questions!`;
                                 )}
                             >
                                 {isCampaignMode && (
-                                    <td className="py-6 px-4 text-center">
+                                    <td className="py-4 px-4 text-center">
+
                                         <input
                                             type="checkbox"
                                             checked={selectedCustomers.includes(customer._id)}
@@ -193,7 +199,8 @@ Reply to this message to schedule your service or ask any questions!`;
                                         />
                                     </td>
                                 )}
-                                <td className="py-6 px-4">
+                                <td className="py-4 px-4">
+
                                     <div className="flex items-center gap-4">
                                         <div
                                             className="w-10 h-10 rounded-full bg-muted flex items-center justify-center border border-border cursor-pointer hover:bg-racing-blue/20 transition-colors"
@@ -202,14 +209,15 @@ Reply to this message to schedule your service or ask any questions!`;
                                             <User className="w-5 h-5 text-muted-foreground" />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-black text-foreground">{customer.name}</p>
+                                            <p className="text-[13px] font-black text-foreground leading-tight">{customer.name}</p>
                                             <div
-                                                className="flex items-center gap-2 mt-1 cursor-pointer hover:text-racing-blue transition-colors group/phone"
+                                                className="flex items-center gap-1.5 mt-0.5 cursor-pointer hover:text-racing-blue transition-colors group/phone"
                                                 onClick={() => handleCall(customer)}
                                             >
-                                                <Phone className="w-3 h-3 text-muted-foreground/60 group-hover/phone:text-racing-blue" />
-                                                <span className="text-[14px] font-bold text-muted-foreground group-hover/phone:text-racing-blue">{customer.phone}</span>
+                                                <Phone className="w-2.5 h-2.5 text-muted-foreground/60 group-hover/phone:text-racing-blue" />
+                                                <span className="text-[12px] font-bold text-muted-foreground group-hover/phone:text-racing-blue">{customer.phone}</span>
                                             </div>
+
                                             {customer.address && (
                                                 <p className="text-[8px] font-bold text-muted-foreground/60 uppercase mt-1 line-clamp-1 max-w-[150px]">
                                                     {customer.address}
@@ -218,12 +226,14 @@ Reply to this message to schedule your service or ask any questions!`;
                                         </div>
                                     </div>
                                 </td>
-                                <td className="py-6 px-4">
+                                <td className="py-4 px-4">
+
                                     <span className="text-[10px] font-black text-foreground uppercase tracking-widest bg-muted/50 px-2 py-1 rounded border border-border">
                                         {customer.preferredContact || "Phone"}
                                     </span>
                                 </td>
-                                <td className="py-6 px-4">
+                                <td className="py-4 px-4">
+
                                     {customer.lastSale ? (
                                         <div>
                                             <p className="text-sm font-black text-foreground uppercase tracking-tighter">{customer.lastSale.bikeName}</p>
@@ -241,7 +251,8 @@ Reply to this message to schedule your service or ask any questions!`;
                                         <span className="text-[10px] text-muted-foreground italic">No sales record</span>
                                     )}
                                 </td>
-                                <td className="py-6 px-4">
+                                <td className="py-4 px-4">
+
                                     <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-1 text-racing-blue font-black italic text-xs">
                                             ₹{(customer.lifetimeValue || 0).toLocaleString('en-IN')}
@@ -261,7 +272,8 @@ Reply to this message to schedule your service or ask any questions!`;
                                         )}
                                     </div>
                                 </td>
-                                <td className="py-6 px-4">
+                                <td className="py-4 px-4">
+
                                     <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-2">
                                             <span className={cn(
@@ -279,31 +291,80 @@ Reply to this message to schedule your service or ask any questions!`;
                                         )}
                                     </div>
                                 </td>
-                                <td className="py-6 px-4 text-right">
-                                    <div className="flex justify-end gap-2">
-                                        <button
-                                            onClick={handleService}
-                                            className="p-2 rounded-xl border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 group/btn transition-all"
-                                            title="Schedule Service"
-                                        >
-                                            <Wrench className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
-                                        </button>
-                                        <button
-                                            onClick={() => handleWhatsApp(customer)}
-                                            className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all"
-                                            title="WhatsApp Customer"
-                                        >
-                                            <MessageSquare className="w-4 h-4 text-green-600 dark:text-green-400 group-hover/btn:scale-110 transition-transform" />
-                                        </button>
-                                        <button
-                                            onClick={() => setEditingCustomer(customer)}
-                                            className="p-2 rounded-xl border border-border hover:bg-foreground/10 hover:border-foreground/50 group/btn transition-all"
-                                            title="Edit Customer Profile"
-                                        >
-                                            <History className="w-4 h-4 text-muted-foreground group-hover/btn:scale-110 transition-transform" />
-                                        </button>
+                                <td className="py-3 px-2 text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                        {/* Desktop-only Quick Actions */}
+                                        <div className="hidden md:flex items-center gap-2">
+                                            <button
+                                                onClick={handleService}
+                                                className="p-2 rounded-xl border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 group/btn transition-all"
+                                                title="Schedule Service"
+                                            >
+                                                <Wrench className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleWhatsApp(customer)}
+                                                className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all"
+                                                title="WhatsApp Customer"
+                                            >
+                                                <MessageSquare className="w-4 h-4 text-green-600 dark:text-green-400 group-hover/btn:scale-110 transition-transform" />
+                                            </button>
+                                        </div>
+
+                                        <div className="relative">
+                                            <button
+                                                onClick={() => setOpenMenuId(openMenuId === customer._id ? null : customer._id)}
+                                                className={cn(
+                                                    "p-2 rounded-xl border border-border hover:bg-muted/30 transition-all text-muted-foreground",
+                                                    openMenuId === customer._id && "bg-muted shadow-inner border-racing-blue/30 text-foreground"
+                                                )}
+                                            >
+                                                <MoreVertical className="w-4 h-4" />
+                                            </button>
+
+                                            <AnimatePresence>
+                                                {openMenuId === customer._id && (
+                                                    <>
+                                                        <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                                                        <motion.div
+                                                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                            className="absolute right-0 top-full mt-2 w-52 bg-card border border-border rounded-2xl shadow-2xl z-50 py-2 overflow-hidden"
+                                                        >
+                                                            {/* Mobile-only consolidated actions */}
+                                                            <div className="md:hidden border-b border-border/50 mb-1 pb-1">
+                                                                <button
+                                                                    onClick={() => { handleService(); setOpenMenuId(null); }}
+                                                                    className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-racing-blue/10 transition-colors text-racing-blue flex items-center gap-3"
+                                                                >
+                                                                    <Wrench className="w-3.5 h-3.5" />
+                                                                    Schedule Service
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => { handleWhatsApp(customer); setOpenMenuId(null); }}
+                                                                    className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-green-500/10 transition-colors text-green-600 flex items-center gap-3"
+                                                                >
+                                                                    <MessageSquare className="w-3.5 h-3.5" />
+                                                                    WhatsApp Member
+                                                                </button>
+                                                            </div>
+
+                                                            <button
+                                                                onClick={() => { setEditingCustomer(customer); setOpenMenuId(null); }}
+                                                                className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground flex items-center gap-3"
+                                                            >
+                                                                <History className="w-3.5 h-3.5" />
+                                                                History & Profile
+                                                            </button>
+                                                        </motion.div>
+                                                    </>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
                                     </div>
                                 </td>
+
                             </tr>
                         ))}
                     </tbody>

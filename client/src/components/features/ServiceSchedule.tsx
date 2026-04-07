@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { Calendar, Clock, User, Bike, CheckCircle2, AlertCircle, MoreVertical, Search, Filter, Wrench, Loader2, Phone, ShieldAlert, ChevronDown, UserCheck, X, Save } from "lucide-react";
+import { Calendar, Clock, User, Bike, CheckCircle2, AlertCircle, MoreVertical, Search, Filter, Wrench, Loader2, Phone, ShieldAlert, ChevronDown, UserCheck, X, Save, MessageSquare } from "lucide-react";
+
 import { API_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,7 +27,10 @@ export function ServiceSchedule() {
         technician: ""
     });
     const [updating, setUpdating] = useState(false);
+    const [openStatusId, setOpenStatusId] = useState<string | null>(null);
+    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
+
     const [sortBy, setSortBy] = useState("newest");
     const [filterStatus, setFilterStatus] = useState("all");
     const [startDate, setStartDate] = useState("");
@@ -377,17 +381,18 @@ export function ServiceSchedule() {
             {/* Job List */}
             <div className="bg-background/90 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="w-full text-left border-collapse">
                         <thead className="bg-card/50 border-b border-border">
                             <tr>
-                                <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Time & Priority</th>
-                                <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Customer & Vehicle</th>
-                                <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Service & Tech</th>
-                                <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Service Remarks</th>
-                                <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Status</th>
-                                <th className="px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground text-right">Action</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">Time & Priority</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Customer & Vehicle</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Service & Tech</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Service Remarks</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Status</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground text-right">Action</th>
                             </tr>
                         </thead>
+
                         <tbody className="divide-y border-border/50">
                             {processedJobs.length === 0 && (
                                 <tr>
@@ -397,8 +402,10 @@ export function ServiceSchedule() {
                                 </tr>
                             )}
                             {processedJobs.map((job) => (
-                                <tr key={job.id} className="group hover:bg-muted/50 transition-colors">
-                                    <td className="px-8 py-6">
+                                <tr key={job.id} className="border-b border-border/30 group hover:bg-muted/30 transition-colors">
+
+                                    <td className="px-6 py-4">
+
                                         <div className="flex flex-col gap-1">
                                             <div className="flex items-center gap-2">
                                                 <Clock className="w-3.5 h-3.5 text-racing-blue" />
@@ -418,7 +425,8 @@ export function ServiceSchedule() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6">
+                                    <td className="px-6 py-4">
+
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center border border-border group-hover:border-racing-blue/50 transition-colors">
                                                 <User className="w-5 h-5 text-muted-foreground" />
@@ -435,7 +443,8 @@ export function ServiceSchedule() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6">
+                                    <td className="px-6 py-4">
+
                                         <div className="flex flex-col gap-2">
                                             <div className="flex items-center gap-2">
                                                 <Wrench className="w-3.5 h-3.5 text-muted-foreground" />
@@ -449,7 +458,8 @@ export function ServiceSchedule() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6">
+                                    <td className="px-6 py-4">
+
                                         <div className="flex items-center gap-2 max-w-[200px] group/remark">
                                             <div className="relative flex-1">
                                                 <input
@@ -475,38 +485,108 @@ export function ServiceSchedule() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6">
-                                        <div className="relative group/status w-fit">
-                                            <span className={cn(
-                                                "flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all cursor-pointer",
-                                                statusColors[job.status] || "bg-muted text-muted-foreground border-border"
-                                            )}>
+                                    <td className="px-6 py-4">
+
+                                        <div className="relative w-fit">
+                                            <button
+                                                onClick={() => setOpenStatusId(openStatusId === job.id ? null : job.id)}
+                                                className={cn(
+                                                    "flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all cursor-pointer",
+                                                    statusColors[job.status] || "bg-muted text-muted-foreground border-border",
+                                                    openStatusId === job.id && "ring-2 ring-racing-blue ring-offset-2 dark:ring-offset-background"
+                                                )}>
                                                 {job.status.replace('-', ' ')}
-                                                <ChevronDown className="w-3 h-3 transition-transform group-hover/status:rotate-180" />
-                                            </span>
-                                            <div className="absolute top-full left-0 pt-2 hidden group-hover/status:block z-50">
-                                                <div className="flex flex-col bg-card border border-border rounded-xl shadow-2xl overflow-hidden w-40">
-                                                    {STATUS_OPTIONS.map((opt) => (
-                                                        <button
-                                                            key={opt}
-                                                            onClick={() => updateStatus(job.id, opt)}
-                                                            className="px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground hover:text-foreground border-b border-border/50 last:border-0"
+                                                <ChevronDown className={cn("w-3 h-3 transition-transform", openStatusId === job.id && "rotate-180")} />
+                                            </button>
+
+                                            <AnimatePresence>
+                                                {openStatusId === job.id && (
+                                                    <>
+                                                        <div className="fixed inset-0 z-40" onClick={() => setOpenStatusId(null)} />
+                                                        <motion.div
+                                                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                            className="absolute top-full left-0 pt-2 z-50"
                                                         >
-                                                            {opt.replace('-', ' ')}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
+                                                            <div className="flex flex-col bg-card border border-border rounded-xl shadow-2xl overflow-hidden w-40">
+                                                                {STATUS_OPTIONS.map((opt) => (
+                                                                    <button
+                                                                        key={opt}
+                                                                        onClick={() => { updateStatus(job.id, opt); setOpenStatusId(null); }}
+                                                                        className={cn(
+                                                                            "px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors border-b border-border/50 last:border-0",
+                                                                            job.status === opt ? "text-racing-blue" : "text-muted-foreground hover:text-foreground"
+                                                                        )}
+                                                                    >
+                                                                        {opt.replace('-', ' ')}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </motion.div>
+                                                    </>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="relative inline-block text-left">
+                                            <button
+                                                onClick={() => setOpenMenuId(openMenuId === job.id ? null : job.id)}
+                                                className={cn(
+                                                    "p-2 border border-border rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-racing-blue",
+                                                    openMenuId === job.id && "bg-muted shadow-inner border-racing-blue/30 text-racing-blue"
+                                                )}
+                                            >
+                                                <MoreVertical className="w-4 h-4" />
+                                            </button>
+
+                                            <AnimatePresence>
+                                                {openMenuId === job.id && (
+                                                    <>
+                                                        <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                                                        <motion.div
+                                                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                            className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-2xl shadow-2xl z-[60] py-2 overflow-hidden"
+                                                        >
+                                                            <button
+                                                                onClick={() => { handleEdit(job); setOpenMenuId(null); }}
+                                                                className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground flex items-center gap-3"
+                                                            >
+                                                                <Wrench className="w-3.5 h-3.5" />
+                                                                Full Job Edit
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    window.location.href = `tel:${job.phone}`;
+                                                                    setOpenMenuId(null);
+                                                                }}
+                                                                className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-green-500/10 transition-colors text-green-600 flex items-center gap-3"
+                                                            >
+                                                                <Phone className="w-3.5 h-3.5" />
+                                                                Call Customer
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const message = `Hello ${job.customer}! Your ${job.bikeModel} is scheduled for ${job.type} at ${job.time}.`;
+                                                                    window.open(`https://wa.me/91${job.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
+                                                                    setOpenMenuId(null);
+                                                                }}
+                                                                className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-racing-blue/10 transition-colors text-racing-blue flex items-center gap-3"
+                                                            >
+                                                                <MessageSquare className="w-3.5 h-3.5" />
+                                                                WhatsApp
+                                                            </button>
+                                                        </motion.div>
+                                                    </>
+                                                )}
+                                            </AnimatePresence>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6 text-right">
-                                        <button
-                                            onClick={() => handleEdit(job)}
-                                            className="p-2 border border-border rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-racing-blue group/edit"
-                                        >
-                                            <MoreVertical className="w-4 h-4" />
-                                        </button>
-                                    </td>
+
                                 </tr>
                             ))}
                         </tbody>
