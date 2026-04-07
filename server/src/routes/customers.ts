@@ -14,14 +14,40 @@ router.get('/', async (req, res) => {
             // Find last sale for this customer
             const lastSale = await Sale.findOne({ customerId: customer._id }).sort({ createdAt: -1 });
 
-            // Find service count
-            const serviceCount = await Service.countDocuments({ customerId: customer._id });
+            // Find service count (completed services)
+            const serviceCount = await Service.countDocuments({ customerId: customer._id, status: 'completed' });
 
             // Find latest service
             const latestService = await Service.findOne({ customerId: customer._id }).sort({ createdAt: -1 });
 
+            // Dynamic Service Tracker Logic
+            let serviceMilestone = "N/A";
+            let nextServiceDue = null;
+            let isFreeService = false;
+
+            if (lastSale) {
+                const purchaseDate = new Date(lastSale.createdAt);
+                // logic: 1st: 30, 2nd: 150, 3rd: 270, 4th: 390 -> 30 + (n * 120)
+                const nextServiceInDays = 30 + (serviceCount * 120);
+                nextServiceDue = new Date(purchaseDate.getTime() + (nextServiceInDays * 24 * 60 * 60 * 1000));
+
+                const milestoneNumber = serviceCount + 1;
+                isFreeService = milestoneNumber <= 4;
+
+                const ordinal = (n: number) => {
+                    const s = ["th", "st", "nd", "rd"];
+                    const v = n % 100;
+                    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+                };
+
+                serviceMilestone = `${ordinal(milestoneNumber)} ${isFreeService ? 'FREE' : 'PAID'} SERVICE`;
+            }
+
             return {
                 ...customer.toObject(),
+                nextServiceDue: nextServiceDue,
+                serviceMilestone: serviceMilestone,
+                isFreeService: isFreeService,
                 lastSale: lastSale ? {
                     bikeName: lastSale.bikeName,
                     variant: lastSale.variant,

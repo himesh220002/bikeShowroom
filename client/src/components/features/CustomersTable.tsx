@@ -17,13 +17,16 @@ interface CustomerCRM {
     preferredContact?: string;
     lifetimeValue?: number;
     feedbackScore?: number;
-    nextServiceDue?: string;
     lastSale: {
         bikeName: string;
         variant: string;
         salePrice: string;
         saleDate: string;
+        createdAt: string;
     } | null;
+    nextServiceDue: string | null;
+    serviceMilestone: string;
+    isFreeService: boolean;
     serviceHistory: {
         totalCount: number;
         latest: {
@@ -79,17 +82,25 @@ export function CustomersTable({
         const displayPhone = showroomPhone || "7004100062";
         const displayEmail = showroomEmail || "choudharyyamaha.ktr@gmail.com";
 
+        const milestone = customer.serviceMilestone || "Periodic Maintenance";
+        const dueDate = customer.nextServiceDue ? new Date(customer.nextServiceDue).toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        }) : "soon";
+
         const message = `Hello ${customer.name}! 
 
 This is Choudhary Yamaha, Katihar. We are checking in to see how your ${customer.lastSale?.bikeName || "Yamaha machine"} is performing.
 
-Is it time for your next periodic maintenance? Our expert technicians are ready to ensure your machine stays in peak condition. 
+🚀 Your **${milestone}** is scheduled for **${dueDate}**.
+
+Periodic service is vital to keep your machine in peak condition and maintain its warranty. ${customer.isFreeService ? "Since this is a **FREE SERVICE**." : ""}
 
 📍 Address: ${showroomAddress || "Manihari Mor, Mirchaibari, Katihar"}
 📞 Contact: ${displayPhone}
-✉️ Email: ${displayEmail}
 
-Reply to this message to schedule your service or ask any questions!`;
+Reply to this message to confirm your appointment!`;
 
         const encodedMessage = encodeURIComponent(message);
         const cleanPhone = customer.phone.replace(/\D/g, '');
@@ -150,8 +161,8 @@ Reply to this message to schedule your service or ask any questions!`;
                 </div>
             </div>
 
-            <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto pb-20">
+                <table className="w-full text-left border-collapse min-w-[1000px]">
                     <thead>
                         <tr className="border-b border-border text-center">
                             {isCampaignMode && (
@@ -175,7 +186,7 @@ Reply to this message to schedule your service or ask any questions!`;
                             <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Last Purchase</th>
                             <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">LTV / Score</th>
                             <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Service Status</th>
-                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground text-right">Actions</th>
+                            <th className="py-4 px-8 text-[9px] font-black uppercase tracking-widest text-muted-foreground text-right w-[220px]">Actions</th>
                         </tr>
 
                     </thead>
@@ -282,39 +293,57 @@ Reply to this message to schedule your service or ask any questions!`;
                                         )}
                                     </div>
                                 </td>
-                                <td className="py-4 px-4">
-
-                                    <div className="flex flex-col gap-1">
-                                        <div className="flex items-center gap-2">
-                                            <span className={cn(
-                                                "w-2 h-2 rounded-full",
-                                                customer.serviceHistory.totalCount > 0 ? "bg-green-500" : "bg-amber-500"
-                                            )} />
-                                            <span className="text-[11px] font-black text-foreground uppercase tracking-widest">
-                                                {customer.serviceHistory.totalCount} Services Done
-                                            </span>
-                                        </div>
-                                        {customer.serviceHistory.latest && (
-                                            <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest ml-4">
-                                                Last: {customer.serviceHistory.latest.status} on {new Date(customer.serviceHistory.latest.date).toLocaleDateString()}
-                                            </span>
+                                <td className="py-4 px-4 text-center">
+                                    <div className="flex flex-col items-center gap-1.5">
+                                        {customer.nextServiceDue ? (
+                                            <>
+                                                <div className="flex items-center gap-2">
+                                                    <div className={cn(
+                                                        "w-1.5 h-1.5 rounded-full animate-pulse",
+                                                        new Date() > new Date(customer.nextServiceDue) ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" :
+                                                            (new Date(customer.nextServiceDue).getTime() - new Date().getTime()) < (7 * 24 * 60 * 60 * 1000) ? "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" :
+                                                                "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"
+                                                    )} />
+                                                    <span className={cn(
+                                                        "text-[10px] font-black uppercase tracking-widest",
+                                                        new Date() > new Date(customer.nextServiceDue) ? "text-red-500" :
+                                                            (new Date(customer.nextServiceDue).getTime() - new Date().getTime()) < (7 * 24 * 60 * 60 * 1000) ? "text-amber-500" :
+                                                                "text-green-500"
+                                                    )}>
+                                                        {new Date(customer.nextServiceDue).toLocaleDateString('en-IN', {
+                                                            day: 'numeric',
+                                                            month: 'short'
+                                                        })}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className={cn(
+                                                        "text-[8px] font-black px-2 py-0.5 rounded-full border uppercase tracking-widest",
+                                                        customer.isFreeService ? "bg-racing-blue/10 border-racing-blue text-racing-blue" : "bg-muted border-border text-muted-foreground"
+                                                    )}>
+                                                        {customer.serviceMilestone}
+                                                    </span>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-30">N/A</span>
                                         )}
                                     </div>
                                 </td>
-                                <td className="py-3 px-2 text-right">
+                                <td className="py-4 px-8 text-right w-[220px]">
                                     <div className="flex items-center justify-end gap-2">
                                         {/* Desktop-only Quick Actions */}
                                         <div className="hidden md:flex items-center gap-2">
                                             <button
                                                 onClick={handleService}
-                                                className="p-2 rounded-xl border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 group/btn transition-all"
+                                                className="p-2 flex-shrink-0 rounded-xl border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 group/btn transition-all"
                                                 title="Schedule Service"
                                             >
                                                 <Wrench className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
                                             </button>
                                             <button
                                                 onClick={() => handleWhatsApp(customer)}
-                                                className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all"
+                                                className="p-2 flex-shrink-0 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all"
                                                 title="WhatsApp Customer"
                                             >
                                                 <MessageSquare className="w-4 h-4 text-green-600 dark:text-green-400 group-hover/btn:scale-110 transition-transform" />
@@ -340,7 +369,7 @@ Reply to this message to schedule your service or ask any questions!`;
                                                             initial={{ opacity: 0, scale: 0.95, y: -10 }}
                                                             animate={{ opacity: 1, scale: 1, y: 0 }}
                                                             exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                                            className="absolute right-0 top-full mt-2 w-52 bg-card border border-border rounded-2xl shadow-2xl z-50 py-2 overflow-hidden"
+                                                            className="absolute right-0 top-full mt-2 w-52 bg-card border border-border rounded-2xl shadow-2xl z-50 py-2"
                                                         >
                                                             {/* Mobile-only consolidated actions */}
                                                             <div className="md:hidden border-b border-border/50 mb-1 pb-1">

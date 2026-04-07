@@ -101,7 +101,7 @@ export function ServiceBooking() {
 
     return (
         <div className="w-full max-w-4xl mx-auto">
-            <div className="bg-card rounded-[1.5rem] md:rounded-[3rem] p-4 md:p-8 md:p-14 border border-border shadow-2xl relative overflow-hidden">
+            <div className="bg-card rounded-[1.5rem] md:rounded-[3rem] p-4 md:p-8 md:p-10 border border-border shadow-2xl relative overflow-hidden">
                 {/* Progress Bar */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-muted">
                     <motion.div

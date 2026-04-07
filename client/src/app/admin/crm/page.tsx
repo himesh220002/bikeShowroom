@@ -139,7 +139,7 @@ export default function CRMPage() {
             />
 
             {/* Main Table Container */}
-            <div className="bg-background/90 border border-border/50 rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[500px]">
+            <div className="bg-white border border-border/50 rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[500px] relative">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-40 gap-4">
                         <Loader2 className="w-10 h-10 text-racing-blue animate-spin" />
