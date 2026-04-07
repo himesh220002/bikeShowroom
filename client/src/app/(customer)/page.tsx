@@ -4,6 +4,7 @@ import { LeadForm } from "@/components/features/LeadForm";
 import { Viewer360Carousel } from "@/components/features/Viewer360Carousel";
 import { AdCarousel } from "@/components/features/AdCarousel";
 import { RideVideo } from "@/components/features/RideVideo";
+import { FAQ } from "@/components/features/FAQ";
 import { BIKES } from "@/lib/constants/bikes";
 import { cn } from "@/lib/utils/cn";
 import { MapPin, Clock, Phone, Info, User, ShieldCheck, Award, Zap } from "lucide-react";
@@ -70,6 +71,8 @@ export default function Home() {
           <Viewer360Carousel />
         </div>
       </section>
+
+
 
       {/* Lead Capture Section */}
       <section id="inquiry" className="py-32 bg-zinc-950/40 backdrop-blur-sm">
@@ -151,6 +154,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <FAQ />
 
       {/* SEO/Local Keywords Footer */}
       <section className="py-12 bg-zinc-950/80 border-t border-zinc-900">

@@ -23,6 +23,8 @@ export interface IInquiry extends Document {
     utmCampaign?: string;
     utmContent?: string;
     utmTerm?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 const InquirySchema: Schema = new Schema({

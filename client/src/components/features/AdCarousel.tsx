@@ -110,11 +110,11 @@ function AdCard({ ad }: { ad: Ad }) {
                         Choudhary Yamaha Exclusive
                     </span>
                 </div>
-                <h3 className="text-xl md:text-2xl font-display font-black text-foreground uppercase tracking-tight leading-none line-clamp-1">
+                <h3 className="text-xl md:text-2xl font-display font-black text-blue-200 uppercase tracking-tight leading-none line-clamp-1">
                     {ad.name}
                 </h3>
                 {ad.description && (
-                    <p className="text-muted-foreground text-sm font-medium line-clamp-2 max-w-xl hidden md:block">
+                    <p className="text-gray-400 text-sm font-medium line-clamp-2 max-w-xl hidden md:block">
                         {ad.description}
                     </p>
                 )}
@@ -122,7 +122,7 @@ function AdCard({ ad }: { ad: Ad }) {
                     <a
                         href={ad.link}
                         target="_blank"
-                        className="inline-flex items-center gap-3 px-8 py-4 bg-foreground text-background rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-racing-blue hover:text-white transition-all shadow-xl hover:-translate-y-1"
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-white text-racing-blue rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-racing-blue hover:text-white transition-all shadow-xl hover:-translate-y-1"
                     >
                         {ad.type === "Video" ? <Play className="w-4 h-4 fill-current" /> : <ExternalLink className="w-4 h-4" />}
                         {ad.type === "Video" ? "Watch Review" : "Explore"}

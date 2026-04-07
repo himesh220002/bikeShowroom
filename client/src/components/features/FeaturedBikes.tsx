@@ -112,12 +112,12 @@ export function FeaturedBikes() {
                         { icon: Bike, title: "Swift Valuations", desc: "Digital exchange scoring" },
                         { icon: Phone, title: "Expert Support", desc: "Certified Technicians" }
                     ].map((item, i) => (
-                        <div key={item.title} className="bg-muted/50 p-6 rounded-3xl border border-border flex items-center gap-5 group hover:border-racing-blue/20 transition-all">
+                        <div key={item.title} className="bg-gray-900 p-6 rounded-3xl border border-gray-800 border-inner flex items-center gap-5 group hover:border-racing-blue/20 transition-all">
                             <div className="w-12 h-12 bg-racing-blue/10 rounded-2xl flex items-center justify-center shrink-0">
                                 <item.icon className="w-6 h-6 text-racing-blue" />
                             </div>
                             <div>
-                                <h5 className="font-display font-black text-foreground text-sm uppercase tracking-tight">{item.title}</h5>
+                                <h5 className="font-display font-black text-white text-sm uppercase tracking-tight">{item.title}</h5>
                                 <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">{item.desc}</p>
                             </div>
                         </div>

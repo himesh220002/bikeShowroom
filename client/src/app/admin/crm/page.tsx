@@ -2,9 +2,13 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { CustomersTable } from "@/components/features/CustomersTable";
+import { CampaignModal } from "@/components/features/CampaignModal";
 import { API_URL } from "@/lib/config";
-import { Download, Heart, Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, X, MessageSquare, BarChart3 } from "lucide-react";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
+import { useRouter } from "next/navigation";
+import { ExportButton } from "@/components/ui/ExportButton";
+import { cn } from "@/lib/utils/cn";
 
 export default function CRMPage() {
     const [customers, setCustomers] = useState<any[]>([]);
@@ -13,6 +17,10 @@ export default function CRMPage() {
     const [sortBy, setSortBy] = useState("newest");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [isCampaignMode, setIsCampaignMode] = useState(false);
+    const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
+    const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchCustomers = async () => {
@@ -55,69 +63,118 @@ export default function CRMPage() {
     }, [customers, searchQuery, sortBy, startDate, endDate]);
 
     return (
-        <div className="space-y-12">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h2 className="text-2xl font-display font-black text-gray-500 uppercase tracking-tighter">
-                        CUSTOMER <span className="text-gradient">RELATIONSHIP</span>
-                    </h2>
-                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Nurture and track long-term customer satisfaction</p>
+        <div className="space-y-8 animate-in fade-in duration-700">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 bg-racing-blue/10 rounded-2xl">
+                        <BarChart3 className="w-6 h-6 text-racing-blue" />
+                    </div>
+                    <div>
+                        <h2 className="text-3xl font-display font-black text-foreground uppercase tracking-tighter italic">
+                            Customer <span className="text-racing-blue">CRM</span>
+                        </h2>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">Nurturing Relationships • Driving Growth</p>
+                    </div>
                 </div>
-                <div className="flex gap-2">
-                    <button className="p-3 bg-card border border-border text-muted-foreground rounded-xl hover:text-foreground transition-all">
-                        <Download className="w-4 h-4" />
+
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => router.push("/admin/crm/insights")}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-card border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted hover:border-racing-blue/50 transition-all shadow-xl shadow-black/5"
+                    >
+                        <BarChart3 className="w-4 h-4 text-racing-blue" />
+                        Intelligence
                     </button>
-                    <button className="flex items-center gap-2 px-6 py-3 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-racing-blue/20">
-                        <Sparkles className="w-4 h-4" />
-                        Campaign Mode
+
+                    <button
+                        onClick={() => {
+                            setIsCampaignMode(!isCampaignMode);
+                            if (isCampaignMode) setSelectedCustomers([]);
+                        }}
+                        className={cn(
+                            "flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl",
+                            isCampaignMode
+                                ? "bg-red-600 text-white hover:bg-red-700 shadow-red-900/20"
+                                : "bg-card border border-border text-foreground hover:bg-muted hover:border-racing-blue/50"
+                        )}
+                    >
+                        {isCampaignMode ? <X className="w-4 h-4" /> : <Sparkles className="w-4 h-4 text-racing-blue" />}
+                        {isCampaignMode ? "Exit Campaign" : "Campaign Blast"}
                     </button>
+
+                    <ExportButton
+                        data={processedCustomers}
+                        filename="Yamaha_CRM_Export"
+                        sheetName="Customers"
+                    />
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-6 bg-card border border-border rounded-2xl shadow-xl">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Active Customers</h4>
-                    <p className="text-2xl font-display font-black text-foreground italic">{customers.length}</p>
-                </div>
-                <div className="p-6 bg-card border border-border rounded-2xl shadow-xl">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Service Retention</h4>
-                    <p className="text-2xl font-display font-black text-foreground italic">84%</p>
-                </div>
-                <div className="p-6 bg-card border border-border rounded-2xl shadow-xl">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Sentiment Score</h4>
-                    <p className="text-2xl font-display font-black text-racing-blue italic flex items-center gap-2">
-                        GREAT <Heart className="w-4 h-4 fill-racing-blue" />
-                    </p>
-                </div>
-            </div>
-
+            {/* Controls */}
             <AdminTableControls
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
                 sortBy={sortBy}
                 onSortChange={setSortBy}
                 sortOptions={[
-                    { label: "Newest Joined", value: "newest" },
-                    { label: "Oldest Joined", value: "oldest" },
-                    { label: "Name A-Z", value: "name" }
+                    { label: "Latest Joined", value: "newest" },
+                    { label: "Early Adopters", value: "oldest" },
+                    { label: "Alpha (A-Z)", value: "name" }
                 ]}
                 startDate={startDate}
                 onStartDateChange={setStartDate}
                 endDate={endDate}
                 onEndDateChange={setEndDate}
-                placeholder="Search customers by name, phone or email..."
+                placeholder="Find customers by name, digits or email..."
             />
 
-            <div className="bg-background/90 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[400px]">
+            {/* Main Table Container */}
+            <div className="bg-background/90 border border-border/50 rounded-[2.5rem] overflow-hidden shadow-2xl min-h-[500px]">
                 {loading ? (
-                    <div className="flex flex-col items-center justify-center py-32 gap-4">
-                        <Loader2 className="w-8 h-8 text-racing-blue animate-spin" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Syncing CRM Core...</span>
+                    <div className="flex flex-col items-center justify-center py-40 gap-4">
+                        <Loader2 className="w-10 h-10 text-racing-blue animate-spin" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground animate-pulse">Initializing Data Stream...</span>
                     </div>
                 ) : (
-                    <CustomersTable customers={processedCustomers} />
+                    <CustomersTable
+                        customers={processedCustomers}
+                        isCampaignMode={isCampaignMode}
+                        selectedCustomers={selectedCustomers}
+                        onSelectionChange={setSelectedCustomers}
+                    />
                 )}
             </div>
+
+            {/* Custom Bulk Action Bar */}
+            {isCampaignMode && selectedCustomers.length > 0 && (
+                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-10 duration-500">
+                    <div className="bg-foreground text-background px-10 py-5 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.4)] flex items-center gap-10 border border-white/10 backdrop-blur-2xl">
+                        <div className="flex flex-col">
+                            <span className="text-[9px] font-black uppercase tracking-widest opacity-50">Audience Selected</span>
+                            <span className="text-2xl font-display font-black italic tracking-tighter">{selectedCustomers.length} Profiles</span>
+                        </div>
+                        <div className="h-10 w-px bg-white/10" />
+                        <button
+                            onClick={() => setIsCampaignModalOpen(true)}
+                            className="flex items-center gap-3 px-8 py-4 bg-racing-blue text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-xl shadow-racing-blue/30"
+                        >
+                            <MessageSquare className="w-5 h-5" />
+                            Draft Campaign
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            <CampaignModal
+                isOpen={isCampaignModalOpen}
+                onClose={() => setIsCampaignModalOpen(false)}
+                recipientIds={selectedCustomers}
+                onSuccess={() => {
+                    setSelectedCustomers([]);
+                    setIsCampaignMode(false);
+                }}
+            />
         </div>
     );
 }

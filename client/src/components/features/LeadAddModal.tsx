@@ -11,6 +11,7 @@ interface LeadAddModalProps {
     onClose: () => void;
     onUpdate: () => void;
     initialData?: {
+        inquiryId?: string;
         name?: string;
         phone?: string;
         interests?: string[];
@@ -21,18 +22,21 @@ interface LeadAddModalProps {
 export function LeadAddModal({ isOpen, onClose, onUpdate, initialData }: LeadAddModalProps) {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
+        inquiryId: initialData?.inquiryId || "",
         name: initialData?.name || "",
         phone: initialData?.phone || "",
         interests: initialData?.interests || [] as string[],
         status: "New",
         heat: "Warm",
-        adminNotes: initialData?.adminNotes || ""
+        adminNotes: initialData?.adminNotes || "",
+        source: "Admin Manual"
     });
 
     useEffect(() => {
         if (initialData) {
             setFormData(prev => ({
                 ...prev,
+                inquiryId: initialData.inquiryId || prev.inquiryId,
                 name: initialData.name || prev.name,
                 phone: initialData.phone || prev.phone,
                 interests: initialData.interests || prev.interests,
@@ -51,9 +55,11 @@ export function LeadAddModal({ isOpen, onClose, onUpdate, initialData }: LeadAdd
             return;
         }
 
+        const endpoint = formData.inquiryId ? `${API_URL}/leads/manual-escalate` : `${API_URL}/leads`;
+
         setLoading(true);
         try {
-            const res = await fetch(`${API_URL}/leads`, {
+            const res = await fetch(endpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
@@ -91,8 +97,12 @@ export function LeadAddModal({ isOpen, onClose, onUpdate, initialData }: LeadAdd
                             <PlusCircle className="w-5 h-5 text-racing-blue" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Manual Lead Entry</h3>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase">Create a new pre-sale inquiry</p>
+                            <h3 className="text-sm font-black uppercase tracking-widest text-foreground">
+                                {formData.inquiryId ? "Escalate to Hot Lead" : "Manual Lead Entry"}
+                            </h3>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase">
+                                {formData.inquiryId ? "Promote existing inquiry to priority status" : "Create a new pre-sale inquiry"}
+                            </p>
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground">
@@ -199,7 +209,7 @@ export function LeadAddModal({ isOpen, onClose, onUpdate, initialData }: LeadAdd
                             className="flex-1 py-4 px-6 bg-racing-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-racing-blue/20 flex items-center justify-center gap-2"
                         >
                             {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
-                            Create Lead
+                            {formData.inquiryId ? "Escalate Lead" : "Create Lead"}
                         </button>
                     </div>
                 </form>

@@ -4,6 +4,9 @@ import { Rocket, Phone, MessageSquare, MoreVertical, Flame, Calendar, Users } fr
 import { cn } from "@/lib/utils/cn";
 import { ExportButton } from "@/components/ui/ExportButton";
 
+import { useState } from "react";
+import { API_URL } from "@/lib/config";
+
 export interface Lead {
     _id: string;
     customerId: {
@@ -21,6 +24,27 @@ interface LeadsTableHotProps {
 }
 
 export function LeadsTableHot({ leads }: LeadsTableHotProps) {
+    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
+    const refreshLeads = () => {
+        window.location.reload();
+    };
+
+    const handleDiscardLead = async (id: string) => {
+        if (!window.confirm("Are you sure you want to discard this hot lead? This action cannot be undone.")) return;
+        try {
+            const res = await fetch(`${API_URL}/qualified-leads/${id}`, {
+                method: "DELETE"
+            });
+            const data = await res.json();
+            if (data.success) {
+                refreshLeads();
+            }
+        } catch (err) {
+            console.error("Error discarding hot lead:", err);
+        }
+    };
+
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center mb-6">
@@ -90,6 +114,28 @@ export function LeadsTableHot({ leads }: LeadsTableHotProps) {
                                         <button className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all">
                                             <Phone className="w-4 h-4 text-green-600 dark:text-green-400 group-hover/btn:scale-110 transition-transform" />
                                         </button>
+                                        <div className="relative">
+                                            <button
+                                                onClick={() => setOpenMenuId(openMenuId === lead._id ? null : lead._id)}
+                                                className={cn(
+                                                    "p-2 rounded-xl border border-border hover:bg-muted/30 transition-all",
+                                                    openMenuId === lead._id && "bg-muted shadow-inner border-racing-blue/30"
+                                                )}
+                                            >
+                                                <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                                            </button>
+
+                                            {openMenuId === lead._id && (
+                                                <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-2xl shadow-2xl z-50 py-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                                                    <button
+                                                        onClick={() => handleDiscardLead(lead._id)}
+                                                        className="w-full px-4 py-2 text-[10px] font-black uppercase tracking-widest text-left hover:bg-red-500/10 transition-colors text-red-500/80 hover:text-red-500"
+                                                    >
+                                                        Discard Lead
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </td>
                             </tr>

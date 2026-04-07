@@ -126,6 +126,21 @@ export function LeadsTable({ leads }: LeadsTableProps) {
         window.location.href = `tel:${lead.phone}`;
     };
 
+    const handleDiscardLead = async (id: string) => {
+        if (!window.confirm("Are you sure you want to discard this lead? This action cannot be undone.")) return;
+        try {
+            const res = await fetch(`${API_URL}/leads/${id}`, {
+                method: "DELETE"
+            });
+            const data = await res.json();
+            if (data.success) {
+                refreshLeads();
+            }
+        } catch (err) {
+            console.error("Error discarding lead:", err);
+        }
+    };
+
     return (
         <div className="w-full space-y-4">
             <div className="flex justify-between items-center m-6">
@@ -204,7 +219,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                                     </div>
                                 </td>
                                 <td className="py-6 px-4">
-                                    <div className="flex flex-wrap gap-1">
+                                    <div className="flex flex-wrap max-w-[300px] gap-1">
                                         {lead.interests.map((interest) => (
                                             <span key={interest} className="px-2 py-0.5 rounded-md bg-muted text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                                                 {interest}
@@ -217,28 +232,19 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                                         <div className="flex items-center gap-2 group/date relative">
                                             {lead.followUpDate ? (
                                                 <div className="flex flex-col">
-                                                    <span className="text-[10px] font-black text-foreground uppercase tracking-tighter">
+                                                    <span className="text-[12px] font-black text-foreground uppercase tracking-tighter">
                                                         {new Date(lead.followUpDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
                                                     </span>
-                                                    <span className="text-[8px] font-bold text-racing-blue uppercase tracking-widest opacity-60">
+                                                    <span className="text-[10px] font-bold text-racing-blue uppercase tracking-widest opacity-60">
                                                         {new Date(lead.followUpDate).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
                                                     </span>
                                                 </div>
                                             ) : (
-                                                <button
-                                                    onClick={() => setEditingLead(lead)}
-                                                    className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground/40 hover:text-racing-blue transition-colors uppercase tracking-widest italic"
-                                                >
+                                                <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest italic">
                                                     <Calendar className="w-3 h-3" />
                                                     Set Schedule
-                                                </button>
+                                                </div>
                                             )}
-                                            <button
-                                                onClick={() => setEditingLead(lead)}
-                                                className="hidden group-hover/date:flex absolute -right-6 p-1.5 bg-card border border-border rounded-lg shadow-xl hover:bg-muted transition-all z-10"
-                                            >
-                                                <Edit3 className="w-3 h-3 text-muted-foreground" />
-                                            </button>
                                         </div>
                                     </div>
                                 </td>
@@ -252,21 +258,31 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                                                 setEditingRemarks(prev => ({ ...prev, [id]: val }));
                                                 setShowSaveIcon(prev => ({ ...prev, [id]: val !== (lead.adminNotes || "") }));
                                             }}
+                                            onInput={(e) => {
+                                                const target = e.target as HTMLTextAreaElement;
+                                                target.style.height = "auto"; // reset height
+                                                target.style.height = Math.min(target.scrollHeight, 200) + "px"; // expand until 200px
+                                            }}
                                             placeholder="Add remarks..."
                                             rows={1}
-                                            className="w-full max-w-[200px] bg-transparent border-none text-xs font-bold text-foreground outline-none resize-none focus:bg-muted/50 p-1 rounded transition-all placeholder:italic placeholder:font-normal"
+                                            className="w-full max-w-[200px] min-h-[20px] max-h-[100px] bg-transparent border-none text-xs font-bold text-foreground outline-none resize-none focus:bg-muted/50 p-1 rounded transition-all placeholder:italic placeholder:font-normal overflow-y-auto"
                                         />
                                         {showSaveIcon[lead._id || lead.id || ""] && (
                                             <button
-                                                onClick={() => handleUpdateLead(lead._id || lead.id || "", { adminNotes: editingRemarks[lead._id || lead.id || ""] })}
+                                                onClick={() =>
+                                                    handleUpdateLead(lead._id || lead.id || "", {
+                                                        adminNotes: editingRemarks[lead._id || lead.id || ""],
+                                                    })
+                                                }
                                                 className="p-1 bg-racing-blue text-white rounded hover:bg-dark-racing transition-all animate-bounce"
                                             >
                                                 <Save className="w-3 h-3" />
                                             </button>
                                         )}
                                     </div>
+
                                 </td>
-                                <td className="py-6 px-4">
+                                <td className="py-6 px-2 lg:px-4 w-[150px]">
                                     <span className={cn(
                                         "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border",
                                         lead.status === "New" ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" :
@@ -278,7 +294,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                                     </span>
                                 </td>
                                 <td className="py-6 px-4 text-right">
-                                    <div className="flex justify-end gap-2">
+                                    <div className="flex flex-wrap justify-end gap-2">
                                         <button
                                             onClick={() => handleWhatsApp(lead)}
                                             className="p-2 rounded-xl border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 group/btn transition-all"
@@ -296,6 +312,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                                         <button
                                             onClick={() => {
                                                 setEscalationData({
+                                                    inquiryId: lead._id || lead.id,
                                                     name: lead.name,
                                                     phone: lead.phone,
                                                     interests: lead.interests,
@@ -344,15 +361,9 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                                                         </select>
                                                     </div>
                                                     <button
-                                                        onClick={() => {
-                                                            setEditingLead(lead);
-                                                            setOpenMenuId(null);
-                                                        }}
-                                                        className="w-full px-4 py-2 text-[10px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors flex items-center justify-between"
+                                                        onClick={() => handleDiscardLead(lead._id || lead.id || "")}
+                                                        className="w-full px-4 py-2 text-[10px] font-black uppercase tracking-widest text-left hover:bg-red-500/10 transition-colors text-red-500/80 hover:text-red-500"
                                                     >
-                                                        Full Edit <Edit3 className="w-3 h-3 text-muted-foreground" />
-                                                    </button>
-                                                    <button className="w-full px-4 py-2 text-[10px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-red-500/80 hover:text-red-500">
                                                         Discard Lead
                                                     </button>
                                                 </div>

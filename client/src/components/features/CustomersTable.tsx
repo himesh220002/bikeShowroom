@@ -33,9 +33,17 @@ interface CustomerCRM {
 
 interface CustomersTableProps {
     customers: CustomerCRM[];
+    isCampaignMode?: boolean;
+    selectedCustomers?: string[];
+    onSelectionChange?: (ids: string[]) => void;
 }
 
-export function CustomersTable({ customers }: CustomersTableProps) {
+export function CustomersTable({
+    customers,
+    isCampaignMode,
+    selectedCustomers = [],
+    onSelectionChange
+}: CustomersTableProps) {
     const router = useRouter();
     const [config, setConfig] = useState<any>(null);
     const [editingCustomer, setEditingCustomer] = useState<CustomerCRM | null>(null);
@@ -110,17 +118,49 @@ Reply to this message to schedule your service or ask any questions!`;
                         <p className="text-[10px] font-bold text-muted-foreground uppercase">{customers.length} Verified Owners</p>
                     </div>
                 </div>
-                <ExportButton
-                    data={customers}
-                    filename="Yamaha_Customers_Report"
-                    sheetName="Customers"
-                />
+                <div className="flex items-center gap-2">
+                    {isCampaignMode && (
+                        <button
+                            onClick={() => {
+                                if (selectedCustomers.length === customers.length) {
+                                    onSelectionChange?.([]);
+                                } else {
+                                    onSelectionChange?.(customers.map(c => c._id));
+                                }
+                            }}
+                            className="px-4 py-2 bg-muted border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted/50 transition-all"
+                        >
+                            {selectedCustomers.length === customers.length ? "Deselect All" : "Select All"}
+                        </button>
+                    )}
+                    <ExportButton
+                        data={customers}
+                        filename="Yamaha_Customers_Report"
+                        sheetName="Customers"
+                    />
+                </div>
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="border-b border-border">
-                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Customer</th>
+                        <tr className="border-b border-border text-center">
+                            {isCampaignMode && (
+                                <th className="py-6 px-4 w-[50px]">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedCustomers.length === customers.length && customers.length > 0}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                onSelectionChange?.(customers.map(c => c._id));
+                                            } else {
+                                                onSelectionChange?.([]);
+                                            }
+                                        }}
+                                        className="w-4 h-4 rounded border-border accent-racing-blue cursor-pointer"
+                                    />
+                                </th>
+                            )}
+                            <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Customer</th>
                             <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contact Pref</th>
                             <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Last Purchase</th>
                             <th className="py-6 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">LTV / Score</th>
@@ -130,7 +170,29 @@ Reply to this message to schedule your service or ask any questions!`;
                     </thead>
                     <tbody>
                         {customers.map((customer) => (
-                            <tr key={customer._id} className="border-b border-border/30 group hover:bg-muted/30 transition-colors">
+                            <tr
+                                key={customer._id}
+                                className={cn(
+                                    "border-b border-border/30 group hover:bg-muted/30 transition-colors",
+                                    selectedCustomers.includes(customer._id) && "bg-racing-blue/5 shadow-[inset_4px_0_0_0_#0056b3]"
+                                )}
+                            >
+                                {isCampaignMode && (
+                                    <td className="py-6 px-4 text-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedCustomers.includes(customer._id)}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    onSelectionChange?.([...selectedCustomers, customer._id]);
+                                                } else {
+                                                    onSelectionChange?.(selectedCustomers.filter(id => id !== customer._id));
+                                                }
+                                            }}
+                                            className="w-4 h-4 rounded border-border accent-racing-blue cursor-pointer"
+                                        />
+                                    </td>
+                                )}
                                 <td className="py-6 px-4">
                                     <div className="flex items-center gap-4">
                                         <div
