@@ -20,7 +20,7 @@ jest.mock('framer-motion', () => ({
 // Mock next/image
 jest.mock('next/image', () => ({
     __esModule: true,
-    default: (props: any) => <img {...props} />,
+    default: ({ fill, ...props }: any) => <img {...props} />,
 }));
 
 describe('LoginPage', () => {
@@ -37,11 +37,12 @@ describe('LoginPage', () => {
         });
 
         // Mock window.location for navigation
-        const location = new URL('http://localhost') as any;
-        location.assign = jest.fn();
-        location.replace = jest.fn();
         delete (window as any).location;
-        window.location = location;
+        (window as any).location = {
+            assign: jest.fn(),
+            replace: jest.fn(),
+            href: 'http://localhost',
+        };
     });
 
 

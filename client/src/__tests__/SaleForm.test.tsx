@@ -63,6 +63,9 @@ describe('SaleForm', () => {
         const select = screen.getByRole('combobox');
         fireEvent.change(select, { target: { value: '1|Racing Blue' } });
 
+        fireEvent.change(screen.getByPlaceholderText("Enter Chassis No."), { target: { value: 'CH123' } });
+        fireEvent.change(screen.getByPlaceholderText("Enter Engine No."), { target: { value: 'EN123' } });
+
         const submitButton = screen.getByText("Confirm & Record Sale");
         fireEvent.click(submitButton);
 
@@ -77,6 +80,8 @@ describe('SaleForm', () => {
                         bikeId: "1",
                         variant: "Racing Blue",
                         salePrice: "182000",
+                        chassisNumber: "CH123",
+                        engineNumber: "EN123",
                     }),
                 })
             );
@@ -97,6 +102,9 @@ describe('SaleForm', () => {
 
         const select = screen.getByRole('combobox');
         fireEvent.change(select, { target: { value: '1|Racing Blue' } });
+
+        fireEvent.change(screen.getByPlaceholderText("Enter Chassis No."), { target: { value: 'CH123' } });
+        fireEvent.change(screen.getByPlaceholderText("Enter Engine No."), { target: { value: 'EN123' } });
 
         fireEvent.click(screen.getByText("Confirm & Record Sale"));
 

@@ -93,9 +93,12 @@ describe('LeadForm', () => {
 
     it('captures UTM parameters from URL', async () => {
         // Robust way to mock search params without triggering JSDOM navigation errors
-        const mockSearchParams = new URLSearchParams("utm_source=test_source&utm_medium=test_medium");
+        const mockParams: Record<string, string> = {
+            utm_source: "test_source",
+            utm_medium: "test_medium"
+        };
         const getSpy = jest.spyOn(URLSearchParams.prototype, 'get');
-        getSpy.mockImplementation((key) => mockSearchParams.get(key));
+        getSpy.mockImplementation((key) => mockParams[key] || null);
 
         render(<LeadForm />);
 
