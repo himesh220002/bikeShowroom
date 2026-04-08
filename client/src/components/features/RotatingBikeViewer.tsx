@@ -196,7 +196,9 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
 
         const rect = containerRef.current.getBoundingClientRect();
         const deltaX = e.clientX - startX.current;
-        const pixelsPerFrame = rect.width / (TOTAL_IMAGES * 1.5);
+
+        // Refined sensitivity: approx 1.2x swipe for full rotation
+        const pixelsPerFrame = rect.width / (TOTAL_IMAGES * 1.2);
         const moveFrames = Math.floor(deltaX / pixelsPerFrame);
         setTargetIndex(lastIndex.current - moveFrames);
     };
@@ -222,7 +224,8 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-full cursor-grab active:cursor-grabbing select-none flex items-center justify-center bg-background overflow-hidden"
+            className="relative w-full h-full cursor-grab active:cursor-grabbing select-none flex items-center justify-center bg-background overflow-hidden touch-action-none"
+            style={{ touchAction: 'none' }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
