@@ -62,7 +62,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
             </div>
 
             {/* Mode Selection Tabs (Top) */}
-            <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 p-1.5 bg-card/60 backdrop-blur-lg border border-border/5 rounded-2xl z-20 will-change-transform">
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 p-1.5 bg-card/60 backdrop-blur-lg border border-border/5 rounded-2xl z-20 will-change-transform">
                 {modes.map((mode) => (
                     <button
                         key={mode.id}

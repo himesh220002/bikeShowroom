@@ -7,6 +7,7 @@ import { API_URL } from "@/lib/config";
 import { useRouter } from "next/navigation";
 import { ExportButton } from "@/components/ui/ExportButton";
 import { CustomerEditModal } from "./CustomerEditModal";
+import { useConfig } from "@/components/providers/ConfigProvider";
 
 interface CustomerCRM {
     _id: string;
@@ -54,7 +55,7 @@ export function CustomersTable({
 }: CustomersTableProps) {
 
     const router = useRouter();
-    const [config, setConfig] = useState<any>(null);
+    const { config } = useConfig();
     const [editingCustomer, setEditingCustomer] = useState<CustomerCRM | null>(null);
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
@@ -64,18 +65,7 @@ export function CustomersTable({
     };
 
 
-    useEffect(() => {
-        const fetchConfig = async () => {
-            try {
-                const res = await fetch(`${API_URL}/config`);
-                const data = await res.json();
-                if (data.success) setConfig(data.data);
-            } catch (err) {
-                console.error("Failed to fetch showroom config:", err);
-            }
-        };
-        fetchConfig();
-    }, []);
+    // Removed internal fetchConfig as it's provided by ConfigProvider
 
     const handleWhatsApp = (customer: CustomerCRM) => {
         const { showroomPhone, showroomEmail, showroomAddress } = config || {};

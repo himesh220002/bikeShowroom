@@ -97,7 +97,7 @@ export function Viewer360Carousel() {
             </div>
 
             {/* Navigation Dots */}
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex gap-2 p-2 bg-card/60 backdrop-blur-xl border border-border rounded-full will-change-transform">
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex gap-2 p-2 bg-card/60 backdrop-blur-xl border border-border rounded-full will-change-transform">
                 {uniqueBikes.map((bike, idx) => (
                     <button
                         key={bike.slug}

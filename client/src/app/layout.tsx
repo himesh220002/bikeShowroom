@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/context/AuthContext";
+import { ConfigProvider } from "@/components/providers/ConfigProvider";
 import Script from "next/script";
 
 export default function RootLayout({
@@ -38,9 +39,11 @@ export default function RootLayout({
         </Script>
 
         <AuthProvider>
-          <ThemeProvider>
-            {children}
-          </ThemeProvider>
+          <ConfigProvider>
+            <ThemeProvider>
+              {children}
+            </ThemeProvider>
+          </ConfigProvider>
         </AuthProvider>
       </body>
     </html>

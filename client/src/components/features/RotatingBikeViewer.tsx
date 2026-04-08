@@ -64,9 +64,9 @@ function InfiniteGrid() {
                 }}
             />
 
-            {/* Minor "MM" Scale (10px Grid H & V) - Precision detailing */}
+            {/* Minor "MM" Scale (10px Grid H & V) - Precision detailing (Increased visibility) */}
             <div
-                className="absolute inset-0 opacity-[0.25] dark:opacity-[0.08]"
+                className="absolute inset-0 opacity-[0.4] dark:opacity-[0.12]"
                 style={{
                     backgroundImage: `
                         linear-gradient(to right, #000 0.5px, transparent 0.5px),
@@ -79,7 +79,7 @@ function InfiniteGrid() {
             />
             {/* Minor Grid White Inversion for Dark Theme */}
             <div
-                className="absolute inset-0 hidden dark:block opacity-[0.08]"
+                className="absolute inset-0 hidden dark:block opacity-[0.12]"
                 style={{
                     backgroundImage: `
                         linear-gradient(to right, #fff 0.5px, transparent 0.5px),

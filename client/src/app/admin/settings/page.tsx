@@ -123,8 +123,8 @@ export default function SettingsPage() {
     return (
         <div className="space-y-12">
             <div>
-                <h2 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter">
-                    GENERAL <span className="text-gradient">SETTINGS</span>
+                <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
+                    GENERAL SETTINGS
                 </h2>
                 <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Configure showroom contact details and messaging defaults</p>
             </div>
@@ -213,8 +213,8 @@ export default function SettingsPage() {
                 </div>
             </form>
             <div className="pt-8 border-t border-border">
-                <h2 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter">
-                    SECURITY <span className="text-gradient">SETTINGS</span>
+                <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
+                    SECURITY SETTINGS
                 </h2>
                 <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Manage administrative access credentials</p>
             </div>

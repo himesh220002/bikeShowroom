@@ -4,8 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Instagram, Mail, MapPin, Phone, Youtube, ChevronRight, ShieldCheck, Award } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { useConfig } from "@/components/providers/ConfigProvider";
 
 export function Footer() {
+    const { config } = useConfig();
     return (
         <footer className="bg-card/80 backdrop-blur-md pt-24 pb-12 border-t border-border">
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -110,8 +112,7 @@ export function Footer() {
                                     <MapPin className="w-5 h-5 text-racing-blue" />
                                 </div>
                                 <div className="text-sm font-bold text-muted-foreground leading-snug">
-                                    Manihari Mor, Mirchaibari Katihar <br />
-                                    Katihar, Bihar - 854105
+                                    {config.showroomAddress}
                                 </div>
                             </div>
                             <div className="flex gap-4">
@@ -119,7 +120,7 @@ export function Footer() {
                                     <Phone className="w-5 h-5 text-racing-blue" />
                                 </div>
                                 <div className="text-sm font-black text-foreground">
-                                    +91 7004100062
+                                    {config.showroomPhone}
                                 </div>
                             </div>
                             <div className="flex gap-4 text-center xl:text-left">
@@ -127,7 +128,7 @@ export function Footer() {
                                     <Mail className="w-5 h-5 text-racing-blue" />
                                 </div>
                                 <div className="text-sm font-black text-foreground flex items-center">
-                                    choudharyyamaha.ktr@gmail.com
+                                    {config.showroomEmail}
                                 </div>
                             </div>
                             <div className="flex gap-4">

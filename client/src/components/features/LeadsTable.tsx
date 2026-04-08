@@ -9,6 +9,7 @@ import { API_URL } from "@/lib/config";
 import { ExportButton } from "@/components/ui/ExportButton";
 import { LeadEditModal } from "./LeadEditModal";
 import { LeadAddModal } from "./LeadAddModal";
+import { useConfig } from "@/components/providers/ConfigProvider";
 
 export interface Lead {
     _id?: string;
@@ -33,7 +34,7 @@ interface LeadsTableProps {
 
 export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
 
-    const [config, setConfig] = useState<any>(null);
+    const { config } = useConfig();
     const [editingLead, setEditingLead] = useState<Lead | null>(null);
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const [selectedBrochure, setSelectedBrochure] = useState<{ [key: string]: string }>({});
@@ -72,18 +73,7 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
         }
     };
 
-    useEffect(() => {
-        const fetchConfig = async () => {
-            try {
-                const res = await fetch(`${API_URL}/config`);
-                const data = await res.json();
-                if (data.success) setConfig(data.data);
-            } catch (err) {
-                console.error("Failed to fetch showroom config:", err);
-            }
-        };
-        fetchConfig();
-    }, []);
+    // Removed internal fetchConfig as it's provided by ConfigProvider
 
     const handleWhatsApp = (lead: Lead) => {
         const bikeName = lead.interests[0];

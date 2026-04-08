@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 import { submitLead } from "@/lib/actions/leadActions";
 import { useAuth } from "@/context/AuthContext";
+import { useConfig } from "@/components/providers/ConfigProvider";
 
 const categories = [
     {
@@ -42,6 +43,7 @@ interface LeadFormProps {
 
 export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
     const { user } = useAuth();
+    const { config } = useConfig();
     const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
     const [response, setResponse] = useState<{ score?: number, message?: string }>({});
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -138,7 +140,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                             {/* Showroom Connect Panel */}
                             <div className="w-full max-w-md grid grid-cols-1 gap-4 mb-10">
                                 <a
-                                    href="https://maps.app.goo.gl/AS7gdFTCvMJqCbDF9"
+                                    href={config.showroomMap}
                                     target="_blank"
                                     className="flex items-center justify-between p-4 bg-zinc-900 rounded-2xl border border-zinc-800 hover:border-racing-blue/50 transition-all group"
                                 >
@@ -155,7 +157,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 </a>
 
                                 <a
-                                    href="https://wa.me/917004100062?text=Hi, I just submitted an inquiry on your website. I am interested in a Yamaha bike."
+                                    href={`https://wa.me/${config.showroomPhone.replace(/\D/g, '')}?text=Hi, I just submitted an inquiry on your website. I am interested in a Yamaha bike.`}
                                     target="_blank"
                                     className="flex items-center justify-between p-4 bg-[#25D366]/10 rounded-2xl border border-[#25D366]/20 hover:border-[#25D366]/50 transition-all group"
                                 >
@@ -172,7 +174,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 </a>
 
                                 <a
-                                    href="tel:+917004100062"
+                                    href={`tel:${config.showroomPhone.replace(/\s+/g, '')}`}
                                     className="flex items-center justify-between p-4 bg-racing-blue rounded-2xl hover:bg-dark-racing transition-all group shadow-xl shadow-racing-blue/20"
                                 >
                                     <div className="flex items-center gap-4">

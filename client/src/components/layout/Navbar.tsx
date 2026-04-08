@@ -10,10 +10,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { LogIn, User as UserIcon, LogOut, ChevronDown } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { useConfig } from "@/components/providers/ConfigProvider";
 
 export function Navbar() {
     const pathname = usePathname();
-    const { user, login, logout, loading } = useAuth();
+    const { user, login, logout, loading: authLoading } = useAuth();
+    const { config } = useConfig();
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -84,7 +86,7 @@ export function Navbar() {
                     {/* Desktop Actions */}
                     <div className="hidden xl:flex items-center gap-4">
                         <Link
-                            href="tel:+917004100062"
+                            href={`tel:${config.showroomPhone.replace(/\s+/g, '')}`}
                             className="p-3 rounded-full hover:bg-muted transition-colors group border border-transparent hover:border-border"
                         >
                             <Phone className="w-4 h-4 text-muted-foreground group-hover:text-racing-blue" />
@@ -92,7 +94,7 @@ export function Navbar() {
 
                         <ThemeToggle />
 
-                        {loading ? (
+                        {authLoading ? (
                             <div className="w-10 h-10 rounded-full bg-zinc-800 animate-pulse" />
                         ) : user ? (
                             <div className="relative">
@@ -194,7 +196,7 @@ export function Navbar() {
                                 </motion.div>
                             ))}
                             <div className="pt-4 space-y-4">
-                                {loading ? (
+                                {authLoading ? (
                                     <div className="h-14 bg-muted rounded-3xl animate-pulse" />
                                 ) : user ? (
                                     <div className="space-y-4">
@@ -248,11 +250,11 @@ export function Navbar() {
                                     </div>
                                 )}
                                 <Link
-                                    href="tel:+917004100062"
+                                    href={`tel:${config.showroomPhone.replace(/\s+/g, '')}`}
                                     onClick={() => setIsOpen(false)}
                                     className="block w-full text-center py-4 bg-muted/30 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground border border-border/30"
                                 >
-                                    Contact Dealer: +91 70041 00062
+                                    Contact Dealer: {config.showroomPhone}
                                 </Link>
                             </div>
                         </div>
