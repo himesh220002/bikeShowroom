@@ -54,7 +54,7 @@ export function Hero() {
                         transition={{ duration: 0.8, delay: 0.2 }}
                         className="space-y-4 mb-8"
                     >
-                        <h1 className="text-5xl sm:text-5xl md:text-6xl lg:text-[8rem] font-display font-black text-white leading-[0.9] md:leading-[0.85] uppercase tracking-tighter">
+                        <h1 className="text-5xl sm:text-6xl lg:text-7xl 2xl:text-[8rem] font-display font-black text-white leading-[0.9] md:leading-[0.85] uppercase tracking-tighter">
                             REVS YOUR <br />
                             <span className="text-gradient">HEART.</span>
                         </h1>

@@ -45,7 +45,7 @@ export default function Home() {
                 color: "text-amber-500"
               }
             ].map((item, i) => (
-              <div key={i} className="flex flex-col items-center text-center p-8 bg-zinc-900/50 rounded-[3rem] border border-white/5 hover:border-racing-blue/20 transition-all group">
+              <div key={i} className="flex flex-col items-center text-center p-3 md:p-8 bg-zinc-900/50 rounded-[2rem] md:rounded-[3rem] border border-white/5 hover:border-racing-blue/20 transition-all group">
                 <div className={cn("w-16 h-16 rounded-2xl bg-zinc-950 flex items-center justify-center mb-6 border border-zinc-800 group-hover:border-racing-blue/50 transition-all", item.color)}>
                   <item.icon className="w-8 h-8" />
                 </div>
@@ -93,8 +93,6 @@ export default function Home() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 gap-y-8 mt-12">
                   {[
-                    { icon: MapPin, title: "Our Location", detail: "Manihari Mor, Mirchaibari, Katihar" },
-                    { icon: Clock, title: "Opening Hours", detail: "Mon - Sat: 9:00 AM - 8:00 PM" },
                     { icon: Phone, title: "Direct Contact", detail: "+91 7004100062" },
                     { icon: User, title: "Personalized Consultation", detail: "Expert guidance on model selection" },
                     { icon: Phone, title: "Priority Callback", detail: "Response within 2-4 business hours" }

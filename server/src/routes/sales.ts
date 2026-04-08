@@ -53,6 +53,12 @@ router.post('/', async (req, res) => {
         });
         await sale.save();
 
+        // Update Customer LTV
+        const numericPrice = Number(salePrice.toString().replace(/[^0-9.]/g, ''));
+        if (!isNaN(numericPrice) && customer) {
+            customer.lifetimeValue = (customer.lifetimeValue || 0) + numericPrice;
+            await customer.save();
+        }
 
         // 5. Broadcast Real-time Updates
         const io = (req as any).io;

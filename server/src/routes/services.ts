@@ -40,19 +40,33 @@ router.post('/', async (req, res) => {
 // Update service status and timestamps
 router.put('/:id/status', async (req, res) => {
     try {
-        const { status, technicianName } = req.body;
+        const { status, technicianName, cost } = req.body;
         const updateData: any = { status };
 
         if (technicianName) updateData.technicianName = technicianName;
         if (req.body.estimatedCompletionTime) updateData.estimatedCompletionTime = req.body.estimatedCompletionTime;
-
-        // Automatically set the correct timestamp based on the new status
-        if (status === 'in-progress') updateData.startedAt = new Date();
-        if (status === 'completed') updateData.completedAt = new Date();
-        if (status === 'delivered') updateData.deliveredAt = new Date();
+        if (cost !== undefined) updateData.cost = Number(cost);
 
         const service = await Service.findById(req.params.id);
         if (!service) return res.status(404).json({ success: false, message: 'Service not found' });
+
+        // Automatically set the correct timestamp based on the new status
+        if (status === 'in-progress' && !service.startedAt) updateData.startedAt = new Date();
+        if (status === 'completed' && !service.completedAt) updateData.completedAt = new Date();
+        if (status === 'delivered' && !service.deliveredAt) updateData.deliveredAt = new Date();
+
+        // Update Customer LTV if transitioning to a final state for the first time
+        const isFinalStatus = ['completed', 'delivered'].includes(status);
+        const wasFinalStatus = ['completed', 'delivered'].includes(service.status);
+
+        if (isFinalStatus && !wasFinalStatus) {
+            const customer = await Customer.findById(service.customerId);
+            if (customer) {
+                const billAmount = cost !== undefined ? Number(cost) : (service.cost || 0);
+                customer.lifetimeValue = (customer.lifetimeValue || 0) + billAmount;
+                await customer.save();
+            }
+        }
 
         // Update basic fields
         Object.assign(service, updateData);

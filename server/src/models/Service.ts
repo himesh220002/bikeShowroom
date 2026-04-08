@@ -19,6 +19,7 @@ export interface IService extends Document {
     startedAt?: Date;
     completedAt?: Date;
     deliveredAt?: Date;
+    cost: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -41,6 +42,7 @@ const ServiceSchema: Schema = new Schema({
     appointmentDate: { type: String, required: true },
     appointmentTime: { type: String, required: true },
     estimatedCompletionTime: { type: String },
+    cost: { type: Number, default: 0 },
     statusHistory: [{
         status: { type: String, required: true },
         timestamp: { type: Date, default: Date.now },

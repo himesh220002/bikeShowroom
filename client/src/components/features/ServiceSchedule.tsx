@@ -379,216 +379,229 @@ export function ServiceSchedule() {
             </div>
 
             {/* Job List */}
-            <div className="bg-background/90 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead className="bg-card/50 border-b border-border">
+            <div className="bg-background/90 border border-border rounded-[2.5rem] shadow-2xl overflow-visible">
+                <div className="overflow-x-auto min-h-[550px]">
+                    <table className="w-full text-left border-separate border-spacing-0 overflow-visible">
+                        <thead className="bg-card/50 border-b border-border relative z-10">
                             <tr>
-                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">Time & Priority</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap rounded-tl-[2.5rem]">Time & Priority</th>
                                 <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Customer & Vehicle</th>
                                 <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Service & Tech</th>
                                 <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Service Remarks</th>
                                 <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Status</th>
-                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground text-right">Action</th>
+                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground text-right rounded-tr-[2.5rem]">Action</th>
                             </tr>
                         </thead>
 
                         <tbody className="divide-y border-border/50">
                             {processedJobs.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="px-8 py-20 text-center opacity-20 italic text-sm font-medium">
+                                    <td colSpan={6} className="px-8 py-20 text-center opacity-20 italic text-sm font-medium">
                                         No active jobs in the workshop...
                                     </td>
                                 </tr>
                             )}
-                            {processedJobs.map((job) => (
-                                <tr key={job.id} className="border-b border-border/30 group hover:bg-muted/30 transition-colors">
 
-                                    <td className="px-6 py-4">
+                            {processedJobs.map((job, index) => {
+                                // Only open UP if we are NOT in the first two rows (to avoid top-clipping)
+                                // AND we are near the bottom of the list.
+                                const isNearBottom = index > 1 && index >= processedJobs.length - 2;
+                                return (
+                                    <tr key={job.id} className="border-b border-border/30 group hover:bg-muted/30 transition-colors">
 
-                                        <div className="flex flex-col gap-1">
-                                            <div className="flex items-center gap-2">
-                                                <Clock className="w-3.5 h-3.5 text-racing-blue" />
-                                                <span className="text-sm font-black text-foreground italic">{job.time}</span>
-                                                {isAtRisk(job.time, job.date, job.status) && (
-                                                    <span className="px-2 py-0.5 bg-red-500 text-white text-[7px] font-black uppercase tracking-widest rounded-full animate-pulse shadow-lg shadow-red-500/20">
-                                                        AT RISK
-                                                    </span>
-                                                )}
+                                        <td className={cn("px-6 py-4", index === processedJobs.length - 1 && "rounded-bl-[2.5rem]")}>
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-2">
+                                                    <Clock className="w-3.5 h-3.5 text-racing-blue" />
+                                                    <span className="text-sm font-black text-foreground italic">{job.time}</span>
+                                                    {isAtRisk(job.time, job.date, job.status) && (
+                                                        <span className="px-2 py-0.5 bg-red-500 text-white text-[7px] font-black uppercase tracking-widest rounded-full animate-pulse shadow-lg shadow-red-500/20">
+                                                            AT RISK
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className={cn(
+                                                    "flex items-center gap-1.5 px-2 py-0.5 rounded-lg border w-fit",
+                                                    job.priority === "High" ? "bg-red-500/10 text-red-500 border-red-500/20" : "bg-muted/30 text-muted-foreground border-border/50"
+                                                )}>
+                                                    <ShieldAlert className="w-2.5 h-2.5" />
+                                                    <span className="text-[8px] font-black uppercase tracking-widest">{job.priority}</span>
+                                                </div>
                                             </div>
-                                            <div className={cn(
-                                                "flex items-center gap-1.5 px-2 py-0.5 rounded-lg border w-fit",
-                                                job.priority === "High" ? "bg-red-500/10 text-red-500 border-red-500/20" : "bg-muted/30 text-muted-foreground border-border/50"
-                                            )}>
-                                                <ShieldAlert className="w-2.5 h-2.5" />
-                                                <span className="text-[8px] font-black uppercase tracking-widest">{job.priority}</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
+                                        </td>
+                                        <td className="px-6 py-4">
 
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center border border-border group-hover:border-racing-blue/50 transition-colors">
-                                                <User className="w-5 h-5 text-muted-foreground" />
-                                            </div>
-                                            <div>
-                                                <h4 className="text-sm font-black text-foreground uppercase tracking-widest mb-1">{job.customer}</h4>
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-[10px] font-bold text-muted-foreground">{job.bike}</span>
-                                                    <div className="flex items-center gap-1 text-[9px] font-bold text-racing-blue/70">
-                                                        <Phone className="w-2.5 h-2.5" />
-                                                        {job.phone}
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center border border-border group-hover:border-racing-blue/50 transition-colors">
+                                                    <User className="w-5 h-5 text-muted-foreground" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-sm font-black text-foreground uppercase tracking-widest mb-1">{job.customer}</h4>
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-[10px] font-bold text-muted-foreground">{job.bike}</span>
+                                                        <div className="flex items-center gap-1 text-[9px] font-bold text-racing-blue/70">
+                                                            <Phone className="w-2.5 h-2.5" />
+                                                            {job.phone}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
+                                        </td>
+                                        <td className="px-6 py-4">
 
-                                        <div className="flex flex-col gap-2">
-                                            <div className="flex items-center gap-2">
-                                                <Wrench className="w-3.5 h-3.5 text-muted-foreground" />
-                                                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">{job.type}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-5 h-5 bg-racing-blue/10 rounded-full flex items-center justify-center border border-racing-blue/20">
-                                                    <UserCheck className="w-3 h-3 text-racing-blue" />
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex items-center gap-2">
+                                                    <Wrench className="w-3.5 h-3.5 text-muted-foreground" />
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">{job.type}</span>
                                                 </div>
-                                                <span className="text-[10px] font-black text-foreground/70 uppercase tracking-tighter">{job.technician}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-5 h-5 bg-racing-blue/10 rounded-full flex items-center justify-center border border-racing-blue/20">
+                                                        <UserCheck className="w-3 h-3 text-racing-blue" />
+                                                    </div>
+                                                    <span className="text-[10px] font-black text-foreground/70 uppercase tracking-tighter">{job.technician}</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
+                                        </td>
+                                        <td className="px-6 py-4">
 
-                                        <div className="flex items-center gap-2 max-w-[200px] group/remark">
-                                            <div className="relative flex-1">
-                                                <input
-                                                    type="text"
-                                                    value={tempRemarks[job.id] !== undefined ? tempRemarks[job.id] : (job.notes || "")}
-                                                    onChange={(e) => setTempRemarks({ ...tempRemarks, [job.id]: e.target.value })}
-                                                    placeholder="Add special instructions..."
-                                                    className="w-full bg-transparent border-b border-transparent hover:border-border focus:border-racing-blue focus:outline-none text-[14px] font-medium py-1 transition-all placeholder:text-muted-foreground/30"
-                                                />
+                                            <div className="flex items-center gap-2 max-w-[200px] group/remark">
+                                                <div className="relative flex-1">
+                                                    <input
+                                                        type="text"
+                                                        value={tempRemarks[job.id] !== undefined ? tempRemarks[job.id] : (job.notes || "")}
+                                                        onChange={(e) => setTempRemarks({ ...tempRemarks, [job.id]: e.target.value })}
+                                                        placeholder="Add special instructions..."
+                                                        className="w-full bg-transparent border-b border-transparent hover:border-border focus:border-racing-blue focus:outline-none text-[14px] font-medium py-1 transition-all placeholder:text-muted-foreground/30"
+                                                    />
+                                                </div>
+                                                {(tempRemarks[job.id] !== undefined && tempRemarks[job.id] !== job.notes) && (
+                                                    <button
+                                                        onClick={() => handleSaveRemark(job.id)}
+                                                        disabled={savingRemark === job.id}
+                                                        className="p-1.5 bg-green-500/10  text-green-500 rounded-lg hover:bg-green-500 hover:text-white transition-all transform active:scale-95 disabled:opacity-50"
+                                                    >
+                                                        {savingRemark === job.id ? (
+                                                            <Loader2 className="w-3 h-3 animate-spin" />
+                                                        ) : (
+                                                            <Save className="w-3 h-3" />
+                                                        )}
+                                                    </button>
+                                                )}
                                             </div>
-                                            {(tempRemarks[job.id] !== undefined && tempRemarks[job.id] !== job.notes) && (
+                                        </td>
+                                        <td className="px-6 py-4">
+
+                                            <div className="relative w-fit">
                                                 <button
-                                                    onClick={() => handleSaveRemark(job.id)}
-                                                    disabled={savingRemark === job.id}
-                                                    className="p-1.5 bg-green-500/10  text-green-500 rounded-lg hover:bg-green-500 hover:text-white transition-all transform active:scale-95 disabled:opacity-50"
-                                                >
-                                                    {savingRemark === job.id ? (
-                                                        <Loader2 className="w-3 h-3 animate-spin" />
-                                                    ) : (
-                                                        <Save className="w-3 h-3" />
-                                                    )}
+                                                    onClick={() => setOpenStatusId(openStatusId === job.id ? null : job.id)}
+                                                    className={cn(
+                                                        "flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all cursor-pointer",
+                                                        statusColors[job.status] || "bg-muted text-muted-foreground border-border",
+                                                        openStatusId === job.id && "ring-2 ring-racing-blue ring-offset-2 dark:ring-offset-background"
+                                                    )}>
+                                                    {job.status.replace('-', ' ')}
+                                                    <ChevronDown className={cn("w-3 h-3 transition-transform", openStatusId === job.id && "rotate-180")} />
                                                 </button>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
 
-                                        <div className="relative w-fit">
-                                            <button
-                                                onClick={() => setOpenStatusId(openStatusId === job.id ? null : job.id)}
-                                                className={cn(
-                                                    "flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all cursor-pointer",
-                                                    statusColors[job.status] || "bg-muted text-muted-foreground border-border",
-                                                    openStatusId === job.id && "ring-2 ring-racing-blue ring-offset-2 dark:ring-offset-background"
-                                                )}>
-                                                {job.status.replace('-', ' ')}
-                                                <ChevronDown className={cn("w-3 h-3 transition-transform", openStatusId === job.id && "rotate-180")} />
-                                            </button>
+                                                <AnimatePresence>
+                                                    {openStatusId === job.id && (
+                                                        <>
+                                                            <div className="fixed inset-0 z-40" onClick={() => setOpenStatusId(null)} />
+                                                            <motion.div
+                                                                initial={{ opacity: 0, scale: 0.95, y: isNearBottom ? 10 : -10 }}
+                                                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                                exit={{ opacity: 0, scale: 0.95, y: isNearBottom ? 10 : -10 }}
+                                                                className={cn(
+                                                                    "absolute left-0 z-50 pt-2",
+                                                                    isNearBottom ? "bottom-full mb-2 pb-2" : "top-full mt-2"
+                                                                )}
+                                                            >
+                                                                <div className="flex flex-col bg-card border border-border rounded-xl shadow-2xl overflow-hidden w-40">
+                                                                    {STATUS_OPTIONS.map((opt) => (
+                                                                        <button
+                                                                            key={opt}
+                                                                            onClick={() => { updateStatus(job.id, opt); setOpenStatusId(null); }}
+                                                                            className={cn(
+                                                                                "px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors border-b border-border/50 last:border-0",
+                                                                                job.status === opt ? "text-racing-blue" : "text-muted-foreground hover:text-foreground"
+                                                                            )}
+                                                                        >
+                                                                            {opt.replace('-', ' ')}
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            </motion.div>
+                                                        </>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
 
-                                            <AnimatePresence>
-                                                {openStatusId === job.id && (
-                                                    <>
-                                                        <div className="fixed inset-0 z-40" onClick={() => setOpenStatusId(null)} />
-                                                        <motion.div
-                                                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                                                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                                            className="absolute top-full left-0 pt-2 z-50"
-                                                        >
-                                                            <div className="flex flex-col bg-card border border-border rounded-xl shadow-2xl overflow-hidden w-40">
-                                                                {STATUS_OPTIONS.map((opt) => (
+                                        </td>
+                                        <td className={cn("px-6 py-4 text-right", index === processedJobs.length - 1 && "rounded-br-[2.5rem]")}>
+                                            <div className="relative inline-block text-left">
+                                                <button
+                                                    onClick={() => setOpenMenuId(openMenuId === job.id ? null : job.id)}
+                                                    className={cn(
+                                                        "p-2 border border-border rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-racing-blue",
+                                                        openMenuId === job.id && "bg-muted shadow-inner border-racing-blue/30 text-racing-blue"
+                                                    )}
+                                                >
+                                                    <MoreVertical className="w-4 h-4" />
+                                                </button>
+
+                                                <AnimatePresence>
+                                                    {openMenuId === job.id && (
+                                                        <>
+                                                            <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                                                            <motion.div
+                                                                initial={{ opacity: 0, scale: 0.95, y: isNearBottom ? 10 : -10 }}
+                                                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                                exit={{ opacity: 0, scale: 0.95, y: isNearBottom ? 10 : -10 }}
+                                                                className={cn(
+                                                                    "absolute right-0 z-[60] py-2",
+                                                                    isNearBottom ? "bottom-full mb-2" : "top-full mt-2"
+                                                                )}
+                                                            >
+                                                                <div className="bg-card border border-border rounded-2xl shadow-2xl overflow-hidden w-48 py-2">
                                                                     <button
-                                                                        key={opt}
-                                                                        onClick={() => { updateStatus(job.id, opt); setOpenStatusId(null); }}
-                                                                        className={cn(
-                                                                            "px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors border-b border-border/50 last:border-0",
-                                                                            job.status === opt ? "text-racing-blue" : "text-muted-foreground hover:text-foreground"
-                                                                        )}
+                                                                        onClick={() => { handleEdit(job); setOpenMenuId(null); }}
+                                                                        className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground flex items-center gap-3"
                                                                     >
-                                                                        {opt.replace('-', ' ')}
+                                                                        <Wrench className="w-3.5 h-3.5" />
+                                                                        Full Job Edit
                                                                     </button>
-                                                                ))}
-                                                            </div>
-                                                        </motion.div>
-                                                    </>
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            window.location.href = `tel:${job.phone}`;
+                                                                            setOpenMenuId(null);
+                                                                        }}
+                                                                        className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-green-500/10 transition-colors text-green-600 flex items-center gap-3"
+                                                                    >
+                                                                        <Phone className="w-3.5 h-3.5" />
+                                                                        Call Customer
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            const message = `Hello ${job.customer}! Your ${job.bikeModel} is scheduled for ${job.type} at ${job.time}.`;
+                                                                            window.open(`https://wa.me/91${job.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
+                                                                            setOpenMenuId(null);
+                                                                        }}
+                                                                        className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-racing-blue/10 transition-colors text-racing-blue flex items-center gap-3"
+                                                                    >
+                                                                        <MessageSquare className="w-3.5 h-3.5" />
+                                                                        WhatsApp
+                                                                    </button>
+                                                                </div>
+                                                            </motion.div>
+                                                        </>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        </td>
 
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="relative inline-block text-left">
-                                            <button
-                                                onClick={() => setOpenMenuId(openMenuId === job.id ? null : job.id)}
-                                                className={cn(
-                                                    "p-2 border border-border rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-racing-blue",
-                                                    openMenuId === job.id && "bg-muted shadow-inner border-racing-blue/30 text-racing-blue"
-                                                )}
-                                            >
-                                                <MoreVertical className="w-4 h-4" />
-                                            </button>
-
-                                            <AnimatePresence>
-                                                {openMenuId === job.id && (
-                                                    <>
-                                                        <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-                                                        <motion.div
-                                                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                                                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                                            className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-2xl shadow-2xl z-[60] py-2 overflow-hidden"
-                                                        >
-                                                            <button
-                                                                onClick={() => { handleEdit(job); setOpenMenuId(null); }}
-                                                                className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground flex items-center gap-3"
-                                                            >
-                                                                <Wrench className="w-3.5 h-3.5" />
-                                                                Full Job Edit
-                                                            </button>
-                                                            <button
-                                                                onClick={() => {
-                                                                    window.location.href = `tel:${job.phone}`;
-                                                                    setOpenMenuId(null);
-                                                                }}
-                                                                className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-green-500/10 transition-colors text-green-600 flex items-center gap-3"
-                                                            >
-                                                                <Phone className="w-3.5 h-3.5" />
-                                                                Call Customer
-                                                            </button>
-                                                            <button
-                                                                onClick={() => {
-                                                                    const message = `Hello ${job.customer}! Your ${job.bikeModel} is scheduled for ${job.type} at ${job.time}.`;
-                                                                    window.open(`https://wa.me/91${job.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
-                                                                    setOpenMenuId(null);
-                                                                }}
-                                                                className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-racing-blue/10 transition-colors text-racing-blue flex items-center gap-3"
-                                                            >
-                                                                <MessageSquare className="w-3.5 h-3.5" />
-                                                                WhatsApp
-                                                            </button>
-                                                        </motion.div>
-                                                    </>
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
-                                    </td>
-
-                                </tr>
-                            ))}
+                                    </tr>
+                                )
+                            })}
                         </tbody>
                     </table>
                 </div>

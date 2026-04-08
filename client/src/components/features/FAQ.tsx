@@ -12,7 +12,7 @@ const FAQ_DATA = [
     },
     {
         question: "Do you offer finance and easy EMI options?",
-        answer: "Yes, we have exclusive partnerships with HDFC Bank, IDFC First, and Yamaha Financial Services. We offer competitive interest rates starting from 6.99%* with flexible tenures ranging from 12 to 48 months. Zero downpayment schemes are also available for eligible customers."
+        answer: "Yes, we provide seamless finance options through our premium partners: \n1. L&T Finance: Quick processing and minimal documentation. \n2. Bajaj Finance: Instant approval and attractive EMI subvention schemes. \n3. IDFC First Bank: Competitive interest rates and flexible tenures. \nWe also work with HDFC and Yamaha Financial Services to ensure you get the best deal."
     },
     {
         question: "How long does the registration (RC) process take?",
@@ -97,7 +97,7 @@ export function FAQ() {
                                             <div className="px-8 pb-8">
                                                 <div className="p-6 bg-racing-blue/5 rounded-2xl border border-racing-blue/10 relative">
                                                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-racing-blue rounded-full" />
-                                                    <p className="text-xs font-bold text-zinc-700 leading-relaxed tracking-wider uppercase opacity-90">
+                                                    <p className="text-xs font-bold text-zinc-700 leading-relaxed tracking-wider opacity-90">
                                                         {faq.answer}
                                                     </p>
                                                 </div>

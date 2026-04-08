@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Save, Wrench, Clock, FileText } from "lucide-react";
+import { X, Save, Wrench, Clock, FileText, IndianRupee } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { API_URL } from "@/lib/config";
 import { ServiceBooking } from "./ServicesTable";
@@ -20,7 +20,8 @@ export function ServiceStatusModal({ service, newStatus, isOpen, onClose, onUpda
         status: newStatus,
         technicianName: service.technicianName || "",
         estimatedCompletionTime: service.estimatedCompletionTime || "",
-        notes: ""
+        notes: "",
+        cost: (service as any).cost || 0
     });
 
     if (!isOpen) return null;
@@ -92,6 +93,20 @@ export function ServiceStatusModal({ service, newStatus, isOpen, onClose, onUpda
                                     onChange={(e) => setFormData({ ...formData, estimatedCompletionTime: e.target.value })}
                                     placeholder="2 hours / 5 PM"
                                     className="w-full bg-background border border-border rounded-xl pl-11 pr-4 py-3 text-xs font-bold text-foreground outline-none focus:border-racing-blue/30 transition-all"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black text-racing-blue">Bill Amount (Service + Accessories)</label>
+                            <div className="relative">
+                                <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-racing-blue" />
+                                <input
+                                    type="number"
+                                    value={formData.cost}
+                                    onChange={(e) => setFormData({ ...formData, cost: Number(e.target.value) })}
+                                    placeholder="0.00"
+                                    className="w-full bg-racing-blue/5 border border-racing-blue/20 rounded-xl pl-11 pr-4 py-3 text-xs font-black text-racing-blue outline-none focus:border-racing-blue/50 transition-all shadow-[0_0_20px_rgba(45,106,255,0.05)]"
                                 />
                             </div>
                         </div>
