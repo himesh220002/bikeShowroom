@@ -11,12 +11,12 @@ interface ZeroDownpaymentBannerProps {
 
 export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBannerProps) {
     return (
-        <section className="py-24 bg-background overflow-hidden px-4 sm:px-6 lg:px-8">
+        <section className="sm:py-12 md:py-24 bg-background overflow-hidden px-0 sm:px-6 lg:px-8">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className="max-w-[1600px] mx-auto relative min-h-[600px] rounded-[1.5rem] md:rounded-[4rem] overflow-hidden border border-border shadow-2xl group"
+                className="max-w-[1600px] mx-auto relative min-h-[600px] sm:rounded-[1.5rem] md:rounded-[4rem] overflow-hidden border border-border shadow-2xl group"
             >
                 {/* Full Background Image */}
                 <div className="absolute inset-0 bg-zinc-950">
@@ -55,7 +55,7 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
                         >
-                            <h2 className="text-4xl md:text-8xl font-display font-black text-white uppercase tracking-tighter leading-[0.85] mb-8">
+                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-black text-white uppercase tracking-tighter leading-[0.85] mb-8">
                                 ZERO <br />
                                 <span className="text-racing-blue">DOWNPAYMENT</span>
                             </h2>
@@ -106,7 +106,7 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
 
                 {/* Decorative Background Element */}
                 <div className="absolute top-1/2 right-12 -translate-y-1/2 opacity-[0.04] pointer-events-none select-none hidden lg:block">
-                    <div className="text-[30rem] font-black text-white leading-none tracking-tighter italic">
+                    <div className="text-[10rem] 2xl:text-[20rem] font-black text-white leading-none tracking-tighter italic">
                         0%
                     </div>
                 </div>

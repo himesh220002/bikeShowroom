@@ -77,13 +77,13 @@ export default function Home() {
       {/* Lead Capture Section */}
       <section id="inquiry" className="py-32 bg-zinc-950/40 backdrop-blur-sm">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-24 items-center">
             <div>
               <div>
                 <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
                   Connect With Us
                 </h2>
-                <h3 className="text-3xl md:text-6xl font-display font-black text-white mb-8 uppercase tracking-tighter">
+                <h3 className="text-3xl md:text-4xl xl:text-6xl font-display font-black text-white mb-8 uppercase tracking-tighter">
                   BOOK A TEST RIDE <br />
                   <span className="text-racing-blue">AT CHOUDHARY Yamaha</span>
                 </h3>

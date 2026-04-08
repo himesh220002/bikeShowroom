@@ -231,7 +231,7 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
             onPointerUp={handlePointerUp}
         >
             {/* Background Grid - z-0 */}
-            <InfiniteGrid />
+            {/* <InfiniteGrid /> */}
 
             {loading && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-30 bg-background/90 backdrop-blur-md">

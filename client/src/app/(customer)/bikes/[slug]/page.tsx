@@ -111,7 +111,7 @@ export default function BikePage() {
 
                 <section className="py-24 bg-zinc-950">
                     <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-24 items-center">
                             <motion.div
                                 initial={{ opacity: 0, x: -30 }}
                                 whileInView={{ opacity: 1, x: 0 }}
@@ -122,7 +122,7 @@ export default function BikePage() {
                                     <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
                                         Take the First Step
                                     </h2>
-                                    <h3 className="text-3xl md:text-6xl font-display font-black text-white mb-8 uppercase tracking-tighter leading-none">
+                                    <h3 className="text-3xl md:text-4xl xl:text-6xl font-display font-black text-white mb-8 uppercase tracking-tighter leading-none">
                                         READY TO RIDE THE <br />
                                         <span className="text-racing-blue">{bike.name}?</span>
                                     </h3>
