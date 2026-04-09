@@ -88,12 +88,16 @@ export function NotificationBell() {
     return (
         <div className="relative">
             <button
-                onClick={() => setIsSelected(!isSelected)}
+                onClick={() => {
+                    const nextState = !isOpen;
+                    setIsOpen(nextState);
+                    setIsSelected(nextState);
+                }}
                 className={cn(
                     "relative p-3 rounded-full transition-all group",
                     isSelected
-                        ? "bg-racing-blue text-white border-racing-blue" // selected state
-                        : "bg-transparent text-muted-foreground border hover:bg-muted hover:border-border" // normal state
+                        ? "bg-racing-blue text-white border border-racing-blue" // selected state
+                        : "bg-transparent text-muted-foreground border border-none hover:bg-muted hover:border-border" // normal state
                 )}
             >
                 <Bell
@@ -104,7 +108,7 @@ export function NotificationBell() {
                     )}
                 />
                 {unreadCount > 0 && (
-                    <span className="absolute top-2 right-2 w-4 h-4 bg-red-500 text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-background shadow-lg scale-110">
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-background shadow-[0_0_15px_rgba(220,38,38,0.5)] animate-bounce-subtle">
                         {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
                 )}
@@ -116,15 +120,15 @@ export function NotificationBell() {
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute right-0 mt-3 w-80 md:w-96 bg-card border border-border rounded-3xl shadow-2xl py-4 z-50 overflow-hidden"
+                        className="absolute right-0 mt-4 w-[calc(100vw-64px)] sm:w-80 md:w-[400px] bg-card/95 backdrop-blur-xl border-2 border-racing-blue/20 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] py-6 z-50 overflow-hidden"
                     >
                         <div className="px-6 pb-4 border-b border-border flex justify-between items-center">
                             <div>
-                                <h3 className="text-[11px] font-black uppercase tracking-widest text-foreground flex items-center gap-2">
-                                    <Bell className="w-3.5 h-3.5 text-racing-blue" />
+                                <h3 className="text-[12px] font-black uppercase tracking-widest text-foreground flex items-center gap-2">
+                                    <Bell className="w-4 h-4 text-racing-blue drop-shadow-[0_0_8px_rgba(0,123,255,0.5)]" />
                                     Notifications
                                 </h3>
-                                <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">Stay Updated</p>
+                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 opacity-60">Status: Real-time Active</p>
                             </div>
                             {unreadCount > 0 && (
                                 <button
@@ -148,8 +152,9 @@ export function NotificationBell() {
                                 notifications.map((notification) => (
                                     <div
                                         key={notification._id}
+                                        onClick={() => !notification.isRead && markAsRead(notification._id)}
                                         className={cn(
-                                            "px-3 py-2 sm:px-6 sm:py-4 border-b border-border/50 hover:bg-muted/30 transition-colors relative group/item",
+                                            "px-4 py-3 sm:px-8 sm:py-5 border-b border-border/50 hover:bg-muted/50 transition-all relative group/item cursor-pointer",
                                             !notification.isRead && "bg-racing-blue/5 border-l-4 border-l-racing-blue"
                                         )}
                                     >

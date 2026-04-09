@@ -159,11 +159,11 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 <a
                                     href={`https://wa.me/${config.showroomPhone.replace(/\D/g, '')}?text=Hi, I just submitted an inquiry on your website. I am interested in a Yamaha bike.`}
                                     target="_blank"
-                                    className="flex items-center justify-between p-4 bg-[#25D366]/10 rounded-2xl border border-[#25D366]/20 hover:border-[#25D366]/50 transition-all group"
+                                    className="flex items-center justify-between p-4 bg-[#00ba54]/10 rounded-2xl border border-[#00ba54]/20 hover:border-[#00ba54]/50 transition-all group"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 bg-[#25D366]/20 rounded-xl flex items-center justify-center">
-                                            <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                                        <div className="w-10 h-10 bg-[#00ba54]/20 rounded-xl flex items-center justify-center">
+                                            <MessageCircle className="w-5 h-5 text-[#00ba54]" />
                                         </div>
                                         <div className="text-left">
                                             <span className="block text-[10px] font-black text-[#25D366] uppercase tracking-widest">Direct Support</span>

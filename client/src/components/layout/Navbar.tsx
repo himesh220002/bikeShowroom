@@ -45,7 +45,7 @@ export function Navbar() {
         )}>
             <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center">
-                    {/* Logo remains same... */}
+                    {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 md:gap-4 group">
                         <div className="relative w-10 h-10 md:w-14 md:h-14 transition-transform duration-500 group-hover:scale-110">
                             <Image
@@ -178,8 +178,11 @@ export function Navbar() {
                     >
                         <div className="p-8 space-y-6">
                             <div className="flex items-center justify-between pb-4 border-b border-border">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Interface Theme</span>
-                                <ThemeToggle />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Interface theme / NOTIFICATIONS</span>
+                                <div className="flex items-center gap-4">
+                                    <ThemeToggle />
+                                    {user && <NotificationBell />}
+                                </div>
                             </div>
                             {navLinks.map((link, idx) => (
                                 <motion.div

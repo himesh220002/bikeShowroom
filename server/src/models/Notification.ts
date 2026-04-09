@@ -15,7 +15,7 @@ const NotificationSchema: Schema = new Schema({
     message: { type: String, required: true },
     type: { type: String, enum: ['broadcast', 'system', 'service'], default: 'broadcast' },
     isRead: { type: Boolean, default: false },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now, expires: 2592000 } // Auto-delete after 30 days
 });
 
 export default mongoose.model<INotification>('Notification', NotificationSchema);
