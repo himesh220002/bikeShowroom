@@ -2,6 +2,7 @@
 
 import { ShoppingCart, Bike, User, IndianRupee, Calendar } from "lucide-react";
 import { ExportButton } from "@/components/ui/ExportButton";
+import { cn } from "@/lib/utils/cn";
 
 interface SalesTableProps {
     sales: any[];
@@ -87,24 +88,31 @@ export function SalesTable({ sales }: SalesTableProps) {
                                     </div>
                                 </td>
                                 <td className="py-4 px-4">
-
-                                    <div className="flex flex-col gap-1">
-                                        <div className="flex items-center gap-1.5 text-racing-blue font-display font-black italic">
+                                    <div className="flex flex-col gap-1.5">
+                                        <div className="flex items-center gap-1.5 text-[14px] font-display font-black text-racing-blue italic">
                                             <IndianRupee className="w-3.5 h-3.5" />
                                             {Number(sale.salePrice).toLocaleString('en-IN')}
                                         </div>
-                                        <span className="text-[8px] font-black uppercase bg-muted/50 px-1.5 py-0.5 rounded border border-border w-fit">
-                                            {sale.paymentMethod || "Cash"}
-                                        </span>
+                                        <div className="flex items-center gap-1.5">
+                                            <span className={cn(
+                                                "text-[8px] font-black uppercase px-2 py-0.5 rounded border tracking-widest",
+                                                sale.paymentMethod === 'Cash' ? "bg-green-500/10 text-green-600 border-green-500/20" :
+                                                    sale.paymentMethod === 'UPI' ? "bg-blue-500/10 text-blue-600 border-blue-500/20" :
+                                                        "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                            )}>
+                                                {sale.paymentMethod || "Cash"}
+                                            </span>
+                                        </div>
                                     </div>
                                 </td>
                                 <td className="py-4 px-4">
-
-                                    <div className="flex flex-col gap-1">
-                                        <p className="text-[10px] font-black text-foreground uppercase tracking-widest">
-                                            INV: {sale.invoiceNumber || "NON-TAX"}
-                                        </p>
-                                        <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-60">
+                                    <div className="flex flex-col gap-1.5">
+                                        <div className="px-2 py-1 bg-muted/50 border border-border rounded-lg w-fit">
+                                            <p className="text-[9px] font-black text-foreground uppercase tracking-wider">
+                                                {sale.invoiceNumber || "NON-TAX"}
+                                            </p>
+                                        </div>
+                                        <p className="text-[8px] font-black text-muted-foreground uppercase opacity-80 tracking-widest ml-1">
                                             BY: {sale.salesperson || "Showroom Manager"}
                                         </p>
                                     </div>

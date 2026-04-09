@@ -11,7 +11,9 @@ export default function CustomerLayout({
             <div className="bg-fixed-layer" />
             <Navbar />
             <main className="font-sans relative z-10">{children}</main>
-            <Footer />
+            <div className="relative z-10">
+                <Footer />
+            </div>
         </div>
     );
 }

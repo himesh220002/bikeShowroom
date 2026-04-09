@@ -1,5 +1,6 @@
 import { ServiceBooking } from "@/components/features/ServiceBooking";
 import { SparesGallery } from "@/components/features/SparesGallery";
+import { UserBookings } from "@/components/features/UserBookings";
 import { Wrench, Shield, Zap, MessageSquare } from "lucide-react";
 
 export default function ServicePage() {
@@ -45,6 +46,10 @@ export default function ServicePage() {
                     {/* Left Side: Booking & Stats */}
                     <div id="booking" className="lg:col-span-12 xl:col-span-5 space-y-12">
                         <ServiceBooking />
+
+                        <div className="pt-12 border-t border-zinc-900">
+                            <UserBookings />
+                        </div>
 
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
                             {[

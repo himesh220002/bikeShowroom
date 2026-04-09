@@ -8,6 +8,7 @@ import { Bike, Calendar, Clock, Plus, Trash2, Wrench, AlertCircle, ChevronRight,
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
+import { UserBookings } from "@/components/features/UserBookings";
 
 interface UserBike {
     _id: string;
@@ -303,6 +304,10 @@ export default function ProfilePage() {
                             </motion.div>
                         )}
                     </AnimatePresence>
+
+                    <div className="mb-16">
+                        <UserBookings />
+                    </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Bike List */}

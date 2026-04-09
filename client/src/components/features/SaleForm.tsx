@@ -19,6 +19,9 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
         salePrice: "",
         chassisNumber: "",
         engineNumber: "",
+        paymentMethod: "Cash",
+        invoiceNumber: "NON-TAX",
+        salesperson: "Showroom Manager",
     });
 
 
@@ -41,6 +44,9 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                     salePrice: "",
                     chassisNumber: "",
                     engineNumber: "",
+                    paymentMethod: "Cash",
+                    invoiceNumber: "NON-TAX",
+                    salesperson: "Showroom Manager",
                 });
 
                 onSaleComplete();
@@ -163,7 +169,7 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                             </div>
                         </div>
 
-                        {/* Structural Filling Section */}
+                        {/* Vehicle Identity Section */}
                         <div className="grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-border/50">
                             <div className="group">
                                 <label htmlFor="chassisNumber" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Chassis Number</label>
@@ -190,8 +196,48 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                                 />
                             </div>
                         </div>
-                    </div>
 
+                        {/* Payment & Documentation Section */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 pt-4">
+                            <div className="group">
+                                <label htmlFor="paymentMethod" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Payment Method</label>
+                                <select
+                                    id="paymentMethod"
+                                    required
+                                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[12px] font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                    value={formData.paymentMethod}
+                                    onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
+                                >
+                                    <option value="Cash">Cash</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="EMI">EMI</option>
+                                    <option value="UPI">UPI</option>
+                                </select>
+                            </div>
+                            <div className="group">
+                                <label htmlFor="invoiceNumber" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Document No. / INV</label>
+                                <input
+                                    id="invoiceNumber"
+                                    type="text"
+                                    required
+                                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[12px] font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                    value={formData.invoiceNumber}
+                                    onChange={(e) => setFormData({ ...formData, invoiceNumber: e.target.value })}
+                                />
+                            </div>
+                            <div className="group">
+                                <label htmlFor="salesperson" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Showroom Agent</label>
+                                <input
+                                    id="salesperson"
+                                    type="text"
+                                    required
+                                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[12px] font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                    value={formData.salesperson}
+                                    onChange={(e) => setFormData({ ...formData, salesperson: e.target.value })}
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -209,6 +255,6 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                     {loading ? "Processing..." : "Confirm & Record Sale"}
                 </button>
             </div>
-        </form>
+        </form >
     );
 }

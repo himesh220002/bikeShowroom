@@ -2,8 +2,27 @@ import { Router } from 'express';
 import Service from '../models/Service';
 import Customer from '../models/Customer';
 import WorkshopSlot from '../models/WorkshopSlot';
+import { protect } from '../middleware/authMiddleware';
 
 const router = Router();
+
+// Get services for the logged-in user
+router.get('/user', protect, async (req: any, res) => {
+    try {
+        const userPhone = req.user.phone;
+        if (!userPhone) {
+            return res.json({ success: true, data: [] });
+        }
+
+        const services = await Service.find({ phone: userPhone })
+            .populate('customerId')
+            .sort({ createdAt: -1 });
+
+        res.json({ success: true, data: services });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 router.post('/', async (req, res) => {
     try {

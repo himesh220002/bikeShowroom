@@ -14,6 +14,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SaleForm } from "@/components/features/SaleForm";
 import { useRouter } from "next/navigation";
 import { SlotManagement } from "@/components/features/SlotManagement";
+import { TestingGround } from "@/components/features/TestingGround";
+import { FlaskConical } from "lucide-react";
 
 const socket = io(API_BASE_URL);
 
@@ -24,7 +26,7 @@ export default function AdminDashboard() {
     const [bikes, setBikes] = useState<any[]>([]);
     const [sales, setSales] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<"leads" | "services" | "hot" | "sales" | "slots">("leads");
+    const [activeTab, setActiveTab] = useState<"leads" | "services" | "hot" | "sales" | "slots" | "testing">("leads");
     const [isSaleFormOpen, setIsSaleFormOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<string>("newest");
@@ -67,7 +69,7 @@ export default function AdminDashboard() {
         const urlTab = params.get('tab');
         const urlSearch = params.get('search');
 
-        if (urlTab && ["leads", "services", "hot", "sales", "slots"].includes(urlTab)) {
+        if (urlTab && ["leads", "services", "hot", "sales", "slots", "testing"].includes(urlTab)) {
             setActiveTab(urlTab as any);
         }
         if (urlSearch) {
@@ -415,7 +417,8 @@ export default function AdminDashboard() {
                         { id: "hot", label: "Hot Leads 🔥", icon: Rocket, color: "#f97316" }, // orange-500
                         { id: "services", label: "Post-Sales Services", icon: Wrench, color: "#007bff" },
                         { id: "slots", label: "Capacity & Slots", icon: Calendar, color: "#8b5cf6" }, // purple-500
-                        { id: "sales", label: "Sales Ledger", icon: ShoppingCart, color: "#22c55e" } // green-500
+                        { id: "sales", label: "Sales Ledger", icon: ShoppingCart, color: "#22c55e" }, // green-500
+                        { id: "testing", label: "Testing Ground", icon: FlaskConical, color: "#ec4899" } // pink-500
 
                     ].map((tab) => (
                         <button
@@ -448,14 +451,16 @@ export default function AdminDashboard() {
                                 activeTab === "hot" ? <Rocket className="w-5 h-5 text-orange-500" /> :
                                     activeTab === "services" ? <Wrench className="w-5 h-5 text-racing-blue" /> :
                                         activeTab === "slots" ? <Calendar className="w-5 h-5 text-purple-500" /> :
-                                            <ShoppingCart className="w-5 h-5 text-green-500" />}
+                                            activeTab === "testing" ? <FlaskConical className="w-5 h-5 text-pink-500" /> :
+                                                <ShoppingCart className="w-5 h-5 text-green-500" />}
                         </div>
                         <h3 className="text-xl font-display font-black text-foreground uppercase tracking-tighter">
                             {activeTab === "leads" ? "Inquiry Stream" :
                                 activeTab === "hot" ? "Priority Prospects" :
                                     activeTab === "services" ? "Workshop Queue" :
                                         activeTab === "slots" ? "Capacity Management" :
-                                            "Sales History"}
+                                            activeTab === "testing" ? "Experimental Tools" :
+                                                "Sales History"}
                         </h3>
                     </div>
 
@@ -513,7 +518,8 @@ export default function AdminDashboard() {
                         activeTab === "hot" ? <LeadsTableHot leads={processedHotLeads} onUpdate={fetchData} /> :
                             activeTab === "services" ? <ServicesTable services={processedServices} onUpdate={fetchData} /> :
                                 activeTab === "slots" ? <div className="px-8 pb-8"><SlotManagement /></div> :
-                                    <div className="p-8"><SalesTable sales={processedSales} /></div>
+                                    activeTab === "testing" ? <div className="px-8 pb-8"><TestingGround /></div> :
+                                        <div className="p-8"><SalesTable sales={processedSales} /></div>
 
                 )}
             </div>

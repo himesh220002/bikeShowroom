@@ -41,7 +41,7 @@ export function AdCarousel() {
 
 
     return (
-        <section id="promotions" className="relative py-16 bg-transparent overflow-hidden">
+        <section id="promotions" className="relative py-16 bg-transparent overflow-hidden scroll-mt-[100px]">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between mb-10">
                     <div>

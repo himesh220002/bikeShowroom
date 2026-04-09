@@ -419,7 +419,7 @@ export function ServiceBooking() {
                                         <span className="text-xs font-black uppercase tracking-widest">Fast Track Protocol</span>
                                     </div>
                                     <p className="text-[10px] text-muted-foreground font-medium">
-                                        Our workshop manager will call you within 12 to 24 hours of submission to confirm your preferred time slot and pickup options.
+                                        Our workshop manager will call you within 24 hours of submission to confirm your preferred time slot and pickup options.
                                     </p>
                                 </div>
                             </motion.div>

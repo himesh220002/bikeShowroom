@@ -8,7 +8,7 @@ const router = Router();
 // Record a new bike sale
 router.post('/', async (req, res) => {
     try {
-        const { customerName, customerPhone, bikeId, variant, salePrice, chassisNumber, engineNumber } = req.body;
+        const { customerName, customerPhone, bikeId, variant, salePrice, chassisNumber, engineNumber, paymentMethod, invoiceNumber, salesperson } = req.body;
 
         // 1. Find or create customer in CRM
         let customer = await Customer.findOne({ phone: customerPhone });
@@ -49,7 +49,10 @@ router.post('/', async (req, res) => {
             variant,
             salePrice,
             chassisNumber,
-            engineNumber
+            engineNumber,
+            paymentMethod,
+            invoiceNumber,
+            salesperson
         });
         await sale.save();
 

@@ -95,9 +95,17 @@ export default function ProductsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-zinc-950 pt-24 md:pt-32 pb-24">
+        <div className="min-h-screen bg-zinc-950 pt-24 md:pt-32 pb-24 relative overflow-hidden">
+            {/* Showroom Background Image - Fixed Position */}
+            <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+                <div
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-100 scale-100"
+                    style={{ backgroundImage: `url('/images/mt15v2background.webp')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/40 via-zinc-950/80 to-zinc-950" />
+            </div>
 
-            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
                 <div className="mb-10 md:mb-20 space-y-4">
 
