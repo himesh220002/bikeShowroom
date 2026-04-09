@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import Service from '../models/Service';
 import Customer from '../models/Customer';
+import WorkshopSlot from '../models/WorkshopSlot';
 
 const router = Router();
 
@@ -15,7 +16,28 @@ router.post('/', async (req, res) => {
             await customer.save();
         }
 
-        // 2. Create Service linked to Customer
+        // 2. Manage Workshop Slot with Overbooking Protection
+        const { appointmentDate, appointmentTime } = rest;
+        if (appointmentDate && appointmentTime) {
+            const slot = await WorkshopSlot.findOne({ date: appointmentDate, slotTime: appointmentTime });
+            const capacity = slot?.capacity ?? 5;
+            const bookedCount = slot?.bookedCount ?? 0;
+
+            if (bookedCount >= capacity) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Workshop slot at ${appointmentTime} on ${appointmentDate} is fully booked.`
+                });
+            }
+
+            await WorkshopSlot.findOneAndUpdate(
+                { date: appointmentDate, slotTime: appointmentTime },
+                { $inc: { bookedCount: 1 } },
+                { upsert: true, new: true }
+            );
+        }
+
+        // 3. Create Service linked to Customer
         const service = new Service({
             ...rest,
             name,
@@ -54,6 +76,32 @@ router.put('/:id/status', async (req, res) => {
         if (status === 'in-progress' && !service.startedAt) updateData.startedAt = new Date();
         if (status === 'completed' && !service.completedAt) updateData.completedAt = new Date();
         if (status === 'delivered' && !service.deliveredAt) updateData.deliveredAt = new Date();
+
+        // Update Workshop Slot if cancelled
+        if (status === 'cancelled' && service.status !== 'cancelled') {
+            await WorkshopSlot.findOneAndUpdate(
+                { date: service.appointmentDate, slotTime: service.appointmentTime },
+                { $inc: { bookedCount: -1 } }
+            );
+        } else if (service.status === 'cancelled' && status !== 'cancelled') {
+            // Re-activating a cancelled service - Check Capacity First
+            const slot = await WorkshopSlot.findOne({ date: service.appointmentDate, slotTime: service.appointmentTime });
+            const capacity = slot?.capacity ?? 5;
+            const bookedCount = slot?.bookedCount ?? 0;
+
+            if (bookedCount >= capacity) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Workshop slot at ${service.appointmentTime} on ${service.appointmentDate} is now full. Cannot re-activate.`
+                });
+            }
+
+            await WorkshopSlot.findOneAndUpdate(
+                { date: service.appointmentDate, slotTime: service.appointmentTime },
+                { $inc: { bookedCount: 1 } },
+                { upsert: true }
+            );
+        }
 
         // Update Customer LTV if transitioning to a final state for the first time
         const isFinalStatus = ['completed', 'delivered'].includes(status);
@@ -104,13 +152,46 @@ router.put('/:id', async (req, res) => {
         if (name !== undefined) updateFields.name = name;
         if (phone !== undefined) updateFields.phone = phone;
 
-        const service = await Service.findByIdAndUpdate(
-            req.params.id,
-            updateFields,
-            { new: true }
-        ).populate('customerId');
-
+        const service = await Service.findById(req.params.id);
         if (!service) return res.status(404).json({ success: false, message: 'Service not found' });
+
+        // Handle Rescheduling
+        const dateChanged = updateData.appointmentDate && updateData.appointmentDate !== service.appointmentDate;
+        const timeChanged = updateData.appointmentTime && updateData.appointmentTime !== service.appointmentTime;
+
+        if ((dateChanged || timeChanged) && service.status !== 'cancelled') {
+            const nextDate = updateData.appointmentDate || service.appointmentDate;
+            const nextTime = updateData.appointmentTime || service.appointmentTime;
+
+            // Check Capacity in New Slot
+            const slot = await WorkshopSlot.findOne({ date: nextDate, slotTime: nextTime });
+            const capacity = slot?.capacity ?? 5;
+            const bookedCount = slot?.bookedCount ?? 0;
+
+            if (bookedCount >= capacity) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Target workshop slot at ${nextTime} on ${nextDate} is already full.`
+                });
+            }
+
+            // Decrement from old slot
+            await WorkshopSlot.findOneAndUpdate(
+                { date: service.appointmentDate, slotTime: service.appointmentTime },
+                { $inc: { bookedCount: -1 } }
+            );
+            // Increment in new slot
+            await WorkshopSlot.findOneAndUpdate(
+                { date: nextDate, slotTime: nextTime },
+                { $inc: { bookedCount: 1 } },
+                { upsert: true }
+            );
+        }
+
+        // Apply updates
+        Object.assign(service, updateFields);
+        await service.save();
+        await service.populate('customerId');
 
         // Emit update to all connected admin dashboards
         const io = (req as any).io;

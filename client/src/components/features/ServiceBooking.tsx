@@ -18,6 +18,10 @@ export function ServiceBooking() {
     const [submitted, setSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [userBikes, setUserBikes] = useState<any[]>([]);
+    const [availableSlots, setAvailableSlots] = useState<any[]>([]);
+    const [loadingSlots, setLoadingSlots] = useState(false);
+
+    const STANDARD_SLOTS = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
 
     // Form data state
     const [formData, setFormData] = useState({
@@ -48,6 +52,20 @@ export function ServiceBooking() {
                 .catch(err => console.error("Failed to fetch user bikes:", err));
         }
     }, [user]);
+
+    useEffect(() => {
+        if (formData.appointmentDate) {
+            setLoadingSlots(true);
+            axios.get(`${API_URL}/workshop-slots/available?date=${formData.appointmentDate}`)
+                .then(res => {
+                    if (res.data.success) {
+                        setAvailableSlots(res.data.data);
+                    }
+                })
+                .catch(err => console.error("Failed to fetch slots:", err))
+                .finally(() => setLoadingSlots(false));
+        }
+    }, [formData.appointmentDate]);
 
     const serviceOptions = [
         { id: "General", label: "General Checkup", icon: Wrench, desc: "Standard 21-point inspection" },
@@ -314,15 +332,65 @@ export function ServiceBooking() {
                                             className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all [color-scheme:dark]"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">Preferred Time</label>
-                                        <input
-                                            required
-                                            type="time"
-                                            value={formData.appointmentTime}
-                                            onChange={(e) => setFormData(p => ({ ...p, appointmentTime: e.target.value }))}
-                                            className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all [color-scheme:dark]"
-                                        />
+                                    <div className="space-y-4 md:col-span-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">Select Time Slot</label>
+                                        {!formData.appointmentDate ? (
+                                            <div className="p-8 border border-dashed border-border rounded-3xl text-center">
+                                                <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">Please select a date first</p>
+                                            </div>
+                                        ) : loadingSlots ? (
+                                            <div className="grid grid-cols-3 gap-3">
+                                                {[1, 2, 3, 4, 5, 6].map(i => (
+                                                    <div key={i} className="h-12 bg-muted animate-pulse rounded-xl" />
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                                                {STANDARD_SLOTS.map(time => {
+                                                    const slotInfo = availableSlots.find(s => s.slotTime === time);
+                                                    const capacity = slotInfo?.capacity ?? 5;
+                                                    const bookedCount = slotInfo?.bookedCount ?? 0;
+                                                    const isFull = bookedCount >= capacity;
+                                                    const isSelected = formData.appointmentTime === time;
+
+                                                    return (
+                                                        <button
+                                                            key={time}
+                                                            type="button"
+                                                            disabled={isFull}
+                                                            onClick={() => setFormData(p => ({ ...p, appointmentTime: time }))}
+                                                            className={cn(
+                                                                "relative p-4 rounded-xl border transition-all text-center group",
+                                                                isSelected
+                                                                    ? "bg-racing-blue border-racing-blue text-white shadow-lg shadow-racing-blue/20"
+                                                                    : isFull
+                                                                        ? "bg-muted/50 border-border opacity-50 cursor-not-allowed"
+                                                                        : "bg-background border-border hover:border-racing-blue/50"
+                                                            )}
+                                                        >
+                                                            <div className={cn(
+                                                                "text-[12px] font-black uppercase tracking-tight mb-1",
+                                                                isSelected ? "text-white" : "text-foreground"
+                                                            )}>
+                                                                {time}
+                                                            </div>
+                                                            <div className={cn(
+                                                                "text-[8px] font-bold uppercase tracking-widest",
+                                                                isSelected ? "text-white/70" : isFull ? "text-red-500" : "text-racing-blue"
+                                                            )}>
+                                                                {isFull ? "Fully Booked" : `${capacity - bookedCount} Slots Left`}
+                                                            </div>
+                                                            {isSelected && (
+                                                                <motion.div
+                                                                    layoutId="activeSlot"
+                                                                    className="absolute inset-0 border-2 border-white/20 rounded-xl"
+                                                                />
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 

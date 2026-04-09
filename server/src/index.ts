@@ -23,6 +23,7 @@ import salesRouter from './routes/sales';
 import customersRouter from './routes/customers';
 import configRouter from './routes/config';
 import sparesRouter from './routes/spares';
+import workshopSlotsRouter from './routes/workshopSlots';
 
 import adminAuthRouter from './routes/adminAuthRoutes';
 import campaignsRouter from './routes/campaigns';
@@ -129,6 +130,7 @@ app.use('/api/sales', salesRouter);
 app.use('/api/customers', customersRouter);
 app.use('/api/config', configRouter);
 app.use('/api/spares', sparesRouter);
+app.use('/api/workshop-slots', workshopSlotsRouter);
 app.use('/api/campaigns', campaignsRouter);
 app.use('/api/insights', insightsRouter);
 

@@ -72,12 +72,12 @@ export function SalesTable({ sales }: SalesTableProps) {
                                         </div>
                                         <div>
                                             <p className="text-[13px] font-black text-foreground uppercase tracking-tighter leading-tight">{sale.bikeName}</p>
-                                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
+                                            <div className="flex flex-col flex-wrap items-start gap-x-2 gap-y-0.5 mt-0.5">
                                                 <p className="text-[9px] font-black text-racing-blue uppercase tracking-widest">{sale.variant}</p>
                                                 {(sale.chassisNumber || sale.engineNumber) && (
-                                                    <div className="flex items-center gap-2 border-l border-border/50 pl-2">
-                                                        {sale.chassisNumber && <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-tighter">C: {sale.chassisNumber}</span>}
-                                                        {sale.engineNumber && <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-tighter">E: {sale.engineNumber}</span>}
+                                                    <div className="flex items-center gap-2">
+                                                        {sale.chassisNumber && <span className="text-[12px] font-bold text-muted-foreground uppercase tracking-tighter">C: {sale.chassisNumber}</span>}
+                                                        {sale.engineNumber && <span className="text-[12px] font-bold text-muted-foreground uppercase tracking-tighter">E: {sale.engineNumber}</span>}
                                                     </div>
                                                 )}
                                             </div>

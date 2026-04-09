@@ -13,6 +13,7 @@ import { API_BASE_URL, API_URL } from "@/lib/config";
 import { motion, AnimatePresence } from "framer-motion";
 import { SaleForm } from "@/components/features/SaleForm";
 import { useRouter } from "next/navigation";
+import { SlotManagement } from "@/components/features/SlotManagement";
 
 const socket = io(API_BASE_URL);
 
@@ -23,7 +24,7 @@ export default function AdminDashboard() {
     const [bikes, setBikes] = useState<any[]>([]);
     const [sales, setSales] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<"leads" | "services" | "hot" | "sales">("leads");
+    const [activeTab, setActiveTab] = useState<"leads" | "services" | "hot" | "sales" | "slots">("leads");
     const [isSaleFormOpen, setIsSaleFormOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<string>("newest");
@@ -66,7 +67,7 @@ export default function AdminDashboard() {
         const urlTab = params.get('tab');
         const urlSearch = params.get('search');
 
-        if (urlTab && ["leads", "services", "hot", "sales"].includes(urlTab)) {
+        if (urlTab && ["leads", "services", "hot", "sales", "slots"].includes(urlTab)) {
             setActiveTab(urlTab as any);
         }
         if (urlSearch) {
@@ -322,11 +323,11 @@ export default function AdminDashboard() {
             </div>
 
             {/* Intelligence & Analytics Entry */}
-            <div className="relative group">
+            <div className="relative group hidden 2xl:block">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-racing-blue to-blue-600 rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
                 <div
                     onClick={goToInsights}
-                    className="relative flex flex-col md:flex-row items-center justify-between p-6 md:p-8 bg-card border border-border rounded-[2rem] shadow-xl hover:border-racing-blue/40 transition-all cursor-pointer overflow-hidden group/card"
+                    className="relative flex flex-col md:flex-row items-center justify-between p-3 md:p-4 bg-card border border-border rounded-[2rem] shadow-xl hover:border-racing-blue/40 transition-all cursor-pointer overflow-hidden group/card"
                 >
                     <div className="absolute top-0 right-0 w-1/4 h-full bg-racing-blue/5 -skew-x-12 translate-x-1/2 pointer-events-none group-hover/card:translate-x-1/3 transition-transform duration-700" />
 
@@ -413,6 +414,7 @@ export default function AdminDashboard() {
                         { id: "leads", label: "Pre-Sales Inquiries", icon: Users, color: "#007bff" }, // racing-blue
                         { id: "hot", label: "Hot Leads 🔥", icon: Rocket, color: "#f97316" }, // orange-500
                         { id: "services", label: "Post-Sales Services", icon: Wrench, color: "#007bff" },
+                        { id: "slots", label: "Capacity & Slots", icon: Calendar, color: "#8b5cf6" }, // purple-500
                         { id: "sales", label: "Sales Ledger", icon: ShoppingCart, color: "#22c55e" } // green-500
 
                     ].map((tab) => (
@@ -445,13 +447,15 @@ export default function AdminDashboard() {
                             {activeTab === "leads" ? <Users className="w-5 h-5 text-racing-blue" /> :
                                 activeTab === "hot" ? <Rocket className="w-5 h-5 text-orange-500" /> :
                                     activeTab === "services" ? <Wrench className="w-5 h-5 text-racing-blue" /> :
-                                        <ShoppingCart className="w-5 h-5 text-green-500" />}
+                                        activeTab === "slots" ? <Calendar className="w-5 h-5 text-purple-500" /> :
+                                            <ShoppingCart className="w-5 h-5 text-green-500" />}
                         </div>
                         <h3 className="text-xl font-display font-black text-foreground uppercase tracking-tighter">
                             {activeTab === "leads" ? "Inquiry Stream" :
                                 activeTab === "hot" ? "Priority Prospects" :
                                     activeTab === "services" ? "Workshop Queue" :
-                                        "Sales History"}
+                                        activeTab === "slots" ? "Capacity Management" :
+                                            "Sales History"}
                         </h3>
                     </div>
 
@@ -508,7 +512,8 @@ export default function AdminDashboard() {
                     activeTab === "leads" ? <LeadsTable leads={processedLeads} onUpdate={fetchData} /> :
                         activeTab === "hot" ? <LeadsTableHot leads={processedHotLeads} onUpdate={fetchData} /> :
                             activeTab === "services" ? <ServicesTable services={processedServices} onUpdate={fetchData} /> :
-                                <div className="p-8"><SalesTable sales={processedSales} /></div>
+                                activeTab === "slots" ? <div className="px-8 pb-8"><SlotManagement /></div> :
+                                    <div className="p-8"><SalesTable sales={processedSales} /></div>
 
                 )}
             </div>
