@@ -42,16 +42,18 @@ export function NotificationBell() {
 
         fetchNotifications();
 
-        const socket = io(API_BASE_URL);
-
-        // Join the room based on user's phone number
-        if (user.phone) {
-            socket.emit("join", user.phone);
-            console.log(`Socket joined room: ${user.phone}`);
-        }
+        const socket = io(API_BASE_URL, {
+            withCredentials: true,
+            transports: ['websocket', 'polling']
+        } as any);
 
         socket.on("connect", () => {
             console.log("Socket.io connected successfully", socket.id);
+            // Join the room based on user's phone number only after connection
+            if (user.phone) {
+                socket.emit("join", user.phone);
+                console.log(`Socket joined room: ${user.phone}`);
+            }
         });
 
         socket.on("connect_error", (err: Error) => {

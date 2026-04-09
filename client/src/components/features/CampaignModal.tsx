@@ -192,7 +192,7 @@ export function CampaignModal({ isOpen, onClose, recipientIds, onSuccess }: Camp
                                 <div className="w-[320px] flex flex-col gap-2">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Live Preview</label>
                                     <div className="flex-1 bg-[#E4FED3] dark:bg-[#075E54]/20 border border-[#25D366]/20 rounded-2xl p-6 relative overflow-y-auto min-h-[300px]">
-                                        <div className="bg-white dark:bg-[#075E54] p-4 rounded-xl rounded-tl-none shadow-md text-xs font-medium text-foreground relative animate-in slide-in-from-left-2 duration-300">
+                                        <div className="bg-white p-4 rounded-xl rounded-tl-none shadow-md text-xs font-medium text-gray-700 relative animate-in slide-in-from-left-2 duration-300">
                                             <div className="absolute -left-2 top-0 w-0 h-0 border-t-8 border-t-white dark:border-t-[#075E54] border-l-8 border-l-transparent" />
                                             {activeContent || <span className="opacity-30 italic">Start typing to see preview...</span>}
                                             <div className="text-[8px] text-right mt-2 opacity-50 font-bold">12:34 PM ✓✓</div>
