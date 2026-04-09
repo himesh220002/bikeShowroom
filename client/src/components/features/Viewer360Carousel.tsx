@@ -52,15 +52,17 @@ export function Viewer360Carousel() {
         index === self.findIndex((b) => b.threeSixtyUrl === bike.threeSixtyUrl)
     );
 
-    if (uniqueBikes.length === 0) return null;
-
     const nextBike = () => {
+        if (uniqueBikes.length === 0) return;
         setCurrentIndex((prev) => (prev + 1) % uniqueBikes.length);
     };
 
     const prevBike = () => {
+        if (uniqueBikes.length === 0) return;
         setCurrentIndex((prev) => (prev - 1 + uniqueBikes.length) % uniqueBikes.length);
     };
+
+    if (uniqueBikes.length === 0) return null;
 
     const currentBike = uniqueBikes[currentIndex];
 

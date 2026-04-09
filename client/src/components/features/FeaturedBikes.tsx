@@ -12,6 +12,7 @@ export function FeaturedBikes() {
     const [loading, setLoading] = useState(true);
     const scrollRef = useRef<HTMLDivElement>(null);
 
+    // Initial fetch
     useEffect(() => {
         const fetchBikes = async () => {
             try {
@@ -28,6 +29,39 @@ export function FeaturedBikes() {
         };
         fetchBikes();
     }, []);
+
+    const bikesToShow = liveBikes.length > 0 ? liveBikes : BIKES;
+
+    const scroll = (direction: 'left' | 'right') => {
+        if (scrollRef.current) {
+            const { scrollLeft, offsetWidth } = scrollRef.current;
+            const scrollAmount = offsetWidth > 1024 ? offsetWidth / 3 : offsetWidth > 768 ? offsetWidth / 2 : offsetWidth;
+            const scrollTo = direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount;
+            scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+        }
+    };
+
+    // Auto-play Effect - MUST be called before any conditional returns
+    useEffect(() => {
+        if (loading || bikesToShow.length <= 1) return;
+
+        const interval = setInterval(() => {
+            if (scrollRef.current) {
+                const { scrollLeft, scrollWidth, offsetWidth } = scrollRef.current;
+
+                // If at the end (or near it due to pixel precision), go back to start
+                const isAtEnd = scrollLeft + offsetWidth >= scrollWidth - 10;
+
+                if (isAtEnd) {
+                    scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    scroll('right');
+                }
+            }
+        }, 8000);
+
+        return () => clearInterval(interval);
+    }, [loading, bikesToShow.length]);
 
     if (loading) {
         return (
@@ -49,17 +83,6 @@ export function FeaturedBikes() {
         );
     }
 
-    const bikesToShow = liveBikes.length > 0 ? liveBikes : BIKES;
-
-    const scroll = (direction: 'left' | 'right') => {
-        if (scrollRef.current) {
-            const { scrollLeft, offsetWidth } = scrollRef.current;
-            const scrollAmount = offsetWidth > 1024 ? offsetWidth / 3 : offsetWidth > 768 ? offsetWidth / 2 : offsetWidth;
-            const scrollTo = direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount;
-            scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
-        }
-    };
-
     return (
         <section id="machines" className="py-12 lg:py-32 bg-transparent overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,7 +98,7 @@ export function FeaturedBikes() {
                         </h2>
                     </div>
 
-                    <div className="hidden sm:flex gap-4">
+                    <div className="hidden sm:flex width-fit gap-4">
                         <button
                             onClick={() => scroll('left')}
                             className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center text-foreground hover:border-racing-blue transition-all group active:scale-95"
