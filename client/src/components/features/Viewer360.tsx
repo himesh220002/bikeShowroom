@@ -41,12 +41,12 @@ export function Viewer360({ bike }: { bike: Bike }) {
 
     const modes = [
         { id: "360", label: "360° Explore", icon: Rotate3d },
-        { id: "sound", label: "Engine Sound", icon: Volume2 },
-        { id: "tech", label: "Digital Tech", icon: Cpu },
+        // { id: "sound", label: "Engine Sound", icon: Volume2 },
+        // { id: "tech", label: "Digital Tech", icon: Cpu },
     ];
 
     return (
-        <div className="relative max-w-[1400px] mx-auto h-[600px] md:h-[700px] bg-background rounded-[3rem] overflow-hidden border border-border shadow-2xl group/viewer">
+        <div className="relative max-w-[1400px] mx-auto h-[400px] sm:h-[600px] md:h-[700px] bg-background rounded-xl md:rounded-[3rem] overflow-hidden border border-border shadow-2xl group/viewer">
             {/* Main 3D View (Custom Rotating Viewer) */}
             <div className="absolute inset-0 z-0">
                 {activeMode === "360" ? (
@@ -62,7 +62,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
             </div>
 
             {/* Mode Selection Tabs (Top) */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 p-1.5 bg-card/60 backdrop-blur-lg border border-border/5 rounded-2xl z-20 will-change-transform">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 flex items-center gap-2 p-1.5 bg-card/60 backdrop-blur-lg border border-border/5 rounded-2xl z-20 will-change-transform">
                 {modes.map((mode) => (
                     <button
                         key={mode.id}

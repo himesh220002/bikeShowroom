@@ -33,12 +33,26 @@ import bcrypt from 'bcryptjs';
 import Config from './models/Config';
 
 const app = express();
-app.set('trust proxy', 1); // Enable trust proxy for Render/load balancers
+app.set('trust proxy', 1); // Enable trust proxy for Render/Vercel/load balancers
+
 const httpServer = createServer(app);
+
+// Get allowed origins from env
+const allowedOrigins = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://bike-showroom-client.vercel.app" // Added Vercel domain
+];
+
+if (process.env.CLIENT_URL) {
+    allowedOrigins.push(...process.env.CLIENT_URL.split(',').map(o => o.trim()));
+}
+
 const io = new Server(httpServer, {
     cors: {
-        origin: "*", // Adjust for production
-        methods: ["GET", "POST"]
+        origin: allowedOrigins,
+        methods: ["GET", "POST"],
+        credentials: true
     }
 });
 
@@ -46,7 +60,13 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/bikeYamahaDB';
 
 app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 app.use(express.json());

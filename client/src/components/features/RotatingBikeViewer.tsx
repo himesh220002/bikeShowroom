@@ -264,7 +264,7 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
             </div>
 
             {/* Interaction Helper - z-20 (Always on top) */}
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-card/10 backdrop-blur-xl border border-border px-6 py-3 rounded-2xl pointer-events-none z-20">
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-card/10 backdrop-blur-xl border border-border px-3 sm:px-6 py-1 sm:py-3 rounded-2xl pointer-events-none z-20">
                 <Rotate3d className="w-4 h-4 text-racing-blue" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Hold & Drag to Explore</span>
             </div>

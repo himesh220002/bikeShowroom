@@ -50,6 +50,14 @@ export function NotificationBell() {
             console.log(`Socket joined room: ${user.phone}`);
         }
 
+        socket.on("connect", () => {
+            console.log("Socket.io connected successfully", socket.id);
+        });
+
+        socket.on("connect_error", (err: Error) => {
+            console.error("Socket.io connection error:", err.message);
+        });
+
         socket.on("new_notification", (notification: Notification) => {
             setNotifications(prev => [notification, ...prev]);
             setUnreadCount(prev => prev + 1);

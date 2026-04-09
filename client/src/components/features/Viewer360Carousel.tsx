@@ -118,14 +118,14 @@ export function Viewer360Carousel() {
             {/* Next/Prev Buttons */}
             <button
                 onClick={prevBike}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-card/60 backdrop-blur-lg border border-border rounded-full text-foreground hover:bg-racing-blue hover:text-white hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100 will-change-transform"
+                className="absolute left-2 md:left-4 top-90 md:top-1/2 -translate-y-1/2 z-40 p-1 md:p-4 bg-card/60 backdrop-blur-lg border border-border rounded-full text-foreground hover:bg-racing-blue hover:text-white hover:scale-110 active:scale-95 transition-all opacity-40 2xl:opacity-0 group-hover/carousel:opacity-100 will-change-transform"
                 aria-label="Previous Bike"
             >
                 <ChevronLeft className="w-8 h-8" />
             </button>
             <button
                 onClick={nextBike}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-card/60 backdrop-blur-lg border border-border rounded-full text-foreground hover:bg-racing-blue hover:text-white hover:scale-110 active:scale-95 transition-all opacity-0 group-hover/carousel:opacity-100 will-change-transform"
+                className="absolute right-2 md:right-4 top-90 md:top-1/2 -translate-y-1/2 z-40 p-1 md:p-4 bg-card/60 backdrop-blur-lg border border-border rounded-full text-foreground hover:bg-racing-blue hover:text-white hover:scale-110 active:scale-95 transition-all opacity-40 2xl:opacity-0 group-hover/carousel:opacity-100 will-change-transform"
                 aria-label="Next Bike"
             >
                 <ChevronRight className="w-8 h-8" />

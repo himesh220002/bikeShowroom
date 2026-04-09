@@ -70,7 +70,7 @@ export function FAQ() {
                             >
                                 <button
                                     onClick={() => setActiveIndex(isActive ? null : index)}
-                                    className="w-full px-8 py-6 flex items-center justify-between text-left gap-4"
+                                    className="w-full px-4 sm:px-8 py-6 flex items-center justify-between text-left gap-4"
                                 >
                                     <span className={cn(
                                         "text-sm font-black uppercase tracking-widest transition-colors duration-300",
@@ -80,7 +80,7 @@ export function FAQ() {
                                     </span>
                                     <div className={cn(
                                         "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500",
-                                        isActive ? "bg-racing-blue text-white rotate-180" : "bg-white/5 text-gray-500"
+                                        isActive ? "sm:bg-racing-blue text-black sm:text-white rotate-180" : "sm:bg-white/10 text-white sm:text-gray-500"
                                     )}>
                                         <ChevronDown className="w-4 h-4" />
                                     </div>
@@ -94,7 +94,7 @@ export function FAQ() {
                                             exit={{ height: 0, opacity: 0 }}
                                             transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
                                         >
-                                            <div className="px-8 pb-8">
+                                            <div className="px-4 sm:px-8 pb-8">
                                                 <div className="p-6 bg-racing-blue/5 rounded-2xl border border-racing-blue/10 relative">
                                                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-racing-blue rounded-full" />
                                                     <p className="text-xs font-bold text-zinc-700 leading-relaxed tracking-wider opacity-90">
