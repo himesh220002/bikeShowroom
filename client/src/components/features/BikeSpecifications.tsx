@@ -20,8 +20,8 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
         { label: "Transmission", value: bike.fullSpecs.transmission, icon: "Binary" },
         { label: "Braking System", value: bike.fullSpecs.brakes, icon: "Shield" },
         { label: "Fuel Capacity", value: bike.fullSpecs.fuelCapacity, icon: "Fuel" },
-        ...(bike.fullSpecs.topSpeed ? [{ label: "Top Speed", value: bike.fullSpecs.topSpeed, icon: "Timer" }] : []),
-        ...(bike.fullSpecs.mileage ? [{ label: "Mileage", value: bike.fullSpecs.mileage, icon: "Activity" }] : []),
+        // ...(bike.fullSpecs.topSpeed ? [{ label: "Top Speed", value: bike.fullSpecs.topSpeed, icon: "Timer" }] : []),
+        // ...(bike.fullSpecs.mileage ? [{ label: "Mileage", value: bike.fullSpecs.mileage, icon: "Activity" }] : []),
     ];
 
     const secondarySpecs = [

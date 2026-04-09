@@ -86,7 +86,9 @@ export function TestingGround() {
                     regNumber: "TEST-0000",
                     serviceType: "General",
                     interests: ["TEST_USER"],
-                    source: "Testing Ground"
+                    source: "Testing Ground",
+                    appointmentDate: today,
+                    appointmentTime: "09:00"
                 });
                 // Note: /services route upserts customer and returns the service object which contains customer reference or we can find the customer.
                 // For simplicity, we'll search for them by phone now.

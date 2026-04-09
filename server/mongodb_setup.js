@@ -1,7 +1,7 @@
 // Choudhary Yamaha - MongoDB Schema Initialization Script
 // Run this in mongosh or your MongoDB Compass console
 
-use bikeYamahaDB
+// use bikeYamahaDB
 
 // 1. Master Customers Collection
 // Stores the unique identity of every person who interacts with the showroom

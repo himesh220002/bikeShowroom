@@ -17,7 +17,7 @@ export interface ICampaign extends Document {
 
 const CampaignSchema: Schema = new Schema({
     name: { type: String, required: true },
-    type: { type: String, enum: ['Service', 'Promotion', 'Check-in', 'Announcement'], required: true },
+    type: { type: String, enum: ['Service', 'Promotion', 'Check-in', 'Announcement', 'Testing'], required: true },
     templateId: { type: String },
     content: { type: String, required: true },
     status: { type: String, enum: ['Draft', 'Scheduled', 'Sending', 'Completed', 'Failed'], default: 'Draft' },

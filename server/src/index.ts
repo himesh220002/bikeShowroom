@@ -27,6 +27,7 @@ import workshopSlotsRouter from './routes/workshopSlots';
 
 import adminAuthRouter from './routes/adminAuthRoutes';
 import campaignsRouter from './routes/campaigns';
+import notificationsRouter from './routes/notifications';
 import insightsRouter from './routes/insights';
 import bcrypt from 'bcryptjs';
 import Config from './models/Config';
@@ -105,9 +106,15 @@ mongoose.connect(MONGO_URI)
 
 // Socket.io Connection
 io.on('connection', (socket) => {
-    console.log('Admin client connected to dashboard');
+    console.log('Client connected to socket.io');
+
+    socket.on('join', (room) => {
+        socket.join(room);
+        console.log(`Socket ${socket.id} joined room: ${room}`);
+    });
+
     socket.on('disconnect', () => {
-        console.log('Admin client disconnected');
+        console.log('Client disconnected');
     });
 });
 
@@ -132,6 +139,7 @@ app.use('/api/config', configRouter);
 app.use('/api/spares', sparesRouter);
 app.use('/api/workshop-slots', workshopSlotsRouter);
 app.use('/api/campaigns', campaignsRouter);
+app.use('/api/notifications', notificationsRouter);
 app.use('/api/insights', insightsRouter);
 
 app.get('/', (req, res) => {

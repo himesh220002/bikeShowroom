@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { LogIn, User as UserIcon, LogOut, ChevronDown } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { NotificationBell } from "@/components/features/NotificationBell";
 import { useConfig } from "@/components/providers/ConfigProvider";
 
 export function Navbar() {
@@ -93,6 +94,7 @@ export function Navbar() {
                         </Link>
 
                         <ThemeToggle />
+                        {user && <NotificationBell />}
 
                         {authLoading ? (
                             <div className="w-10 h-10 rounded-full bg-zinc-800 animate-pulse" />

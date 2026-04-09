@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import Campaign from '../models/Campaign';
 import Customer from '../models/Customer';
+import Notification from '../models/Notification';
+import { WhatsAppService } from '../utils/whatsappService';
 
 const router = Router();
 
@@ -36,8 +38,7 @@ router.post('/', async (req: any, res) => {
         // Respond immediately to the client
         res.json({ success: true, data: campaign });
 
-        // Process in "background" (simulated for now)
-        // In a real scenario, this would call Meta's API for each recipient
+        // Process in "background"
         let successCount = 0;
         let failureCount = 0;
 
@@ -50,21 +51,35 @@ router.post('/', async (req: any, res) => {
             try {
                 const customer = await Customer.findById(id);
                 if (customer && customer.phone) {
-                    // Simulate WhatsApp API call
-                    // console.log(`Sending WhatsApp to ${customer.phone}: ${content}`);
+                    // 1. Send WhatsApp message
+                    const waSuccess = await WhatsAppService.sendMessage(customer.phone, content);
 
-                    // We'll simulate a 95% success rate for demonstration
-                    const isSuccess = Math.random() > 0.05;
-                    if (isSuccess) successCount++;
+                    // 2. Create Frontend Notification
+                    const notification = new Notification({
+                        userPhone: customer.phone,
+                        title: name || 'New Announcement',
+                        message: content,
+                        type: 'broadcast'
+                    });
+                    await notification.save();
+
+                    // 3. Emit real-time notification to the user's specific room
+                    if (req.io) {
+                        req.io.to(customer.phone).emit('new_notification', notification);
+                        console.log(`Emitted notification to room: ${customer.phone}`);
+                    }
+
+                    if (waSuccess) successCount++;
                     else failureCount++;
                 } else {
                     failureCount++;
                 }
             } catch (err) {
+                console.error(`Error processing recipient ${id}:`, err);
                 failureCount++;
             }
 
-            // Update stats intermittently if it's a large campaign
+            // Update stats intermittently
             if ((successCount + failureCount) % 5 === 0) {
                 await Campaign.findByIdAndUpdate(campaign._id, {
                     successCount,
@@ -91,7 +106,9 @@ router.post('/', async (req: any, res) => {
 
     } catch (error: any) {
         console.error("Campaign Launch Error:", error);
-        // We don't use res.status here if it was already sent above
+        if (!res.headersSent) {
+            res.status(500).json({ success: false, message: error.message });
+        }
     }
 });
 

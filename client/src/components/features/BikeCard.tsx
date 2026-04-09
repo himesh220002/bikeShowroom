@@ -30,7 +30,7 @@ export function BikeCard({ bike, index = 0 }: BikeCardProps) {
             >
                 {/* Dynamic Background Glow */}
                 <div
-                    className="absolute -top-24 -right-24 w-64 h-64 blur-[100px] opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none"
+                    className="absolute -top-24 -right-24 w-64 h-64 blur-[100px] opacity-10 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none"
                     style={{ backgroundColor: primaryColor.hex }}
                 />
 
