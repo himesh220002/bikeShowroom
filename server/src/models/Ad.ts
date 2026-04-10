@@ -6,9 +6,12 @@ export interface IAd extends Document {
     image: string;
     description?: string;
     link: string;
-    status: 'Active' | 'Scheduled' | 'Ended';
-    impact: string; // e.g., "1.2k clicks"
+    status: 'Active' | 'Inactive' | 'Scheduled';
+    impact: string;
     priority: number;
+    month?: string;
+    startDate?: Date;
+    endDate?: Date;
 }
 
 const AdSchema: Schema = new Schema({
@@ -17,9 +20,12 @@ const AdSchema: Schema = new Schema({
     image: { type: String, required: true },
     description: { type: String },
     link: { type: String, required: true },
-    status: { type: String, enum: ['Active', 'Scheduled', 'Ended'], default: 'Scheduled' },
+    status: { type: String, enum: ['Active', 'Inactive', 'Scheduled'], default: 'Scheduled' },
     impact: { type: String, default: '0' },
-    priority: { type: Number, default: 0 }
+    priority: { type: Number, default: 0 },
+    month: { type: String },
+    startDate: { type: Date },
+    endDate: { type: Date }
 }, {
     timestamps: true
 });

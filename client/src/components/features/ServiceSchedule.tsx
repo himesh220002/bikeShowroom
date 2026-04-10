@@ -144,8 +144,14 @@ export function ServiceSchedule() {
             });
             const data = await res.json();
             if (data.success) {
+                const updated = data.data;
                 setJobs(prev => prev.map(job =>
-                    job.id === id ? { ...job, status } : job
+                    job.id === id ? {
+                        ...job,
+                        status: updated.status,
+                        priority: updated.priority,
+                        deliveredAt: updated.deliveredAt
+                    } : job
                 ));
             } else {
                 alert("Failed to update status: " + data.error);
@@ -281,10 +287,10 @@ export function ServiceSchedule() {
 
     return (
         <div className="space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-display font-black text-gray-400 uppercase tracking-tighter">
-                        SERVICE <span className="text-gradient">SCHEDULE</span>
+                    <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
+                        SERVICE SCHEDULE
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Manage daily workshop operations</p>
                 </div>

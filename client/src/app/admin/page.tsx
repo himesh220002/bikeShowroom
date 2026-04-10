@@ -409,7 +409,7 @@ export default function AdminDashboard() {
                 </AnimatePresence>
             </div>
 
-            <div id="data-tabs" className="p-1 pb-4 px-1.5 bg-card border border-border rounded-[1.5rem] md:rounded-[3rem] overflow-hidden shadow-2xl">
+            <div id="data-tabs" className="p-1 pb-4 px-1.5 bg-card border border-border rounded-2xl overflow-hidden shadow-2xl">
                 {/* Integrated Tabs Header */}
                 <div className="flex flex-wrap gap-2 p-3 bg-muted/30 border-b border-border">
                     {[

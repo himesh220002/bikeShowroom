@@ -26,8 +26,65 @@ const upload = multer({ storage: storage });
 // Get all campaigns
 router.get('/', async (req, res) => {
     try {
-        const ads = await Ad.find().sort({ priority: 1, createdAt: -1 });
-        res.json({ success: true, data: ads });
+        let ads = await Ad.find();
+        const now = new Date();
+        const currentMonth = now.toLocaleString('en-US', { month: 'long' });
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const currentMonthIndex = now.getMonth();
+
+        // 1. Auto-transition status based on dates
+        const updatedAds = await Promise.all(ads.map(async (ad) => {
+            let status = ad.status;
+            let changed = false;
+
+            if (ad.startDate && ad.endDate) {
+                if (now < ad.startDate) {
+                    if (status !== 'Scheduled') { status = 'Scheduled'; changed = true; }
+                } else if (now > ad.endDate) {
+                    if (status !== 'Inactive') { status = 'Inactive'; changed = true; }
+                } else {
+                    if (status !== 'Active') { status = 'Active'; changed = true; }
+                }
+            }
+
+            if (changed) {
+                ad.status = status;
+                await ad.save();
+            }
+            return ad;
+        }));
+
+        // 2. Complex Sorting
+        // - Sort by month relevance (current month first, circular)
+        // - Within month, sort by status (Active > Scheduled > Inactive)
+        // - Then by priority
+        const sortedAds = updatedAds.sort((a: any, b: any) => {
+            const getMonthIdx = (m?: string) => m ? months.indexOf(m) : -1;
+            const aMonthIdx = getMonthIdx(a.month);
+            const bMonthIdx = getMonthIdx(b.month);
+
+            // Circular distance from current month
+            const getDist = (idx: number) => {
+                if (idx === -1) return 100; // No month set
+                return (idx - currentMonthIndex + 12) % 12;
+            };
+
+            const aDist = getDist(aMonthIdx);
+            const bDist = getDist(bMonthIdx);
+
+            if (aDist !== bDist) return aDist - bDist;
+
+            // Status Priority
+            const statusOrder = { 'Active': 0, 'Scheduled': 1, 'Inactive': 2 };
+            const aStatus = statusOrder[a.status as keyof typeof statusOrder] ?? 3;
+            const bStatus = statusOrder[b.status as keyof typeof statusOrder] ?? 3;
+
+            if (aStatus !== bStatus) return aStatus - bStatus;
+
+            return (a.priority || 0) - (b.priority || 0);
+        });
+
+        res.json({ success: true, data: sortedAds });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
     }
@@ -36,7 +93,7 @@ router.get('/', async (req, res) => {
 // Create new campaign with image upload
 router.post('/', upload.single('image'), async (req, res) => {
     try {
-        const { name, type, link, status, description } = req.body;
+        const { name, type, link, status, description, month, startDate, endDate } = req.body;
 
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'Image is required' });
@@ -53,6 +110,9 @@ router.post('/', upload.single('image'), async (req, res) => {
             link,
             status,
             description,
+            month,
+            startDate: startDate ? new Date(startDate) : undefined,
+            endDate: endDate ? new Date(endDate) : undefined,
             image: imagePath,
             impact: '0',
             priority: adCount
@@ -90,8 +150,17 @@ router.post('/reorder', async (req, res) => {
 // Update campaign
 router.put('/:id', upload.single('image'), async (req, res) => {
     try {
-        const { name, type, link, status, description } = req.body;
-        const updateData: any = { name, type, link, status, description };
+        const { name, type, link, status, description, month, startDate, endDate } = req.body;
+        const updateData: any = {
+            name,
+            type,
+            link,
+            status,
+            description,
+            month,
+            startDate: startDate ? new Date(startDate) : undefined,
+            endDate: endDate ? new Date(endDate) : undefined
+        };
 
         if (req.file) {
             // New image uploaded

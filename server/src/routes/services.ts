@@ -96,6 +96,11 @@ router.put('/:id/status', async (req, res) => {
         if (status === 'completed' && !service.completedAt) updateData.completedAt = new Date();
         if (status === 'delivered' && !service.deliveredAt) updateData.deliveredAt = new Date();
 
+        // Reset priority to Normal if completed or delivered
+        if (['completed', 'delivered'].includes(status)) {
+            updateData.priority = 'Normal';
+        }
+
         // Update Workshop Slot if cancelled
         if (status === 'cancelled' && service.status !== 'cancelled') {
             await WorkshopSlot.findOneAndUpdate(
@@ -209,6 +214,12 @@ router.put('/:id', async (req, res) => {
 
         // Apply updates
         Object.assign(service, updateFields);
+
+        // Reset priority to Normal if completed or delivered
+        if (['completed', 'delivered'].includes(service.status)) {
+            service.priority = 'Normal';
+        }
+
         await service.save();
         await service.populate('customerId');
 

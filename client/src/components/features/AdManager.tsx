@@ -13,8 +13,11 @@ type Campaign = {
     image: string;
     description?: string;
     link: string;
-    status: "Active" | "Scheduled" | "Ended";
+    status: "Active" | "Inactive" | "Scheduled";
     impact: string;
+    month?: string;
+    startDate?: string;
+    endDate?: string;
     createdAt: string;
 };
 
@@ -31,6 +34,10 @@ export function AdManager() {
     const [description, setDescription] = useState("");
     const [image, setImage] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [month, setMonth] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [status, setStatus] = useState<"Active" | "Inactive" | "Scheduled">("Scheduled");
     const [uploading, setUploading] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -71,7 +78,10 @@ export function AdManager() {
         formData.append('link', link);
         formData.append('description', description);
         if (image) formData.append('image', image);
-        formData.append('status', editingAd?.status || 'Active');
+        formData.append('status', status);
+        formData.append('month', month);
+        if (startDate) formData.append('startDate', startDate);
+        if (endDate) formData.append('endDate', endDate);
 
         try {
             const url = editingAd ? `${API_URL}/ads/${editingAd._id}` : `${API_URL}/ads`;
@@ -143,6 +153,10 @@ export function AdManager() {
         setImage(null);
         setPreviewUrl(null);
         setEditingAd(null);
+        setMonth("");
+        setStartDate("");
+        setEndDate("");
+        setStatus("Scheduled");
     };
 
     const startEditing = (ad: Campaign) => {
@@ -152,6 +166,10 @@ export function AdManager() {
         setLink(ad.link);
         setDescription(ad.description || "");
         setPreviewUrl(ad.image);
+        setMonth(ad.month || "");
+        setStartDate(ad.startDate ? new Date(ad.startDate).toISOString().split('T')[0] : "");
+        setEndDate(ad.endDate ? new Date(ad.endDate).toISOString().split('T')[0] : "");
+        setStatus(ad.status);
         setIsAdding(true);
     };
 
@@ -168,8 +186,8 @@ export function AdManager() {
         <div className="space-y-8 text-foreground">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter">
-                        AD <span className="text-gradient">MANAGEMENT</span>
+                    <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
+                        AD MANAGEMENT
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Control your showroom's digital footprint</p>
                 </div>
@@ -242,6 +260,55 @@ export function AdManager() {
                                     rows={3}
                                     className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all resize-none"
                                 />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Target Month</label>
+                                    <select
+                                        value={month}
+                                        onChange={e => setMonth(e.target.value)}
+                                        className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all appearance-none"
+                                    >
+                                        <option value="">No specific month</option>
+                                        {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(m => (
+                                            <option key={m} value={m}>{m}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Initial Status</label>
+                                    <select
+                                        value={status}
+                                        onChange={e => setStatus(e.target.value as any)}
+                                        className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all appearance-none font-bold"
+                                    >
+                                        <option value="Active">Active</option>
+                                        <option value="Scheduled">Scheduled</option>
+                                        <option value="Inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 border-t border-border/50 pt-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Schedule Start</label>
+                                    <input
+                                        type="date"
+                                        value={startDate}
+                                        onChange={e => setStartDate(e.target.value)}
+                                        className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all [color-scheme:dark]"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Schedule End</label>
+                                    <input
+                                        type="date"
+                                        value={endDate}
+                                        onChange={e => setEndDate(e.target.value)}
+                                        className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all [color-scheme:dark]"
+                                    />
+                                </div>
                             </div>
 
                             <button
@@ -326,11 +393,29 @@ export function AdManager() {
                                     <h4 className="text-lg font-display font-black text-foreground uppercase tracking-tight">{camp.name}</h4>
                                     <div className="flex items-center gap-4">
                                         <span className="text-[9px] font-black uppercase tracking-widest text-racing-blue">{camp.type}</span>
+                                        {camp.month && (
+                                            <>
+                                                <span className="w-1 h-1 rounded-full bg-border" />
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-amber-500">{camp.month} Edition</span>
+                                            </>
+                                        )}
                                         <span className="w-1 h-1 rounded-full bg-border" />
                                         <a href={camp.link} target="_blank" className="text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue flex items-center gap-1 transition-colors">
                                             <LinkIcon className="w-3 h-3" />
                                             Target Link
                                         </a>
+                                    </div>
+                                    <div className="flex items-center gap-4 pt-1">
+                                        {camp.startDate && (
+                                            <span className="text-[8px] font-bold text-muted-foreground/60 uppercase">
+                                                From: {new Date(camp.startDate).toLocaleDateString()}
+                                            </span>
+                                        )}
+                                        {camp.endDate && (
+                                            <span className="text-[8px] font-bold text-muted-foreground/60 uppercase">
+                                                Until: {new Date(camp.endDate).toLocaleDateString()}
+                                            </span>
+                                        )}
                                     </div>
                                     {camp.description && <p className="text-[10px] text-muted-foreground font-medium max-w-sm line-clamp-1">{camp.description}</p>}
                                 </div>
@@ -338,12 +423,12 @@ export function AdManager() {
 
                             <div className="flex items-center gap-8">
                                 <div className="hidden lg:flex flex-col items-end">
-                                    <span className="text-[8px] text-muted-foreground font-black uppercase tracking-[0.2em] mb-1">Status</span>
+                                    <span className="text-[8px] text-muted-foreground font-black uppercase tracking-[0.2em] mb-1">Live Status</span>
                                     <span className={cn(
                                         "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border",
                                         camp.status === "Active" ? "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20" :
                                             camp.status === "Scheduled" ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" :
-                                                "bg-muted text-muted-foreground border-border"
+                                                "bg-red-500/10 text-red-600 border-red-500/20"
                                     )}>
                                         {camp.status}
                                     </span>
