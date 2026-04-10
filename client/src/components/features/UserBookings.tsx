@@ -28,8 +28,12 @@ interface ServiceBooking {
     appointmentDate: string;
     appointmentTime: string;
     status: 'booked' | 'in-progress' | 'completed' | 'delivered' | 'cancelled';
+    priority?: 'High' | 'Normal';
     technicianName?: string;
+    estimatedCompletionTime?: string;
     cost?: number;
+    billingType?: 'free' | 'paid';
+    serviceNumber?: number;
     notes?: string;
     createdAt: string;
 }
@@ -100,7 +104,7 @@ export function UserBookings() {
             {/* Component Header & Tabs */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
                 <div className="space-y-1 text-center sm:text-left">
-                    <h3 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter flex items-center justify-center sm:justify-start gap-3">
+                    <h3 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter flex items-center justify-center sm:justify-start gap-3">
                         {activeTab === "active" ? <Activity className="w-6 h-6 text-racing-blue" /> : <History className="w-6 h-6 text-zinc-500" />}
                         Workshop <span className={activeTab === "active" ? "text-racing-blue" : "text-muted-foreground"}>Bookings</span>
                     </h3>
@@ -109,12 +113,12 @@ export function UserBookings() {
                     </p>
                 </div>
 
-                <div className="flex gap-2 p-1 bg-muted/30 border border-border rounded-xl backdrop-blur-sm">
+                <div className="flex gap-2 p-1 bg-muted/90 border border-border rounded-xl backdrop-blur-sm">
                     <button
                         onClick={() => setActiveTab("active")}
                         className={cn(
                             "px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all relative overflow-hidden",
-                            activeTab === "active" ? "bg-racing-blue text-white shadow-lg shadow-racing-blue/20" : "text-muted-foreground hover:text-foreground"
+                            activeTab === "active" ? "bg-racing-blue text-white shadow-lg shadow-racing-blue/20" : "text-muted-foreground hover:text-white"
                         )}
                     >
                         Active ({activeBookings.length})
@@ -141,7 +145,7 @@ export function UserBookings() {
                     className="space-y-4"
                 >
                     {currentList.length === 0 ? (
-                        <div className="glass p-20 rounded-[3rem] text-center border border-dashed border-border/50 bg-card/10">
+                        <div className="bg-gray-100 p-20 rounded-[3rem] text-center border border-dashed border-border/50 bg-card/10">
                             {activeTab === "active" ? <Activity className="w-12 h-12 text-muted-foreground/30 mx-auto mb-6" /> : <History className="w-12 h-12 text-muted-foreground/30 mx-auto mb-6" />}
                             <h4 className="text-xl font-display font-black text-foreground uppercase tracking-tighter mb-2 opacity-50">
                                 No {activeTab} Records
@@ -153,7 +157,7 @@ export function UserBookings() {
                             <div
                                 key={booking._id}
                                 className={cn(
-                                    "glass rounded-[2rem] border border-border/50 overflow-hidden hover:border-racing-blue/30 transition-all group",
+                                    "bg-gray-100 rounded-[2rem] border border-border/50 overflow-hidden hover:border-racing-blue/30 transition-all group",
                                     booking.status === 'in-progress' && "border-racing-blue/20 bg-racing-blue/[0.02]"
                                 )}
                             >
@@ -176,6 +180,17 @@ export function UserBookings() {
                                                     <h4 className="text-lg font-display font-black text-foreground uppercase tracking-tighter italic">
                                                         {booking.serviceType}
                                                     </h4>
+                                                    {/* Service Number Badge */}
+                                                    {booking.serviceNumber && (
+                                                        <span className={cn(
+                                                            "text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
+                                                            booking.serviceNumber <= 4
+                                                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                                                : "bg-racing-blue/10 text-racing-blue border-racing-blue/20"
+                                                        )}>
+                                                            SVC #{booking.serviceNumber} &middot; {booking.serviceNumber <= 4 ? 'Free' : 'Paid'}
+                                                        </span>
+                                                    )}
                                                     <span className={cn(
                                                         "text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
                                                         booking.status === 'booked' ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
@@ -186,6 +201,11 @@ export function UserBookings() {
                                                     )}>
                                                         {booking.status.replace('-', ' ')}
                                                     </span>
+                                                    {booking.priority === 'High' && (
+                                                        <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20">
+                                                            HIGH PRIORITY
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                                                     <Bike className="w-3 h-3" /> {booking.bikeModel} <span className="opacity-20">/</span> {booking.regNumber || 'REG PENDING'}
@@ -235,16 +255,38 @@ export function UserBookings() {
                                     </div>
 
                                     {/* Expandable Meta Info */}
-                                    {booking.technicianName && (
-                                        <div className="mt-6 pt-4 border-t border-border/30 flex items-center gap-4">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest italic">Attended By:</span>
-                                                <span className="text-[9px] font-black text-foreground uppercase tracking-tighter">{booking.technicianName}</span>
-                                            </div>
-                                            {booking.cost && (
-                                                <div className="flex items-center gap-2 ml-auto">
-                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest italic">Final Amount:</span>
-                                                    <span className="text-[10px] font-black text-racing-blue uppercase tracking-tighter italic">₹{booking.cost.toLocaleString('en-IN')}</span>
+                                    {(booking.technicianName || (['completed', 'delivered'].includes(booking.status) && (booking.cost != null || booking.billingType))) && (
+                                        <div className="mt-6 pt-4 border-t border-border/30 flex flex-wrap items-center gap-4">
+                                            {/* Billing Type Badge — only shown after admin confirms pricing */}
+                                            {['completed', 'delivered'].includes(booking.status) && (
+                                                booking.billingType === 'free' ? (
+                                                    <span className="px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                                                        🎁 Free Service
+                                                    </span>
+                                                ) : (
+                                                    <span className="px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full bg-racing-blue/10 text-racing-blue border border-racing-blue/20">
+                                                        💳 Paid Service
+                                                    </span>
+                                                )
+                                            )}
+
+                                            {booking.technicianName && (
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest italic">Attended By:</span>
+                                                    <span className="text-[9px] font-black text-foreground uppercase tracking-tighter">{booking.technicianName}</span>
+                                                </div>
+                                            )}
+
+                                            {booking.cost != null && (['delivered', 'completed'].includes(booking.status)) && (
+                                                <div className="ml-auto flex items-center gap-3 px-4 py-2 bg-racing-blue/5 border border-racing-blue/20 rounded-2xl">
+                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Final Bill</span>
+                                                    <span className="text-sm font-black text-racing-blue uppercase tracking-tighter">
+                                                        {booking.billingType === 'free' && booking.cost === 0
+                                                            ? 'Complimentary'
+                                                            : booking.cost > 0
+                                                                ? `₹${booking.cost.toLocaleString('en-IN')}`
+                                                                : 'Pending'}
+                                                    </span>
                                                 </div>
                                             )}
                                         </div>

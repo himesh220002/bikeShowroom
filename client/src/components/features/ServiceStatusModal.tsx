@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Save, Wrench, Clock, FileText, IndianRupee } from "lucide-react";
+import { X, Save, Wrench, Clock, FileText, IndianRupee, Tag } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { API_URL } from "@/lib/config";
 import { ServiceBooking } from "./ServicesTable";
@@ -21,7 +21,8 @@ export function ServiceStatusModal({ service, newStatus, isOpen, onClose, onUpda
         technicianName: service.technicianName || "",
         estimatedCompletionTime: service.estimatedCompletionTime || "",
         notes: "",
-        cost: (service as any).cost || 0
+        cost: (service as any).cost || 0,
+        billingType: (service as any).billingType || 'paid' as 'free' | 'paid'
     });
 
     if (!isOpen) return null;
@@ -97,8 +98,41 @@ export function ServiceStatusModal({ service, newStatus, isOpen, onClose, onUpda
                             </div>
                         </div>
 
+                        {/* Billing Type Toggle */}
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black text-racing-blue">Bill Amount (Service + Accessories)</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                <Tag className="w-3 h-3" /> Service Pricing
+                            </label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {(['paid', 'free'] as const).map((type) => (
+                                    <button
+                                        key={type}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, billingType: type })}
+                                        className={cn(
+                                            "py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all",
+                                            formData.billingType === type
+                                                ? type === 'paid'
+                                                    ? "bg-racing-blue text-white border-racing-blue shadow-lg shadow-racing-blue/20"
+                                                    : "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20"
+                                                : "bg-background text-muted-foreground border-border hover:border-racing-blue/30"
+                                        )}
+                                    >
+                                        {type === 'paid' ? '💳 Paid' : '🎁 Free'}
+                                    </button>
+                                ))}
+                            </div>
+                            {formData.billingType === 'free' && (
+                                <p className="text-[9px] text-emerald-600 font-bold mt-1 pl-1">
+                                    Free service — add amount only if extras were charged.
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black text-racing-blue">
+                                {formData.billingType === 'free' ? 'Extra Charges (if any)' : 'Bill Amount (Service + Accessories)'}
+                            </label>
                             <div className="relative">
                                 <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-racing-blue" />
                                 <input

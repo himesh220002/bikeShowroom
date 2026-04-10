@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
         }
 
         // 2. Manage Workshop Slot with Overbooking Protection
-        const { appointmentDate, appointmentTime } = rest;
+        const { appointmentDate, appointmentTime, bikeModel } = rest;
         if (appointmentDate && appointmentTime) {
             const slot = await WorkshopSlot.findOne({ date: appointmentDate, slotTime: appointmentTime });
             const capacity = slot?.capacity ?? 5;
@@ -56,12 +56,27 @@ router.post('/', async (req, res) => {
             );
         }
 
-        // 3. Create Service linked to Customer
+        // 3. Compute service number for this phone + bikeModel combo
+        //    Count all prior services (non-cancelled) to determine the sequence number
+        const priorCount = await Service.countDocuments({
+            phone,
+            bikeModel,
+            status: { $nin: ['cancelled'] }
+        });
+        const serviceNumber = priorCount + 1;
+
+        // Services 1–4 are complimentary (free), 5+ are paid.
+        // Admin can always override from the Full Job Edit form.
+        const autoBillingType: 'free' | 'paid' = serviceNumber <= 4 ? 'free' : 'paid';
+
+        // 4. Create Service linked to Customer
         const service = new Service({
             ...rest,
             name,
             phone,
-            customerId: customer._id
+            customerId: customer._id,
+            serviceNumber,
+            billingType: rest.billingType || autoBillingType
         });
         await service.save();
 
@@ -77,6 +92,7 @@ router.post('/', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
+
 
 // Update service status and timestamps
 router.put('/:id/status', async (req, res) => {

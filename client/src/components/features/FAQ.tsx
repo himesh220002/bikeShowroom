@@ -64,8 +64,8 @@ export function FAQ() {
                                 className={cn(
                                     "group border rounded-3xl transition-all duration-500 overflow-hidden",
                                     isActive
-                                        ? "bg-white border-white shadow-[0_20px_50px_rgba(45,106,255,0.1)]"
-                                        : "bg-zinc-900/50 border-white/5 hover:border-white/10 hover:bg-zinc-900"
+                                        ? "bg-zinc-900 border-racing-blue/50 shadow-[0_20px_50px_rgba(45,106,255,0.1)]"
+                                        : "bg-zinc-900/40 border-white/5 hover:border-racing-blue/20"
                                 )}
                             >
                                 <button
@@ -74,15 +74,15 @@ export function FAQ() {
                                 >
                                     <span className={cn(
                                         "text-sm font-black uppercase tracking-widest transition-colors duration-300",
-                                        isActive ? "text-zinc-950" : "text-gray-400 group-hover:text-white"
+                                        isActive ? "text-white" : "text-gray-400 group-hover:text-white"
                                     )}>
                                         {faq.question}
                                     </span>
                                     <div className={cn(
-                                        "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500",
-                                        isActive ? "sm:bg-racing-blue text-black sm:text-white rotate-180" : "sm:bg-white/10 text-white sm:text-gray-500"
+                                        "w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-500",
+                                        isActive ? "bg-racing-blue text-white rotate-180 shadow-lg shadow-racing-blue/20" : "bg-white/5 text-gray-500"
                                     )}>
-                                        <ChevronDown className="w-4 h-4" />
+                                        <ChevronDown className={cn("w-5 h-5", isActive && "animate-bounce-subtle")} />
                                     </div>
                                 </button>
 
@@ -95,9 +95,9 @@ export function FAQ() {
                                             transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
                                         >
                                             <div className="px-4 sm:px-8 pb-8">
-                                                <div className="p-6 bg-racing-blue/5 rounded-2xl border border-racing-blue/10 relative">
-                                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-racing-blue rounded-full" />
-                                                    <p className="text-xs font-bold text-zinc-700 leading-relaxed tracking-wider opacity-90">
+                                                <div className="p-6 bg-racing-blue/5 rounded-2xl border border-racing-blue/10 relative overflow-hidden">
+                                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-racing-blue" />
+                                                    <p className="text-xs font-bold text-gray-300 leading-relaxed tracking-wider">
                                                         {faq.answer}
                                                     </p>
                                                 </div>

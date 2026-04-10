@@ -5,7 +5,8 @@ import { Wrench, Shield, Zap, MessageSquare } from "lucide-react";
 
 export default function ServicePage() {
     return (
-        <div className="min-h-screen bg-zinc-950 pt-20 md:pt-32 pb-24 relative overflow-hidden">
+        <div className="min-h-screen bg-zinc-950 pt-24 md:pt-36 pb-24 relative overflow-hidden">
+            <div className="h-[200px] inset-0 bg-black/50 z-0" />
 
             {/* Background Decorative Elements */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-racing-blue/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
@@ -20,14 +21,14 @@ export default function ServicePage() {
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue">Premium Support Hub</span>
                     </div>
                     <div className="space-y-8">
-                        <h1 className="text-4xl md:text-6xl xl:text-7xl font-display font-black text-white uppercase tracking-tighter leading-none">
+                        <h1 className="text-3xl md:text-5xl xl:text-7xl font-display font-black text-white uppercase tracking-tighter leading-none">
                             EXPERT <span className="text-gradient">SERVICE & SPARES</span>
                         </h1>
                         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
                             <p className="text-gray-400 font-medium leading-relaxed max-w-2xl">
                                 Experience world-class maintenance at our Yamaha-certified facility. From high-speed tuning to genuine part replacements, we ensure your ride stays at its peak performance.
                             </p>
-                            <div className="flex flex-wrap gap-4 shrink-0">
+                            {/* <div className="flex flex-wrap gap-4 shrink-0">
                                 <div className="px-6 py-4 bg-zinc-900/50 border border-zinc-800 rounded-3xl flex items-center gap-4">
                                     <div className="w-10 h-10 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
                                         <MessageSquare className="w-5 h-5 text-racing-blue" />
@@ -37,27 +38,29 @@ export default function ServicePage() {
                                         <span className="text-xs font-black text-white uppercase tracking-widest">+91 70041 00062</span>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                <div className="grid grid-cols-1 lg:grid-cols-1 gap-12 xl:gap-24">
                     {/* Left Side: Booking & Stats */}
-                    <div id="booking" className="lg:col-span-12 xl:col-span-5 space-y-12">
-                        <ServiceBooking />
+                    <div id="booking" className="lg:col-span-1 xl:col-span-1 space-y-16">
+                        <section>
+                            <ServiceBooking />
+                        </section>
 
-                        <div className="pt-12 border-t border-zinc-900">
+                        <section className="pt-16 border-t border-white/5">
                             <UserBookings />
-                        </div>
+                        </section>
 
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                             {[
                                 { icon: Wrench, label: "Certified", value: "Technicians" },
                                 { icon: Shield, label: "Official", value: "Warranty" },
                                 { icon: Zap, label: "Quick", value: "Turnaround" }
                             ].map((stat, i) => (
-                                <div key={i} className="p-3 md:p-6 bg-zinc-900/30 border border-zinc-800 rounded-[2rem] text-center hover:border-racing-blue/20 transition-all group">
+                                <div key={i} className="p-6 bg-zinc-900/40 border border-white/5 rounded-[2.5rem] text-center hover:border-racing-blue/20 transition-all group">
                                     <stat.icon className="w-6 h-6 text-racing-blue mx-auto mb-4 group-hover:scale-110 transition-transform" />
                                     <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500 block mb-1">{stat.label}</span>
                                     <span className="text-sm font-black text-white uppercase tracking-tighter italic">{stat.value}</span>
@@ -67,10 +70,8 @@ export default function ServicePage() {
                     </div>
 
                     {/* Right Side: Spare Parts Discovery */}
-                    <div id="spares" className="lg:col-span-12 xl:col-span-7 space-y-12">
-                        <div className="p-1 px-4 bg-racing-blue/10 border border-racing-blue/20 rounded-full w-fit mb-4">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue">Genuine Accessories & Parts</span>
-                        </div>
+                    <div id="spares" className="flex justify-center items-center space-y-12">
+
                         <SparesGallery />
                     </div>
                 </div>

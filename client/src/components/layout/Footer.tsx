@@ -67,7 +67,8 @@ export function Footer() {
                                 { name: "MT-Series", href: "/products#sport" },
                                 { name: "FZ-Series", href: "/products#street" },
                                 { name: "Aerox 155", href: "/products#scooters" },
-                                { name: "Scooters", href: "/products#scooters" }
+                                { name: "Scooters", href: "/products#scooters" },
+                                { name: "About Us", href: "/#experience" },
                             ].map((item) => (
                                 <li key={item.name}>
                                     <Link href={item.href} className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
@@ -89,7 +90,9 @@ export function Footer() {
                                 { name: "Book A Service", href: "/service#booking" },
                                 { name: "Finance / EMI", href: "/#inquiry" },
                                 { name: "Insurance Sync", href: "/#inquiry" },
-                                { name: "Genuine Spares", href: "/service#spares" }
+                                { name: "Genuine Spares", href: "/service#spares" },
+                                { name: "WhatsApp Connect", href: "https://wa.me/917004100062" },
+                                { name: "Careers", href: "/#inquiry" }
                             ].map((item) => (
                                 <li key={item.name}>
                                     <Link href={item.href} className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">

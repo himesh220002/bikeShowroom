@@ -74,15 +74,18 @@ export function Hero() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.6 }}
-                        className="flex flex-wrap gap-5"
+                        className="flex flex-wrap gap-4"
                     >
-                        <a href="#bikes" className="w-full sm:w-auto bg-racing-blue hover:bg-dark-racing text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-sm flex items-center justify-center gap-3 transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-racing-blue/40 group">
-                            Explore Lineup
-                            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        <a href="/products" className="w-full sm:w-auto bg-racing-blue hover:bg-dark-racing text-white px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-racing-blue/40 group">
+                            Explore Models
+                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <a href="/service" className="w-full sm:w-auto bg-white/5 hover:bg-white/10 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all border border-white/10 shadow-2xl flex items-center justify-center gap-3">
-                            <Activity className="w-4 h-4 text-racing-blue" />
-                            Book Service
+                        <a href="#inquiry" className="w-full sm:w-auto bg-white hover:bg-gray-100 text-black px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs transition-all shadow-2xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95">
+                            Book Test Ride
+                        </a>
+                        <a href="#promotions" className="w-full sm:w-auto bg-zinc-900/50 hover:bg-zinc-800 text-white px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs transition-all border border-white/10 shadow-2xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95">
+                            <Star className="w-3.5 h-3.5 text-racing-blue" />
+                            View Offers
                         </a>
                     </motion.div>
 

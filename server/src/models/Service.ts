@@ -20,6 +20,8 @@ export interface IService extends Document {
     completedAt?: Date;
     deliveredAt?: Date;
     cost: number;
+    billingType: 'free' | 'paid';
+    serviceNumber: number;   // 1-based count per phone+bikeModel; 1-4 = free, 5+ = paid
     createdAt: Date;
     updatedAt: Date;
 }
@@ -43,6 +45,8 @@ const ServiceSchema: Schema = new Schema({
     appointmentTime: { type: String, required: true },
     estimatedCompletionTime: { type: String },
     cost: { type: Number, default: 0 },
+    billingType: { type: String, enum: ['free', 'paid'], default: 'paid' },
+    serviceNumber: { type: Number, default: 1 },
     statusHistory: [{
         status: { type: String, required: true },
         timestamp: { type: Date, default: Date.now },

@@ -90,6 +90,7 @@ export function ServicesTable({ services, onUpdate }: ServicesTableProps) {
                             <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Booking Info</th>
                             <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Vehicle</th>
                             <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Schedule</th>
+                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Bill</th>
                             <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground text-right">Status</th>
                         </tr>
 
@@ -148,6 +149,32 @@ export function ServicesTable({ services, onUpdate }: ServicesTableProps) {
                                             <span className="text-[7.5px] font-black text-amber-600 bg-amber-500/10 border border-amber-500/20 px-1 py-0.5 rounded w-fit mt-0.5">
                                                 EST: {service.estimatedCompletionTime}
                                             </span>
+                                        )}
+                                    </div>
+                                </td>
+
+                                <td className="py-4 px-4">
+                                    <div className="flex flex-col gap-1">
+                                        {/* Service Number Badge */}
+                                        {(service as any).serviceNumber && (
+                                            <span className={cn(
+                                                "text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full border w-fit",
+                                                (service as any).serviceNumber <= 4
+                                                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                                                    : "bg-racing-blue/10 text-racing-blue border-racing-blue/20"
+                                            )}>
+                                                SVC #{(service as any).serviceNumber} · {(service as any).serviceNumber <= 4 ? 'Free' : 'Paid'}
+                                            </span>
+                                        )}
+                                        {(service as any).cost > 0 ? (
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="text-[10px] font-black text-racing-blue uppercase tracking-tighter">
+                                                    ₹{((service as any).cost as number).toLocaleString('en-IN')}
+                                                </span>
+                                                <span className="text-[8px] font-bold text-muted-foreground uppercase opacity-60">Billed</span>
+                                            </div>
+                                        ) : (
+                                            <span className="text-[10px] font-black text-muted-foreground opacity-30 uppercase tracking-widest">—</span>
                                         )}
                                     </div>
                                 </td>

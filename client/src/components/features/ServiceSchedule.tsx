@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { Calendar, Clock, User, Bike, CheckCircle2, AlertCircle, MoreVertical, Search, Filter, Wrench, Loader2, Phone, ShieldAlert, ChevronDown, UserCheck, X, Save, MessageSquare } from "lucide-react";
+import { Calendar, Clock, User, Bike, CheckCircle2, AlertCircle, MoreVertical, Search, Filter, Wrench, Loader2, Phone, ShieldAlert, ChevronDown, UserCheck, X, Save, MessageSquare, IndianRupee, Tag } from "lucide-react";
 
 import { API_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
@@ -24,7 +24,9 @@ export function ServiceSchedule() {
         appointmentDate: "",
         appointmentTime: "",
         priority: "Normal",
-        technician: ""
+        technician: "",
+        billingType: "paid" as 'free' | 'paid',
+        cost: 0
     });
     const [updating, setUpdating] = useState(false);
     const [openStatusId, setOpenStatusId] = useState<string | null>(null);
@@ -82,7 +84,9 @@ export function ServiceSchedule() {
             appointmentDate: job.date,
             appointmentTime: job.time,
             priority: job.priority,
-            technician: job.technician === "Unassigned" ? "" : job.technician
+            technician: job.technician === "Unassigned" ? "" : job.technician,
+            billingType: job.billingType || 'paid',
+            cost: job.cost || 0
         });
         setIsEditModalOpen(true);
     };
@@ -103,7 +107,9 @@ export function ServiceSchedule() {
                     appointmentDate: editForm.appointmentDate,
                     appointmentTime: editForm.appointmentTime,
                     priority: editForm.priority,
-                    technicianName: editForm.technician
+                    technicianName: editForm.technician,
+                    billingType: editForm.billingType,
+                    cost: editForm.cost
                 })
             });
             const data = await res.json();
@@ -121,7 +127,9 @@ export function ServiceSchedule() {
                         date: updated.appointmentDate,
                         time: updated.appointmentTime,
                         priority: updated.priority,
-                        technician: updated.technicianName || "Unassigned"
+                        technician: updated.technicianName || "Unassigned",
+                        billingType: updated.billingType || 'paid',
+                        cost: updated.cost || 0
                     } : job
                 ));
                 setIsEditModalOpen(false);
@@ -206,10 +214,13 @@ export function ServiceSchedule() {
                         type: s.serviceType,
                         time: s.appointmentTime || "Not Set",
                         date: s.appointmentDate || "",
-                        status: s.status, // already lowercase from backend
+                        status: s.status,
                         priority: s.priority || "Normal",
                         technician: s.technicianName || "Unassigned",
                         notes: s.notes || "",
+                        cost: s.cost || 0,
+                        billingType: s.billingType || 'paid',
+                        serviceNumber: s.serviceNumber || 1,
                         deliveredAt: s.deliveredAt || null
                     }));
                     setJobs(formatted);
@@ -456,9 +467,25 @@ export function ServiceSchedule() {
                                         <td className="px-6 py-4">
 
                                             <div className="flex flex-col gap-2">
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    {/* Service Number Badge */}
+                                                    <span className={cn(
+                                                        "text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full border",
+                                                        job.serviceNumber <= 4
+                                                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                                                            : "bg-racing-blue/10 text-racing-blue border-racing-blue/20"
+                                                    )}>
+                                                        SVC #{job.serviceNumber} · {job.serviceNumber <= 4 ? 'Free' : 'Paid'}
+                                                    </span>
                                                     <Wrench className="w-3.5 h-3.5 text-muted-foreground" />
                                                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">{job.type}</span>
+                                                    {job.billingType === 'free' ? (
+                                                        <span className="text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">Free</span>
+                                                    ) : job.cost > 0 ? (
+                                                        <span className="text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full bg-racing-blue/10 text-racing-blue border border-racing-blue/20">
+                                                            ₹{job.cost.toLocaleString('en-IN')}
+                                                        </span>
+                                                    ) : null}
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-5 h-5 bg-racing-blue/10 rounded-full flex items-center justify-center border border-racing-blue/20">
@@ -776,6 +803,53 @@ export function ServiceSchedule() {
                                                     className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-3.5 text-xs font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
                                                 />
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Billing Section */}
+                                    <div className="border border-border/60 rounded-2xl p-5 space-y-4 bg-muted/10">
+                                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+                                            <Tag className="w-3 h-3" /> Billing Configuration
+                                        </p>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {(['paid', 'free'] as const).map((type) => (
+                                                <button
+                                                    key={type}
+                                                    type="button"
+                                                    onClick={() => setEditForm({ ...editForm, billingType: type, cost: type === 'free' ? 0 : editForm.cost })}
+                                                    className={cn(
+                                                        "py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all",
+                                                        editForm.billingType === type
+                                                            ? type === 'paid'
+                                                                ? "bg-racing-blue text-white border-racing-blue shadow-lg shadow-racing-blue/20"
+                                                                : "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20"
+                                                            : "bg-background text-muted-foreground border-border hover:border-racing-blue/30"
+                                                    )}
+                                                >
+                                                    {type === 'paid' ? '💳 Paid Service' : '🎁 Free Service'}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-racing-blue">
+                                                {editForm.billingType === 'free' ? 'Extra Charges (if any)' : 'Final Bill Amount (Service + Parts + Labour)'}
+                                            </label>
+                                            <div className="relative">
+                                                <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-racing-blue" />
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={editForm.cost}
+                                                    onChange={(e) => setEditForm({ ...editForm, cost: Number(e.target.value) })}
+                                                    placeholder="0.00"
+                                                    className="w-full bg-racing-blue/5 border border-racing-blue/20 rounded-xl pl-11 pr-4 py-3.5 text-xs font-black text-racing-blue focus:outline-none focus:border-racing-blue/50 transition-all"
+                                                />
+                                            </div>
+                                            {editForm.billingType === 'free' && (
+                                                <p className="text-[9px] text-emerald-600 font-bold pl-1">
+                                                    Free service — enter amount only if additional work was charged.
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
