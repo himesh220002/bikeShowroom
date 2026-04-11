@@ -53,7 +53,7 @@ export function AdCarousel() {
                 </div>
 
                 <div className="relative">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {ads.map((ad) => (
                             <AdCard key={ad._id} ad={ad} />
                         ))}
@@ -70,7 +70,7 @@ export function AdCarousel() {
 function AdCard({ ad }: { ad: Ad }) {
     return (
         <div className="group flex flex-col space-y-4">
-            <div className="relative aspect-square w-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden bg-muted/50 backdrop-blur-md border border-border shadow-2xl gpu-accelerated">
+            <div className="relative aspect-[3/4] w-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden bg-muted/50 backdrop-blur-md border border-border shadow-2xl gpu-accelerated">
                 {/* Visual content part */}
                 <div className="absolute inset-0 w-full h-full">
                     {/* Blurred background for non-banner types */}

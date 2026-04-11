@@ -117,7 +117,7 @@ export function UserBookings() {
                     <button
                         onClick={() => setActiveTab("active")}
                         className={cn(
-                            "px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all relative overflow-hidden",
+                            "px-6 py-2.5 rounded-lg text-[0.5625rem] font-black uppercase tracking-widest transition-all relative overflow-hidden",
                             activeTab === "active" ? "bg-racing-blue text-white shadow-lg shadow-racing-blue/20" : "text-muted-foreground hover:text-white"
                         )}
                     >
@@ -126,7 +126,7 @@ export function UserBookings() {
                     <button
                         onClick={() => setActiveTab("history")}
                         className={cn(
-                            "px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all relative overflow-hidden",
+                            "px-6 py-2.5 rounded-lg text-[0.5625rem] font-black uppercase tracking-widest transition-all relative overflow-hidden",
                             activeTab === "history" ? "bg-zinc-800 text-white shadow-lg" : "text-muted-foreground hover:text-foreground"
                         )}
                     >
@@ -157,7 +157,7 @@ export function UserBookings() {
                             <div
                                 key={booking._id}
                                 className={cn(
-                                    "bg-gray-100 rounded-[2rem] border border-border/50 overflow-hidden hover:border-racing-blue/30 transition-all group",
+                                    "bg-background rounded-[2rem] border border-border/50 overflow-hidden hover:border-racing-blue/30 transition-all group",
                                     booking.status === 'in-progress' && "border-racing-blue/20 bg-racing-blue/[0.02]"
                                 )}
                             >
@@ -247,8 +247,8 @@ export function UserBookings() {
                                                 </div>
                                             ) : (
                                                 <div className="text-right">
-                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-1">Booking Ref</span>
-                                                    <span className="text-[10px] font-black text-foreground uppercase tracking-[0.2em] opacity-40 italic">#{booking._id.slice(-6)}</span>
+                                                    <span className="text-[0.5rem] font-black text-muted-foreground uppercase tracking-widest block mb-1">Booking Ref</span>
+                                                    <span className="text-[0.625rem] font-black text-foreground uppercase tracking-[0.2em] opacity-40 italic">#{booking._id.slice(-6)}</span>
                                                 </div>
                                             )}
                                         </div>

@@ -58,7 +58,7 @@ const tiles = [
 
 export function QuickAccessTiles() {
     return (
-        <section className="hidden md:block py-24 bg-zinc-950">
+        <section className="hidden md:block py-24 bg-zinc-950/40 backdrop-blur-sm">
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
@@ -69,7 +69,7 @@ export function QuickAccessTiles() {
                     </h3>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-6 gap-6">
                     {tiles.map((tile, i) => (
                         <motion.div
                             key={tile.title}
@@ -80,7 +80,7 @@ export function QuickAccessTiles() {
                         >
                             <Link
                                 href={tile.href}
-                                className="group relative flex flex-col items-center text-center p-8 bg-zinc-900/50 rounded-[2.5rem] border border-white/5 hover:border-white/10 transition-all hover:bg-zinc-800/50 h-full overflow-hidden"
+                                className="group relative flex flex-col items-center text-center p-3 xl:p-8 bg-zinc-900/50 rounded-[2.5rem] border border-white/5 hover:border-white/10 transition-all hover:bg-zinc-800/50 h-full overflow-hidden"
                             >
                                 {/* Hover Glow */}
                                 <div className={cn(
@@ -89,7 +89,7 @@ export function QuickAccessTiles() {
                                 )} />
 
                                 <div className={cn(
-                                    "w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 shadow-2xl",
+                                    "w-12 h-12 xl:w-16 xl:h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 shadow-2xl",
                                     tile.color,
                                     tile.hoverColor
                                 )}>

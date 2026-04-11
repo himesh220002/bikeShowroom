@@ -148,7 +148,7 @@ export function Footer() {
 
                 <div className="mt-24 pt-12 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        © {new Date().getFullYear()} Choudhary Yamaha. Excellence Synchronized.
+                        © {new Date().getFullYear()} Choudhary Yamaha. Excellence Synchronized. <span>|</span> <Link href="https://github.com/himesh220002/" target="_blank" rel="noopener noreferrer" className="text-racing-blue hover:text-racing-blue transition-colors">Digitally Empowered by Himesh</Link>
                     </p>
                     <div className="flex items-center gap-8">
                         <Link href="/requirements" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors">Digital Roadmap</Link>

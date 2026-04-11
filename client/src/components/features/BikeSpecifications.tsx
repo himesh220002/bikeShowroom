@@ -14,14 +14,12 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
     }
 
     const mainSpecs = [
-        { label: "Engine", value: bike.fullSpecs.engine, icon: "Gauge" },
-        { label: "Max Power", value: bike.fullSpecs.power, icon: "Zap" },
-        { label: "Max Torque", value: bike.fullSpecs.torque, icon: "Cpu" },
-        { label: "Transmission", value: bike.fullSpecs.transmission, icon: "Binary" },
-        { label: "Braking System", value: bike.fullSpecs.brakes, icon: "Shield" },
-        { label: "Fuel Capacity", value: bike.fullSpecs.fuelCapacity, icon: "Fuel" },
-        // ...(bike.fullSpecs.topSpeed ? [{ label: "Top Speed", value: bike.fullSpecs.topSpeed, icon: "Timer" }] : []),
-        // ...(bike.fullSpecs.mileage ? [{ label: "Mileage", value: bike.fullSpecs.mileage, icon: "Activity" }] : []),
+        { label: "Engine", value: bike.fullSpecs.engine, icon: "Gauge", image: "/images/bike parts/155-cc-lc4v-sohc-fi-engine-with-vva.webp" },
+        { label: "Max Power", value: bike.fullSpecs.power, icon: "Zap", image: "/images/bike parts/accelerationbike.jpeg" },
+        { label: "Max Torque", value: bike.fullSpecs.torque, icon: "Cpu", image: "/images/bike parts/mt-03-right-side-handelbar-throttle-grip.avif" },
+        { label: "Transmission", value: bike.fullSpecs.transmission, icon: "Binary", image: "/images/bike parts/gearengine.jpg" },
+        { label: "Braking System", value: bike.fullSpecs.brakes, icon: "Shield", image: "/images/bike parts/fz-rave-front-disc-brake-caliper.avif" },
+        { label: "Fuel Capacity", value: bike.fullSpecs.fuelCapacity, icon: "Fuel", image: "/images/bike parts/xsr-155-branding-fuel-tank-decal.avif" },
     ];
 
     const secondarySpecs = [
@@ -42,7 +40,7 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                     </h3>
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 mb-16">
+                <div className="max-w-[1200px] mx-auto grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 mb-16">
                     {mainSpecs.map((spec, index) => (
                         <motion.div
                             key={spec.label}
@@ -50,16 +48,29 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
-                            className="bg-card p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-border hover:border-racing-blue/30 transition-all group relative overflow-hidden"
+                            className="group relative h-48 md:h-64 rounded-[2rem] md:rounded-[2.5rem] border border-border overflow-hidden transition-all hover:border-racing-blue/50"
                         >
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-racing-blue/5 blur-2xl -mr-12 -mt-12 group-hover:bg-racing-blue/10 transition-colors" />
+                            {/* Background Image with Overlay */}
+                            {spec.image && (
+                                <>
+                                    <div
+                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                        style={{ backgroundImage: `url("${spec.image}")` }}
+                                    />
+                                    <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
+                                </>
+                            )}
 
-                            <div className="w-10 h-10 md:w-14 md:h-14 bg-muted rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform relative z-10">
-                                <LucideIcon name={spec.icon} className="w-5 h-5 md:w-6 md:h-6 text-racing-blue" />
+                            <div className="relative z-10 p-5 md:p-8 h-full flex flex-col">
+                                <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 backdrop-blur-md rounded-xl md:rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                    <LucideIcon name={spec.icon} className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                                </div>
+
+                                <div className="mt-auto">
+                                    <h4 className="text-[8px] md:text-[10px] text-white/60 font-black uppercase tracking-widest mb-1">{spec.label}</h4>
+                                    <p className="text-sm md:text-xl text-white font-black uppercase tracking-tight">{spec.value}</p>
+                                </div>
                             </div>
-
-                            <h4 className="text-[8px] md:text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1 md:mb-2 relative z-10">{spec.label}</h4>
-                            <p className="text-sm md:text-lg text-foreground font-bold uppercase tracking-tight relative z-10">{spec.value}</p>
                         </motion.div>
                     ))}
                 </div>

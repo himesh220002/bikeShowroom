@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { Calendar, Clock, User, Bike, CheckCircle2, AlertCircle, MoreVertical, Search, Filter, Wrench, Loader2, Phone, ShieldAlert, ChevronDown, UserCheck, X, Save, MessageSquare, IndianRupee, Tag } from "lucide-react";
+import { Calendar, Clock, Plus, User, Bike, CheckCircle2, AlertCircle, MoreVertical, Search, Filter, Wrench, Loader2, Phone, ShieldAlert, ChevronDown, UserCheck, X, Save, MessageSquare, IndianRupee, Tag } from "lucide-react";
 
 import { API_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
+import { ManualServiceModal } from "./ManualServiceModal";
+import io from "socket.io-client";
 
 export function ServiceSchedule() {
     const [jobs, setJobs] = useState<any[]>([]);
@@ -14,6 +16,7 @@ export function ServiceSchedule() {
 
     // Edit Modal State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isManualModalOpen, setIsManualModalOpen] = useState(false);
     const [editingJob, setEditingJob] = useState<any>(null);
     const [editForm, setEditForm] = useState({
         customer: "",
@@ -199,6 +202,61 @@ export function ServiceSchedule() {
     };
 
     useEffect(() => {
+        const socket = io(API_URL.replace('/api', ''));
+
+        socket.on('service_updated', (updatedService: any) => {
+            setJobs(prev => prev.map(job =>
+                job.id === updatedService._id ? {
+                    ...job,
+                    customer: updatedService.name,
+                    phone: updatedService.phone,
+                    bikeModel: updatedService.bikeModel,
+                    regNumber: updatedService.regNumber,
+                    bike: `${updatedService.bikeModel} (${updatedService.regNumber})`,
+                    type: updatedService.serviceType,
+                    time: updatedService.appointmentTime || "Not Set",
+                    date: updatedService.appointmentDate || "",
+                    status: updatedService.status,
+                    priority: updatedService.priority || "Normal",
+                    technician: updatedService.technicianName || "Unassigned",
+                    notes: updatedService.notes || "",
+                    cost: updatedService.cost || 0,
+                    billingType: updatedService.billingType || 'paid',
+                    serviceNumber: updatedService.serviceNumber || 1,
+                    deliveredAt: updatedService.deliveredAt || null
+                } : job
+            ));
+        });
+
+        socket.on('new_service', (newService: any) => {
+            const formatted = {
+                id: newService._id,
+                customer: newService.name,
+                phone: newService.phone,
+                bikeModel: newService.bikeModel,
+                regNumber: newService.regNumber,
+                bike: `${newService.bikeModel} (${newService.regNumber})`,
+                type: newService.serviceType,
+                time: newService.appointmentTime || "Not Set",
+                date: newService.appointmentDate || "",
+                status: newService.status,
+                priority: newService.priority || "Normal",
+                technician: newService.technicianName || "Unassigned",
+                notes: newService.notes || "",
+                cost: newService.cost || 0,
+                billingType: newService.billingType || 'paid',
+                serviceNumber: newService.serviceNumber || 1,
+                deliveredAt: newService.deliveredAt || null
+            };
+            setJobs(prev => [formatted, ...prev]);
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
+    useEffect(() => {
         const fetchServices = async () => {
             try {
                 const res = await fetch(`${API_URL}/services`);
@@ -298,42 +356,50 @@ export function ServiceSchedule() {
 
     return (
         <div className="space-y-8">
-            <div className="flex flex-col justify-between gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
                         SERVICE SCHEDULE
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Manage daily workshop operations</p>
                 </div>
-                <AdminTableControls
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    sortBy={sortBy}
-                    onSortChange={setSortBy}
-                    sortOptions={[
-                        { label: "Status & Queue", value: "newest" },
-                        { label: "Oldest Appointment", value: "oldest" },
-                        { label: "Customer Name A-Z", value: "name" }
-                    ]}
-                    filterStatus={filterStatus}
-                    onFilterChange={setFilterStatus}
-                    filterOptions={[
-                        { label: "All Status", value: "all" },
-                        { label: "Booked", value: "booked" },
-                        { label: "In Progress", value: "in-progress" },
-                        { label: "Completed", value: "completed" },
-                        { label: "Delivered", value: "delivered" },
-                        { label: "Cancelled", value: "cancelled" },
-                        { label: "Deferred", value: "deferred" }
-                    ]}
-                    startDate={startDate}
-                    onStartDateChange={setStartDate}
-                    endDate={endDate}
-                    onEndDateChange={setEndDate}
-                    placeholder="Search workshop jobs by name, reg, bike or tech..."
-                    className="md:w-auto flex-1"
-                />
+                <button
+                    onClick={() => setIsManualModalOpen(true)}
+                    className="group relative flex items-center gap-2 px-6 py-3 bg-racing-blue text-white rounded-2xl overflow-hidden shadow-xl shadow-racing-blue/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                    <Plus className="w-4 h-4" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Add Walk-in Service</span>
+                </button>
             </div>
+            <AdminTableControls
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                sortOptions={[
+                    { label: "Status & Queue", value: "newest" },
+                    { label: "Oldest Appointment", value: "oldest" },
+                    { label: "Customer Name A-Z", value: "name" }
+                ]}
+                filterStatus={filterStatus}
+                onFilterChange={setFilterStatus}
+                filterOptions={[
+                    { label: "All Status", value: "all" },
+                    { label: "Booked", value: "booked" },
+                    { label: "In Progress", value: "in-progress" },
+                    { label: "Completed", value: "completed" },
+                    { label: "Delivered", value: "delivered" },
+                    { label: "Cancelled", value: "cancelled" },
+                    { label: "Deferred", value: "deferred" }
+                ]}
+                startDate={startDate}
+                onStartDateChange={setStartDate}
+                endDate={endDate}
+                onEndDateChange={setEndDate}
+                placeholder="Search workshop jobs by name, reg, bike or tech..."
+                className="md:w-auto flex-1"
+            />
 
             {/* Stats Summary */}
             <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
@@ -876,6 +942,15 @@ export function ServiceSchedule() {
                     </div>
                 )}
             </AnimatePresence>
-        </div>
+
+            <ManualServiceModal
+                isOpen={isManualModalOpen}
+                onClose={() => setIsManualModalOpen(false)}
+                onSuccess={(newJob) => {
+                    // socket will handle state update, but we can do it manually too for instant feedback
+                    // setJobs(prev => [newJob, ...prev]);
+                }}
+            />
+        </div >
     );
 }

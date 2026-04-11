@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { Package, Plus, Loader2, Settings2, Trash2, Edit3, Search } from "lucide-react";
+import { Package, Plus, Minus, Loader2, Settings2, Trash2, Edit3, Search } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
 import io from "socket.io-client";
@@ -126,6 +126,38 @@ export default function InventoryPage() {
         }
     };
 
+    const handleStockChange = async (bikeId: string, colorIndex: number, delta: number) => {
+        const bike = bikes.find(b => b._id === bikeId);
+        if (!bike) return;
+
+        const updatedColors = [...bike.colors];
+        const currentStock = updatedColors[colorIndex].stock || 0;
+        const newStock = Math.max(0, currentStock + delta);
+
+        if (newStock === currentStock) return;
+
+        updatedColors[colorIndex] = { ...updatedColors[colorIndex], stock: newStock };
+
+        // Optimistic UI update
+        setBikes(prev => prev.map(b => b._id === bikeId ? { ...b, colors: updatedColors } : b));
+
+        try {
+            const res = await fetch(`${API_URL}/bikes/${bikeId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...bike, colors: updatedColors })
+            });
+            const data = await res.json();
+            if (!data.success) {
+                // Revert on failure
+                fetchInventory();
+            }
+        } catch (err) {
+            console.error("Failed to update stock:", err);
+            fetchInventory();
+        }
+    };
+
     const processedBikes = useMemo(() => {
         let filtered = [...bikes];
         if (searchQuery) {
@@ -205,24 +237,35 @@ export default function InventoryPage() {
                             {bike.tag}
                         </div>
 
-                        <div className="space-y-4 border-t border-border/10 flex-1">
-                            <div className="flex flex-wrap gap-2">
-                                {bike.colors.map((color: any, idx: number) => (
+                        <div className="flex flex-wrap gap-2">
+                            {bike.colors.map((color: any, idx: number) => (
+                                <div
+                                    key={idx}
+                                    className="px-3 py-1.5 rounded-xl bg-muted/50 border border-border/50 flex items-center gap-3 group/item transition-all hover:bg-muted"
+                                >
                                     <div
-                                        key={idx}
-                                        className="px-2 py-1 rounded-lg bg-muted/50 border border-border/50 flex items-center gap-2"
-                                        title={`${color.name}: ${color.stock} in stock`}
-                                    >
-                                        <div
-                                            className="w-3.5 h-3.5 rounded-full border border-white/20"
-                                            style={{ backgroundColor: color.hex }}
-                                        />
-                                        <span className="text-[12px] ">{color.name}</span>
-                                        <span className="text-[14px] font-black uppercase tracking-widest text-foreground/70">{color.stock}</span>
+                                        className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-sm"
+                                        style={{ backgroundColor: color.hex }}
+                                    />
+                                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mr-1">{color.name}</span>
 
+                                    <div className="flex items-center gap-2 bg-background/50 rounded-lg p-0.5 border border-border/50">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleStockChange(bike._id, idx, -1); }}
+                                            className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-red-50 text-red-500 transition-colors shadow-sm"
+                                        >
+                                            <Minus className="w-3 h-3" strokeWidth={3} />
+                                        </button>
+                                        <span className="text-[12px] font-black w-6 text-center text-foreground">{color.stock || 0}</span>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleStockChange(bike._id, idx, 1); }}
+                                            className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-green-50 text-green-500 transition-colors shadow-sm"
+                                        >
+                                            <Plus className="w-3 h-3" strokeWidth={3} />
+                                        </button>
                                     </div>
-                                ))}
-                            </div>
+                                </div>
+                            ))}
                         </div>
 
                         <div className="mt-8 pt-6 border-t border-border/10 flex justify-between items-center">
@@ -253,6 +296,32 @@ export default function InventoryPage() {
             </div>
         </div>
     );
+
+    const handleSpareStockChange = async (spareId: string, delta: number) => {
+        const spare = spares.find(s => s._id === spareId);
+        if (!spare) return;
+
+        const newStock = Math.max(0, (spare.stock || 0) + delta);
+        if (newStock === spare.stock) return;
+
+        // Optimistic UI update
+        setSpares(prev => prev.map(s => s._id === spareId ? { ...s, stock: newStock } : s));
+
+        try {
+            const res = await fetch(`${API_URL}/spares/${spareId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...spare, stock: newStock })
+            });
+            const data = await res.json();
+            if (!data.success) {
+                fetchInventory();
+            }
+        } catch (err) {
+            console.error("Failed to update spare stock:", err);
+            fetchInventory();
+        }
+    };
 
     const renderSpares = () => {
         const filteredSpares = spares.filter(s =>
@@ -299,12 +368,26 @@ export default function InventoryPage() {
                             </div>
                             <div className="text-right">
                                 <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground block">Stock</span>
-                                <span className={cn(
-                                    "text-md font-display font-black italic",
-                                    spare.stock > 10 ? "text-green-500" : "text-red-500"
-                                )}>
-                                    {spare.stock}
-                                </span>
+                                <div className="flex items-center gap-2 bg-background/50 rounded-lg p-1 border border-border/50">
+                                    <button
+                                        onClick={() => handleSpareStockChange(spare._id, -1)}
+                                        className="w-5 h-5 flex items-center justify-center rounded bg-white hover:bg-red-50 text-red-500 transition-colors shadow-sm"
+                                    >
+                                        <Minus className="w-3 h-3" strokeWidth={3} />
+                                    </button>
+                                    <span className={cn(
+                                        "text-md font-display font-black italic w-6 text-center",
+                                        spare.stock > 10 ? "text-green-500" : "text-red-500"
+                                    )}>
+                                        {spare.stock}
+                                    </span>
+                                    <button
+                                        onClick={() => handleSpareStockChange(spare._id, 1)}
+                                        className="w-5 h-5 flex items-center justify-center rounded bg-white hover:bg-green-50 text-green-500 transition-colors shadow-sm"
+                                    >
+                                        <Plus className="w-3 h-3" strokeWidth={3} />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

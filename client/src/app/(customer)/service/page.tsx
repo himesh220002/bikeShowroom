@@ -6,7 +6,7 @@ import { Wrench, Shield, Zap, MessageSquare } from "lucide-react";
 export default function ServicePage() {
     return (
         <div className="min-h-screen bg-zinc-950 pt-24 md:pt-36 pb-24 relative overflow-hidden">
-            <div className="h-[200px] inset-0 bg-black/50 z-0" />
+            {/* <div className="h-[200px] inset-0 bg-black/50 z-0" /> */}
 
             {/* Background Decorative Elements */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-racing-blue/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />

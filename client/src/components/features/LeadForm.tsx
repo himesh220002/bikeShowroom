@@ -273,8 +273,8 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                                 value={item.label}
                                                                 defaultChecked={isItemSelected(item.id)}
                                                             />
-                                                            <div className="px-3 py-3 sm:py-4 rounded-2xl bg-racing-blue/10 border border-border peer-checked:border-racing-blue/90 peer-checked:bg-racing-blue/30 transition-all flex flex-col items-center justify-center text-center h-full">
-                                                                <span className="text-[12px] font-black uppercase tracking-tighter text-foreground peer-checked:text-racing-blue transition-colors">
+                                                            <div className="px-3 py-3 sm:py-4 rounded-2xl bg-cyan-900/60 border border-cyan-900/60 peer-checked:border-racing-blue/90 peer-checked:bg-racing-blue/30 transition-all flex flex-col items-center justify-center text-center h-full">
+                                                                <span className="text-[12px] font-black uppercase tracking-tighter text-white peer-checked:text-white transition-colors">
                                                                     {item.label}
                                                                 </span>
                                                                 {item.bonus && (

@@ -58,10 +58,10 @@ export function Navbar() {
                             />
                         </div>
                         <div className="flex flex-col gap-0 md:gap-1">
-                            <span className="text-base md:text-xl font-display font-black tracking-tighter text-foreground leading-none">
+                            <span className="text-base md:text-xl font-display font-black tracking-tighter text-gradient-text leading-none">
                                 CHOUDHARY YAMAHA
                             </span>
-                            <span className="text-[10px] uppercase font-black tracking-[0.3em] text-racing-blue -mt-0.5">
+                            <span className="text-[0.625rem] uppercase font-black tracking-[0.3em] text-racing-blue -mt-0.5">
                                 THE CALL OF THE BLUE
                             </span>
                         </div>
@@ -73,7 +73,7 @@ export function Navbar() {
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-racing-blue transition-colors relative group"
+                                className="text-[0.6875rem] font-black uppercase tracking-[0.2em] text-gradient-text hover:text-racing-blue transition-colors relative group"
                             >
                                 {link.name}
                                 <span className={cn(
@@ -113,8 +113,8 @@ export function Navbar() {
                                             </div>
                                         )}
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{user.displayName.split(' ')[0]}</span>
-                                    <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", isProfileOpen && "rotate-180")} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-gradient-text">{user.displayName.split(' ')[0]}</span>
+                                    <ChevronDown className={cn("w-3 h-3 text-gray-600 transition-transform", isProfileOpen && "rotate-180")} />
                                 </button>
 
                                 <AnimatePresence>

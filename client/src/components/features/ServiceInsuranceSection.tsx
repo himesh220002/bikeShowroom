@@ -1,14 +1,53 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Wrench, Shield, Clock, Calendar, CheckCircle2, ChevronRight, Bell } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Wrench, Shield, Clock, Calendar, CheckCircle2, ChevronRight, Bell, Plus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_URL } from "@/lib/config";
+
+interface UserBike {
+    _id: string;
+    bikeId?: string;
+    bikeModel: string;
+    bikeImage?: string;
+    registrationNumber: string;
+    purchaseDate: string;
+    lastServiceDate?: string;
+    nextServiceDate?: string;
+    nextServiceKm?: number;
+    mileage: number;
+    serviceCount: number;
+}
 
 export function ServiceInsuranceSection() {
     const { user } = useAuth();
+    const [bikes, setBikes] = useState<UserBike[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (user) {
+            const fetchBikes = async () => {
+                try {
+                    const res = await axios.get(`${API_URL}/user-bikes`, { withCredentials: true });
+                    if (res.data.success) {
+                        setBikes(res.data.data);
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch bikes for dashboard:", err);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchBikes();
+        }
+    }, [user]);
 
     if (!user) return null;
+
+    const primaryBike = bikes[0];
 
     return (
         <section className="py-32 bg-zinc-950 overflow-hidden">
@@ -81,8 +120,12 @@ export function ServiceInsuranceSection() {
                                         <CheckCircle2 className="w-5 h-5 text-racing-blue" />
                                     </div>
                                     <div>
-                                        <h4 className="text-[10px] font-black text-white uppercase tracking-widest">My Garage Dashboard</h4>
-                                        <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Real-time Status</p>
+                                        <h4 className="text-[10px] font-black text-white uppercase tracking-widest">
+                                            {primaryBike ? `${primaryBike.bikeModel} Dashboard` : "My Garage Dashboard"}
+                                        </h4>
+                                        <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">
+                                            {primaryBike?.registrationNumber || "Real-time Status"}
+                                        </p>
                                     </div>
                                 </div>
                                 <Bell className="w-4 h-4 text-gray-500 animate-pulse" />
@@ -92,11 +135,23 @@ export function ServiceInsuranceSection() {
                             <div className="grid grid-cols-2 gap-4 mb-8">
                                 <div className="p-4 bg-zinc-800/50 rounded-2xl border border-white/5">
                                     <h5 className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-1">Next Service</h5>
-                                    <p className="text-sm font-black text-white uppercase tracking-tight">12 May 2024</p>
+                                    {loading ? (
+                                        <div className="h-4 w-16 bg-white/10 animate-pulse rounded" />
+                                    ) : (
+                                        <p className="text-sm font-black text-white uppercase tracking-tight">
+                                            {primaryBike?.nextServiceDate ? new Date(primaryBike.nextServiceDate).toLocaleDateString() : "TBD"}
+                                        </p>
+                                    )}
                                 </div>
                                 <div className="p-4 bg-zinc-800/50 rounded-2xl border border-white/5">
                                     <h5 className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-1">Insurance Expiry</h5>
-                                    <p className="text-sm font-black text-racing-blue uppercase tracking-tight">28 Days Left</p>
+                                    {loading ? (
+                                        <div className="h-4 w-16 bg-white/10 animate-pulse rounded" />
+                                    ) : (
+                                        <p className="text-sm font-black text-racing-blue uppercase tracking-tight">
+                                            {primaryBike ? "Active" : "Unknown"}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
@@ -123,6 +178,30 @@ export function ServiceInsuranceSection() {
                             </div>
 
                             {/* Explainer Overlay (Desktop only) */}
+                            <AnimatePresence>
+                                {!primaryBike && !loading && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="absolute inset-x-8 bottom-8 top-[140px] bg-zinc-950/90 backdrop-blur-md rounded-3xl border border-racing-blue/20 flex flex-col items-center justify-center p-6 text-center z-20"
+                                    >
+                                        <div className="w-12 h-12 rounded-2xl bg-racing-blue/10 flex items-center justify-center mb-4">
+                                            <Plus className="w-6 h-6 text-racing-blue" />
+                                        </div>
+                                        <h5 className="text-xs font-black text-white uppercase tracking-widest mb-2">No Bikes Found</h5>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-6">
+                                            Register your bike to track service & insurance in real-time.
+                                        </p>
+                                        <Link
+                                            href="/profile"
+                                            className="px-6 py-2.5 bg-racing-blue text-white text-[9px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-racing-blue/20 hover:scale-105 transition-all"
+                                        >
+                                            Add Bike Now
+                                        </Link>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                                 whileInView={{ opacity: 1, scale: 1, y: 0 }}

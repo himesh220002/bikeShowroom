@@ -31,7 +31,7 @@
 .light {
   --background: #f8fafc;
   --foreground: #020617;
-  --card: #ffffff;
+  --card: #f1f4fa;
   --card-foreground: #020617;
   --border: #e2e8f0;
   --muted: #f1f5f9;
@@ -39,6 +39,7 @@
   --ring: #3b82f6;
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(0, 0, 0, 0.05);
+  --gradient-text: linear-gradient(to right, #1b2631, #493069);
 }
 
 .dark {
@@ -52,6 +53,7 @@
   --ring: #2563eb;
   --glass-bg: rgba(9, 9, 11, 0.7);
   --glass-border: rgba(255, 255, 255, 0.05);
+  --gradient-text: linear-gradient(to right, #c5d5e7, #1e9cac);
 }
 
 @theme inline {
@@ -115,6 +117,14 @@
   pointer-events: none;
   transform: translateZ(0);
   will-change: transform;
+}
+
+.text-gradient-text {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 }
 
 /* Removed backdrop-filter restriction for mobile to allow blurred backgrounds as requested */

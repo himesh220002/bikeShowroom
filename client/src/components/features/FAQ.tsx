@@ -70,19 +70,27 @@ export function FAQ() {
                             >
                                 <button
                                     onClick={() => setActiveIndex(isActive ? null : index)}
-                                    className="w-full px-4 sm:px-8 py-6 flex items-center justify-between text-left gap-4"
+                                    className="w-full px-4 sm:px-8 py-6 flex items-center justify-between text-left gap-4 group"
                                 >
-                                    <span className={cn(
-                                        "text-sm font-black uppercase tracking-widest transition-colors duration-300",
-                                        isActive ? "text-white" : "text-gray-400 group-hover:text-white"
-                                    )}>
+                                    <span
+                                        className={cn(
+                                            "text-sm font-black uppercase tracking-widest transition-colors duration-300",
+                                            isActive ? "text-white" : "text-gray-400 group-hover:text-white"
+                                        )}
+                                    >
                                         {faq.question}
                                     </span>
-                                    <div className={cn(
-                                        "w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-500",
-                                        isActive ? "bg-racing-blue text-white rotate-180 shadow-lg shadow-racing-blue/20" : "bg-white/5 text-gray-500"
-                                    )}>
-                                        <ChevronDown className={cn("w-5 h-5", isActive && "animate-bounce-subtle")} />
+                                    <div
+                                        className={cn(
+                                            "w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-500",
+                                            isActive
+                                                ? "bg-racing-blue text-white rotate-180 shadow-lg shadow-racing-blue/20"
+                                                : "bg-white/5 text-gray-500"
+                                        )}
+                                    >
+                                        <ChevronDown
+                                            className={cn("w-5 h-5 transition-transform", isActive && "animate-bounce-subtle")}
+                                        />
                                     </div>
                                 </button>
 

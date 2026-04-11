@@ -21,13 +21,13 @@ export function ShowroomExperience() {
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             whileInView={{ opacity: 1, scale: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10 relative group"
+                            className="aspect-[5/5] rounded-[3rem] overflow-hidden border border-white/10 relative group"
                         >
                             <Image
-                                src="/images/choudharyyamahaimage.jpg"
+                                src="/images/r15v4-sp.webp"
                                 alt="Showroom Interior"
                                 fill
-                                className="object-contain transition-transform duration-700 group-hover:scale-110"
+                                className="object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         </motion.div>
@@ -131,6 +131,7 @@ export function ShowroomExperience() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.5 }}
+                            onClick={() => window.open("https://www.google.com/maps/place/Yamaha+Motor+Showroom+-+Choudhary+Auto+Mobile/@25.5510543,87.5554903,17z/data=!3m1!4b1!4m6!3m5!1s0x39faabfee0ff3ee9:0xb3d96e799dcd25ef!8m2!3d25.5510495!4d87.5580652!16s%2Fg%2F11tj359dsf?entry=ttu&g_ep=EgoyMDI2MDQwNy4wIKXMDSoASAFQAw%3D%3D", "_blank")}
                             className="bg-zinc-800 hover:bg-zinc-700 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-[11px] flex items-center gap-3 transition-all hover:scale-105 active:scale-95 group border border-white/5"
                         >
                             Visit Our Showroom
