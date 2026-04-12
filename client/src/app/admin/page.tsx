@@ -4,8 +4,9 @@ import { useEffect, useState, useMemo } from "react";
 import { BarChart2, Users, Package, Calendar, TrendingUp, Bell, Rocket, Wrench, ChevronDown, ShoppingCart, Search, Clock } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { LeadsTable, type Lead } from "@/components/features/LeadsTable";
-import { ServicesTable, type ServiceBooking } from "@/components/features/ServicesTable";
+import { ServiceReminderTable } from "@/components/features/ServiceReminderTable";
 import { LeadsTableHot, type Lead as HotLead } from "@/components/features/LeadsTableHot";
+import { type ServiceBooking } from "@/components/features/ServicesTable";
 import { SalesTable } from "@/components/features/SalesTable";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
 import io from "socket.io-client";
@@ -415,7 +416,7 @@ export default function AdminDashboard() {
                     {[
                         { id: "leads", label: "Pre-Sales Inquiries", icon: Users, color: "#007bff" }, // racing-blue
                         { id: "hot", label: "Hot Leads 🔥", icon: Rocket, color: "#f97316" }, // orange-500
-                        { id: "services", label: "Post-Sales Services", icon: Wrench, color: "#007bff" },
+                        { id: "services", label: "Service Reminders", icon: Bell, color: "#007bff" },
                         { id: "slots", label: "Capacity & Slots", icon: Calendar, color: "#8b5cf6" }, // purple-500
                         { id: "sales", label: "Sales Ledger", icon: ShoppingCart, color: "#22c55e" }, // green-500
                         { id: "testing", label: "Testing Ground", icon: FlaskConical, color: "#ec4899" } // pink-500
@@ -449,7 +450,7 @@ export default function AdminDashboard() {
                         <div className="w-10 h-10 rounded-xl bg-racing-blue/10 flex items-center justify-center">
                             {activeTab === "leads" ? <Users className="w-5 h-5 text-racing-blue" /> :
                                 activeTab === "hot" ? <Rocket className="w-5 h-5 text-orange-500" /> :
-                                    activeTab === "services" ? <Wrench className="w-5 h-5 text-racing-blue" /> :
+                                    activeTab === "services" ? <Bell className="w-5 h-5 text-racing-blue" /> :
                                         activeTab === "slots" ? <Calendar className="w-5 h-5 text-purple-500" /> :
                                             activeTab === "testing" ? <FlaskConical className="w-5 h-5 text-pink-500" /> :
                                                 <ShoppingCart className="w-5 h-5 text-green-500" />}
@@ -457,7 +458,7 @@ export default function AdminDashboard() {
                         <h3 className="text-xl font-display font-black text-foreground uppercase tracking-tighter">
                             {activeTab === "leads" ? "Inquiry Stream" :
                                 activeTab === "hot" ? "Priority Prospects" :
-                                    activeTab === "services" ? "Workshop Queue" :
+                                    activeTab === "services" ? "Service Reminders" :
                                         activeTab === "slots" ? "Capacity Management" :
                                             activeTab === "testing" ? "Experimental Tools" :
                                                 "Sales History"}
@@ -516,7 +517,7 @@ export default function AdminDashboard() {
                 ) : (
                     activeTab === "leads" ? <LeadsTable leads={processedLeads} onUpdate={fetchData} /> :
                         activeTab === "hot" ? <LeadsTableHot leads={processedHotLeads} onUpdate={fetchData} /> :
-                            activeTab === "services" ? <ServicesTable services={processedServices} onUpdate={fetchData} /> :
+                            activeTab === "services" ? <ServiceReminderTable onUpdate={fetchData} /> :
                                 activeTab === "slots" ? <div className="px-8 pb-8"><SlotManagement /></div> :
                                     activeTab === "testing" ? <div className="px-8 pb-8"><TestingGround /></div> :
                                         <div className="p-8"><SalesTable sales={processedSales} /></div>

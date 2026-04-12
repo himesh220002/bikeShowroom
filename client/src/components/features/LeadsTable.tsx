@@ -1,9 +1,9 @@
 "use client";
 
-import { CheckCircle2, MoreVertical, Phone, MessageSquare, Users, Edit3, Save, Calendar, UserPlus } from "lucide-react";
+import { CheckCircle2, MoreVertical, Phone, MessageSquare, Users, Edit3, Save, Calendar, UserPlus, Clock, Hash, TrendingUp, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { BIKES } from "@/lib/constants/bikes";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { API_URL } from "@/lib/config";
 import { ExportButton } from "@/components/ui/ExportButton";
@@ -33,7 +33,6 @@ interface LeadsTableProps {
 }
 
 export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
-
     const { config } = useConfig();
     const [editingLead, setEditingLead] = useState<Lead | null>(null);
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -41,20 +40,50 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
     const [editingRemarks, setEditingRemarks] = useState<{ [key: string]: string }>({});
     const [showSaveIcon, setShowSaveIcon] = useState<{ [key: string]: boolean }>({});
 
-    // For Escalation
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [escalationData, setEscalationData] = useState<any>(null);
 
-    // Pagination
+    const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+
+    const handleSort = (key: string) => {
+        let direction: 'asc' | 'desc' = 'asc';
+        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 10;
-    const totalPages = Math.ceil(leads.length / pageSize);
-    const currentLeads = leads.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const pageSize = 50;
+
+    const sortedLeads = useMemo(() => {
+        return [...leads].sort((a, b) => {
+            if (!sortConfig) return 0;
+            const { key, direction } = sortConfig;
+            let aVal: any = (a as any)[key] || "";
+            let bVal: any = (b as any)[key] || "";
+
+            if (key === 'heat') {
+                const order: any = { 'HOT': 3, 'WARM': 2, 'COLD': 1 };
+                aVal = order[a.heat || 'COLD'] || 0;
+                bVal = order[b.heat || 'COLD'] || 0;
+            } else {
+                aVal = String(aVal).toLowerCase();
+                bVal = String(bVal).toLowerCase();
+            }
+
+            if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+            if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+    }, [leads, sortConfig]);
+
+    const totalPages = Math.ceil(sortedLeads.length / pageSize);
+    const currentLeads = sortedLeads.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     const refreshLeads = () => {
         if (onUpdate) onUpdate();
     };
-
 
     const handleUpdateLead = async (id: string, updates: Partial<Lead>) => {
         try {
@@ -65,27 +94,23 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
             });
             const data = await res.json();
             if (data.success) {
-                // Success - update local state? For now just refresh or clear showSaveIcon
                 setShowSaveIcon(prev => ({ ...prev, [id]: false }));
+                if (onUpdate) onUpdate();
             }
         } catch (err) {
             console.error("Error updating lead:", err);
         }
     };
 
-    // Removed internal fetchConfig as it's provided by ConfigProvider
-
     const handleWhatsApp = (lead: Lead) => {
         const bikeName = lead.interests[0];
         let brochurePageUrl = "";
         let bike = null;
 
-        // Use manually selected brochure if available
         const selected = selectedBrochure[lead._id || lead.id || ""];
         if (selected) {
             bike = BIKES.find(b => b.name === selected || b.slug === selected);
         } else {
-            // Fallback to auto-calculation based on first interest
             bike = BIKES.find(b =>
                 b.name.toLowerCase() === bikeName?.toLowerCase() ||
                 b.slug === bikeName?.toLowerCase().replace(/\s+/g, '-')
@@ -107,11 +132,9 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
         const footer = `\n\nWe look forward to welcoming you soon at Choudhary Yamaha!`;
 
         const message = intro + showroomDetails + visitInvite + brochurePart + footer;
-
         const encodedMessage = encodeURIComponent(message);
         const cleanPhone = lead.phone.replace(/\D/g, '');
         const phoneWithCountry = (cleanPhone.length === 10) ? `91${cleanPhone}` : cleanPhone;
-
         const whatsappUrl = `https://wa.me/${phoneWithCountry}?text=${encodedMessage}`;
         window.open(whatsappUrl, '_blank');
     };
@@ -123,28 +146,24 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
     const handleDiscardLead = async (id: string) => {
         if (!window.confirm("Are you sure you want to discard this lead? This action cannot be undone.")) return;
         try {
-            const res = await fetch(`${API_URL}/leads/${id}`, {
-                method: "DELETE"
-            });
+            const res = await fetch(`${API_URL}/leads/${id}`, { method: "DELETE" });
             const data = await res.json();
-            if (data.success) {
-                refreshLeads();
-            }
+            if (data.success) refreshLeads();
         } catch (err) {
             console.error("Error discarding lead:", err);
         }
     };
 
     return (
-        <div className="w-full space-y-3">
-            <div className="flex justify-between items-center m-4">
+        <div className="w-full space-y-4">
+            <div className="flex justify-between items-center px-4">
                 <div className="flex items-center gap-3">
                     <div className="p-1.5 bg-racing-blue/10 rounded-lg">
                         <Users className="w-4 h-4 text-racing-blue" />
                     </div>
                     <div>
-                        <h3 className="text-xs font-black uppercase tracking-widest text-foreground">Active Leads</h3>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">{leads.length} Prospective Customers</p>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-foreground">Inquiry Stream</h3>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Spreadsheet View ({leads.length} Records)</p>
                     </div>
                 </div>
 
@@ -154,313 +173,292 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
                     sheetName="Leads"
                 />
             </div>
-            <div className="w-full overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="border-b border-border">
-                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Prospect</th>
-                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Interest</th>
-                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Follow-up / Schedule</th>
-                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Remarks / Response</th>
-                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground">Status</th>
-                            <th className="py-4 px-4 text-[9px] font-black uppercase tracking-widest text-muted-foreground text-right">Actions</th>
-                        </tr>
 
+            <div className="overflow-x-auto border border-border rounded-xl bg-card">
+                <table className="w-full text-left border-collapse min-w-[1800px] table-fixed">
+                    <thead>
+                        <tr className="border-b border-border bg-muted/30">
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[180px] cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('name')}>
+                                <div className="flex items-center gap-1">
+                                    Lead Name
+                                    {sortConfig?.key === 'name' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[140px] cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('phone')}>
+                                <div className="flex items-center gap-1">
+                                    Phone Number
+                                    {sortConfig?.key === 'phone' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[100px] text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('score')}>
+                                <div className="flex items-center justify-center gap-1">
+                                    Score
+                                    {sortConfig?.key === 'score' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[120px] text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('heat')}>
+                                <div className="flex items-center justify-center gap-1">
+                                    Quality
+                                    {sortConfig?.key === 'heat' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[200px]">Interests</th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[120px]">Apt Date</th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[100px]">Apt Time</th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[150px] text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('status')}>
+                                <div className="flex items-center justify-center gap-1">
+                                    Status
+                                    {sortConfig?.key === 'status' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[300px]">Admin Remarks</th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground w-[180px] text-center">Actions</th>
+                        </tr>
                     </thead>
                     <tbody>
-                        {currentLeads.map((lead) => (
-                            <tr key={lead._id || lead.id} className="border-b border-border/30 group hover:bg-muted/30 transition-colors">
-                                <td className="py-4 px-4">
+                        {currentLeads.map((lead) => {
+                            const leadId = lead._id || lead.id || "";
+                            return (
+                                <tr key={leadId} className="border-b border-border/30 group hover:bg-muted/10 transition-colors">
+                                    {/* Name */}
+                                    <td className="py-3 px-4 border-r border-border/10">
+                                        <p className="text-[12px] font-black text-foreground uppercase tracking-tight truncate">{lead.name}</p>
+                                    </td>
 
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex flex-col items-center">
-                                            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center border border-border">
-                                                <Users className="w-5 h-5 text-muted-foreground" />
-                                            </div>
-                                            {lead.score !== undefined && (
-                                                <div className="mt-2 w-full max-w-[60px] group/score relative">
-                                                    <div className="flex justify-between items-center mb-1">
-                                                        <span className="text-[7px] font-black uppercase tracking-tighter text-muted-foreground/50">Score</span>
-                                                        <span className="text-[7px] font-black text-foreground">{lead.score}</span>
-                                                    </div>
-                                                    <div className="h-1 w-full bg-muted rounded-full overflow-hidden border border-border/50">
-                                                        <div
-                                                            className={cn(
-                                                                "h-full rounded-full transition-all duration-500",
-                                                                lead.score > 7 ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]" :
-                                                                    lead.score > 4 ? "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" :
-                                                                        "bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]"
-                                                            )}
-                                                            style={{ width: `${(lead.score || 0) * 10}%` }}
-                                                        />
-                                                    </div>
-                                                    {/* Tooltip on hover */}
-                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/score:block z-50">
-                                                        <div className="bg-black/90 text-white text-[7px] font-black uppercase tracking-[0.2em] px-2 py-1 rounded whitespace-nowrap">
-                                                            Lead Quality: {lead.heat} ({lead.score}/10)
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
+                                    {/* Phone */}
+                                    <td className="py-3 px-4 border-r border-border/10 uppercase tracking-wider text-[11px] font-bold text-muted-foreground">
+                                        <div
+                                            className="flex items-center gap-2 cursor-pointer hover:text-racing-blue transition-colors"
+                                            onClick={() => handleCall(lead)}
+                                        >
+                                            <Phone className="w-3 h-3 opacity-40" />
+                                            {lead.phone}
                                         </div>
-                                        <div>
-                                            <p className="text-[13px] font-black text-foreground leading-tight">{lead.name}</p>
-                                            <div
-                                                className="flex items-center gap-1.5 mt-0.5 cursor-pointer hover:text-racing-blue transition-colors group/phone"
-                                                onClick={() => handleCall(lead)}
-                                            >
-                                                <Phone className="w-2.5 h-2.5 text-muted-foreground/60 group-hover/phone:text-racing-blue" />
-                                                <span className="text-[12px] font-bold text-muted-foreground group-hover/phone:text-racing-blue">{lead.phone}</span>
+                                    </td>
+
+                                    {/* Score */}
+                                    <td className="py-3 px-4 border-r border-border/10 text-center">
+                                        <div className="flex flex-col items-center gap-1">
+                                            <span className="text-[10px] font-black text-foreground">{lead.score || 0}/10</span>
+                                            <div className="h-1 w-12 bg-muted rounded-full overflow-hidden border border-border/50">
+                                                <div
+                                                    className={cn(
+                                                        "h-full rounded-full transition-all duration-500",
+                                                        (lead.score || 0) > 7 ? "bg-red-500" :
+                                                            (lead.score || 0) > 4 ? "bg-amber-500" : "bg-blue-500"
+                                                    )}
+                                                    style={{ width: `${(lead.score || 0) * 10}%` }}
+                                                />
                                             </div>
                                         </div>
+                                    </td>
 
-                                    </div>
-                                </td>
-                                <td className="py-6 px-4">
-                                    <div className="flex flex-wrap max-w-[300px] gap-1">
-                                        {lead.interests.map((interest) => (
-                                            <span key={interest} className="px-2 py-0.5 rounded-md bg-muted text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-                                                {interest}
+                                    {/* Quality/Heat */}
+                                    <td className="py-3 px-4 border-r border-border/10 text-center">
+                                        <span className={cn(
+                                            "text-[9px] font-black uppercase tracking-[.2em] px-2 py-0.5 rounded border",
+                                            lead.heat === 'HOT' ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                                                lead.heat === 'WARM' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
+                                                    "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                                        )}>
+                                            {lead.heat || 'COLD'}
+                                        </span>
+                                    </td>
+
+                                    {/* Interests */}
+                                    <td className="py-3 px-4 border-r border-border/10">
+                                        <div className="flex flex-wrap gap-1">
+                                            {lead.interests.map((interest) => (
+                                                <span key={interest} className="px-1.5 py-0.5 rounded bg-muted/50 text-[9px] font-black uppercase tracking-widest text-muted-foreground border border-border/50">
+                                                    {interest}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </td>
+
+                                    {/* Apt Date */}
+                                    <td className="py-3 px-4 border-r border-border/10 whitespace-nowrap">
+                                        <div className="flex items-center gap-2">
+                                            <Calendar className="w-3 h-3 text-muted-foreground/40" />
+                                            <span className="text-[11px] font-bold text-muted-foreground uppercase">
+                                                {lead.followUpDate ? new Date(lead.followUpDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : "—"}
                                             </span>
-                                        ))}
-                                    </div>
-                                </td>
-                                <td className="py-4 px-4">
+                                        </div>
+                                    </td>
 
-                                    <div className="flex flex-col gap-1">
-                                        <div className="flex items-center gap-2 group/date relative">
-                                            {lead.followUpDate ? (
-                                                <div className="flex flex-col">
-                                                    <span className="text-[12px] font-black text-foreground uppercase tracking-tighter">
-                                                        {new Date(lead.followUpDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-racing-blue uppercase tracking-widest opacity-60">
-                                                        {new Date(lead.followUpDate).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-                                                    </span>
-                                                </div>
-                                            ) : (
-                                                <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest italic">
-                                                    <Calendar className="w-3 h-3" />
-                                                    Set Schedule
-                                                </div>
+                                    {/* Apt Time */}
+                                    <td className="py-3 px-4 border-r border-border/10 whitespace-nowrap">
+                                        <div className="flex items-center gap-2">
+                                            <Clock className="w-3 h-3 text-muted-foreground/40" />
+                                            <span className="text-[11px] font-bold text-muted-foreground">
+                                                {lead.followUpDate ? new Date(lead.followUpDate).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : "—"}
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    {/* Status */}
+                                    <td className="py-3 px-4 border-r border-border/10 text-center">
+                                        <span className={cn(
+                                            "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
+                                            lead.status === "New" ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" :
+                                                lead.status === "Contacted" ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20" :
+                                                    lead.status === "Test Ride" ? "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20" :
+                                                        "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
+                                        )}>
+                                            {lead.status}
+                                        </span>
+                                    </td>
+
+                                    {/* Remarks */}
+                                    <td className="py-3 px-4 border-r border-border/10">
+                                        <div className="flex items-center gap-2">
+                                            <textarea
+                                                value={editingRemarks[leadId] ?? lead.adminNotes ?? ""}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    setEditingRemarks(prev => ({ ...prev, [leadId]: val }));
+                                                    setShowSaveIcon(prev => ({ ...prev, [leadId]: val !== (lead.adminNotes || "") }));
+                                                }}
+                                                placeholder="Add internal remarks..."
+                                                rows={1}
+                                                className="w-full bg-transparent border-none text-[11px] font-bold text-foreground outline-none resize-none focus:bg-muted/50 p-1 rounded transition-all placeholder:italic placeholder:font-normal"
+                                            />
+                                            {showSaveIcon[leadId] && (
+                                                <button
+                                                    onClick={() => handleUpdateLead(leadId, { adminNotes: editingRemarks[leadId] })}
+                                                    className="p-1 px-2 bg-racing-blue text-white rounded text-[8px] font-black uppercase tracking-widest animate-pulse"
+                                                >
+                                                    Save
+                                                </button>
                                             )}
                                         </div>
-                                    </div>
-                                </td>
-                                <td className="py-4 px-4">
+                                    </td>
 
-                                    <div className="flex items-center gap-2">
-                                        <textarea
-                                            value={editingRemarks[lead._id || lead.id || ""] ?? lead.adminNotes ?? ""}
-                                            onChange={(e) => {
-                                                const val = e.target.value;
-                                                const id = lead._id || lead.id || "";
-                                                setEditingRemarks(prev => ({ ...prev, [id]: val }));
-                                                setShowSaveIcon(prev => ({ ...prev, [id]: val !== (lead.adminNotes || "") }));
-                                            }}
-                                            onInput={(e) => {
-                                                const target = e.target as HTMLTextAreaElement;
-                                                target.style.height = "auto"; // reset height
-                                                target.style.height = Math.min(target.scrollHeight, 200) + "px"; // expand until 200px
-                                            }}
-                                            placeholder="Add remarks..."
-                                            rows={1}
-                                            className="w-full max-w-[200px] min-h-[20px] max-h-[100px] bg-transparent border-none text-xs font-bold text-foreground outline-none resize-none focus:bg-muted/50 p-1 rounded transition-all placeholder:italic placeholder:font-normal overflow-y-auto"
-                                        />
-                                        {showSaveIcon[lead._id || lead.id || ""] && (
-                                            <button
-                                                onClick={() =>
-                                                    handleUpdateLead(lead._id || lead.id || "", {
-                                                        adminNotes: editingRemarks[lead._id || lead.id || ""],
-                                                    })
-                                                }
-                                                className="p-1 bg-racing-blue text-white rounded hover:bg-dark-racing transition-all animate-bounce"
-                                            >
-                                                <Save className="w-3 h-3" />
-                                            </button>
-                                        )}
-                                    </div>
-
-                                </td>
-                                <td className="py-4 px-2 lg:px-4 w-[150px]">
-
-                                    <span className={cn(
-                                        "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border",
-                                        lead.status === "New" ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" :
-                                            lead.status === "Contacted" ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20" :
-                                                lead.status === "Test Ride" ? "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20" :
-                                                    "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
-                                    )}>
-                                        {lead.status}
-                                    </span>
-                                </td>
-                                <td className="py-4 px-4 text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                        {/* Desktop-only Quick Actions */}
-                                        <div className="hidden md:flex items-center gap-2">
+                                    {/* Actions */}
+                                    <td className="py-3 px-4 text-center">
+                                        <div className="flex items-center justify-center gap-2">
                                             <button
                                                 onClick={() => handleWhatsApp(lead)}
-                                                className="p-2 rounded-xl border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 group/btn transition-all"
-                                                title="Send WhatsApp Brochure"
+                                                className="p-2 rounded-lg border border-border hover:bg-racing-blue/10 hover:border-racing-blue/50 text-racing-blue transition-all"
+                                                title="WhatsApp Brochure"
                                             >
-                                                <MessageSquare className="w-4 h-4 text-racing-blue group-hover/btn:scale-110 transition-transform" />
+                                                <MessageSquare className="w-3.5 h-3.5" />
                                             </button>
                                             <button
                                                 onClick={() => handleCall(lead)}
-                                                className="p-2 rounded-xl border border-border hover:bg-green-500/10 hover:border-green-500/50 group/btn transition-all"
-                                                title="Call Prospect"
+                                                className="p-2 rounded-lg border border-border hover:bg-green-500/10 hover:border-green-500/50 text-green-600 transition-all"
+                                                title="Direct Call"
                                             >
-                                                <Phone className="w-4 h-4 text-green-400 group-hover/btn:scale-110 transition-transform" />
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setEscalationData({
-                                                        inquiryId: lead._id || lead.id,
-                                                        name: lead.name,
-                                                        phone: lead.phone,
-                                                        interests: lead.interests,
-                                                        adminNotes: lead.adminNotes
-                                                    });
-                                                    setIsAddModalOpen(true);
-                                                }}
-                                                className="p-2 rounded-xl border border-border hover:bg-orange-500/10 hover:border-orange-500/50 group/escalate transition-all"
-                                                title="Escalate to Hot Lead"
-                                            >
-                                                <UserPlus className="w-4 h-4 text-orange-500 group-hover:escalate:scale-110 transition-transform" />
-                                            </button>
-                                        </div>
-
-                                        <div className="relative">
-                                            <button
-                                                onClick={() => setOpenMenuId(openMenuId === (lead._id || lead.id) ? null : (lead._id || lead.id || null))}
-                                                className={cn(
-                                                    "p-2 rounded-xl border border-border hover:bg-muted/30 transition-all",
-                                                    openMenuId === (lead._id || lead.id) && "bg-muted shadow-inner border-racing-blue/30"
-                                                )}
-                                            >
-                                                <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                                                <Phone className="w-3.5 h-3.5" />
                                             </button>
 
-                                            <AnimatePresence>
-                                                {openMenuId === (lead._id || lead.id) && (
-                                                    <>
-                                                        <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-                                                        <motion.div
-                                                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                                                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                                            className="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-2xl shadow-2xl z-50 py-2 overflow-hidden"
-                                                        >
-                                                            {/* Mobile-only consolidated actions */}
-                                                            <div className="md:hidden border-b border-border/50 mb-1 pb-1">
+                                            <div className="relative">
+                                                <button
+                                                    onClick={() => setOpenMenuId(openMenuId === leadId ? null : leadId)}
+                                                    className={cn(
+                                                        "p-2 rounded-lg border border-border hover:bg-muted/30 transition-all",
+                                                        openMenuId === leadId && "bg-muted"
+                                                    )}
+                                                >
+                                                    <MoreVertical className="w-3.5 h-3.5 text-muted-foreground" />
+                                                </button>
+
+                                                <AnimatePresence>
+                                                    {openMenuId === leadId && (
+                                                        <>
+                                                            <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                                                            <motion.div
+                                                                initial={{ opacity: 0, y: -5 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                className="absolute right-0 top-full mt-1 w-56 bg-card border border-border rounded-xl shadow-2xl z-50 py-1 overflow-hidden"
+                                                            >
+                                                                <div className="px-4 py-2 border-b border-border/50 bg-muted/20">
+                                                                    <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-1">Send Brochure</p>
+                                                                    <select
+                                                                        className="w-full bg-background border border-border rounded px-2 py-1 text-[9px] font-bold outline-none"
+                                                                        value={selectedBrochure[leadId] || ""}
+                                                                        onChange={(e) => setSelectedBrochure({ ...selectedBrochure, [leadId]: e.target.value })}
+                                                                    >
+                                                                        <option value="">Default (Interest)</option>
+                                                                        {BIKES.map(b => <option key={b.slug} value={b.name}>{b.name}</option>)}
+                                                                    </select>
+                                                                </div>
                                                                 <button
-                                                                    onClick={() => { handleWhatsApp(lead); setOpenMenuId(null); }}
-                                                                    className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-racing-blue/10 transition-colors text-racing-blue flex items-center gap-3"
+                                                                    onClick={() => { setEditingLead(lead); setOpenMenuId(null); }}
+                                                                    className="flex items-center gap-2 w-full px-4 py-2 text-[9px] font-black uppercase text-left hover:bg-muted transition-colors text-muted-foreground"
                                                                 >
-                                                                    <MessageSquare className="w-3.5 h-3.5" />
-                                                                    WhatsApp Brochure
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => { handleCall(lead); setOpenMenuId(null); }}
-                                                                    className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-green-500/10 transition-colors text-green-600 flex items-center gap-3"
-                                                                >
-                                                                    <Phone className="w-3.5 h-3.5" />
-                                                                    Call Customer
+                                                                    <Edit3 className="w-3 h-3" />
+                                                                    Edit Info
                                                                 </button>
                                                                 <button
                                                                     onClick={() => {
-                                                                        setEscalationData({ inquiryId: lead._id || lead.id, name: lead.name, phone: lead.phone, interests: lead.interests, adminNotes: lead.adminNotes });
+                                                                        setEscalationData({ inquiryId: leadId, name: lead.name, phone: lead.phone, interests: lead.interests, adminNotes: lead.adminNotes });
                                                                         setIsAddModalOpen(true);
                                                                         setOpenMenuId(null);
                                                                     }}
-                                                                    className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-orange-500/10 transition-colors text-orange-500 flex items-center gap-3"
+                                                                    className="flex items-center gap-2 w-full px-4 py-2 text-[9px] font-black uppercase text-left hover:bg-orange-500/10 transition-colors text-orange-500"
                                                                 >
-                                                                    <UserPlus className="w-3.5 h-3.5" />
-                                                                    Escalate Lead
+                                                                    <UserPlus className="w-3 h-3" />
+                                                                    Escalate Hot
                                                                 </button>
-                                                            </div>
-
-                                                            <div className="px-4 py-2 border-b border-border/50 mb-1">
-                                                                <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-1">Select Brochure</p>
-                                                                <select
-                                                                    className="w-full bg-muted border border-border rounded-lg px-2 py-1.5 text-[10px] font-bold text-foreground outline-none cursor-pointer"
-                                                                    value={selectedBrochure[lead._id || lead.id || ""] || ""}
-                                                                    onChange={(e) => {
-                                                                        setSelectedBrochure({ ...selectedBrochure, [lead._id || lead.id || ""]: e.target.value });
-                                                                    }}
+                                                                <button
+                                                                    onClick={() => { handleDiscardLead(leadId); setOpenMenuId(null); }}
+                                                                    className="flex items-center gap-2 w-full px-4 py-2 text-[9px] font-black uppercase text-left hover:bg-red-500/10 transition-colors text-red-500 mt-1 border-t border-border/30"
                                                                 >
-                                                                    <option value="">Default (Interest)</option>
-                                                                    {BIKES.map(b => (
-                                                                        <option key={b.slug} value={b.name}>{b.name}</option>
-                                                                    ))}
-                                                                </select>
-                                                            </div>
-                                                            <button
-                                                                onClick={() => { setEditingLead(lead); setOpenMenuId(null); }}
-                                                                className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground flex items-center gap-3"
-                                                            >
-                                                                <Edit3 className="w-3.5 h-3.5" />
-                                                                Edit Lead
-                                                            </button>
-                                                            <button
-                                                                onClick={() => { handleDiscardLead(lead._id || lead.id || ""); setOpenMenuId(null); }}
-                                                                className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-red-500/10 transition-colors text-red-500/80 hover:text-red-500 mt-1 border-t border-border/30 flex items-center gap-3"
-                                                            >
-                                                                Discard Lead
-                                                            </button>
-                                                        </motion.div>
-                                                    </>
-                                                )}
-                                            </AnimatePresence>
+                                                                    Discard Lead
+                                                                </button>
+                                                            </motion.div>
+                                                        </>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-
-                            </tr>
-                        ))}
-                        {leads.length === 0 && (
-                            <tr>
-                                <td colSpan={6} className="px-8 py-20 text-center opacity-30 italic text-sm font-medium">
-                                    No fresh leads detected in the stream...
-                                </td>
-                            </tr>
-                        )}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
 
-            {/* Pagination Controls */}
+            {/* Pagination */}
             {totalPages > 1 && (
-                <div className="flex items-center justify-between pt-6 border-t border-border/50">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">
-                        Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, leads.length)} of {leads.length} leads
+                <div className="flex items-center justify-between px-4 py-2 bg-muted/10 border border-border rounded-xl">
+                    <p className="text-[9px] font-bold text-muted-foreground uppercase">
+                        Spreadsheet Page {currentPage} of {totalPages}
                     </p>
                     <div className="flex gap-2">
                         <button
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage(prev => prev - 1)}
-                            className="px-4 py-2 bg-card border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+                            className="px-3 py-1.5 bg-card border border-border rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-muted disabled:opacity-30 transition-all"
                         >
-                            Previous
+                            Prev
                         </button>
-                        {[...Array(totalPages)].map((_, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setCurrentPage(i + 1)}
-                                className={cn(
-                                    "w-8 h-8 rounded-xl text-[10px] font-black transition-all border",
-                                    currentPage === i + 1
-                                        ? "bg-racing-blue text-white border-racing-blue shadow-lg shadow-racing-blue/20"
-                                        : "bg-card border-border hover:bg-muted"
-                                )}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
                         <button
                             disabled={currentPage === totalPages}
                             onClick={() => setCurrentPage(prev => prev + 1)}
-                            className="px-4 py-2 bg-card border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+                            className="px-3 py-1.5 bg-card border border-border rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-muted disabled:opacity-30 transition-all"
                         >
                             Next
                         </button>

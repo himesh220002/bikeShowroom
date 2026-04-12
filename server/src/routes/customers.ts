@@ -9,6 +9,7 @@ const router = Router();
 router.get('/', async (req, res) => {
     try {
         const customers = await Customer.find().sort({ createdAt: -1 });
+        const allServices = await Service.find().sort({ createdAt: -1 });
 
         const enhancedCustomers = await Promise.all(customers.map(async (customer) => {
             // Find last sale for this customer
@@ -17,8 +18,22 @@ router.get('/', async (req, res) => {
             // Find service count (completed services)
             const serviceCount = await Service.countDocuments({ customerId: customer._id, status: 'completed' });
 
-            // Find latest service
+            // Find latest service (for vehicle info)
             const latestService = await Service.findOne({ customerId: customer._id }).sort({ createdAt: -1 });
+            const regNumber = latestService?.regNumber || "N/A";
+
+            // MAPPING LOGIC: Match this customer to any current scheduled service
+            const matchedService = allServices.find(s => {
+                // Priority 1: Registration Number Match
+                if (regNumber !== "N/A" && s.regNumber === regNumber) return true;
+
+                // Priority 2: Phone + Name + Bike Model Match
+                const nameMatch = s.name.toLowerCase().trim() === customer.name.toLowerCase().trim();
+                const phoneMatch = s.phone.replace(/\D/g, '') === customer.phone.replace(/\D/g, '');
+                const modelMatch = lastSale && s.bikeModel.toLowerCase().trim() === lastSale.bikeName.toLowerCase().trim();
+
+                return nameMatch && phoneMatch && modelMatch;
+            });
 
             // Dynamic Service Tracker Logic
             let serviceMilestone = "N/A";
@@ -27,7 +42,6 @@ router.get('/', async (req, res) => {
 
             if (lastSale) {
                 const purchaseDate = new Date(lastSale.createdAt);
-                // logic: 1st: 30, 2nd: 150, 3rd: 270, 4th: 390 -> 30 + (n * 120)
                 const nextServiceInDays = 30 + (serviceCount * 120);
                 nextServiceDue = new Date(purchaseDate.getTime() + (nextServiceInDays * 24 * 60 * 60 * 1000));
 
@@ -43,11 +57,26 @@ router.get('/', async (req, res) => {
                 serviceMilestone = `${ordinal(milestoneNumber)} ${isFreeService ? 'FREE' : 'PAID'} SERVICE`;
             }
 
+            // AUTO-STATUS LOGIC
+            let calculatedStatus = customer.reminderStatus || "";
+            if (matchedService) {
+                if (matchedService.status === 'booked') {
+                    calculatedStatus = "Service scheduled created by customer";
+                } else if (['in-progress', 'completed', 'delivered'].includes(matchedService.status)) {
+                    calculatedStatus = "Already Done Current Service";
+                }
+            }
+
             return {
                 ...customer.toObject(),
                 nextServiceDue: nextServiceDue,
                 serviceMilestone: serviceMilestone,
                 isFreeService: isFreeService,
+                reminderStatus: calculatedStatus,
+                reminderRemarks: customer.reminderRemarks || "",
+                reminderCalled: customer.reminderCalled || false,
+                reminderMessaged: customer.reminderMessaged || false,
+                regNumber: regNumber,
                 lastSale: lastSale ? {
                     bikeName: lastSale.bikeName,
                     variant: lastSale.variant,

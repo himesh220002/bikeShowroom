@@ -11,6 +11,11 @@ export interface ICustomer extends Document {
     lifetimeValue?: number;
     feedbackScore?: number;
     nextServiceDue?: Date;
+    reminderStatus?: string;
+    reminderRemarks?: string;
+    reminderCalled?: boolean;
+    reminderMessaged?: boolean;
+    lastUpdated?: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -26,6 +31,11 @@ const CustomerSchema: Schema = new Schema({
     lifetimeValue: { type: Number, default: 0 },
     feedbackScore: { type: Number, default: 0 },
     nextServiceDue: { type: Date },
+    reminderStatus: { type: String },
+    reminderRemarks: { type: String },
+    reminderCalled: { type: Boolean, default: false },
+    reminderMessaged: { type: Boolean, default: false },
+    lastUpdated: { type: Date, default: Date.now }
 }, {
     timestamps: true,
     collection: 'customers'

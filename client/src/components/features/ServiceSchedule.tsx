@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { Calendar, Clock, Plus, User, Bike, CheckCircle2, AlertCircle, MoreVertical, Search, Filter, Wrench, Loader2, Phone, ShieldAlert, ChevronDown, UserCheck, X, Save, MessageSquare, IndianRupee, Tag } from "lucide-react";
+import { Calendar, Clock, Plus, User, Bike, CheckCircle2, AlertCircle, MoreVertical, Search, Filter, Wrench, Loader2, Phone, ShieldAlert, ChevronDown, UserCheck, X, Save, MessageSquare, IndianRupee, Tag, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
 import { API_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
@@ -42,6 +42,18 @@ export function ServiceSchedule() {
     const [endDate, setEndDate] = useState("");
     const [tempRemarks, setTempRemarks] = useState<{ [key: string]: string }>({});
     const [savingRemark, setSavingRemark] = useState<string | null>(null);
+
+    const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 50;
+
+    const handleSort = (key: string) => {
+        let direction: 'asc' | 'desc' = 'asc';
+        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
 
     const isAtRisk = (timeStr: string, dateStr: string, status: string) => {
         if (status !== 'booked') return false;
@@ -318,32 +330,66 @@ export function ServiceSchedule() {
             filtered = filtered.filter(j => new Date(j.time || 0) <= end);
         }
         const statusOrder = ['booked', 'in-progress', 'completed', 'delivered', 'cancelled', 'deferred'];
-        return filtered.sort((a, b) => {
-            if (sortBy === "name") return (a.customer || "").localeCompare(b.customer || "");
 
-            // Primary sort for 'newest' (which is now Status + Time)
-            if (sortBy === "newest") {
-                const statusDiff = statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
-                if (statusDiff !== 0) return statusDiff;
+        let finalJobs = [...filtered];
 
-                // Secondary sort: Time
-                const dateA = new Date(`${a.date} ${a.time}`).getTime();
-                const dateB = new Date(`${b.date} ${b.time}`).getTime();
-                return dateA - dateB;
-            }
+        if (sortConfig) {
+            const { key, direction } = sortConfig;
+            finalJobs.sort((a, b) => {
+                let aVal: any = (a as any)[key] || "";
+                let bVal: any = (b as any)[key] || "";
 
-            if (sortBy === "oldest") {
-                const dateA = new Date(`${a.date} ${a.time}`).getTime();
-                const dateB = new Date(`${b.date} ${b.time}`).getTime();
-                return dateA - dateB;
-            }
+                if (key === 'priority') {
+                    const pOrder: any = { 'High': 3, 'Normal': 2, 'Low': 1 };
+                    aVal = pOrder[a.priority] || 0;
+                    bVal = pOrder[b.priority] || 0;
+                } else if (key === 'date') {
+                    aVal = new Date(a.date).getTime();
+                    bVal = new Date(b.date).getTime();
+                } else {
+                    // Character comparison for others
+                    aVal = String(aVal).toLowerCase();
+                    bVal = String(bVal).toLowerCase();
+                }
 
-            // Fallback: Newest first (time based)
-            const dateA = new Date(`${a.date || 0} ${a.time || 0}`).getTime();
-            const dateB = new Date(`${b.date || 0} ${b.time || 0}`).getTime();
-            return dateB - dateA;
-        });
-    }, [jobs, searchQuery, filterStatus, sortBy, startDate, endDate]);
+                if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+                if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+        } else {
+            // Default sorting if no column clicked
+            finalJobs.sort((a, b) => {
+                if (sortBy === "name") return (a.customer || "").localeCompare(b.customer || "");
+
+                // Primary sort for 'newest' (which is now Status + Time)
+                if (sortBy === "newest") {
+                    const statusDiff = statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+                    if (statusDiff !== 0) return statusDiff;
+
+                    // Secondary sort: Time
+                    const dateA = new Date(`${a.date} ${a.time}`).getTime();
+                    const dateB = new Date(`${b.date} ${b.time}`).getTime();
+                    return dateA - dateB;
+                }
+
+                if (sortBy === "oldest") {
+                    const dateA = new Date(`${a.date} ${a.time}`).getTime();
+                    const dateB = new Date(`${b.date} ${b.time}`).getTime();
+                    return dateA - dateB;
+                }
+
+                // Fallback: Newest first (time based)
+                const dateA = new Date(`${a.date || 0} ${a.time || 0}`).getTime();
+                const dateB = new Date(`${b.date || 0} ${b.time || 0}`).getTime();
+                return dateB - dateA;
+            });
+        }
+
+        return finalJobs;
+    }, [jobs, searchQuery, filterStatus, sortBy, startDate, endDate, sortConfig]);
+
+    const totalPages = Math.ceil(processedJobs.length / pageSize);
+    const currentJobs = processedJobs.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     if (loading) {
         return (
@@ -462,141 +508,252 @@ export function ServiceSchedule() {
             </div>
 
             {/* Job List */}
-            <div className="bg-background/90 border border-border rounded-[2.5rem] shadow-2xl overflow-visible">
-                <div className="overflow-x-auto min-h-[550px]">
-                    <table className="w-full text-left border-separate border-spacing-0 overflow-visible">
-                        <thead className="bg-card/50 border-b border-border relative z-10">
+            <div className="overflow-x-auto border border-border rounded-xl bg-card">
+                <table className="w-full text-left border-collapse min-w-[2200px] table-fixed">
+                    <thead>
+                        <tr className="border-b border-border bg-muted/30">
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[100px] text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('time')}>
+                                <div className="flex items-center justify-center gap-1">
+                                    Time
+                                    {sortConfig?.key === 'time' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[120px] text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('date')}>
+                                <div className="flex items-center justify-center gap-1">
+                                    Date
+                                    {sortConfig?.key === 'date' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[120px] text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('priority')}>
+                                <div className="flex items-center justify-center gap-1">
+                                    Priority
+                                    {sortConfig?.key === 'priority' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[200px] cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('customer')}>
+                                <div className="flex items-center gap-1">
+                                    Customer Name
+                                    {sortConfig?.key === 'customer' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[140px] cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('phone')}>
+                                <div className="flex items-center gap-1">
+                                    Phone Number
+                                    {sortConfig?.key === 'phone' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[180px] cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('bikeModel')}>
+                                <div className="flex items-center gap-1">
+                                    Machine Model
+                                    {sortConfig?.key === 'bikeModel' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[160px] cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('regNumber')}>
+                                <div className="flex items-center gap-1">
+                                    Reg #
+                                    {sortConfig?.key === 'regNumber' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[150px] cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('type')}>
+                                <div className="flex items-center gap-1">
+                                    Job Type
+                                    {sortConfig?.key === 'type' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[100px] text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('billingType')}>
+                                <div className="flex items-center justify-center gap-1">
+                                    Billing
+                                    {sortConfig?.key === 'billingType' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[120px] text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('cost')}>
+                                <div className="flex items-center justify-center gap-1">
+                                    Cost
+                                    {sortConfig?.key === 'cost' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[180px] cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('technician')}>
+                                <div className="flex items-center gap-1">
+                                    Technician
+                                    {sortConfig?.key === 'technician' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[250px]">Special Instructions</th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[150px] text-center">Work Status</th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground w-[130px] text-center">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {currentJobs.length === 0 ? (
                             <tr>
-                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap rounded-tl-[2.5rem]">Time & Priority</th>
-                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Customer & Vehicle</th>
-                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Service & Tech</th>
-                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Service Remarks</th>
-                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Status</th>
-                                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground text-right rounded-tr-[2.5rem]">Action</th>
+                                <td colSpan={14} className="py-20 text-center text-[11px] font-black uppercase tracking-widest text-muted-foreground/30 italic">
+                                    No active jobs in the workshop stream...
+                                </td>
                             </tr>
-                        </thead>
-
-                        <tbody className="divide-y border-border/50">
-                            {processedJobs.length === 0 && (
-                                <tr>
-                                    <td colSpan={6} className="px-8 py-20 text-center opacity-20 italic text-sm font-medium">
-                                        No active jobs in the workshop...
-                                    </td>
-                                </tr>
-                            )}
-
-                            {processedJobs.map((job, index) => {
-                                // Only open UP if we are NOT in the first two rows (to avoid top-clipping)
-                                // AND we are near the bottom of the list.
-                                const isNearBottom = index > 1 && index >= processedJobs.length - 2;
+                        ) : (
+                            currentJobs.map((job, index) => {
+                                const isNearBottom = index > 1 && index >= currentJobs.length - 2;
                                 return (
-                                    <tr key={job.id} className="border-b border-border/30 group hover:bg-muted/30 transition-colors">
-
-                                        <td className={cn("px-6 py-4", index === processedJobs.length - 1 && "rounded-bl-[2.5rem]")}>
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex items-center gap-2">
-                                                    <Clock className="w-3.5 h-3.5 text-racing-blue" />
-                                                    <span className="text-sm font-black text-foreground italic">{job.time}</span>
-                                                    {isAtRisk(job.time, job.date, job.status) && (
-                                                        <span className="px-2 py-0.5 bg-red-500 text-white text-[7px] font-black uppercase tracking-widest rounded-full animate-pulse shadow-lg shadow-red-500/20">
-                                                            AT RISK
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <div className={cn(
-                                                    "flex items-center gap-1.5 px-2 py-0.5 rounded-lg border w-fit",
-                                                    job.priority === "High" ? "bg-red-500/10 text-red-500 border-red-500/20" : "bg-muted/30 text-muted-foreground border-border/50"
-                                                )}>
-                                                    <ShieldAlert className="w-2.5 h-2.5" />
-                                                    <span className="text-[8px] font-black uppercase tracking-widest">{job.priority}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center border border-border group-hover:border-racing-blue/50 transition-colors">
-                                                    <User className="w-5 h-5 text-muted-foreground" />
-                                                </div>
-                                                <div>
-                                                    <h4 className="text-sm font-black text-foreground uppercase tracking-widest mb-1">{job.customer}</h4>
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="text-[10px] font-bold text-muted-foreground">{job.bike}</span>
-                                                        <div className="flex items-center gap-1 text-[9px] font-bold text-racing-blue/70">
-                                                            <Phone className="w-2.5 h-2.5" />
-                                                            {job.phone}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-
-                                            <div className="flex flex-col gap-2">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    {/* Service Number Badge */}
-                                                    <span className={cn(
-                                                        "text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full border",
-                                                        job.serviceNumber <= 4
-                                                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                                                            : "bg-racing-blue/10 text-racing-blue border-racing-blue/20"
-                                                    )}>
-                                                        SVC #{job.serviceNumber} · {job.serviceNumber <= 4 ? 'Free' : 'Paid'}
+                                    <tr key={job.id} className="border-b border-border/30 group hover:bg-muted/10 transition-colors">
+                                        {/* Time */}
+                                        <td className="py-3 px-4 border-r border-border/10 text-center">
+                                            <div className="flex flex-col items-center gap-1">
+                                                <span className="text-[13px] font-black text-foreground italic">{job.time}</span>
+                                                {isAtRisk(job.time, job.date, job.status) && (
+                                                    <span className="px-1.5 py-0.5 bg-red-500 text-white text-[7px] font-black uppercase tracking-widest rounded-full animate-pulse">
+                                                        Risk
                                                     </span>
-                                                    <Wrench className="w-3.5 h-3.5 text-muted-foreground" />
-                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">{job.type}</span>
-                                                    {job.billingType === 'free' ? (
-                                                        <span className="text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">Free</span>
-                                                    ) : job.cost > 0 ? (
-                                                        <span className="text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full bg-racing-blue/10 text-racing-blue border border-racing-blue/20">
-                                                            ₹{job.cost.toLocaleString('en-IN')}
-                                                        </span>
-                                                    ) : null}
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-5 h-5 bg-racing-blue/10 rounded-full flex items-center justify-center border border-racing-blue/20">
-                                                        <UserCheck className="w-3 h-3 text-racing-blue" />
-                                                    </div>
-                                                    <span className="text-[10px] font-black text-foreground/70 uppercase tracking-tighter">{job.technician}</span>
-                                                </div>
+                                                )}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
 
-                                            <div className="flex items-center gap-2 max-w-[200px] group/remark">
-                                                <div className="relative flex-1">
-                                                    <input
-                                                        type="text"
-                                                        value={tempRemarks[job.id] !== undefined ? tempRemarks[job.id] : (job.notes || "")}
-                                                        onChange={(e) => setTempRemarks({ ...tempRemarks, [job.id]: e.target.value })}
-                                                        placeholder="Add special instructions..."
-                                                        className="w-full bg-transparent border-b border-transparent hover:border-border focus:border-racing-blue focus:outline-none text-[14px] font-medium py-1 transition-all placeholder:text-muted-foreground/30"
-                                                    />
+                                        {/* Date */}
+                                        <td className="py-3 px-4 border-r border-border/10 text-center uppercase tracking-wider text-[11px] font-bold text-muted-foreground">
+                                            {new Date(job.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                                        </td>
+
+                                        {/* Priority */}
+                                        <td className="py-3 px-4 border-r border-border/10 text-center">
+                                            <span className={cn(
+                                                "text-[9px] font-black uppercase px-2 py-0.5 rounded border tracking-widest",
+                                                job.priority === "High" ? "bg-red-500/10 text-red-500 border-red-500/20" : "bg-muted/30 text-muted-foreground border-border/50"
+                                            )}>
+                                                {job.priority}
+                                            </span>
+                                        </td>
+
+                                        {/* Customer */}
+                                        <td className="py-3 px-4 border-r border-border/10">
+                                            <p className="text-[13px] font-black text-foreground uppercase tracking-tight truncate">{job.customer}</p>
+                                        </td>
+
+                                        {/* Phone */}
+                                        <td className="py-3 px-4 border-r border-border/10 uppercase tracking-wider text-[12px] font-bold text-muted-foreground">
+                                            {job.phone}
+                                        </td>
+
+                                        {/* Machine */}
+                                        <td className="py-3 px-4 border-r border-border/10">
+                                            <p className="text-[12px] font-black text-foreground uppercase tracking-tighter italic truncate">{job.bikeModel}</p>
+                                        </td>
+
+                                        {/* Reg # */}
+                                        <td className="py-3 px-4 border-r border-border/10 font-mono text-[11px] font-bold text-muted-foreground tracking-tighter uppercase">
+                                            {job.regNumber}
+                                        </td>
+
+                                        {/* Job Type */}
+                                        <td className="py-3 px-4 border-r border-border/10">
+                                            <div className="flex items-center gap-2">
+                                                <Wrench className="w-3.5 h-3.5 text-muted-foreground/40" />
+                                                <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">{job.type}</span>
+                                            </div>
+                                        </td>
+
+                                        {/* Billing */}
+                                        <td className="py-3 px-4 border-r border-border/10 text-center">
+                                            <span className={cn(
+                                                "text-[9px] font-black uppercase px-2 py-0.5 rounded border tracking-widest",
+                                                job.billingType === 'free' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-racing-blue/10 text-racing-blue border-racing-blue/20"
+                                            )}>
+                                                {job.billingType || 'paid'}
+                                            </span>
+                                        </td>
+
+                                        {/* Cost */}
+                                        <td className="py-3 px-4 border-r border-border/10 text-center">
+                                            <div className="flex items-center justify-center gap-0.5 text-[13px] font-black text-racing-blue italic">
+                                                <IndianRupee className="w-3 h-3" />
+                                                {Number(job.cost).toLocaleString('en-IN')}
+                                            </div>
+                                        </td>
+
+                                        {/* Technician */}
+                                        <td className="py-3 px-4 border-r border-border/10">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-5 h-5 bg-racing-blue/5 rounded-full flex items-center justify-center border border-racing-blue/10">
+                                                    <UserCheck className="w-3 h-3 text-racing-blue" />
                                                 </div>
+                                                <span className="text-[11px] font-black text-foreground/70 uppercase tracking-tighter truncate">{job.technician}</span>
+                                            </div>
+                                        </td>
+
+                                        {/* Remarks */}
+                                        <td className="py-3 px-4 border-r border-border/10">
+                                            <div className="flex items-center gap-2 group/remark">
+                                                <input
+                                                    type="text"
+                                                    value={tempRemarks[job.id] !== undefined ? tempRemarks[job.id] : (job.notes || "")}
+                                                    onChange={(e) => setTempRemarks({ ...tempRemarks, [job.id]: e.target.value })}
+                                                    placeholder="Add instructions..."
+                                                    className="w-full bg-transparent border-b border-transparent hover:border-border/50 focus:border-racing-blue focus:outline-none text-[12px] font-medium py-1 transition-all placeholder:text-muted-foreground/20"
+                                                />
                                                 {(tempRemarks[job.id] !== undefined && tempRemarks[job.id] !== job.notes) && (
                                                     <button
                                                         onClick={() => handleSaveRemark(job.id)}
                                                         disabled={savingRemark === job.id}
-                                                        className="p-1.5 bg-green-500/10  text-green-500 rounded-lg hover:bg-green-500 hover:text-white transition-all transform active:scale-95 disabled:opacity-50"
+                                                        className="p-1.5 bg-green-500/10 text-green-500 rounded-lg hover:bg-green-500 hover:text-white transition-all transform active:scale-95 disabled:opacity-50"
                                                     >
-                                                        {savingRemark === job.id ? (
-                                                            <Loader2 className="w-3 h-3 animate-spin" />
-                                                        ) : (
-                                                            <Save className="w-3 h-3" />
-                                                        )}
+                                                        {savingRemark === job.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
                                                     </button>
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
 
-                                            <div className="relative w-fit">
+                                        {/* Status */}
+                                        <td className="py-3 px-4 border-r border-border/10 text-center">
+                                            <div className="relative inline-block text-left">
                                                 <button
                                                     onClick={() => setOpenStatusId(openStatusId === job.id ? null : job.id)}
                                                     className={cn(
-                                                        "flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all cursor-pointer",
+                                                        "flex items-center justify-between gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all cursor-pointer w-[120px]",
                                                         statusColors[job.status] || "bg-muted text-muted-foreground border-border",
-                                                        openStatusId === job.id && "ring-2 ring-racing-blue ring-offset-2 dark:ring-offset-background"
+                                                        openStatusId === job.id && "ring-1 ring-racing-blue"
                                                     )}>
                                                     {job.status.replace('-', ' ')}
                                                     <ChevronDown className={cn("w-3 h-3 transition-transform", openStatusId === job.id && "rotate-180")} />
@@ -612,7 +769,7 @@ export function ServiceSchedule() {
                                                                 exit={{ opacity: 0, scale: 0.95, y: isNearBottom ? 10 : -10 }}
                                                                 className={cn(
                                                                     "absolute left-0 z-50 pt-2",
-                                                                    isNearBottom ? "bottom-full mb-2 pb-2" : "top-full mt-2"
+                                                                    isNearBottom ? "bottom-full mb-2" : "top-full mt-2"
                                                                 )}
                                                             >
                                                                 <div className="flex flex-col bg-card border border-border rounded-xl shadow-2xl overflow-hidden w-40">
@@ -621,8 +778,8 @@ export function ServiceSchedule() {
                                                                             key={opt}
                                                                             onClick={() => { updateStatus(job.id, opt); setOpenStatusId(null); }}
                                                                             className={cn(
-                                                                                "px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors border-b border-border/50 last:border-0",
-                                                                                job.status === opt ? "text-racing-blue" : "text-muted-foreground hover:text-foreground"
+                                                                                "px-4 py-2 text-[9px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors border-b border-border/50 last:border-0",
+                                                                                job.status === opt ? "text-racing-blue bg-racing-blue/5" : "text-muted-foreground"
                                                                             )}
                                                                         >
                                                                             {opt.replace('-', ' ')}
@@ -634,77 +791,102 @@ export function ServiceSchedule() {
                                                     )}
                                                 </AnimatePresence>
                                             </div>
-
                                         </td>
-                                        <td className={cn("px-6 py-4 text-right", index === processedJobs.length - 1 && "rounded-br-[2.5rem]")}>
-                                            <div className="relative inline-block text-left">
+
+                                        {/* Action */}
+                                        <td className="py-3 px-4 text-center">
+                                            <div className="flex items-center justify-center gap-2">
                                                 <button
-                                                    onClick={() => setOpenMenuId(openMenuId === job.id ? null : job.id)}
-                                                    className={cn(
-                                                        "p-2 border border-border rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-racing-blue",
-                                                        openMenuId === job.id && "bg-muted shadow-inner border-racing-blue/30 text-racing-blue"
-                                                    )}
+                                                    onClick={() => handleEdit(job)}
+                                                    className="p-1.5 border border-border rounded-lg hover:bg-muted transition-all text-muted-foreground hover:text-racing-blue"
+                                                    title="Edit Job"
                                                 >
-                                                    <MoreVertical className="w-4 h-4" />
+                                                    <Wrench className="w-3.5 h-3.5" />
                                                 </button>
 
-                                                <AnimatePresence>
-                                                    {openMenuId === job.id && (
-                                                        <>
-                                                            <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-                                                            <motion.div
-                                                                initial={{ opacity: 0, scale: 0.95, y: isNearBottom ? 10 : -10 }}
-                                                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                                exit={{ opacity: 0, scale: 0.95, y: isNearBottom ? 10 : -10 }}
-                                                                className={cn(
-                                                                    "absolute right-0 z-[60] py-2",
-                                                                    isNearBottom ? "bottom-full mb-2" : "top-full mt-2"
-                                                                )}
-                                                            >
-                                                                <div className="bg-card border border-border rounded-2xl shadow-2xl overflow-hidden w-48 py-2">
-                                                                    <button
-                                                                        onClick={() => { handleEdit(job); setOpenMenuId(null); }}
-                                                                        className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-muted transition-colors text-muted-foreground flex items-center gap-3"
-                                                                    >
-                                                                        <Wrench className="w-3.5 h-3.5" />
-                                                                        Full Job Edit
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => {
-                                                                            window.location.href = `tel:${job.phone}`;
-                                                                            setOpenMenuId(null);
-                                                                        }}
-                                                                        className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-green-500/10 transition-colors text-green-600 flex items-center gap-3"
-                                                                    >
-                                                                        <Phone className="w-3.5 h-3.5" />
-                                                                        Call Customer
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => {
-                                                                            const message = `Hello ${job.customer}! Your ${job.bikeModel} is scheduled for ${job.type} at ${job.time}.`;
-                                                                            window.open(`https://wa.me/91${job.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
-                                                                            setOpenMenuId(null);
-                                                                        }}
-                                                                        className="w-full px-4 py-3 text-[10px] font-black uppercase tracking-widest text-left hover:bg-racing-blue/10 transition-colors text-racing-blue flex items-center gap-3"
-                                                                    >
-                                                                        <MessageSquare className="w-3.5 h-3.5" />
-                                                                        WhatsApp
-                                                                    </button>
-                                                                </div>
-                                                            </motion.div>
-                                                        </>
-                                                    )}
-                                                </AnimatePresence>
+                                                <div className="relative">
+                                                    <button
+                                                        onClick={() => setOpenMenuId(openMenuId === job.id ? null : job.id)}
+                                                        className={cn(
+                                                            "p-1.5 border border-border rounded-lg hover:bg-muted transition-all text-muted-foreground",
+                                                            openMenuId === job.id && "bg-muted text-racing-blue border-racing-blue/30"
+                                                        )}
+                                                    >
+                                                        <MoreVertical className="w-3.5 h-3.5" />
+                                                    </button>
+
+                                                    <AnimatePresence>
+                                                        {openMenuId === job.id && (
+                                                            <>
+                                                                <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                                                                <motion.div
+                                                                    initial={{ opacity: 0, scale: 0.95, y: isNearBottom ? 10 : -10 }}
+                                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                                    exit={{ opacity: 0, scale: 0.95, y: isNearBottom ? 10 : -10 }}
+                                                                    className={cn(
+                                                                        "absolute right-0 z-[60] py-2",
+                                                                        isNearBottom ? "bottom-full mb-2" : "top-full mt-2"
+                                                                    )}
+                                                                >
+                                                                    <div className="bg-card border border-border rounded-xl shadow-2xl overflow-hidden w-48 py-1">
+                                                                        <button
+                                                                            onClick={() => { window.location.href = `tel:${job.phone}`; setOpenMenuId(null); }}
+                                                                            className="w-full px-4 py-2 text-[9px] font-black uppercase tracking-widest text-left hover:bg-green-500/10 transition-colors text-green-600 flex items-center gap-2"
+                                                                        >
+                                                                            <Phone className="w-3.5 h-3.5" />
+                                                                            Call Customer
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                const message = `Hello ${job.customer}! Your ${job.bikeModel} is scheduled for ${job.type} at ${job.time}.`;
+                                                                                window.open(`https://wa.me/91${job.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
+                                                                                setOpenMenuId(null);
+                                                                            }}
+                                                                            className="w-full px-4 py-2 text-[9px] font-black uppercase tracking-widest text-left hover:bg-racing-blue/10 transition-colors text-racing-blue flex items-center gap-2"
+                                                                        >
+                                                                            <MessageSquare className="w-3.5 h-3.5" />
+                                                                            WhatsApp
+                                                                        </button>
+                                                                    </div>
+                                                                </motion.div>
+                                                            </>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
                                             </div>
                                         </td>
-
                                     </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+                                );
+                            })
+                        )}
+                    </tbody>
+                </table>
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between px-4 py-2 bg-muted/10 border border-border rounded-xl">
+                    <p className="text-[9px] font-bold text-muted-foreground uppercase">
+                        Spreadsheet Page {currentPage} of {totalPages}
+                    </p>
+                    <div className="flex gap-2">
+                        <button
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(prev => prev - 1)}
+                            className="px-3 py-1.5 bg-card border border-border rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-muted disabled:opacity-30 transition-all"
+                        >
+                            Prev
+                        </button>
+                        <button
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(prev => prev + 1)}
+                            className="px-3 py-1.5 bg-card border border-border rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-muted disabled:opacity-30 transition-all"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <AnimatePresence>
                 {isEditModalOpen && (
