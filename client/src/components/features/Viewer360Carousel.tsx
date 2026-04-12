@@ -83,12 +83,10 @@ export function Viewer360Carousel() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                     >
-                        <h4 className="text-4xl font-display font-black text-foreground/10 uppercase tracking-tighter leading-none mb-2">
+                        <h4 className="text-4xl font-display font-black text-gray-500/20 uppercase tracking-tighter leading-none mb-2">
                             {currentBike.name}
                         </h4>
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue/40">
-                            {currentBike.colors[0].name} Edition
-                        </p>
+
                     </motion.div>
                 </AnimatePresence>
             </div>

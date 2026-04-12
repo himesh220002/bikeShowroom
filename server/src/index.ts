@@ -29,6 +29,7 @@ import adminAuthRouter from './routes/adminAuthRoutes';
 import campaignsRouter from './routes/campaigns';
 import notificationsRouter from './routes/notifications';
 import insightsRouter from './routes/insights';
+import employeesRouter from './routes/employees';
 import bcrypt from 'bcryptjs';
 import Config from './models/Config';
 
@@ -121,6 +122,32 @@ mongoose.connect(MONGO_URI)
                 description: 'Showroom Contact Email'
             });
         }
+
+        // Seed service center info if not exists
+        const servicePhone = await Config.findOne({ key: 'servicePhone' });
+        if (!servicePhone) {
+            await Config.create({
+                key: 'servicePhone',
+                value: '+919733327604',
+                description: 'Service Center Contact Number'
+            });
+        }
+        const serviceAddress = await Config.findOne({ key: 'serviceAddress' });
+        if (!serviceAddress) {
+            await Config.create({
+                key: 'serviceAddress',
+                value: 'CHOUDHARY YAMAHA Service Center, GHV4+WM6, Katihar-Manihari Rd, Barmasia Power House Colony, Lohiya Nagar, Katihar, Bihar 854105',
+                description: 'Service Center Full Address'
+            });
+        }
+        const serviceMap = await Config.findOne({ key: 'serviceMap' });
+        if (!serviceMap) {
+            await Config.create({
+                key: 'serviceMap',
+                value: 'https://share.google/EsFERqZuDrslGA3is',
+                description: 'Service Center Google Maps URL'
+            });
+        }
     })
     .catch((err) => console.error('MongoDB connection error:', err));
 
@@ -161,6 +188,7 @@ app.use('/api/workshop-slots', workshopSlotsRouter);
 app.use('/api/campaigns', campaignsRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/insights', insightsRouter);
+app.use('/api/employees', employeesRouter);
 
 app.get('/', (req, res) => {
     res.send('Bike Showroom API is running with Socket.io...');

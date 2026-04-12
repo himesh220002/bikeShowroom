@@ -258,7 +258,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
 
                                 {/* Categorized Interests */}
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">What are you looking for?</label>
+                                    <label className="text-[12px] font-black uppercase tracking-widest text-foreground ml-2">What are you looking for?</label>
                                     <div className="space-y-6">
                                         {categories.map((cat) => (
                                             <div key={cat.name} className="space-y-3">
@@ -278,7 +278,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                                     {item.label}
                                                                 </span>
                                                                 {item.bonus && (
-                                                                    <span className="text-[7px] font-black text-racing-blue mt-1 uppercase tracking-widest">{item.bonus}</span>
+                                                                    <span className="text-[8px] font-black text-blue-300 mt-1 uppercase tracking-widest">{item.bonus}</span>
                                                                 )}
                                                             </div>
                                                         </label>

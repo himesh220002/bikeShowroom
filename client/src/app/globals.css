@@ -39,7 +39,7 @@
   --ring: #3b82f6;
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(0, 0, 0, 0.05);
-  --gradient-text: linear-gradient(to right, #1b2631, #493069);
+  --gradient-text: linear-gradient(to bottom, #5c738a, #493069);
 }
 
 .dark {
@@ -53,7 +53,7 @@
   --ring: #2563eb;
   --glass-bg: rgba(9, 9, 11, 0.7);
   --glass-border: rgba(255, 255, 255, 0.05);
-  --gradient-text: linear-gradient(to right, #c5d5e7, #1e9cac);
+  --gradient-text: linear-gradient(to bottom, #c5d5e7, #1e9cac);
 }
 
 @theme inline {

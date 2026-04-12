@@ -46,13 +46,7 @@ export default function Home() {
         </div>
       </section>
 
-      <AdCarousel />
 
-      {/* 6. Service & Insurance */}
-      <ServiceInsuranceSection />
-
-      {/* 7. Campaigns & Offers */}
-      <CampaignBanner />
 
       <RideVideo />
 
@@ -97,6 +91,16 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <AdCarousel />
+
+      {/* 7. Campaigns & Offers */}
+      <CampaignBanner />
+
+      {/* 6. Service & Insurance */}
+      <ServiceInsuranceSection />
+
+
 
       <FAQ />
 

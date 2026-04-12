@@ -15,7 +15,12 @@ import {
     Bike,
     Loader2,
     History,
-    Activity
+    Activity,
+    Sparkles,
+    MessageSquare,
+    Save,
+    Edit3,
+    X
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
@@ -35,6 +40,8 @@ interface ServiceBooking {
     billingType?: 'free' | 'paid';
     serviceNumber?: number;
     notes?: string;
+    rating?: number;
+    feedback?: string;
     createdAt: string;
 }
 
@@ -43,6 +50,14 @@ export function UserBookings() {
     const [bookings, setBookings] = useState<ServiceBooking[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<"active" | "history">("active");
+
+    // Local UI State
+    const [showRatingEdit, setShowRatingEdit] = useState<string | null>(null);
+    const [showFeedbackEdit, setShowFeedbackEdit] = useState<string | null>(null);
+    const [tempFeedback, setTempFeedback] = useState("");
+
+    // Emoji Reaction State
+    const [reactionEmoji, setReactionEmoji] = useState<{ id: string, emoji: string } | null>(null);
 
     const fetchBookings = async () => {
         try {
@@ -67,6 +82,41 @@ export function UserBookings() {
             setLoading(false);
         }
     }, [user, authLoading]);
+
+    const handleRateService = async (id: string, rating: number) => {
+        try {
+            const res = await axios.post<{ success: boolean }>(`${API_URL}/services/${id}/rate`, { rating }, { withCredentials: true });
+            if (res.data.success) {
+                setBookings(prev => prev.map(b => b._id === id ? { ...b, rating } : b));
+                setShowRatingEdit(null);
+
+                // Emoji Logic
+                let emoji = "🙂"; // 4-7
+                if (rating > 7) emoji = "😊";
+                if (rating < 4) emoji = "😢";
+
+                setReactionEmoji({ id, emoji });
+                setTimeout(() => setReactionEmoji(null), 3000);
+            }
+        } catch (err) {
+            console.error("Failed to rate service:", err);
+            alert("Failed to save rating. Please try again.");
+        }
+    };
+
+    const handleSaveFeedback = async (id: string) => {
+        try {
+            const res = await axios.post<{ success: boolean }>(`${API_URL}/services/${id}/rate`, { feedback: tempFeedback }, { withCredentials: true });
+            if (res.data.success) {
+                setBookings(prev => prev.map(b => b._id === id ? { ...b, feedback: tempFeedback } : b));
+                setShowFeedbackEdit(null);
+                setTempFeedback("");
+            }
+        } catch (err) {
+            console.error("Failed to save feedback:", err);
+            alert("Failed to save feedback. Please try again.");
+        }
+    };
 
     if (authLoading || (user && loading)) {
         return (
@@ -99,12 +149,10 @@ export function UserBookings() {
 
     const activeBookings = bookings.filter(b => ["booked", "in-progress"].includes(b.status));
     const historyBookings = bookings.filter(b => ["completed", "delivered", "cancelled"].includes(b.status));
-
     const currentList = activeTab === "active" ? activeBookings : historyBookings;
 
     return (
         <div className="space-y-8">
-            {/* Component Header & Tabs */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
                 <div className="space-y-1 text-center sm:text-left">
                     <h3 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter flex items-center justify-center sm:justify-start gap-3">
@@ -138,7 +186,6 @@ export function UserBookings() {
                 </div>
             </div>
 
-            {/* Bookings List */}
             <AnimatePresence mode="wait">
                 <motion.div
                     key={activeTab}
@@ -160,13 +207,26 @@ export function UserBookings() {
                             <div
                                 key={booking._id}
                                 className={cn(
-                                    "bg-background rounded-[2rem] border border-border/50 overflow-hidden hover:border-racing-blue/30 transition-all group",
+                                    "bg-background rounded-[2rem] border border-border/50 overflow-hidden hover:border-racing-blue/30 transition-all group relative",
                                     booking.status === 'in-progress' && "border-racing-blue/20 bg-racing-blue/[0.02]"
                                 )}
                             >
+                                {/* Emoji Reaction Overlay */}
+                                <AnimatePresence>
+                                    {reactionEmoji?.id === booking._id && (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+                                            animate={{ opacity: 1, scale: 1.5, y: -40 }}
+                                            exit={{ opacity: 0, scale: 2, y: -80 }}
+                                            className="absolute left-1/2 md:left-[85%] top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 text-5xl pointer-events-none drop-shadow-2xl"
+                                        >
+                                            {reactionEmoji.emoji}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
                                 <div className="p-6 sm:p-8">
                                     <div className="flex flex-col md:flex-row justify-between gap-6">
-                                        {/* Status & Primary Info */}
                                         <div className="flex items-start gap-4">
                                             <div className={cn(
                                                 "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border",
@@ -183,40 +243,23 @@ export function UserBookings() {
                                                     <h4 className="text-lg font-display font-black text-foreground uppercase tracking-tighter italic">
                                                         {booking.serviceType}
                                                     </h4>
-                                                    {/* Service Number Badge */}
-                                                    {booking.serviceNumber && (
-                                                        <span className={cn(
-                                                            "text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
-                                                            booking.serviceNumber <= 4
-                                                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                                                                : "bg-racing-blue/10 text-racing-blue border-racing-blue/20"
-                                                        )}>
-                                                            SVC #{booking.serviceNumber} &middot; {booking.serviceNumber <= 4 ? 'Free' : 'Paid'}
-                                                        </span>
-                                                    )}
                                                     <span className={cn(
                                                         "text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
                                                         booking.status === 'booked' ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
-                                                            booking.status === 'in-progress' ? "bg-racing-blue/10 text-racing-blue border-racing-blue/20 shadow-[0_0_8px_rgba(37,99,235,0.2)]" :
+                                                            booking.status === 'in-progress' ? "bg-racing-blue/10 text-racing-blue border-racing-blue/20" :
                                                                 booking.status === 'completed' ? "bg-green-500/10 text-green-500 border-green-500/20 text-[6px]" :
                                                                     booking.status === 'delivered' ? "bg-racing-blue/10 text-racing-blue border-racing-blue/20" :
                                                                         "bg-zinc-500/10 text-zinc-500 border-zinc-500/20"
                                                     )}>
                                                         {booking.status.replace('-', ' ')}
                                                     </span>
-                                                    {booking.priority === 'High' && (
-                                                        <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20">
-                                                            HIGH PRIORITY
-                                                        </span>
-                                                    )}
                                                 </div>
                                                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                                                    <Bike className="w-3 h-3" /> {booking.bikeModel} <span className="opacity-20">/</span> {booking.regNumber || 'REG PENDING'}
+                                                    <Bike className="w-3 h-3" /> {booking.bikeModel} <span className="opacity-20">/</span> {booking.regNumber}
                                                 </p>
                                             </div>
                                         </div>
 
-                                        {/* Timeline & Details */}
                                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 flex-1 max-w-2xl">
                                             <div className="space-y-1">
                                                 <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block opacity-60">Scheduled Date</span>
@@ -225,71 +268,140 @@ export function UserBookings() {
                                                     <span className="text-[11px] uppercase tracking-tighter">{new Date(booking.appointmentDate).toDateString()}</span>
                                                 </div>
                                             </div>
-                                            <div className="space-y-1">
+                                            <div className="space-y-1 text-right sm:text-left">
                                                 <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block opacity-60">Slot Time</span>
-                                                <div className="flex items-center gap-2 text-foreground font-bold">
+                                                <div className="flex items-center sm:justify-start justify-end gap-2 text-foreground font-bold font-display">
                                                     <Clock className="w-3.5 h-3.5 text-racing-blue" />
                                                     <span className="text-[11px] uppercase tracking-tighter">{booking.appointmentTime}</span>
                                                 </div>
                                             </div>
-                                            <div className="space-y-1 hidden lg:block">
-                                                <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block opacity-60">Service Center</span>
-                                                <div className="flex items-center gap-2 text-foreground font-bold">
-                                                    <MapPin className="w-3.5 h-3.5 text-racing-blue" />
-                                                    <span className="text-[11px] uppercase tracking-tighter">Yamaha Authorized</span>
-                                                </div>
-                                            </div>
                                         </div>
 
-                                        {/* Status Footer / Actions */}
-                                        <div className="flex items-center justify-end">
-                                            {booking.status === 'in-progress' ? (
-                                                <div className="px-4 py-2 bg-racing-blue shadow-lg shadow-racing-blue/20 rounded-xl flex items-center gap-3">
-                                                    <div className="w-1.5 h-1.5 bg-white rounded-full animate-ping" />
-                                                    <span className="text-[9px] font-black text-white uppercase tracking-widest">Live: In Workshop</span>
-                                                </div>
-                                            ) : (
-                                                <div className="text-right">
-                                                    <span className="text-[0.5rem] font-black text-muted-foreground uppercase tracking-widest block mb-1">Booking Ref</span>
-                                                    <span className="text-[0.625rem] font-black text-foreground uppercase tracking-[0.2em] opacity-40 italic">#{booking._id.slice(-6)}</span>
+                                        <div className="flex flex-col items-end justify-center min-w-[150px]">
+                                            {activeTab === 'history' && ['completed', 'delivered'].includes(booking.status) && (
+                                                <div className="space-y-2 text-right w-full">
+                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-1">Workshop Satisfaction</span>
+
+                                                    {booking.rating !== undefined && showRatingEdit !== booking._id ? (
+                                                        <div className="flex flex-col items-end gap-1">
+                                                            <div className="flex items-center justify-end gap-2">
+                                                                <div className="flex items-baseline gap-1">
+                                                                    <span className="text-xl font-display font-black text-racing-blue">{booking.rating}</span>
+                                                                    <span className="text-[8px] font-black text-muted-foreground opacity-40 uppercase">/10</span>
+                                                                </div>
+                                                                <button
+                                                                    onClick={() => setShowRatingEdit(booking._id)}
+                                                                    className="p-1.5 bg-muted rounded-lg hover:bg-racing-blue/10 transition-colors group/edit"
+                                                                >
+                                                                    <Edit3 className="w-3 h-3 text-muted-foreground group-hover/edit:text-racing-blue" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-wrap justify-end gap-1">
+                                                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                                                                <button
+                                                                    key={num}
+                                                                    onClick={() => handleRateService(booking._id, num)}
+                                                                    className={cn(
+                                                                        "w-6 h-6 flex items-center justify-center rounded-md border text-[8px] font-black transition-all",
+                                                                        booking.rating === num
+                                                                            ? "bg-racing-blue text-white border-racing-blue"
+                                                                            : "border-border hover:bg-racing-blue hover:text-white hover:border-racing-blue"
+                                                                    )}
+                                                                >
+                                                                    {num}
+                                                                </button>
+                                                            ))}
+                                                            {showRatingEdit === booking._id && (
+                                                                <button onClick={() => setShowRatingEdit(null)} className="w-6 h-6 flex items-center justify-center text-muted-foreground">
+                                                                    <X className="w-3 h-3" />
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
                                     </div>
 
-                                    {/* Expandable Meta Info */}
-                                    {(booking.technicianName || (['completed', 'delivered'].includes(booking.status) && (booking.cost != null || booking.billingType))) && (
-                                        <div className="mt-6 pt-4 border-t border-border/30 flex flex-wrap items-center gap-4">
-                                            {/* Billing Type Badge — only shown after admin confirms pricing */}
-                                            {['completed', 'delivered'].includes(booking.status) && (
-                                                booking.billingType === 'free' ? (
-                                                    <span className="px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-                                                        🎁 Free Service
-                                                    </span>
-                                                ) : (
-                                                    <span className="px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full bg-racing-blue/10 text-racing-blue border border-racing-blue/20">
-                                                        💳 Paid Service
-                                                    </span>
-                                                )
-                                            )}
+                                    {(booking.technicianName || booking.cost != null) && (
+                                        <div className="mt-6 pt-4 border-t border-border/10 flex flex-wrap items-center justify-between gap-4">
+                                            <div className="flex items-center gap-6">
+                                                {booking.technicianName && (
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block opacity-40">Tech</span>
+                                                        <span className="text-[9px] font-black uppercase text-foreground">{booking.technicianName}</span>
+                                                    </div>
+                                                )}
+                                                {booking.cost != null && (
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block opacity-40">Cost</span>
+                                                        <span className="text-[10px] font-black text-racing-blue">
+                                                            {booking.billingType === 'free' ? 'Complementary' : `₹${booking.cost.toLocaleString('en-IN')}`}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-20 italic">
+                                                Ref: {booking._id.slice(-8)}
+                                            </div>
+                                        </div>
+                                    )}
 
-                                            {booking.technicianName && (
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest italic">Attended By:</span>
-                                                    <span className="text-[9px] font-black text-foreground uppercase tracking-tighter">{booking.technicianName}</span>
+                                    {/* Feedback Section */}
+                                    {activeTab === 'history' && ['completed', 'delivered'].includes(booking.status) && (
+                                        <div className="mt-4 pt-4 border-t border-border/10">
+                                            {showFeedbackEdit === booking._id ? (
+                                                <div className="space-y-4">
+                                                    <textarea
+                                                        value={tempFeedback}
+                                                        onChange={(e) => setTempFeedback(e.target.value)}
+                                                        placeholder="Share your detailed experience with our workshop team..."
+                                                        className="w-full bg-muted/50 border border-border rounded-2xl p-4 text-[11px] font-medium text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-racing-blue outline-none min-h-[100px] transition-all"
+                                                    />
+                                                    <div className="flex justify-end gap-2">
+                                                        <button
+                                                            onClick={() => { setShowFeedbackEdit(null); setTempFeedback(""); }}
+                                                            className="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:bg-muted transition-colors"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleSaveFeedback(booking._id)}
+                                                            className="px-6 py-2 bg-racing-blue text-white rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-racing-blue/20 hover:scale-[1.02] transition-all"
+                                                        >
+                                                            <Save className="w-3 h-3" /> Save Feedback
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            )}
-
-                                            {booking.cost != null && (['delivered', 'completed'].includes(booking.status)) && (
-                                                <div className="ml-auto flex items-center gap-3 px-4 py-2 bg-racing-blue/5 border border-racing-blue/20 rounded-2xl">
-                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Final Bill</span>
-                                                    <span className="text-sm font-black text-racing-blue uppercase tracking-tighter">
-                                                        {booking.billingType === 'free' && booking.cost === 0
-                                                            ? 'Complimentary'
-                                                            : booking.cost > 0
-                                                                ? `₹${booking.cost.toLocaleString('en-IN')}`
-                                                                : 'Pending'}
-                                                    </span>
+                                            ) : (
+                                                <div className="flex flex-col gap-4">
+                                                    {booking.feedback ? (
+                                                        <div className="p-4 bg-muted/30 rounded-2xl border border-border/50 relative group/msg">
+                                                            <div className="flex justify-between items-start mb-2">
+                                                                <div className="flex items-center gap-2 text-[8px] font-black text-racing-blue uppercase tracking-widest">
+                                                                    <MessageSquare className="w-3 h-3" /> Shared Feedback
+                                                                </div>
+                                                                <button
+                                                                    onClick={() => { setShowFeedbackEdit(booking._id); setTempFeedback(booking.feedback || ""); }}
+                                                                    className="text-muted-foreground hover:text-racing-blue transition-colors"
+                                                                >
+                                                                    <Edit3 className="w-3 h-3" />
+                                                                </button>
+                                                            </div>
+                                                            <p className="text-[10px] text-muted-foreground leading-relaxed italic">
+                                                                "{booking.feedback}"
+                                                            </p>
+                                                        </div>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => { setShowFeedbackEdit(booking._id); setTempFeedback(""); }}
+                                                            className="w-full py-4 border border-dashed border-border rounded-2xl text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue hover:border-racing-blue/50 hover:bg-racing-blue/5 transition-all flex items-center justify-center gap-2"
+                                                        >
+                                                            <MessageSquare className="w-4 h-4" /> Give Detailed Feedback
+                                                        </button>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>

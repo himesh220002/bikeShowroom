@@ -5,24 +5,32 @@ import { API_URL } from "@/lib/config";
 import {
     LineChart, Line, AreaChart, Area, BarChart, Bar,
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    Legend, Cell, PieChart, Pie
+    Legend, Cell, PieChart, Pie, FunnelChart, Funnel, LabelList
 } from "recharts";
 import {
     ArrowLeft, TrendingUp, Users, DollarSign,
-    Wrench, Sparkles, Filter, Calendar, Loader2
+    Wrench, Sparkles, Filter, Calendar, Loader2,
+    PieChart as PieIcon, BarChart3, Target, Activity,
+    Box, Wallet, AlertTriangle, CheckCircle2,
+    ArrowUpRight, ArrowDownRight, Zap, MessageSquare
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
+import { motion } from "framer-motion";
+
+const COLORS = ["#004da1", "#007bff", "#2D6AFF", "#60A5FA", "#93C5FD", "#BFDBFE"];
 
 export default function InsightsPage() {
+    const [period, setPeriod] = useState<"6months" | "ytd" | "all">("6months");
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
         const fetchInsights = async () => {
+            setLoading(true);
             try {
-                const res = await fetch(`${API_URL}/insights/crm`);
+                const res = await fetch(`${API_URL}/insights/crm?period=${period}`);
                 const result = await res.json();
                 if (result.success) setData(result.data);
             } catch (err) {
@@ -32,7 +40,7 @@ export default function InsightsPage() {
             }
         };
         fetchInsights();
-    }, []);
+    }, [period]);
 
     if (loading) {
         return (
@@ -44,191 +52,320 @@ export default function InsightsPage() {
                     </div>
                 </div>
                 <div className="space-y-1 text-center">
-                    <h2 className="text-xl font-display font-black uppercase italic tracking-tighter">Analyzing CRM <span className="text-racing-blue">Data</span></h2>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest animate-pulse">Aggregating historical records...</p>
+                    <h2 className="text-xl font-display font-black uppercase italic tracking-tighter">Syncing Intelligence <span className="text-racing-blue">Core</span></h2>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest animate-pulse">Processing real-time workshop metrics...</p>
                 </div>
             </div>
         );
     }
 
-    const { monthly, brandRevenue, overview } = data || {};
+    const {
+        monthly = [],
+        brandRevenue = [],
+        leadFunnel = [],
+        inventory = [],
+        financeStats = [],
+        financialSplit = [],
+        overview = {
+            totalCustomers: 0,
+            totalRevenue: 0,
+            activeServices: 0,
+            nps: 0,
+            serviceCompletionRate: 0,
+            inventoryHealth: 0,
+            noShowRate: 0
+        }
+    } = data || {};
+
+    const InsightCard = ({ title, icon: Icon, children, className }: any) => (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={cn("bg-card border border-border/50 rounded-[2.5rem] p-8 shadow-2xl space-y-6 group hover:border-racing-blue/20 transition-all", className)}
+        >
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-racing-blue/10 rounded-xl group-hover:scale-110 transition-transform">
+                        <Icon className="w-4 h-4 text-racing-blue" />
+                    </div>
+                    <h3 className="text-lg font-display font-black uppercase italic tracking-tighter text-foreground">{title}</h3>
+                </div>
+                <div className="w-2 h-2 rounded-full bg-racing-blue animate-pulse" />
+            </div>
+            <div className="h-[300px] w-full">
+                {children}
+            </div>
+        </motion.div>
+    );
+
+    // Dynamic Recommendation Logic
+    const salesPerformance = monthly.reduce((acc: any, curr: any) => acc + curr.sales, 0);
+    const targetPerformance = monthly.reduce((acc: any, curr: any) => acc + curr.target, 0);
+    const achievementPercent = targetPerformance > 0 ? Math.round((salesPerformance / targetPerformance) * 100) : 0;
+
+    const financeCount = financeStats.find((f: any) => f._id === 'Finance' || f._id === 'EMI')?.count || 0;
+    const totalFinanceBase = financeStats.reduce((acc: any, curr: any) => acc + curr.count, 0) || 1;
+    const financeUptake = Math.round((financeCount / totalFinanceBase) * 100);
 
     return (
-        <div className="space-y-10 pb-20 animate-in fade-in duration-1000">
-            {/* Top Bar */}
+        <div className="space-y-12 pb-20 animate-in fade-in duration-700">
+            {/* Header & Quick Sync */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex items-center gap-6">
                     <button
                         onClick={() => router.back()}
-                        className="p-3 bg-card border border-border rounded-xl hover:bg-muted transition-all shadow-lg"
+                        className="p-3 bg-card border border-border rounded-xl hover:bg-muted transition-all shadow-lg group"
                     >
-                        <ArrowLeft className="w-5 h-5" />
+                        <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                     </button>
                     <div>
-                        <h2 className="text-3xl font-display font-black text-foreground uppercase tracking-tighter italic">
+                        <h2 className="text-4xl font-display font-black text-foreground uppercase tracking-tighter italic leading-none">
                             Showroom <span className="text-racing-blue">Intelligence</span>
                         </h2>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">Deep Analytics & Growth Projection</p>
+                        <div className="flex items-center gap-2 mt-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Operational Performance Dashboard &bull; Live</p>
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex bg-muted rounded-xl p-1 border border-border/50">
-                    {["Last 6 Months", "Year to Date", "Life-to-Date"].map((period, i) => (
+                <div className="flex bg-muted/50 backdrop-blur-md rounded-2xl p-1.5 border border-border/50">
+                    {[
+                        { label: "Last 6 Months", value: "6months" },
+                        { label: "Year to Date", value: "ytd" },
+                        { label: "Life-to-Date", value: "all" }
+                    ].map((p, i) => (
                         <button
-                            key={period}
+                            key={p.value}
+                            onClick={() => setPeriod(p.value as any)}
                             className={cn(
-                                "px-4 py-2 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all",
-                                i === 0 ? "bg-racing-blue text-white shadow-lg" : "text-muted-foreground hover:text-foreground"
+                                "px-6 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                                period === p.value ? "bg-racing-blue text-white shadow-xl shadow-racing-blue/20" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
                             )}
                         >
-                            {period}
+                            {p.label}
                         </button>
                     ))}
                 </div>
             </div>
 
-            {/* Overview Stats */}
+            {/* Summary KPI Banner */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[
-                    { label: "Total Customers", value: overview.totalCustomers, icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
-                    { label: "Gross Revenue", value: `₹${(overview.totalRevenue / 100000).toFixed(1)}L`, icon: DollarSign, color: "text-green-500", bg: "bg-green-500/10" },
-                    { label: "Active Services", value: overview.activeServices, icon: Wrench, color: "text-orange-500", bg: "bg-orange-500/10" },
-                    { label: "CRM Efficiency", value: "94%", icon: Sparkles, color: "text-racing-blue", bg: "bg-racing-blue/10" },
-                ].map((stat, i) => (
-                    <div key={i} className="bg-card border border-border rounded-3xl p-6 shadow-xl relative overflow-hidden group hover:scale-[1.02] transition-all">
-                        <div className={cn("absolute -right-2 -top-2 w-20 h-20 opacity-[0.03] transition-all group-hover:scale-150 rotate-12", stat.color)}>
-                            <stat.icon className="w-full h-full" />
-                        </div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className={cn("p-2 rounded-xl", stat.bg)}>
-                                <stat.icon className={cn("w-4 h-4", stat.color)} />
+                    { label: "Revenue Target", value: `₹${((overview?.totalRevenue || 0) / 100000).toFixed(1)}L`, trend: "↑ 12%", positive: true, icon: Target },
+                    { label: "Service Efficiency", value: `${overview?.serviceCompletionRate || 0}%`, trend: `vs ${overview?.noShowRate || 0}% No-shows`, positive: overview?.serviceCompletionRate > 80, icon: Activity },
+                    { label: "Customer NPS", value: (overview?.nps || 0).toFixed(1), trend: "↑ 0.4", positive: true, icon: Sparkles },
+                    { label: "Inventory Health", value: `${overview?.inventoryHealth || 0}%`, trend: "Stable", positive: true, icon: Box },
+                ].map((kpi, i) => (
+                    <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="bg-card border border-border rounded-3xl p-6 shadow-xl relative overflow-hidden group"
+                    >
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="p-3 bg-racing-blue/5 rounded-2xl">
+                                <kpi.icon className="w-5 h-5 text-racing-blue" />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{stat.label}</span>
+                            <div className={cn(
+                                "flex items-center gap-1 px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest whitespace-nowrap",
+                                kpi.positive ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"
+                            )}>
+                                {kpi.trend.includes("Stable") ? <Zap className="w-3 h-3" /> : kpi.positive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                                {kpi.trend}
+                            </div>
                         </div>
-                        <div className="text-3xl font-display font-black italic tracking-tighter">{stat.value}</div>
-                        <div className="text-[9px] font-bold text-green-500 uppercase mt-2 italic">Trending ↑ 8.4%</div>
-                    </div>
+                        <div className="text-3xl font-display font-black text-foreground italic tracking-tighter mb-1">{kpi.value}</div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">{kpi.label}</span>
+                    </motion.div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Growth Chart */}
-                <div className="lg:col-span-2 bg-card border border-border rounded-[2.5rem] p-8 shadow-2xl space-y-8">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h3 className="text-xl font-display font-black uppercase italic tracking-tighter">Operational <span className="text-racing-blue">Velocity</span></h3>
-                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Comparing New Acquisitions, Sales & Services</p>
-                        </div>
-                        <div className="flex gap-4">
-                            {[{ k: "sales", c: "#2D6AFF" }, { k: "services", c: "#FFA500" }, { k: "growth", c: "#22c55e" }].map(l => (
-                                <div key={l.k} className="flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: l.c }} />
-                                    <span className="text-[9px] font-black uppercase tracking-widest opacity-50">{l.k}</span>
+            {/* Section 1: Sales Performance */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <InsightCard title="Monthly Sales vs Target" icon={BarChart3}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={monthly}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#88888810" />
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
+                            <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }} />
+                            <Legend wrapperStyle={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em' }} />
+                            <Bar dataKey="target" name="Monthly Target" fill="#2D6AFF20" radius={[10, 10, 0, 0]} />
+                            <Bar dataKey="sales" name="Actual Performance" fill="#2D6AFF" radius={[10, 10, 0, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </InsightCard>
+
+                <InsightCard title="Sales Distribution by Model" icon={PieIcon}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie
+                                data={brandRevenue}
+                                dataKey="units"
+                                nameKey="_id"
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={80}
+                                outerRadius={120}
+                                paddingAngle={5}
+                            >
+                                {brandRevenue?.map((entry: any, index: number) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Pie>
+                            <Tooltip contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }} />
+                            <Legend layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ fontSize: "7px", fontWeight: "900", maxWidth: "150px" }} />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </InsightCard>
+            </div>
+
+            {/* Section 2: Service & Engagement */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <InsightCard title="Service Scheduled vs Completed" icon={Activity}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={monthly}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#88888810" />
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
+                            <Tooltip contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }} />
+                            <Legend />
+                            <Line type="monotone" dataKey="services" name="Total Scheduled" stroke="#93C5FD" strokeWidth={4} dot={{ r: 6, fill: '#93C5FD' }} strokeDasharray="5 5" />
+                            <Line type="monotone" dataKey="growth" name="Completed Jobs" stroke="#2D6AFF" strokeWidth={4} dot={{ r: 6, fill: '#2D6AFF' }} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </InsightCard>
+
+                <InsightCard title="Lead Conversion Funnel" icon={Users}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <FunnelChart>
+                            <Tooltip contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }} />
+                            <Funnel dataKey="value" data={leadFunnel} isAnimationActive>
+                                <LabelList position="right" fill="#888" stroke="none" dataKey="stage" fontSize={10} fontWeight={900} />
+                                {leadFunnel?.map((entry: any, index: number) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Funnel>
+                        </FunnelChart>
+                    </ResponsiveContainer>
+                </InsightCard>
+            </div>
+
+            {/* Section 3: Inventory & Feedback */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <InsightCard title="Real-time Inventory Levels" icon={Box}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={inventory} layout="vertical">
+                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#88888810" />
+                            <XAxis type="number" hide />
+                            <YAxis dataKey="_id" type="category" width={100} axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
+                            <Tooltip />
+                            <Bar dataKey="stock" fill="#2D6AFF" radius={[0, 10, 10, 0]} barSize={20} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </InsightCard>
+
+                <InsightCard title="Revenue Distribution" icon={Wallet}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie
+                                data={data?.financialSplit}
+                                dataKey="value"
+                                nameKey="name"
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={60}
+                                outerRadius={100}
+                                label={({ name, percent }) => `${name} ${(percent ? percent * 100 : 0).toFixed(0)}%`}
+                            >
+                                {data?.financialSplit?.map((entry: any, index: number) => (
+                                    <Cell key={`cell-${index}`} fill={index === 0 ? "#2D6AFF" : COLORS[index + 1]} />
+                                ))}
+                            </Pie>
+                            <Tooltip />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </InsightCard>
+            </div>
+
+            {/* Section 4: Customer Feedback */}
+            <InsightCard title="Recent Customer Feedback" icon={MessageSquare}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar p-2">
+                    {data?.recentFeedback?.length > 0 ? (
+                        data.recentFeedback.map((fb: any, i: number) => (
+                            <div key={i} className="p-4 bg-muted/30 rounded-2xl border border-border/50 space-y-2 hover:border-racing-blue/30 transition-all group">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black uppercase text-foreground">{fb.name}</span>
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-xs font-display font-black text-racing-blue italic">{fb.rating}</span>
+                                        <span className="text-[8px] font-black text-muted-foreground uppercase opacity-40">/10</span>
+                                    </div>
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="h-[350px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={monthly}>
-                                <defs>
-                                    <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#2D6AFF" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#2D6AFF" stopOpacity={0} />
-                                    </linearGradient>
-                                    <linearGradient id="colorServices" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#FFA500" stopOpacity={0.2} />
-                                        <stop offset="95%" stopColor="#FFA500" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#88888820" />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }}
-                                />
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: '#000',
-                                        border: 'none',
-                                        borderRadius: '16px',
-                                        fontSize: '10px',
-                                        fontWeight: '900',
-                                        color: '#fff',
-                                        boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
-                                    }}
-                                    itemStyle={{ color: '#fff' }}
-                                />
-                                <Area type="monotone" dataKey="sales" stroke="#2D6AFF" strokeWidth={4} fillOpacity={1} fill="url(#colorSales)" />
-                                <Area type="monotone" dataKey="services" stroke="#FFA500" strokeWidth={4} fillOpacity={1} fill="url(#colorServices)" />
-                                <Line type="monotone" dataKey="growth" stroke="#22c55e" strokeWidth={3} dot={{ r: 4 }} />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-
-                {/* Brand Revenue Chart */}
-                <div className="bg-card border border-border rounded-[2.5rem] p-8 shadow-2xl space-y-8 flex flex-col">
-                    <div>
-                        <h3 className="text-xl font-display font-black uppercase italic tracking-tighter">Brand <span className="text-racing-blue">Dominance</span></h3>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Revenue Distribution by Bike Model</p>
-                    </div>
-
-                    <div className="flex-1 w-full min-h-[400px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={brandRevenue} layout="vertical">
-                                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#88888810" />
-                                <XAxis type="number" hide />
-                                <YAxis
-                                    dataKey="_id"
-                                    type="category"
-                                    width={100}
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }}
-                                />
-                                <Tooltip
-                                    cursor={{ fill: 'transparent' }}
-                                    contentStyle={{
-                                        backgroundColor: '#000',
-                                        border: 'none',
-                                        borderRadius: '12px',
-                                        fontSize: '10px',
-                                        color: '#fff'
-                                    }}
-                                />
-                                <Bar
-                                    dataKey="revenue"
-                                    radius={[0, 8, 8, 0]}
-                                    barSize={24}
-                                >
-                                    {brandRevenue?.map((entry: any, index: number) => (
-                                        <Cell key={`cell-${index}`} fill={index === 0 ? '#2D6AFF' : '#2D6AFF40'} />
-                                    ))}
-                                </Bar>
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-
-                    <div className="space-y-3 mt-4 pt-4 border-t border-border/50">
-                        {brandRevenue?.slice(0, 3).map((item: any, i: number) => (
-                            <div key={item._id} className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <div className={cn("w-1.5 h-1.5 rounded-full", i === 0 ? "bg-racing-blue" : "bg-muted-foreground/30")} />
-                                    <span className="text-[10px] font-bold text-foreground uppercase">{item._id}</span>
+                                <p className="text-[10px] text-muted-foreground italic line-clamp-3">"{fb.feedback}"</p>
+                                <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest pt-2 border-t border-border/10">
+                                    <span className="text-racing-blue/60">{fb.bikeModel}</span>
+                                    <span className="opacity-40">{new Date(fb.updatedAt).toLocaleDateString()}</span>
                                 </div>
-                                <span className="text-[10px] font-black text-racing-blue">₹{(item.revenue / 1000).toFixed(1)}k</span>
                             </div>
-                        ))}
-                    </div>
+                        ))
+                    ) : (
+                        <div className="col-span-full py-20 flex flex-col items-center justify-center opacity-30 gap-4">
+                            <MessageSquare className="w-8 h-8" />
+                            <span className="text-[10px] uppercase font-black tracking-widest">No Feedback Yet</span>
+                        </div>
+                    )}
+                </div>
+            </InsightCard>
+
+            {/* Focus & Recommendations */}
+            <div className="space-y-6">
+                <h3 className="text-2xl font-display font-black uppercase text-foreground italic tracking-tighter">Engine <span className="text-racing-blue">Recommendations</span></h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[
+                        {
+                            type: "Achievement",
+                            title: "Sales Engagement",
+                            desc: `We achieved ${achievementPercent}% of the sales target for the selected period. ${brandRevenue?.[0]?._id || 'Primary'} model is leading the chart with ${brandRevenue?.[0]?.units || 0} unit sales.`,
+                            icon: CheckCircle2,
+                            color: "text-emerald-500",
+                            bg: "bg-emerald-500/10"
+                        },
+                        {
+                            type: "Lagging Area",
+                            title: "Service No-Shows",
+                            desc: `Service no-show rate is at ${overview.noShowRate}%. We recommend implementing automated reminder calls and WhatsApp follow-ups to reduce this gap.`,
+                            icon: AlertTriangle,
+                            color: "text-rose-500",
+                            bg: "bg-rose-500/10"
+                        },
+                        {
+                            type: "Focus Area",
+                            title: "Finance Uptake",
+                            desc: `Current finance uptake is ${financeUptake}% of total sales. A stronger EMI pitch and low-interest campaigns are needed to reach the industry average of 50%.`,
+                            icon: TrendingUp,
+                            color: "text-racing-blue",
+                            bg: "bg-racing-blue/10"
+                        }
+                    ].map((rec, i) => (
+                        <motion.div
+                            key={i}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.5 + i * 0.1 }}
+                            className="bg-card border border-border rounded-[2rem] p-8 space-y-4 hover:shadow-2xl transition-all"
+                        >
+                            <div className={cn("p-3 w-fit rounded-2xl mb-4", rec.bg)}>
+                                <rec.icon className={cn("w-6 h-6", rec.color)} />
+                            </div>
+                            <span className={cn("text-[9px] font-black uppercase tracking-[0.2em]", rec.color)}>{rec.type}</span>
+                            <h4 className="text-xl font-display font-black text-foreground uppercase tracking-tighter">{rec.title}</h4>
+                            <p className="text-[11px] font-bold text-muted-foreground leading-relaxed uppercase tracking-widest opacity-70">
+                                {rec.desc}
+                            </p>
+                        </motion.div>
+                    ))}
                 </div>
             </div>
         </div>

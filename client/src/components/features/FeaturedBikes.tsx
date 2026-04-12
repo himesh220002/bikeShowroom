@@ -58,7 +58,7 @@ export function FeaturedBikes() {
                     scroll('right');
                 }
             }
-        }, 8000);
+        }, 20000);
 
         return () => clearInterval(interval);
     }, [loading, bikesToShow.length]);

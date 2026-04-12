@@ -40,7 +40,7 @@ export function BikeCard({ bike, index = 0 }: BikeCardProps) {
                     </span>
 
                     <div className="space-y-1 mb-6">
-                        <h4 className="text-2xl md:text-3xl font-display font-black text-foreground tracking-tighter uppercase leading-none group-hover:text-blue-800 transition-colors duration-500">
+                        <h4 className="text-xl md:text-2xl font-display font-black text-foreground tracking-tighter uppercase leading-none group-hover:text-blue-800 transition-colors duration-500">
                             {bike.name}
                         </h4>
                         <p className="text-muted-foreground font-bold uppercase tracking-[0.3em] text-[7px] md:text-[8px]">
@@ -66,7 +66,7 @@ export function BikeCard({ bike, index = 0 }: BikeCardProps) {
                         </span>
                         <div className="flex items-baseline gap-1">
                             <span className="text-[9px] font-black text-racing-blue">₹</span>
-                            <span className="text-xl md:text-3xl font-display font-black text-foreground tracking-tighter italic">
+                            <span className="text-xl md:text-2xl font-display font-black text-foreground tracking-tighter italic">
                                 {bike.price}*
                             </span>
                         </div>
@@ -83,7 +83,7 @@ export function BikeCard({ bike, index = 0 }: BikeCardProps) {
                 </div>
 
                 {/* Oversized Bike Image with Glow Support */}
-                <div className="absolute top-[38%] left-1/2 -translate-x-1/2 w-[82%] pointer-events-none transition-all duration-500 ease-out group-hover:scale-110 group-hover:-translate-y-4 z-10 will-change-transform">
+                <div className="absolute top-[28%] left-1/2 -translate-x-1/2 w-[82%] pointer-events-none transition-all duration-500 ease-out group-hover:scale-110 group-hover:-translate-y-4 z-10 will-change-transform">
                     <div className="relative">
                         <div
                             className="absolute inset-0 blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-700"

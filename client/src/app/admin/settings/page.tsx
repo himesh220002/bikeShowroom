@@ -1,15 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Phone, Mail, Loader2, CheckCircle2, MapPin, Lock, ShieldCheck, AlertCircle } from "lucide-react";
+import { Save, Phone, Mail, Loader2, CheckCircle2, MapPin, Lock, ShieldCheck, AlertCircle, Users } from "lucide-react";
 import { API_URL } from "@/lib/config";
+import { EmployeeManagement } from "@/components/features/EmployeeManagement";
 
 export default function SettingsPage() {
+    const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
     const [settings, setSettings] = useState({
         showroomPhone: "",
         showroomEmail: "",
         showroomAddress: "",
-        showroomMap: ""
+        showroomMap: "",
+        servicePhone: "",
+        serviceAddress: "",
+        serviceMap: ""
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -35,7 +40,10 @@ export default function SettingsPage() {
                         showroomPhone: data.data.showroomPhone || "",
                         showroomEmail: data.data.showroomEmail || "",
                         showroomAddress: data.data.showroomAddress || "",
-                        showroomMap: data.data.showroomMap || ""
+                        showroomMap: data.data.showroomMap || "",
+                        servicePhone: data.data.servicePhone || "",
+                        serviceAddress: data.data.serviceAddress || "",
+                        serviceMap: data.data.serviceMap || ""
                     });
                 }
             } catch (err) {
@@ -129,36 +137,38 @@ export default function SettingsPage() {
                 <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Configure showroom contact details and messaging defaults</p>
             </div>
 
-            <form onSubmit={handleSave} className="max-w-2xl space-y-8">
+            <form onSubmit={handleSave} className="max-w-5xl space-y-8">
                 <div className="bg-card border border-border rounded-[2.5rem] p-8 md:p-12 shadow-2xl space-y-8">
                     <div className="space-y-6">
-                        <div className="space-y-2">
-                            <label htmlFor="showroomPhone" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Showroom Phone (WhatsApp)</label>
-                            <div className="relative group">
-                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
-                                <input
-                                    id="showroomPhone"
-                                    type="text"
-                                    value={settings.showroomPhone}
-                                    onChange={(e) => setSettings({ ...settings, showroomPhone: e.target.value })}
-                                    placeholder="+91 91223 45678"
-                                    className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                                />
+                        <h3 className="text-sm font-black uppercase tracking-widest text-racing-blue border-b border-racing-blue/10 pb-2">Showroom Contact Info</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label htmlFor="showroomPhone" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Phone (WhatsApp)</label>
+                                <div className="relative group">
+                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
+                                    <input
+                                        id="showroomPhone"
+                                        type="text"
+                                        value={settings.showroomPhone}
+                                        onChange={(e) => setSettings({ ...settings, showroomPhone: e.target.value })}
+                                        placeholder="+91 91223 45678"
+                                        className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                    />
+                                </div>
                             </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label htmlFor="showroomEmail" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Showroom Email</label>
-                            <div className="relative group">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
-                                <input
-                                    id="showroomEmail"
-                                    type="email"
-                                    value={settings.showroomEmail}
-                                    onChange={(e) => setSettings({ ...settings, showroomEmail: e.target.value })}
-                                    placeholder="contact@choudharyYamaha.com"
-                                    className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                                />
+                            <div className="space-y-2">
+                                <label htmlFor="showroomEmail" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Email</label>
+                                <div className="relative group">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
+                                    <input
+                                        id="showroomEmail"
+                                        type="email"
+                                        value={settings.showroomEmail}
+                                        onChange={(e) => setSettings({ ...settings, showroomEmail: e.target.value })}
+                                        placeholder="contact@choudharyYamaha.com"
+                                        className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                    />
+                                </div>
                             </div>
                         </div>
 
@@ -178,7 +188,7 @@ export default function SettingsPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <label htmlFor="showroomMap" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Google Maps Location (URL)</label>
+                            <label htmlFor="showroomMap" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Showroom Map Location (URL)</label>
                             <div className="relative group">
                                 <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
                                 <input
@@ -191,27 +201,91 @@ export default function SettingsPage() {
                                 />
                             </div>
                         </div>
+
+                        <h3 className="text-sm font-black uppercase tracking-widest text-racing-blue border-b border-racing-blue/10 pb-2 pt-4">Service Side Contact Info</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label htmlFor="servicePhone" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Service Contact</label>
+                                <div className="relative group">
+                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
+                                    <input
+                                        id="servicePhone"
+                                        type="text"
+                                        value={settings.servicePhone}
+                                        onChange={(e) => setSettings({ ...settings, servicePhone: e.target.value })}
+                                        placeholder="+91 97333 27604"
+                                        className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label htmlFor="serviceMap" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Service Map (URL)</label>
+                                <div className="relative group">
+                                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
+                                    <input
+                                        id="serviceMap"
+                                        type="text"
+                                        value={settings.serviceMap}
+                                        onChange={(e) => setSettings({ ...settings, serviceMap: e.target.value })}
+                                        placeholder="Google Maps URL"
+                                        className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label htmlFor="serviceAddress" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Service Address</label>
+                            <div className="relative group">
+                                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
+                                <input
+                                    id="serviceAddress"
+                                    type="text"
+                                    value={settings.serviceAddress}
+                                    onChange={(e) => setSettings({ ...settings, serviceAddress: e.target.value })}
+                                    placeholder="Full Service Address"
+                                    className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="pt-4 flex items-center gap-4">
-                        <button
-                            type="submit"
-                            disabled={saving}
-                            className="flex items-center gap-2 px-8 py-4 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-racing-blue/20 disabled:opacity-50 disabled:scale-100"
-                        >
-                            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                            {saving ? "Saving Changes..." : "Save Settings"}
-                        </button>
+                    <div className="pt-8 border-t border-border/10 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex items-center gap-4">
+                            <button
+                                type="submit"
+                                disabled={saving}
+                                className="flex items-center gap-2 px-8 py-4 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-racing-blue/20 disabled:opacity-50 disabled:scale-100"
+                            >
+                                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                {saving ? "Saving Changes..." : "Save Settings"}
+                            </button>
 
-                        {success && (
-                            <div className="flex items-center gap-2 text-green-500 animate-in fade-in slide-in-from-left-4">
-                                <CheckCircle2 className="w-4 h-4" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Saved Successfully</span>
-                            </div>
-                        )}
+                            {success && (
+                                <div className="flex items-center gap-2 text-green-500 animate-in fade-in slide-in-from-left-4">
+                                    <CheckCircle2 className="w-4 h-4" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Saved Successfully</span>
+                                </div>
+                            )}
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => setIsEmployeeModalOpen(true)}
+                            className="flex items-center gap-3 px-8 py-4 bg-zinc-900 border border-white/5 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-lg active:scale-95 h-fit whitespace-nowrap"
+                        >
+                            <Users className="w-4 h-4 text-racing-blue" />
+                            Manage Employees
+                        </button>
                     </div>
                 </div>
             </form>
+
+            <EmployeeManagement
+                isOpen={isEmployeeModalOpen}
+                onClose={() => setIsEmployeeModalOpen(false)}
+            />
+
             <div className="pt-8 border-t border-border">
                 <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
                     SECURITY SETTINGS

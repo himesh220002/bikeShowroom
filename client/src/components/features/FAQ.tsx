@@ -104,7 +104,7 @@ export function FAQ() {
                                         >
                                             <div className="px-4 sm:px-8 pb-8">
                                                 <div className="p-6 bg-racing-blue/5 rounded-2xl border border-racing-blue/10 relative overflow-hidden">
-                                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-racing-blue" />
+                                                    {/* <div className="absolute left-0 top-0 bottom-0 w-1 bg-racing-blue" /> */}
                                                     <p className="text-xs font-bold text-gray-300 leading-relaxed tracking-wider">
                                                         {faq.answer}
                                                     </p>

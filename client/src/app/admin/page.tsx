@@ -419,7 +419,7 @@ export default function AdminDashboard() {
                         { id: "services", label: "Service Reminders", icon: Bell, color: "#007bff" },
                         { id: "slots", label: "Capacity & Slots", icon: Calendar, color: "#8b5cf6" }, // purple-500
                         { id: "sales", label: "Sales Ledger", icon: ShoppingCart, color: "#22c55e" }, // green-500
-                        { id: "testing", label: "Testing Ground", icon: FlaskConical, color: "#ec4899" } // pink-500
+                        // { id: "testing", label: "Testing Ground", icon: FlaskConical, color: "#ec4899" } 
 
                     ].map((tab) => (
                         <button

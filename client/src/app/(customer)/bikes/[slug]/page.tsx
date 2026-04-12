@@ -134,7 +134,7 @@ export default function BikePage() {
                                 <div className="bg-zinc-900/50 p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-zinc-800 backdrop-blur-sm relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-racing-blue/10 blur-3xl -mr-16 -mt-16 group-hover:bg-racing-blue/20 transition-colors" />
                                     <h4 className="text-white font-black uppercase tracking-widest mb-6 text-xs md:text-sm flex items-center gap-2">
-                                        <Shield className="w-4 h-4 text-racing-blue" />
+                                        <Shield className="w-6 h-6 text-racing-blue" />
                                         Exclusive Showroom Advantage
                                     </h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
@@ -148,7 +148,7 @@ export default function BikePage() {
                                         ].map((item, i) => (
                                             <div key={i} className="flex flex-col justify-center sm:justify-start sm:items-start items-center gap-1">
                                                 <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-300 font-bold uppercase tracking-tight">
-                                                    <div className="w-1.5 h-1.5 bg-racing-blue rounded-full shrink-0" />
+                                                    <div className="w-2 h-1 bg-racing-blue rounded-full shrink-0" />
                                                     {item.text}
                                                 </div>
                                                 <span className="text-[8px] text-racing-blue/60 font-black uppercase tracking-[0.2em] ml-3.5">

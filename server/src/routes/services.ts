@@ -260,4 +260,38 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.post('/:id/rate', protect, async (req: any, res) => {
+    try {
+        const { rating, feedback } = req.body;
+        const userPhone = req.user.phone;
+
+        const service = await Service.findById(req.params.id);
+        if (!service) return res.status(404).json({ success: false, message: 'Service not found' });
+
+        // Security check: Only the customer who booked the service can rate/feedback it
+        if (service.phone !== userPhone) {
+            return res.status(403).json({ success: false, message: 'Unauthorized.' });
+        }
+
+        if (rating !== undefined) {
+            if (rating < 0 || rating > 10) {
+                return res.status(400).json({ success: false, message: 'Invalid rating. Must be 0-10.' });
+            }
+            service.rating = Number(rating);
+            service.ratedAt = new Date();
+        }
+
+        if (feedback !== undefined) {
+            service.feedback = feedback;
+            service.feedbackAt = new Date();
+        }
+
+        await service.save();
+
+        res.json({ success: true, data: service });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 export default router;

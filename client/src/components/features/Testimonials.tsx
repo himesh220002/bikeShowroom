@@ -127,12 +127,12 @@ export function Testimonials() {
                 </div>
 
                 {/* Call to Action for Why Choose Us */}
-                <div className="mt-24 p-12 bg-zinc-900/60 rounded-[3rem] border border-white/5 flex flex-col md:flex-row items-center justify-between gap-12 group">
+                <div className="mt-24 p-12 bg-zinc-900/60 rounded-[3rem] border border-white/5 flex flex-col lg:flex-row items-center justify-between gap-12 group">
                     <div className="max-w-xl text-center md:text-left">
-                        <h4 className="text-xl font-display font-black text-white uppercase tracking-tighter mb-4">
+                        <h4 className="text-xl xl:text-2xl font-display font-black text-white uppercase tracking-tighter mb-4 xl:mb-8">
                             WHY CUSTOMERS CHOOSE <span className="text-racing-blue">CHOUDHARY YAMAHA</span>
                         </h4>
-                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 list-none p-0 m-0">
                             {[
                                 "Premium Ambience",
                                 "Transparent Billing",
@@ -141,12 +141,16 @@ export function Testimonials() {
                                 "Priority After-Sales Support",
                                 "Expert Finance Guidance"
                             ].map((item) => (
-                                <li key={item} className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-gray-500">
-                                    <div className="w-2 h-2 rounded-full bg-racing-blue shadow-[0_0_10px_rgba(0,123,255,0.5)]" />
+                                <li
+                                    key={item}
+                                    className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-gray-500"
+                                >
+                                    <div className="w-2 h-1 rounded-xl bg-racing-blue shadow-[0_0_10px_rgba(0,123,255,0.5)]" />
                                     {item}
                                 </li>
                             ))}
                         </ul>
+
                     </div>
                     <div className="flex flex-col items-center gap-4 shrink-0">
                         <div className="flex -space-x-4 mb-4">

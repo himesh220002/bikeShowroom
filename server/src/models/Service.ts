@@ -22,6 +22,10 @@ export interface IService extends Document {
     cost: number;
     billingType: 'free' | 'paid';
     serviceNumber: number;   // 1-based count per phone+bikeModel; 1-4 = free, 5+ = paid
+    rating?: number;
+    ratedAt?: Date;
+    feedback?: string;
+    feedbackAt?: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -47,6 +51,10 @@ const ServiceSchema: Schema = new Schema({
     cost: { type: Number, default: 0 },
     billingType: { type: String, enum: ['free', 'paid'], default: 'paid' },
     serviceNumber: { type: Number, default: 1 },
+    rating: { type: Number, min: 0, max: 10 },
+    ratedAt: { type: Date },
+    feedback: { type: String },
+    feedbackAt: { type: Date },
     statusHistory: [{
         status: { type: String, required: true },
         timestamp: { type: Date, default: Date.now },
