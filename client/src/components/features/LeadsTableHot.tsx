@@ -286,10 +286,10 @@ export function LeadsTableHot({ leads, onUpdate }: LeadsTableHotProps) {
             )}
 
             <div className="p-4 bg-orange-500/5 border border-orange-500/10 rounded-xl">
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-orange-600/60 flex items-center gap-2">
+                <div className="text-[9px] font-black uppercase tracking-[0.2em] text-orange-600/60 flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
                     High Velocity Prospects • Accelerated Excel View
-                </p>
+                </div>
             </div>
         </div>
     );

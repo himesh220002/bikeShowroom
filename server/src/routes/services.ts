@@ -151,7 +151,7 @@ router.put('/:id/status', async (req, res) => {
             const customer = await Customer.findById(service.customerId);
             if (customer) {
                 const billAmount = cost !== undefined ? Number(cost) : (service.cost || 0);
-                customer.lifetimeValue = (customer.lifetimeValue || 0) + billAmount;
+                (customer as any).lifetimeValue = ((customer as any).lifetimeValue || 0) + billAmount;
                 await customer.save();
             }
         }

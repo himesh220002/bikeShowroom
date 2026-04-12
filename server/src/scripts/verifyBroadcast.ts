@@ -35,7 +35,7 @@ async function verify() {
             recipientIds: [customer._id]
         });
 
-        if (res.data.success) {
+        if ((res.data as any).success) {
             console.log('Broadcast triggered successfully');
 
             // Wait for processing
@@ -52,7 +52,7 @@ async function verify() {
             }
 
             // 4. Verify Campaign record
-            const campaign = await Campaign.findById(res.data.data._id);
+            const campaign = await Campaign.findById((res.data as any).data._id);
             if (campaign && campaign.status === 'Completed') {
                 console.log('SUCCESS: Campaign completed successfully');
             } else {

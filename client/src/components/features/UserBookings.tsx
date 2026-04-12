@@ -46,7 +46,10 @@ export function UserBookings() {
 
     const fetchBookings = async () => {
         try {
-            const res = await axios.get(`${API_URL}/services/user`, { withCredentials: true });
+            const res = await axios.get<{ success: boolean; data: ServiceBooking[] }>(
+                `${API_URL}/services/user`,
+                { withCredentials: true }
+            );
             if (res.data.success) {
                 setBookings(res.data.data);
             }
