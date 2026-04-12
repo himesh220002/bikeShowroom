@@ -8,7 +8,7 @@ import {
     Users, Upload, Image as ImageIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { API_URL } from "@/lib/config";
+import { API_URL, CONFIG } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
 
 interface Employee {
@@ -68,10 +68,12 @@ export function EmployeeManagement({ isOpen, onClose }: EmployeeManagementProps)
             const res = await fetch(`${API_URL}/employees?status=${statusFilter}`);
             const data = await res.json();
             if (data.success) {
-                // Prepend base URL for local images if they start with /images/
+                // For local images (relative paths), prepend the CLIENT origin (Next.js, port 3000)
+                // NOT the API server URL (port 5000), since files live in client/public
+                const clientOrigin = typeof window !== 'undefined' ? window.location.origin : CONFIG.WEBSITE_URL;
                 const formatted = data.data.map((emp: Employee) => ({
                     ...emp,
-                    imageUrl: emp.imageUrl?.startsWith('/') ? `${API_URL.replace('/api', '')}${emp.imageUrl}` : emp.imageUrl
+                    imageUrl: emp.imageUrl?.startsWith('/') ? `${clientOrigin}${emp.imageUrl}` : emp.imageUrl
                 }));
                 setEmployees(formatted);
             }
@@ -88,7 +90,9 @@ export function EmployeeManagement({ isOpen, onClose }: EmployeeManagementProps)
         try {
             const formDataToSubmit = new FormData();
             Object.entries(formData).forEach(([key, value]) => {
-                if (value !== undefined) formDataToSubmit.append(key, value.toString());
+                // If a file is selected, skip imageUrl so the server uses the uploaded file
+                if (key === 'imageUrl' && selectedFile) return;
+                if (value !== undefined && value !== '') formDataToSubmit.append(key, value.toString());
             });
 
             if (selectedFile) {
@@ -142,7 +146,7 @@ export function EmployeeManagement({ isOpen, onClose }: EmployeeManagementProps)
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="relative w-full max-w-4xl bg-card border border-border shadow-2xl rounded-[2.5rem] overflow-hidden flex flex-col max-h-[90vh]"
+                className="relative w-full max-w-5xl bg-card border border-border shadow-2xl rounded-[2.5rem] overflow-hidden flex flex-col max-h-[90vh]"
             >
                 {/* Header */}
                 <div className="p-6 md:p-8 border-b border-border bg-muted/30 flex items-center justify-between">
@@ -182,7 +186,13 @@ export function EmployeeManagement({ isOpen, onClose }: EmployeeManagementProps)
                             </div>
                         )}
                         <button
-                            onClick={onClose}
+                            onClick={() => {
+                                if (view === 'add' || view === 'edit' || view === 'history') {
+                                    setView('list');
+                                } else {
+                                    onClose();
+                                }
+                            }}
                             className="w-10 h-10 rounded-xl border border-border flex items-center justify-center hover:bg-muted transition-colors"
                         >
                             <X className="w-5 h-5" />
@@ -221,12 +231,12 @@ export function EmployeeManagement({ isOpen, onClose }: EmployeeManagementProps)
                                     <span className="text-[10px] font-black uppercase tracking-widest">Syncing Personnel Data...</span>
                                 </div>
                             ) : employees.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {employees.map((emp) => (
                                         <div key={emp._id} className="p-5 bg-muted/20 border border-border/50 rounded-2xl group hover:border-racing-blue/30 transition-all flex flex-col gap-4">
                                             <div className="flex justify-between items-start">
                                                 <div className="flex gap-4">
-                                                    <div className="w-10 h-10 bg-background border border-border rounded-xl flex items-center justify-center text-racing-blue font-display font-black group-hover:bg-racing-blue group-hover:text-white transition-all overflow-hidden">
+                                                    <div className="w-20 h-20 bg-background border border-border rounded-xl flex items-center justify-center text-racing-blue font-display font-black group-hover:bg-racing-blue group-hover:text-white transition-all overflow-hidden">
                                                         {emp.imageUrl ? (
                                                             <img src={emp.imageUrl} alt={emp.name} className="w-full h-full object-cover" />
                                                         ) : (
@@ -262,7 +272,7 @@ export function EmployeeManagement({ isOpen, onClose }: EmployeeManagementProps)
                                                 </div>
                                                 <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-bold italic">
                                                     <Calendar className="w-3 h-3 text-racing-blue" />
-                                                    In: {new Date(emp.joiningDate).toLocaleDateString()}
+                                                    Joined: {new Date(emp.joiningDate).toLocaleDateString()}
                                                 </div>
                                                 {emp.leavingDate && (
                                                     <div className="flex items-center gap-2 text-[10px] text-red-500/70 font-bold italic">
