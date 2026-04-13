@@ -182,7 +182,7 @@ const policies = [
                 content: [
                     "All new Yamaha motorcycles come with a manufacturer's warranty of 2 years or 30,000 km (whichever comes first) from the date of purchase.",
                     "Scooters are covered under a 3-year or 30,000 km warranty program.",
-                    "Yamaha genuine spare parts purchased from authorized dealers carry a 6-month warranty.",
+                    "Yamaha accessories are supplied as fresh, damage-free items but are not covered under warranty once delivered from the service center.",
                 ]
             },
             {

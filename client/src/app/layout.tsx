@@ -14,6 +14,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/context/AuthContext";
+import { ToastProvider } from "@/context/ToastContext";
 import { ConfigProvider } from "@/components/providers/ConfigProvider";
 import Script from "next/script";
 
@@ -40,11 +41,13 @@ export default function RootLayout({
         </Script>
 
         <AuthProvider>
-          <ConfigProvider>
-            <ThemeProvider>
-              {children}
-            </ThemeProvider>
-          </ConfigProvider>
+          <ToastProvider>
+            <ConfigProvider>
+              <ThemeProvider>
+                {children}
+              </ThemeProvider>
+            </ConfigProvider>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

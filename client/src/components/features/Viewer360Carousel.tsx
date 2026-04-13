@@ -7,6 +7,8 @@ import { BIKES, type Bike } from "@/lib/constants/bikes";
 import { cn } from "@/lib/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 import { API_URL } from "@/lib/config";
+import { Skeleton } from "../ui/Skeleton";
+import { apiCache } from "@/lib/api-cache";
 
 export function Viewer360Carousel() {
     const [bikes, setBikes] = useState<Bike[]>(BIKES);
@@ -15,6 +17,14 @@ export function Viewer360Carousel() {
 
     useEffect(() => {
         async function fetchBikes() {
+            // Check cache first
+            const cachedBikes = apiCache.get<Bike[]>("carousel_bikes");
+            if (cachedBikes) {
+                setBikes(cachedBikes);
+                setLoading(false);
+                return;
+            }
+
             try {
                 const res = await fetch(`${API_URL}/bikes`);
                 const data = await res.json();
@@ -32,6 +42,7 @@ export function Viewer360Carousel() {
                         return staticBike;
                     });
                     setBikes(merged);
+                    apiCache.set("carousel_bikes", merged);
                 }
             } catch (err) {
                 console.error("360 Carousel Sync Error:", err);
@@ -68,66 +79,71 @@ export function Viewer360Carousel() {
 
     return (
         <div className="relative group/carousel">
-            {loading && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center bg-card/50 backdrop-blur-xl rounded-[3rem]">
-                    <Loader2 className="w-8 h-8 text-racing-blue animate-spin" />
+            {loading ? (
+                <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-[3rem] overflow-hidden">
+                    <Skeleton className="w-full h-full" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                        <Loader2 className="w-8 h-8 text-racing-blue animate-spin" />
+                        <p className="text-sm font-medium text-muted-foreground animate-pulse">Syncing Machines...</p>
+                    </div>
                 </div>
-            )}
+            ) : (
+                <>
+                    {/* Bike Info Header */}
+                    <div className="absolute top-24 left-1/2 -translate-x-1/2 z-30 pointer-events-none text-center hidden md:block">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={currentBike.slug}
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 10 }}
+                            >
+                                <h4 className="text-4xl font-display font-black text-gray-500/20 uppercase tracking-tighter leading-none mb-2">
+                                    {currentBike.name}
+                                </h4>
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
 
-            {/* Bike Info Header */}
-            <div className="absolute top-24 left-1/2 -translate-x-1/2 z-30 pointer-events-none text-center hidden md:block">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={currentBike.slug}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                    >
-                        <h4 className="text-4xl font-display font-black text-gray-500/20 uppercase tracking-tighter leading-none mb-2">
-                            {currentBike.name}
-                        </h4>
+                    {/* Main Viewer */}
+                    <div className="relative z-10">
+                        <Viewer360 key={currentBike.slug} bike={currentBike} />
+                    </div>
 
-                    </motion.div>
-                </AnimatePresence>
-            </div>
+                    {/* Navigation Dots */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex gap-2 p-2 bg-card/60 backdrop-blur-xl border border-border rounded-full will-change-transform">
+                        {uniqueBikes.map((bike, idx) => (
+                            <button
+                                key={bike.slug}
+                                onClick={() => setCurrentIndex(idx)}
+                                className={cn(
+                                    "w-2 h-2 rounded-full transition-all",
+                                    currentIndex === idx
+                                        ? "bg-racing-blue w-8"
+                                        : "bg-muted hover:bg-muted-foreground/40"
+                                )}
+                                title={bike.name}
+                            />
+                        ))}
+                    </div>
 
-            {/* Main Viewer */}
-            <div className="relative z-10">
-                <Viewer360 key={currentBike.slug} bike={currentBike} />
-            </div>
-
-            {/* Navigation Dots */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex gap-2 p-2 bg-card/60 backdrop-blur-xl border border-border rounded-full will-change-transform">
-                {uniqueBikes.map((bike, idx) => (
+                    {/* Next/Prev Buttons */}
                     <button
-                        key={bike.slug}
-                        onClick={() => setCurrentIndex(idx)}
-                        className={cn(
-                            "w-2 h-2 rounded-full transition-all",
-                            currentIndex === idx
-                                ? "bg-racing-blue w-8"
-                                : "bg-muted hover:bg-muted-foreground/40"
-                        )}
-                        title={bike.name}
-                    />
-                ))}
-            </div>
-
-            {/* Next/Prev Buttons */}
-            <button
-                onClick={prevBike}
-                className="absolute left-2 md:left-4 top-90 md:top-1/2 -translate-y-1/2 z-40 p-1 md:p-4 bg-card/60 backdrop-blur-lg border border-border rounded-full text-foreground hover:bg-racing-blue hover:text-white hover:scale-110 active:scale-95 transition-all opacity-40 2xl:opacity-0 group-hover/carousel:opacity-100 will-change-transform"
-                aria-label="Previous Bike"
-            >
-                <ChevronLeft className="w-8 h-8" />
-            </button>
-            <button
-                onClick={nextBike}
-                className="absolute right-2 md:right-4 top-90 md:top-1/2 -translate-y-1/2 z-40 p-1 md:p-4 bg-card/60 backdrop-blur-lg border border-border rounded-full text-foreground hover:bg-racing-blue hover:text-white hover:scale-110 active:scale-95 transition-all opacity-40 2xl:opacity-0 group-hover/carousel:opacity-100 will-change-transform"
-                aria-label="Next Bike"
-            >
-                <ChevronRight className="w-8 h-8" />
-            </button>
+                        onClick={prevBike}
+                        className="absolute left-2 md:left-4 top-90 md:top-1/2 -translate-y-1/2 z-40 p-1 md:p-4 bg-card/60 backdrop-blur-lg border border-border rounded-full text-foreground hover:bg-racing-blue hover:text-white hover:scale-110 active:scale-95 transition-all opacity-40 2xl:opacity-0 group-hover/carousel:opacity-100 will-change-transform"
+                        aria-label="Previous Bike"
+                    >
+                        <ChevronLeft className="w-8 h-8" />
+                    </button>
+                    <button
+                        onClick={nextBike}
+                        className="absolute right-2 md:right-4 top-90 md:top-1/2 -translate-y-1/2 z-40 p-1 md:p-4 bg-card/60 backdrop-blur-lg border border-border rounded-full text-foreground hover:bg-racing-blue hover:text-white hover:scale-110 active:scale-95 transition-all opacity-40 2xl:opacity-0 group-hover/carousel:opacity-100 will-change-transform"
+                        aria-label="Next Bike"
+                    >
+                        <ChevronRight className="w-8 h-8" />
+                    </button>
+                </>
+            )}
         </div>
     );
 }

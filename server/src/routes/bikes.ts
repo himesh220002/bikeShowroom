@@ -1,7 +1,43 @@
 import { Router } from 'express';
+import { z } from 'zod';
 import Bike from '../models/Bike';
+import { validate } from '../middleware/validation';
+import { requestQueue } from '../middleware/request-queue';
 
 const router = Router();
+
+const bikeSchema = z.object({
+    body: z.object({
+        name: z.string().min(1, 'Name is required'),
+        slug: z.string().min(1, 'Slug is required'),
+        category: z.enum(['bike', 'scooty']),
+        price: z.string().min(1, 'Price range is required'),
+        colors: z.array(z.object({
+            name: z.string(),
+            hex: z.string(),
+            image: z.string(),
+            colorOption: z.string(),
+            stock: z.number().min(0)
+        })).min(1, 'At least one color/stock entry is required'),
+        specs: z.array(z.object({
+            icon: z.string(),
+            label: z.string()
+        })).optional(),
+        tag: z.string().optional(),
+        description: z.string().optional(),
+        fullSpecs: z.record(z.string(), z.any()).optional(),
+        threeSixtyUrl: z.string().optional(),
+        threeSixtyImageCount: z.number().optional(),
+        brochureUrl: z.string().optional()
+    })
+});
+
+const updateBikeSchema = z.object({
+    body: bikeSchema.shape.body.partial()
+});
+
+// Middleware to queue CRUD operations for bikes
+const bikeQueue = requestQueue((req) => 'bikes');
 
 // Get single bike by slug
 router.get('/slug/:slug', async (req, res) => {
@@ -25,7 +61,7 @@ router.get('/', async (req, res) => {
 });
 
 // Create new bike/scooty
-router.post('/', async (req, res) => {
+router.post('/', bikeQueue, validate(bikeSchema), async (req, res) => {
     try {
         const bike = new Bike(req.body);
         await bike.save();
@@ -36,7 +72,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update stock
-router.put('/:id', async (req, res) => {
+router.put('/:id', bikeQueue, validate(updateBikeSchema), async (req, res) => {
     try {
         const bike = await Bike.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!bike) return res.status(404).json({ success: false, message: 'Bike not found' });
@@ -53,7 +89,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete bike
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', bikeQueue, async (req, res) => {
     try {
         const bike = await Bike.findByIdAndDelete(req.params.id);
         if (!bike) return res.status(404).json({ success: false, message: 'Bike not found' });
