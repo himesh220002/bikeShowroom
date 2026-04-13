@@ -11,7 +11,12 @@ export const metadata: Metadata = {
   title: "Choudhary Yamaha | Authorized Yamaha Dealer",
   description: "Experience the best of Yamaha at Choudhary Yamaha in Katihar. Book test rides, services, and explore the latest Yamaha motorcycles including R15, MT-15, and FZ series.",
   keywords: ["Choudhary Yamaha", "Yamaha bikes Katihar", "Yamaha service Katihar", "R15 Katihar", "MT-15 Katihar"],
-  viewport: "width=device-width, initial-scale=1.0",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 import { AuthProvider } from "@/context/AuthContext";

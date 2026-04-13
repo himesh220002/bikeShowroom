@@ -22,7 +22,7 @@ api.interceptors.response.use(
         const message = error.response?.data?.message || error.message || 'Something went wrong';
 
         // Only show toast for actual errors, not cancellations or specific status codes if needed
-        if (!axios.isCancel(error)) {
+        if (!(axios as any).isAxiosError(error) || !(axios as any).isCancel(error)) {
             toastHandler('error', message);
         }
 
