@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { ConfigProvider } from "@/components/providers/ConfigProvider";
+import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 
 export default function RootLayout({
@@ -26,6 +27,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
       <body className="antialiased bg-background text-foreground overflow-x-hidden">
+        {/* Vercel Analytics */}
+        <Analytics />
         {/* Google Analytics */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=G-QHG9MD28EF`}

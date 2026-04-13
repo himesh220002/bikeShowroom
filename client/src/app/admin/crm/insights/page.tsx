@@ -368,6 +368,33 @@ export default function InsightsPage() {
                     ))}
                 </div>
             </div>
+
+            {/* Section 5: External Analytics */}
+            <div className="grid grid-cols-1 gap-8">
+                <InsightCard title="Web Traffic Intelligence" icon={Activity} className="border-racing-blue/10 bg-gradient-to-br from-card to-racing-blue/5">
+                    <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-racing-blue/20 blur-3xl rounded-full animate-pulse" />
+                            <Activity className="w-16 h-16 text-racing-blue relative z-10" />
+                        </div>
+                        <div className="space-y-2 max-w-md">
+                            <h4 className="text-xl font-display font-black uppercase italic tracking-tighter">Vercel <span className="text-racing-blue">Real-time</span> Analytics</h4>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-relaxed opacity-70">
+                                Detailed visitor demographics, page views, and conversion path analysis are processed externally to ensure showroom performance remains optimal.
+                            </p>
+                        </div>
+                        <a
+                            href="https://vercel.com/dashboard"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 px-8 py-4 bg-racing-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-racing-blue/20 group/btn"
+                        >
+                            Open Vercel Dashboard
+                            <ArrowUpRight className="w-4 h-4 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                        </a>
+                    </div>
+                </InsightCard>
+            </div>
         </div>
     );
 }
