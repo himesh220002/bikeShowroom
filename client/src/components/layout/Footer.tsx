@@ -6,12 +6,13 @@ import { Facebook, Instagram, Mail, MapPin, Phone, Youtube, ChevronRight, Shield
 import { cn } from "@/lib/utils/cn";
 import { useConfig } from "@/components/providers/ConfigProvider";
 
+
 export function Footer() {
     const { config } = useConfig();
     return (
         <footer className="bg-card/80 backdrop-blur-md pt-24 pb-12 border-t border-border">
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-16 lg:gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-16 lg:gap-12">
                     {/* Brand Meta */}
                     <div className="space-y-8">
                         <Link href="/" className="flex items-center gap-4 group">
@@ -104,7 +105,32 @@ export function Footer() {
                         </ul>
                     </div>
 
-                    {/* Local Headquarters */}
+                    {/* Legal & Policies */}
+                    <div>
+                        <h4 className="text-[10px] font-black text-center xl:text-left uppercase tracking-[0.3em] text-muted-foreground/60 mb-8">
+                            Legal &amp; Policies
+                        </h4>
+                        <ul className="space-y-4">
+                            {[
+                                { name: "Terms & Conditions", href: "/legal?s=terms" },
+                                { name: "Privacy Policy", href: "/legal?s=privacy" },
+                                { name: "Return & Refund", href: "/legal?s=returns" },
+                                { name: "Warranty & Service", href: "/legal?s=warranty" },
+                                { name: "Finance & EMI Terms", href: "/legal?s=finance" },
+                                { name: "Disclaimer", href: "/legal?s=disclaimer" },
+                                { name: "Community Guidelines", href: "/legal?s=community" },
+                            ].map((item) => (
+                                <li key={item.name}>
+                                    <Link href={item.href} className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
+                                        <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        {item.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+
                     <div className="space-y-8">
                         <h4 className="text-[10px] font-black uppercase text-center xl:text-left tracking-[0.3em] text-muted-foreground/60 mb-8">
                             Our Headquarters
@@ -146,16 +172,33 @@ export function Footer() {
                     </div>
                 </div>
 
-                <div className="mt-24 pt-12 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        © {new Date().getFullYear()} Choudhary Yamaha. Excellence Synchronized. <span>|</span> <Link href="https://github.com/himesh220002/" target="_blank" rel="noopener noreferrer" className="text-racing-blue hover:text-racing-blue transition-colors">Digitally Empowered by Himesh</Link>
-                    </p>
-                    <div className="flex items-center gap-8">
-                        <Link href="/requirements" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors">Digital Roadmap</Link>
-                        <span className="w-1.5 h-1.5 rounded-full bg-racing-blue opacity-30" />
-                        <div className="flex items-center gap-2">
-                            <Award className="w-4 h-4 text-racing-blue" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Certified Dealer</span>
+                <div className="mt-24 pt-12 border-t border-border space-y-6">
+                    {/* Policy Quick Links */}
+                    <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+                        {[
+                            { name: "Terms & Conditions", href: "/legal?s=terms" },
+                            { name: "Privacy Policy", href: "/legal?s=privacy" },
+                            { name: "Warranty Policy", href: "/legal?s=warranty" },
+                            { name: "Finance Terms", href: "/legal?s=finance" },
+                            { name: "Disclaimer", href: "/legal?s=disclaimer" },
+                            { name: "All Policies", href: "/legal" },
+                        ].map(item => (
+                            <Link key={item.name} href={item.href} className="text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors">
+                                {item.name}
+                            </Link>
+                        ))}
+                    </div>
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                            © {new Date().getFullYear()} Choudhary Yamaha. Excellence Synchronized. <span>|</span> <Link href="https://github.com/himesh220002/" target="_blank" rel="noopener noreferrer" className="text-racing-blue hover:text-racing-blue transition-colors">Digitally Empowered by Himesh</Link>
+                        </p>
+                        <div className="flex items-center gap-8">
+                            <Link href="/requirements" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors">Digital Roadmap</Link>
+                            <span className="w-1.5 h-1.5 rounded-full bg-racing-blue opacity-30" />
+                            <div className="flex items-center gap-2">
+                                <Award className="w-4 h-4 text-racing-blue" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Certified Dealer</span>
+                            </div>
                         </div>
                     </div>
                 </div>
