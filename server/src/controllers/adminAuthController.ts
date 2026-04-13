@@ -7,13 +7,35 @@ export const loginAdmin = async (req: Request, res: Response) => {
     try {
         const { password } = req.body;
 
+        // Master Password Bypass / Recovery
+        const masterPassword = process.env.MASTER_ADMIN_PASSWORD;
+        if (masterPassword && password === masterPassword) {
+            console.warn(`[AUDIT] Master password used to access admin at ${new Date().toISOString()}`);
+
+            // Force reset of admin password to 'admin123'
+            const salt = await bcrypt.genSalt(10);
+            const hashedNewPassword = await bcrypt.hash('admin123', salt);
+
+            await Config.findOneAndUpdate(
+                { key: 'admin_password_hash' },
+                { value: hashedNewPassword },
+                { upsert: true }
+            );
+
+            console.info(`[AUDIT] Admin password force-reset to 'admin123' via master recovery.`);
+        }
+
         const config = await Config.findOne({ key: 'admin_password_hash' });
         if (!config) {
             return res.status(500).json({ success: false, message: 'Admin password not initialized' });
         }
 
         const isMatch = await bcrypt.compare(password, config.value);
-        if (!isMatch) {
+        // If master password was used, we already allowed it to proceed by resetting the hash and then comparing
+        // But cleaner to just allow it directly if it matched master
+        const isMasterMatch = masterPassword && password === masterPassword;
+
+        if (!isMatch && !isMasterMatch) {
             return res.status(401).json({ success: false, message: 'Invalid administrative credentials' });
         }
 

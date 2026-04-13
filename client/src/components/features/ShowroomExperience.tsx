@@ -89,7 +89,7 @@ export function ShowroomExperience() {
                                 transition={{ delay: 0.2 }}
                                 className="text-lg text-gray-400 font-medium leading-relaxed max-w-xl"
                             >
-                                More than just a showroom, Choudhary Yamaha is your trusted destination for advanced bikes and scooters. Experience our premium workshop, expert staff, and a legacy of rider-first service.
+                                More than just a showroom, Choudhary Yamaha is your trusted destination for advanced bikes and scooters. Built upon the legacy of <a href="https://www.yamaha-motor-india.com/" target="_blank" className="text-white hover:text-racing-blue underline underline-offset-4 decoration-white/20 transition-colors">Yamaha Motor India</a>, we offer a premium workshop, expert staff, and a legacy of rider-first service.
                             </motion.p>
                         </div>
 

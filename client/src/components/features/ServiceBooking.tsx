@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Wrench, Calendar, Clock, Bike, Package, CheckCircle2, ChevronRight, User } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { submitServiceBooking } from "@/lib/actions/serviceActions";
+import Link from "next/link";
 
 type ServiceType = "General" | "Periodic" | "Repair" | "Spares";
 
@@ -35,36 +36,44 @@ export function ServiceBooking() {
     });
 
     useEffect(() => {
-        if (user) {
-            setFormData(prev => ({
-                ...prev,
-                name: user.displayName,
-                phone: prev.phone // Keep phone if already entered, though usually it's null
-            }));
+        const fetchUserBikes = async () => {
+            if (user) {
+                try {
+                    setFormData(prev => ({
+                        ...prev,
+                        name: user.displayName,
+                        phone: prev.phone
+                    }));
 
-            // Fetch user's registered bikes
-            axios.get(`${API_URL}/user-bikes`, { withCredentials: true })
-                .then(res => {
+                    const res: any = await axios.get(`${API_URL}/user-bikes`, { withCredentials: true });
                     if (res.data.success) {
                         setUserBikes(res.data.data);
                     }
-                })
-                .catch(err => console.error("Failed to fetch user bikes:", err));
-        }
+                } catch (err) {
+                    console.error("Failed to fetch user bikes:", err);
+                }
+            }
+        };
+        fetchUserBikes();
     }, [user]);
 
     useEffect(() => {
-        if (formData.appointmentDate) {
-            setLoadingSlots(true);
-            axios.get(`${API_URL}/workshop-slots/available?date=${formData.appointmentDate}`)
-                .then(res => {
+        const fetchSlots = async () => {
+            if (formData.appointmentDate) {
+                setLoadingSlots(true);
+                try {
+                    const res: any = await axios.get(`${API_URL}/workshop-slots/available?date=${formData.appointmentDate}`);
                     if (res.data.success) {
                         setAvailableSlots(res.data.data);
                     }
-                })
-                .catch(err => console.error("Failed to fetch slots:", err))
-                .finally(() => setLoadingSlots(false));
-        }
+                } catch (err) {
+                    console.error("Failed to fetch slots:", err);
+                } finally {
+                    setLoadingSlots(false);
+                }
+            }
+        };
+        fetchSlots();
     }, [formData.appointmentDate]);
 
     const serviceOptions = [
@@ -106,6 +115,14 @@ export function ServiceBooking() {
                 </h3>
                 <p className="text-muted-foreground text-sm max-w-sm mb-8 font-medium">
                     Your service request for {formData.bikeModel} has been sent. Our team will contact you at {formData.phone} shortly.
+                    <br />
+                    <Link
+                        href="https://www.yamaha-motor-india.com/"
+                        target="_blank"
+                        className="inline-block mt-4 text-[10px] font-black uppercase tracking-widest text-racing-blue/60 hover:text-racing-blue transition-colors"
+                    >
+                        View Official Yamaha India Service Guidelines
+                    </Link>
                 </p>
                 <button
                     onClick={() => { setSubmitted(false); setStep(1); }}

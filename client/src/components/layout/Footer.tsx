@@ -36,7 +36,7 @@ export function Footer() {
                         <p className="text-sm text-muted-foreground text-center leading-relaxed font-medium">
                             Choudhary Yamaha - Your definitive Yamaha destination in Katihar. Engineering thrill,
                             delivering excellence, and building a community of riders
-                            since 2012.
+                            since 2022.
                         </p>
                         <div className="flex gap-4 justify-center">
                             {[
@@ -93,6 +93,7 @@ export function Footer() {
                                 { name: "Insurance Sync", href: "/#inquiry" },
                                 { name: "Genuine Spares", href: "/service#spares" },
                                 { name: "WhatsApp Connect", href: "https://wa.me/917004100062" },
+                                { name: "Yamaha India Official", href: "https://www.yamaha-motor-india.com/" },
                                 { name: "Careers", href: "/#inquiry" }
                             ].map((item) => (
                                 <li key={item.name}>
@@ -181,6 +182,7 @@ export function Footer() {
                             { name: "Warranty Policy", href: "/legal?s=warranty" },
                             { name: "Finance Terms", href: "/legal?s=finance" },
                             { name: "Disclaimer", href: "/legal?s=disclaimer" },
+                            { name: "Yamaha India", href: "https://www.yamaha-motor-india.com/" },
                             { name: "All Policies", href: "/legal" },
                         ].map(item => (
                             <Link key={item.name} href={item.href} className="text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors">

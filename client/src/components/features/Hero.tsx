@@ -101,7 +101,7 @@ export function Hero() {
                             <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black tracking-[0.2em]">Katihar Riders</p>
                         </div>
                         <div className="space-y-1">
-                            <p className="text-3xl md:text-4xl font-display font-black text-white tracking-tighter">12+</p>
+                            <p className="text-3xl md:text-4xl font-display font-black text-white tracking-tighter">3+</p>
                             <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black tracking-[0.2em]">Legacy Years</p>
                         </div>
                         <div className="hidden sm:block space-y-1">

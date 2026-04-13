@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     ShieldCheck, FileText, RefreshCw, Wrench,
     CreditCard, AlertTriangle, Users, ChevronDown,
-    Download, Scale, ArrowLeft
+    Download, Scale, ArrowLeft, ArrowUpRight
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
@@ -382,6 +382,17 @@ function AccordionItem({ section }: { section: { heading: string; content: strin
                                     {point}
                                 </li>
                             ))}
+                            <li className="flex items-start gap-3 pt-4 mt-4 border-t border-border/20">
+                                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground mt-2 shrink-0" />
+                                <Link
+                                    href="https://www.yamaha-motor-india.com/"
+                                    target="_blank"
+                                    className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors flex items-center gap-2"
+                                >
+                                    Official Yamaha India Guidelines
+                                    <ArrowUpRight className="w-3 h-3" />
+                                </Link>
+                            </li>
                         </ul>
                     </motion.div>
                 )}
