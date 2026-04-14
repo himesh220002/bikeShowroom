@@ -164,8 +164,10 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
                         <Users className="w-4 h-4 text-racing-blue" />
                     </div>
                     <div>
-                        <h3 className="text-xs font-black uppercase tracking-widest text-foreground">Inquiry Stream</h3>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-60">Spreadsheet View ({leads.length} Records)</p>
+                        <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
+                            INQUIRY STREAM
+                        </h2>
+                        <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Central feed for all customer pre-sales inquiries</p>
                     </div>
                 </div>
 

@@ -66,9 +66,9 @@ export default function LeadsPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
-                        SALES LEADS
+                        INQUIRY STREAM
                     </h2>
-                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Manage and track pre-sales customer inquiries</p>
+                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Central feed for all customer pre-sales inquiries</p>
                 </div>
                 <div className="flex gap-2">
                     <button className="p-3 bg-card border border-border text-muted-foreground rounded-xl hover:text-foreground transition-all">

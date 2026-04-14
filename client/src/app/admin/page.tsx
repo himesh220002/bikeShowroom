@@ -414,7 +414,7 @@ export default function AdminDashboard() {
                 {/* Integrated Tabs Header */}
                 <div className="flex flex-wrap gap-2 p-3 bg-muted/30 border-b border-border">
                     {[
-                        { id: "leads", label: "Pre-Sales Inquiries", icon: Users, color: "#007bff" }, // racing-blue
+                        { id: "leads", label: "Inquiry Stream", icon: Users, color: "#007bff" }, // racing-blue
                         { id: "hot", label: "Hot Leads 🔥", icon: Rocket, color: "#f97316" }, // orange-500
                         { id: "services", label: "Service Reminders", icon: Bell, color: "#007bff" },
                         { id: "slots", label: "Capacity & Slots", icon: Calendar, color: "#8b5cf6" }, // purple-500
