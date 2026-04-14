@@ -110,7 +110,7 @@ export default function LeadsPage() {
                 placeholder="Search leads by name, phone or bike..."
             />
 
-            <div className="bg-background border border-border rounded-[1rem] overflow-hidden shadow-2xl min-h-[400px]">
+            <div className="bg-background border border-border rounded-[1rem] pt-6 overflow-hidden shadow-2xl min-h-[400px]">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-32 gap-4">
                         <Loader2 className="w-8 h-8 text-racing-blue animate-spin" />

@@ -21,6 +21,7 @@ export function LeadEditModal({ lead, isOpen, onClose, onUpdate }: LeadEditModal
         followUpDate: lead.followUpDate ? new Date(lead.followUpDate).toISOString().split('T')[0] : "",
         score: lead.score || 0,
         heat: lead.heat || "Cold",
+        preferredColor: lead.preferredColor || "",
         adminNotes: lead.adminNotes || ""
     });
 
@@ -125,13 +126,24 @@ export function LeadEditModal({ lead, isOpen, onClose, onUpdate }: LeadEditModal
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Admin Notes</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Preferred Color (Optional)</label>
+                        <input
+                            type="text"
+                            value={formData.preferredColor}
+                            onChange={(e) => setFormData({ ...formData, preferredColor: e.target.value })}
+                            placeholder="e.g., Racing Blue, Matte Black..."
+                            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-xs font-bold text-foreground outline-none focus:border-racing-blue/30 transition-all font-sans"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Admin Notes</label>
                         <textarea
                             value={formData.adminNotes}
                             onChange={(e) => setFormData({ ...formData, adminNotes: e.target.value })}
                             placeholder="Add internal notes about this lead..."
                             rows={3}
-                            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-xs font-bold text-foreground outline-none focus:border-racing-blue/30 transition-all resize-none"
+                            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-xs font-bold text-foreground outline-none focus:border-racing-blue/30 transition-all resize-none font-sans"
                         />
                     </div>
 

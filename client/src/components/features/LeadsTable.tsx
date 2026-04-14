@@ -23,6 +23,8 @@ export interface Lead {
     assignedAgent?: string;
     score?: number;
     heat?: string;
+    notifyWhenAvailable?: boolean;
+    preferredColor?: string;
     adminNotes?: string;
     createdAt?: string;
 }
@@ -167,11 +169,20 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
                     </div>
                 </div>
 
-                <ExportButton
-                    data={leads}
-                    filename="Yamaha_Leads_Report"
-                    sheetName="Leads"
-                />
+                <div className="flex items-center gap-3">
+                    <ExportButton
+                        data={leads}
+                        filename="Yamaha_Leads_Report"
+                        sheetName="Leads"
+                    />
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-racing-blue/20"
+                    >
+                        <UserPlus className="w-3.5 h-3.5" />
+                        Take Manual Inquiry
+                    </button>
+                </div>
             </div>
 
             <div className="overflow-x-auto border border-border rounded-xl bg-card">
@@ -242,7 +253,20 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
                                 <tr key={leadId} className="border-b border-border/30 group hover:bg-muted/10 transition-colors">
                                     {/* Name */}
                                     <td className="py-3 px-4 border-r border-border/10">
-                                        <p className="text-[12px] font-black text-foreground uppercase tracking-tight truncate">{lead.name}</p>
+                                        <div className="flex items-center justify-between gap-2">
+                                            <p className="text-[12px] font-black text-foreground uppercase tracking-tight truncate">{lead.name}</p>
+                                            {lead.notifyWhenAvailable && (
+                                                <div className="flex items-center gap-1 px-1.5 py-0.5 bg-orange-500/10 text-orange-500 border border-orange-500/20 rounded text-[8px] font-black uppercase animate-pulse">
+                                                    <Clock className="w-2.5 h-2.5" />
+                                                    WAITLIST
+                                                </div>
+                                            )}
+                                            {lead.preferredColor && (
+                                                <div className="flex items-center gap-1 px-1.5 py-0.5 bg-racing-blue/10 text-racing-blue border border-racing-blue/20 rounded text-[8px] font-black uppercase">
+                                                    🎨 {lead.preferredColor}
+                                                </div>
+                                            )}
+                                        </div>
                                     </td>
 
                                     {/* Phone */}
@@ -318,16 +342,24 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
 
                                     {/* Status */}
                                     <td className="py-3 px-4 border-r border-border/10 text-center">
-                                        <span className={cn(
-                                            "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
-                                            lead.status === "New" ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" :
-                                                lead.status === "Contacted" ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20" :
-                                                    lead.status === "Test Ride" ? "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20" :
-                                                        "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
-                                        )}>
+                                        <div
+                                            className={cn(
+                                                "text-wrap px-2 py-1 rounded-md text-xs font-black uppercase tracking-widest border whitespace-wrap",
+                                                lead.status === "New"
+                                                    ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
+                                                    : lead.status === "Contacted"
+                                                        ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                                                        : lead.status === "Test Ride"
+                                                            ? "bg-purple-500/10 text-purple-800 dark:text-purple-600 border-purple-500/20"
+                                                            : lead.status === "Waiting for Availability"
+                                                                ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20"
+                                                                : "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20"
+                                            )}
+                                        >
                                             {lead.status}
-                                        </span>
+                                        </div>
                                     </td>
+
 
                                     {/* Remarks */}
                                     <td className="py-3 px-4 border-r border-border/10">

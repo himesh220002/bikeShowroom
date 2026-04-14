@@ -9,6 +9,9 @@ export const LeadSchema = z.object({
     interests: z.array(z.string()).min(1, "Please select at least one interest"),
     bikeModel: z.string().optional(),
     message: z.string().max(500, "Message must be under 500 characters").optional(),
+    source: z.string().optional(),
+    notifyWhenAvailable: z.boolean().optional(),
+    preferredColor: z.string().max(30, "Color name must be under 30 characters").optional(),
 });
 
 export type LeadInput = z.infer<typeof LeadSchema>;

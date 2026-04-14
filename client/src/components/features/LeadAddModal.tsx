@@ -29,7 +29,8 @@ export function LeadAddModal({ isOpen, onClose, onUpdate, initialData }: LeadAdd
         status: "New",
         heat: "Warm",
         adminNotes: initialData?.adminNotes || "",
-        source: "Admin Manual"
+        source: "Walk-in Inquiry",
+        notifyWhenAvailable: false
     });
 
     useEffect(() => {
@@ -168,6 +169,7 @@ export function LeadAddModal({ isOpen, onClose, onUpdate, initialData }: LeadAdd
                                 <option value="New">New</option>
                                 <option value="Contacted">Contacted</option>
                                 <option value="Test Ride">Test Ride</option>
+                                <option value="Waiting for Availability">Waiting for Availability</option>
                             </select>
                         </div>
                         <div className="space-y-2">
@@ -181,6 +183,39 @@ export function LeadAddModal({ isOpen, onClose, onUpdate, initialData }: LeadAdd
                                 <option value="Warm">Warm</option>
                                 <option value="Hot">Hot</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Source Type</label>
+                            <select
+                                value={formData.source}
+                                onChange={(e) => setFormData({ ...formData, source: e.target.value })}
+                                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-xs font-bold text-foreground outline-none focus:border-racing-blue/30 transition-all font-sans appearance-none"
+                            >
+                                <option value="Walk-in Inquiry">Walk-in Visit</option>
+                                <option value="Phone Inquiry">Phone Call</option>
+                                <option value="Admin Manual">Other Manual</option>
+                            </select>
+                        </div>
+                        <div className="flex flex-col justify-end pb-3">
+                            <label className="flex items-center gap-2 cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.notifyWhenAvailable}
+                                    onChange={(e) => {
+                                        const checked = e.target.checked;
+                                        setFormData({
+                                            ...formData,
+                                            notifyWhenAvailable: checked,
+                                            status: checked ? "Waiting for Availability" : formData.status
+                                        });
+                                    }}
+                                    className="w-4 h-4 rounded border-border text-racing-blue focus:ring-racing-blue/20"
+                                />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-racing-blue transition-colors">Notify When Available</span>
+                            </label>
                         </div>
                     </div>
 

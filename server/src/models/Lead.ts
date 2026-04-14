@@ -23,6 +23,8 @@ export interface IInquiry extends Document {
     utmCampaign?: string;
     utmContent?: string;
     utmTerm?: string;
+    notifyWhenAvailable?: boolean;
+    preferredColor?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -50,6 +52,8 @@ const InquirySchema: Schema = new Schema({
     utmCampaign: { type: String },
     utmContent: { type: String },
     utmTerm: { type: String },
+    notifyWhenAvailable: { type: Boolean, default: false },
+    preferredColor: { type: String },
 }, {
     timestamps: true,
     collection: 'inquiries'
