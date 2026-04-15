@@ -73,7 +73,7 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 gap-8">
                 {/* Customer Section */}
                 <div className="space-y-6">
                     <div className="flex items-center gap-2 mb-2">

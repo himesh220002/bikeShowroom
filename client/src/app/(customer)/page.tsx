@@ -1,15 +1,23 @@
+import dynamic from "next/dynamic";
 import { Hero } from "@/components/features/Hero";
 import { FeaturedBikes } from "@/components/features/FeaturedBikes";
-import { LeadForm } from "@/components/features/LeadForm";
-import { Viewer360Carousel } from "@/components/features/Viewer360Carousel";
-import { AdCarousel } from "@/components/features/AdCarousel";
-import { RideVideo } from "@/components/features/RideVideo";
-import { FAQ } from "@/components/features/FAQ";
 import { QuickAccessTiles } from "@/components/features/QuickAccessTiles";
-import { Testimonials } from "@/components/features/Testimonials";
-import { ShowroomExperience } from "@/components/features/ShowroomExperience";
-import { ServiceInsuranceSection } from "@/components/features/ServiceInsuranceSection";
-import { CampaignBanner } from "@/components/features/CampaignBanner";
+
+// Lazy load below-the-fold components
+const ShowroomExperience = dynamic(() => import("@/components/features/ShowroomExperience").then(mod => mod.ShowroomExperience), {
+  loading: () => <div className="h-96 w-full animate-pulse bg-zinc-900/20" />
+});
+const Viewer360Carousel = dynamic(() => import("@/components/features/Viewer360Carousel").then(mod => mod.Viewer360Carousel), {
+  loading: () => <div className="h-96 w-full animate-pulse bg-zinc-900/20" />
+});
+const RideVideo = dynamic(() => import("@/components/features/RideVideo").then(mod => mod.RideVideo));
+const LeadForm = dynamic(() => import("@/components/features/LeadForm").then(mod => mod.LeadForm));
+const AdCarousel = dynamic(() => import("@/components/features/AdCarousel").then(mod => mod.AdCarousel));
+const CampaignBanner = dynamic(() => import("@/components/features/CampaignBanner").then(mod => mod.CampaignBanner));
+const ServiceInsuranceSection = dynamic(() => import("@/components/features/ServiceInsuranceSection").then(mod => mod.ServiceInsuranceSection));
+const FAQ = dynamic(() => import("@/components/features/FAQ").then(mod => mod.FAQ));
+const Testimonials = dynamic(() => import("@/components/features/Testimonials").then(mod => mod.Testimonials));
+
 import { MapPin, Phone, User } from "lucide-react";
 
 export default function Home() {
@@ -18,15 +26,11 @@ export default function Home() {
       {/* 1. Hero Section */}
       <Hero />
 
-
-
       {/* 3. Featured Bikes & Scooters */}
       <FeaturedBikes />
 
       {/* 2. Quick Access Tiles */}
       <QuickAccessTiles />
-
-
 
       {/* 5. Showroom Experience */}
       <ShowroomExperience />
@@ -45,8 +49,6 @@ export default function Home() {
           <Viewer360Carousel />
         </div>
       </section>
-
-
 
       <RideVideo />
 
@@ -99,8 +101,6 @@ export default function Home() {
 
       {/* 6. Service & Insurance */}
       <ServiceInsuranceSection />
-
-
 
       <FAQ />
 

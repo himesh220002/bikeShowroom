@@ -12,7 +12,7 @@ export function Footer() {
     return (
         <footer className="bg-card/80 backdrop-blur-md pt-24 pb-12 border-t border-border">
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-16 lg:gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-10 lg:gap-12">
                     {/* Brand Meta */}
                     <div className="space-y-8">
                         <Link href="/" className="flex items-center gap-4 group">

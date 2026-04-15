@@ -96,7 +96,7 @@ export function CustomerMasterDatabase({ data }: { data: CustomerMasterData[] })
                 </div>
             </div>
 
-            <div className="overflow-x-auto rounded-3xl border border-white/5 bg-zinc-950/50">
+            <div className="overflow-x-auto rounded-3xl border border-white/5 bg-white">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="border-b border-white/5 bg-zinc-900/50">
@@ -110,7 +110,7 @@ export function CustomerMasterDatabase({ data }: { data: CustomerMasterData[] })
                                 <th
                                     key={col.key}
                                     onClick={() => handleSort(col.key)}
-                                    className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest cursor-pointer hover:text-racing-blue transition-colors group"
+                                    className="px-6 py-4 text-[10px] font-black text-gray-100 uppercase tracking-widest cursor-pointer hover:text-racing-blue transition-colors group"
                                 >
                                     <div className="flex items-center gap-2">
                                         {col.label}
@@ -129,11 +129,11 @@ export function CustomerMasterDatabase({ data }: { data: CustomerMasterData[] })
                             >
                                 <td className="px-6 py-5">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center font-bold text-racing-blue">
+                                        <div className="w-10 h-10 rounded-full bg-zinc-300 border border-white/10 flex items-center justify-center font-bold text-racing-blue">
                                             {customer.name[0]}
                                         </div>
                                         <div>
-                                            <div className="text-sm font-black text-white uppercase italic">{customer.name}</div>
+                                            <div className="text-sm font-black text-black uppercase italic">{customer.name}</div>
                                             <div className="text-[10px] text-gray-500 font-bold">{customer.phone}</div>
                                         </div>
                                     </div>

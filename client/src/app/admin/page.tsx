@@ -417,7 +417,7 @@ export default function AdminDashboard() {
                             transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                         >
                             <div className="px-1 lg:px-4 xl:px-10 pb-10">
-                                <div className=" px-0 md:px-4 xl:p-8 bg-background/50 border border-border/50 rounded-[2rem]">
+                                <div className=" px-0 md:px-4 xl:p-2 bg-background/50 border border-border/50 rounded-[2.5rem]">
                                     <SaleForm
                                         bikes={bikes}
                                         onSaleComplete={() => {

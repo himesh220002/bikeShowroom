@@ -40,7 +40,7 @@ export function Navbar() {
     return (
         <nav className={cn(
             "fixed top-0 w-full z-50 transition-all duration-500 py-4",
-            (isScrolled || isAdmin || isService || pathname === "/") ? "glass shadow-lg shadow-black/5" : "bg-transparent",
+            (isScrolled || isAdmin || isService || pathname === "/" || pathname === "/products" || pathname === "/garage") ? "glass shadow-lg shadow-black/5" : "bg-transparent",
             isAdmin && "lg:left-64 lg:w-[calc(100%-16rem)] border-b border-border"
         )}>
             <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,16 +59,16 @@ export function Navbar() {
                         </div>
                         <div className="flex flex-col gap-0 md:gap-1">
                             <span className="text-base md:text-xl font-display font-black tracking-tighter text-gradient-text leading-none">
-                                CHOUDHARY YAMAHA
+                                CHOUDHARY
                             </span>
-                            <span className="text-[0.625rem] uppercase font-black tracking-[0.3em] text-racing-blue -mt-0.5">
-                                THE CALL OF THE BLUE
+                            <span className="text-[0.9rem] uppercase font-black tracking-[0.2em] text-red-500  -mt-0.5">
+                                YAMAHA
                             </span>
                         </div>
                     </Link>
 
                     {/* Desktop Nav */}
-                    <div className="hidden xl:flex items-center gap-6 2xl:gap-10">
+                    <div className="hidden 2xl:flex items-center gap-6 2xl:gap-10">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
@@ -85,7 +85,7 @@ export function Navbar() {
                     </div>
 
                     {/* Desktop Actions */}
-                    <div className="hidden xl:flex items-center gap-4">
+                    <div className="hidden 2xl:flex items-center gap-4">
                         <Link
                             href={`tel:${config.showroomPhone.replace(/\s+/g, '')}`}
                             className="p-3 rounded-full hover:bg-muted transition-colors group border border-transparent hover:border-border"
@@ -125,7 +125,7 @@ export function Navbar() {
                                             exit={{ opacity: 0, y: 10 }}
                                             className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-2xl shadow-2xl py-2 z-50 overflow-hidden"
                                         >
-                                            <Link href="/garage" className="flex items-center gap-3 px-4 py-3 hover:bg-muted text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors">
+                                            <Link href="/profile" className="flex items-center gap-3 px-4 py-3 hover:bg-muted text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors">
                                                 <UserIcon className="w-4 h-4" /> Profile
                                             </Link>
                                             <button
@@ -160,7 +160,7 @@ export function Navbar() {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="xl:hidden p-2.5 text-white bg-zinc-900/80 rounded-xl backdrop-blur-lg border border-white/10 shadow-xl"
+                        className="2xl:hidden p-2.5 text-white bg-zinc-900/80 rounded-xl backdrop-blur-lg border border-white/10 shadow-xl"
                     >
                         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
@@ -174,7 +174,7 @@ export function Navbar() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="xl:hidden absolute top-full left-0 w-full bg-background/95 backdrop-blur-2xl border-t border-border shadow-2xl"
+                        className="2xl:hidden absolute top-full left-0 w-full bg-background/95 backdrop-blur-2xl border-t border-border shadow-2xl"
                     >
                         <div className="p-8 space-y-6">
                             <div className="flex items-center justify-between pb-4 border-b border-border">
@@ -217,7 +217,7 @@ export function Navbar() {
                                             </div>
                                             <div className="flex flex-col">
                                                 <span className="text-sm font-black text-foreground uppercase tracking-wider">{user.displayName}</span>
-                                                <Link href="/garage" onClick={() => setIsOpen(false)} className="text-[10px] font-black text-racing-blue uppercase tracking-[0.2em] mt-0.5">View Garage</Link>
+                                                <Link href="/profile" onClick={() => setIsOpen(false)} className="text-[10px] font-black text-racing-blue uppercase tracking-[0.2em] mt-0.5">View Profile</Link>
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
