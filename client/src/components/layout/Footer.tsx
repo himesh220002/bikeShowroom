@@ -42,7 +42,7 @@ export function Footer() {
                             {[
                                 { Icon: Facebook, url: "https://www.facebook.com/ChoudharyYamaha/" },
                                 { Icon: Instagram, url: "https://www.instagram.com/choudharyyamaha/" },
-                                { Icon: Youtube, url: "#" }
+                                { Icon: Youtube, url: "https://www.youtube.com/@ChoudharyYamaha" }
                             ].map(({ Icon, url }, i) => (
                                 <a
                                     key={i}

@@ -7,7 +7,7 @@ import Image from "next/image";
 
 const testimonials = [
     {
-        name: "Abhishek Kumar",
+        name: "Yash Kumar",
         role: "R15M Rider",
         quote: "The purchasing experience at Choudhary Yamaha was seamless. Their team handled everything from finance to registration with priority. Best showroom in Katihar!",
         rating: 5,

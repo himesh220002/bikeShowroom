@@ -342,9 +342,7 @@ export default function ProfilePage() {
                         )}
                     </AnimatePresence>
 
-                    <div className="mb-16">
-                        <UserBookings />
-                    </div>
+
 
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                         {/* Bike List */}
@@ -749,7 +747,12 @@ export default function ProfilePage() {
                                     </motion.div>
                                 )}
                             </AnimatePresence>
+
+                            <div className="mb-16">
+                                <UserBookings />
+                            </div>
                         </div>
+
 
                         {/* Reminders & Stats */}
                         <div className="space-y-8">
@@ -861,6 +864,7 @@ export default function ProfilePage() {
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-6">Track all workshop visits in one place</p>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>

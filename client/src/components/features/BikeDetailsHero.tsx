@@ -46,9 +46,9 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 md:pt-32">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8 }}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                     >
                         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-racing-blue/10 text-racing-blue text-[10px] font-black uppercase tracking-widest w-fit mb-6">
                             <Zap className="w-3 h-3" />
@@ -64,8 +64,9 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                             {/* Mobile Image - Injected between Name and Color Selector */}
                             <motion.div
                                 key={`mobile-${color.name}`}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
+                                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                transition={{ type: "spring", stiffness: 260, damping: 20 }}
                                 className="lg:hidden my-8 relative"
                             >
                                 <div className="absolute inset-0 bg-racing-blue/20 blur-[100px] opacity-20 -z-10" />
@@ -217,9 +218,14 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
 
                     <motion.div
                         key={color.name}
-                        initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
-                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                        transition={{ duration: 1, ease: "easeOut" }}
+                        initial={{ opacity: 0, scale: 0.8, x: 100 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 200,
+                            damping: 25,
+                            duration: 0.6
+                        }}
                         className="relative hidden lg:block"
                     >
                         <div className="absolute inset-0 bg-racing-blue/20 blur-[150px] opacity-20 -z-10" />

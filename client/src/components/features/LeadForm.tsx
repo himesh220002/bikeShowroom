@@ -159,7 +159,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 <a
                                     href={`https://wa.me/${config.showroomPhone.replace(/\D/g, '')}?text=Hi, I just submitted an inquiry on your website. I am interested in a Yamaha bike.`}
                                     target="_blank"
-                                    className="flex items-center justify-between p-4 bg-[#00ba54]/10 rounded-2xl border border-[#00ba54]/20 hover:border-[#00ba54]/50 transition-all group"
+                                    className="flex items-center justify-between p-4 bg-white rounded-2xl border border-[#00ba54]/20 hover:border-[#00ba54]/50 transition-all group"
                                 >
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-10 bg-[#00ba54]/20 rounded-xl flex items-center justify-center">
@@ -167,7 +167,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                         </div>
                                         <div className="text-left">
                                             <span className="block text-[10px] font-black text-[#25D366] uppercase tracking-widest">Direct Support</span>
-                                            <span className="text-sm font-bold text-white uppercase">Chat on WhatsApp</span>
+                                            <span className="text-sm font-bold text-gray-800 uppercase">Chat on WhatsApp</span>
                                         </div>
                                     </div>
                                     <ChevronRight className="w-5 h-5 text-[#25D366]/40 group-hover:text-[#25D366] group-hover:translate-x-1 transition-all" />

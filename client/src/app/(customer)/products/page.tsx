@@ -8,10 +8,13 @@ import Link from "next/link";
 import { ChevronRight, Zap } from "lucide-react";
 import { API_URL } from "@/lib/config";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { cn } from "@/lib/utils/cn";
 
 export default function ProductsPage() {
     const [liveBikes, setLiveBikes] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [activeFilter, setActiveFilter] = useState("all");
 
     useEffect(() => {
         const fetchBikes = async () => {
@@ -30,7 +33,14 @@ export default function ProductsPage() {
         fetchBikes();
     }, []);
 
-    const bikesToShow = liveBikes.length > 0 ? liveBikes : BIKES;
+    const bikesToShow = (liveBikes.length > 0 ? liveBikes : BIKES).filter(bike => {
+        const matchesSearch = bike.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            bike.category.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesFilter = activeFilter === "all" ||
+            (activeFilter === "motorcycle" && bike.category === "bike") ||
+            (activeFilter === "scooter" && bike.category === "scooty");
+        return matchesSearch && matchesFilter;
+    });
 
     const CATEGORIES_CONFIG = [
         {
@@ -107,18 +117,57 @@ export default function ProductsPage() {
 
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
-                <div className="mb-10 md:mb-20 space-y-4">
-
-                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-racing-blue/10 text-racing-blue text-[10px] font-black uppercase tracking-widest w-fit">
-                        <Zap className="w-3 h-3" />
-                        Yamaha Lineup
+                {/* Header Container */}
+                <div className="mb-10 md:mb-20 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
+                    {/* Title Section - Hidden below XL */}
+                    <div className="hidden xl:block space-y-4">
+                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-racing-blue/10 text-racing-blue text-[10px] font-black uppercase tracking-widest w-fit">
+                            <Zap className="w-3 h-3" />
+                            Yamaha Lineup
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter">
+                            OUR <span className="text-racing-blue">MACHINES</span>
+                        </h1>
+                        <p className="text-gray-500 max-w-2xl font-medium leading-relaxed">
+                            Discover the perfect balance of performance, style, and innovation across our diverse range of motorcycles and scooters.
+                        </p>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter">
-                        OUR <span className="text-racing-blue">MACHINES</span>
-                    </h1>
-                    <p className="text-gray-500 max-w-2xl font-medium leading-relaxed">
-                        Discover the perfect balance of performance, style, and innovation across our diverse range of motorcycles and scooters.
-                    </p>
+
+                    {/* Search and Filter Section - Always visible */}
+                    <div className="flex flex-col sm:flex-row items-center gap-4 w-full xl:w-auto">
+                        <div className="relative w-full sm:w-80 group">
+                            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                                <Zap className="w-4 h-4 text-racing-blue group-focus-within:scale-110 transition-transform" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Search machines..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-zinc-900 border border-white/5 rounded-2xl py-4 pl-12 pr-6 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-racing-blue/50 transition-all font-bold"
+                            />
+                        </div>
+                        <div className="flex items-center gap-2 p-1 bg-zinc-900 rounded-2xl border border-white/5 w-full sm:w-auto">
+                            {[
+                                { id: "all", label: "All" },
+                                { id: "motorcycle", label: "Bikes" },
+                                { id: "scooter", label: "Scooters" }
+                            ].map((filter) => (
+                                <button
+                                    key={filter.id}
+                                    onClick={() => setActiveFilter(filter.id)}
+                                    className={cn(
+                                        "flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                        activeFilter === filter.id
+                                            ? "bg-racing-blue text-white shadow-lg shadow-racing-blue/20"
+                                            : "text-zinc-500 hover:text-white hover:bg-white/5"
+                                    )}
+                                >
+                                    {filter.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Categories */}
@@ -126,7 +175,7 @@ export default function ProductsPage() {
 
                     {categoriesWithBikes.map((category) => (
                         <section key={category.id} id={category.id} className="space-y-12">
-                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
+                            <div className="flex flex-col justify-between gap-6 border-b border-white/5 pb-8">
                                 <div className="space-y-2">
                                     <h2 className="text-2xl md:text-4xl font-display font-black text-white uppercase tracking-tight">
                                         {category.title}

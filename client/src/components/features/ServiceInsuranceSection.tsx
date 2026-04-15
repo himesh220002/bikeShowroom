@@ -91,7 +91,7 @@ export function ServiceInsuranceSection() {
     const primaryBike = bikes[0];
 
     return (
-        <section className="py-32 bg-white overflow-hidden">
+        <section className="py-32 bg-background overflow-hidden">
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
                     {/* Content Side */}
@@ -100,7 +100,7 @@ export function ServiceInsuranceSection() {
                             <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
                                 Premium Workshop Companion
                             </h2>
-                            <h3 className="text-3xl md:text-5xl font-display font-black text-zinc-900 uppercase tracking-tighter leading-tight mb-8">
+                            <h3 className="text-3xl md:text-5xl font-display font-black text-foreground uppercase tracking-tighter leading-tight mb-8">
                                 THE <span className="text-gradient">DIGITAL TWIN</span> EXPERIENCE
                             </h3>
                             <p className="text-lg text-gray-500 font-medium leading-relaxed max-w-xl">
@@ -111,12 +111,12 @@ export function ServiceInsuranceSection() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                             <Link
                                 href="/service#booking"
-                                className="p-10 bg-zinc-50/50 rounded-[2.5rem] border border-zinc-100 space-y-4 group hover:bg-white hover:shadow-xl hover:shadow-black/5 transition-all text-left block"
+                                className="p-10 bg-foreground/90 rounded-[2.5rem] border-2 border-zinc-400 space-y-4 group hover:bg-foreground hover:shadow-xl hover:shadow-black/5 transition-all text-left block"
                             >
                                 <div className="w-12 h-12 rounded-2xl bg-racing-blue/10 flex items-center justify-center">
                                     <Wrench className="w-6 h-6 text-racing-blue" />
                                 </div>
-                                <h4 className="text-sm font-black text-zinc-900 uppercase tracking-widest">Service Booking</h4>
+                                <h4 className="text-sm font-black text-background uppercase tracking-widest">Service Booking</h4>
                                 <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider leading-relaxed">
                                     Instant slot confirmation with Yamaha-trained experts.
                                 </p>
@@ -127,12 +127,12 @@ export function ServiceInsuranceSection() {
 
                             <Link
                                 href="#inquiry"
-                                className="p-10 bg-zinc-50/50 rounded-[2.5rem] border border-zinc-100 space-y-4 group hover:bg-white hover:shadow-xl hover:shadow-black/5 transition-all text-left block"
+                                className="p-10 bg-foreground/90 rounded-[2.5rem] border-2 border-zinc-400 space-y-4 group hover:bg-foreground hover:shadow-xl hover:shadow-black/5 transition-all text-left block"
                             >
                                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
                                     <Activity className="w-6 h-6 text-emerald-500" />
                                 </div>
-                                <h4 className="text-sm font-black text-zinc-900 uppercase tracking-widest">Performance Metrics</h4>
+                                <h4 className="text-sm font-black text-background uppercase tracking-widest">Performance Metrics</h4>
                                 <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider leading-relaxed">
                                     Track BHP gains and weight savings from your modifications.
                                 </p>
@@ -302,13 +302,13 @@ export function ServiceInsuranceSection() {
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.9 }}
                                         animate={{ opacity: 1, scale: 1 }}
-                                        className="absolute inset-x-8 bottom-10 top-[160px] bg-white/95 backdrop-blur-md rounded-[2.5rem] border border-zinc-100 flex flex-col items-center justify-center p-8 text-center z-20 shadow-2xl shadow-black/5"
+                                        className="absolute inset-x-8 bottom-10 top-[160px] bg-gradient-to-br from-purple-800/90 to-primary backdrop-blur-md rounded-[2.5rem] border border-zinc-100 flex flex-col items-center justify-center p-8 text-center z-20 shadow-2xl shadow-black/5"
                                     >
                                         <div className="w-16 h-16 rounded-3xl bg-zinc-50 border border-zinc-100 flex items-center justify-center mb-6">
                                             <Plus className="w-8 h-8 text-racing-blue" />
                                         </div>
-                                        <h5 className="text-sm font-black text-zinc-900 uppercase tracking-widest mb-3">No Machine Found</h5>
-                                        <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-8 max-w-[200px] leading-relaxed">
+                                        <h5 className="text-sm font-black text-zinc-50 uppercase tracking-widest mb-3">No Machine Found</h5>
+                                        <p className="text-[11px] text-gray-100 font-bold uppercase tracking-wider mb-8 max-w-[200px] leading-relaxed">
                                             Register your bike to unlock full ownership tracking metrics.
                                         </p>
                                         <Link

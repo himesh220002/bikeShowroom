@@ -164,7 +164,7 @@ Reply to this message to confirm your appointment!`;
                 </div>
             </div>
 
-            <div className="overflow-x-auto border border-border rounded-xl bg-card">
+            <div className="overflow-x-auto min-h[300px] border border-border rounded-xl bg-card">
                 <table className="w-full text-left border-collapse min-w-[1800px] table-fixed">
                     <thead>
                         <tr className="border-b border-border bg-muted/30">

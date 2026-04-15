@@ -144,7 +144,7 @@ export default function BikePage() {
                                             { text: "Genuine Yamaha Spares", highlight: "100% Original" },
                                             { text: "1-Year Extended Warranty", highlight: "Peace of Mind" },
                                             { text: "Priority Service Slot", highlight: "Save Time" },
-                                            { text: "Free First Service", highlight: "Zero Cost" }
+                                            { text: "Free Four Services", highlight: "Zero Cost" }
                                         ].map((item, i) => (
                                             <div key={i} className="flex flex-col justify-center sm:justify-start sm:items-start items-center gap-1">
                                                 <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-300 font-bold uppercase tracking-tight">
