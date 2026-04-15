@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { BarChart2, Users, Package, Calendar, TrendingUp, Bell, Rocket, Wrench, ChevronDown, ShoppingCart, Search, Clock } from "lucide-react";
+import { BarChart2, Users, Package, Calendar, TrendingUp, Bell, Rocket, Wrench, ChevronDown, ShoppingCart, Search, Clock, Database } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { LeadsTable, type Lead } from "@/components/features/LeadsTable";
 import { ServiceReminderTable } from "@/components/features/ServiceReminderTable";
 import { LeadsTableHot, type Lead as HotLead } from "@/components/features/LeadsTableHot";
 import { type ServiceBooking } from "@/components/features/ServicesTable";
 import { SalesTable } from "@/components/features/SalesTable";
+import { CustomerMasterDatabase } from "@/components/features/CustomerMasterDatabase";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
 import io from "socket.io-client";
 import { API_BASE_URL, API_URL } from "@/lib/config";
@@ -26,8 +27,9 @@ export default function AdminDashboard() {
     const [services, setServices] = useState<ServiceBooking[]>([]);
     const [bikes, setBikes] = useState<any[]>([]);
     const [sales, setSales] = useState<any[]>([]);
+    const [customers, setCustomers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<"leads" | "services" | "hot" | "sales" | "slots" | "testing">("leads");
+    const [activeTab, setActiveTab] = useState<"leads" | "services" | "hot" | "sales" | "slots" | "testing" | "master">("leads");
     const [isSaleFormOpen, setIsSaleFormOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<string>("newest");
@@ -38,12 +40,13 @@ export default function AdminDashboard() {
 
     const fetchData = async () => {
         try {
-            const [leadsRes, servicesRes, qualifiedRes, bikesRes, salesRes] = await Promise.all([
+            const [leadsRes, servicesRes, qualifiedRes, bikesRes, salesRes, customersRes] = await Promise.all([
                 fetch(`${API_URL}/leads`),
                 fetch(`${API_URL}/services`),
                 fetch(`${API_URL}/qualified-leads`),
                 fetch(`${API_URL}/bikes`),
-                fetch(`${API_URL}/sales`)
+                fetch(`${API_URL}/sales`),
+                fetch(`${API_URL}/customers`)
             ]);
 
             const leadsData = await leadsRes.json();
@@ -51,12 +54,14 @@ export default function AdminDashboard() {
             const qualifiedData = await qualifiedRes.json();
             const bikesData = await bikesRes.json();
             const salesData = await salesRes.json();
+            const customersData = await customersRes.json();
 
             if (leadsData.success) setLeads(leadsData.data);
             if (servicesData.success) setServices(servicesData.data);
             if (qualifiedData.success) setQualifiedLeads(qualifiedData.data);
             if (bikesData.success) setBikes(bikesData.data);
             if (salesData.success) setSales(salesData.data);
+            if (customersData.success) setCustomers(customersData.data);
         } catch (err) {
             console.error("Failed to sync dashboard:", err);
         } finally {
@@ -228,7 +233,8 @@ export default function AdminDashboard() {
                 s.name?.toLowerCase().includes(q) ||
                 s.phone?.toLowerCase().includes(q) ||
                 s.bikeModel?.toLowerCase().includes(q) ||
-                s.regNumber?.toLowerCase().includes(q)
+                s.regNumber?.toLowerCase().includes(q) ||
+                s.chassisNumber?.toLowerCase().includes(q)
             );
         }
         if (filterStatus !== "all") {
@@ -275,6 +281,23 @@ export default function AdminDashboard() {
             return new Date(b.saleDate || 0).getTime() - new Date(a.saleDate || 0).getTime();
         });
     }, [sales, searchQuery, sortBy, startDate, endDate]);
+
+    const processedCustomers = useMemo(() => {
+        let filtered = [...customers];
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            filtered = filtered.filter(c =>
+                c.name.toLowerCase().includes(q) ||
+                c.phone.includes(q) ||
+                c.regNumber?.toLowerCase().includes(q) ||
+                c.chassisNumber?.toLowerCase().includes(q)
+            );
+        }
+        return filtered.sort((a, b) => {
+            if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
+            return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+        });
+    }, [customers, searchQuery, sortBy]);
 
     return (
         <div className="space-y-8">
@@ -419,7 +442,7 @@ export default function AdminDashboard() {
                         { id: "services", label: "Service Reminders", icon: Bell, color: "#007bff" },
                         { id: "slots", label: "Capacity & Slots", icon: Calendar, color: "#8b5cf6" }, // purple-500
                         { id: "sales", label: "Sales Ledger", icon: ShoppingCart, color: "#22c55e" }, // green-500
-                        // { id: "testing", label: "Testing Ground", icon: FlaskConical, color: "#ec4899" } 
+                        { id: "master", label: "Master Intel 📡", icon: Database, color: "#007bff" }
 
                     ].map((tab) => (
                         <button
@@ -452,8 +475,9 @@ export default function AdminDashboard() {
                                 activeTab === "hot" ? <Rocket className="w-5 h-5 text-orange-500" /> :
                                     activeTab === "services" ? <Bell className="w-5 h-5 text-racing-blue" /> :
                                         activeTab === "slots" ? <Calendar className="w-5 h-5 text-purple-500" /> :
-                                            activeTab === "testing" ? <FlaskConical className="w-5 h-5 text-pink-500" /> :
-                                                <ShoppingCart className="w-5 h-5 text-green-500" />}
+                                            activeTab === "master" ? <Database className="w-5 h-5 text-racing-blue" /> :
+                                                activeTab === "testing" ? <FlaskConical className="w-5 h-5 text-pink-500" /> :
+                                                    <ShoppingCart className="w-5 h-5 text-green-500" />}
                         </div>
                         <h3 className="text-xl font-display font-black text-foreground uppercase tracking-tighter">
                             {activeTab === "leads" ? "Inquiry Stream" :
@@ -519,8 +543,9 @@ export default function AdminDashboard() {
                         activeTab === "hot" ? <LeadsTableHot leads={processedHotLeads} onUpdate={fetchData} /> :
                             activeTab === "services" ? <ServiceReminderTable onUpdate={fetchData} /> :
                                 activeTab === "slots" ? <div className="px-8 pb-8"><SlotManagement /></div> :
-                                    activeTab === "testing" ? <div className="px-8 pb-8"><TestingGround /></div> :
-                                        <div className="p-8"><SalesTable sales={processedSales} /></div>
+                                    activeTab === "master" ? <div className="px-8 pb-8"><CustomerMasterDatabase data={processedCustomers} /></div> :
+                                        activeTab === "testing" ? <div className="px-8 pb-8"><TestingGround /></div> :
+                                            <div className="p-8"><SalesTable sales={processedSales} /></div>
 
                 )}
             </div>

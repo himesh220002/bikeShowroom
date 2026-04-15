@@ -44,6 +44,9 @@ export default function ProfilePage() {
     });
     const [bikeServices, setBikeServices] = useState<Record<string, any[]>>({});
     const [expandedHistory, setExpandedHistory] = useState<string | null>(null);
+    const [isSearching, setIsSearching] = useState(false);
+    const [lookupResult, setLookupResult] = useState<any>(null);
+    const [lookupIdentity, setLookupIdentity] = useState({ registrationNumber: "", chassisNumber: "" });
 
     // Profile Editing State
     const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -69,8 +72,9 @@ export default function ProfilePage() {
     const fetchBikes = async () => {
         try {
             const res = await axios.get(`${API_URL}/user-bikes`, { withCredentials: true });
-            if (res.data.success) {
-                setBikes(res.data.data);
+            const data = res.data as any;
+            if (data.success) {
+                setBikes(data.data);
             }
         } catch (err) {
             console.error("Failed to fetch bikes:", err);
@@ -82,8 +86,9 @@ export default function ProfilePage() {
     const fetchOfficialBikes = async () => {
         try {
             const res = await axios.get(`${API_URL}/bikes`);
-            if (res.data.success) {
-                setOfficialBikes(res.data.data);
+            const data = res.data as any;
+            if (data.success) {
+                setOfficialBikes(data.data);
             }
         } catch (err) {
             console.error("Failed to fetch official bikes:", err);
@@ -93,8 +98,9 @@ export default function ProfilePage() {
     const fetchServiceHistory = async (id: string) => {
         try {
             const res = await axios.get(`${API_URL}/user-bikes/${id}/services`, { withCredentials: true });
-            if (res.data.success) {
-                setBikeServices(prev => ({ ...prev, [id]: res.data.data }));
+            const data = res.data as any;
+            if (data.success) {
+                setBikeServices(prev => ({ ...prev, [id]: data.data }));
             }
         } catch (err) {
             console.error("Failed to fetch service history:", err);
@@ -105,7 +111,8 @@ export default function ProfilePage() {
         if (!newOdometer || isNaN(Number(newOdometer))) return;
         try {
             const res = await axios.patch(`${API_URL}/user-bikes/${id}/odometer`, { mileage: Number(newOdometer) }, { withCredentials: true });
-            if (res.data.success) {
+            const data = res.data as any;
+            if (data.success) {
                 setBikes(bikes.map(b => b._id === id ? { ...b, mileage: Number(newOdometer) } : b));
                 setIsUpdatingOdometer(null);
                 setNewOdometer("");
@@ -122,12 +129,40 @@ export default function ProfilePage() {
         }
     }, [user]);
 
+    const handleLookup = async () => {
+        if (!lookupIdentity.registrationNumber && !lookupIdentity.chassisNumber) return;
+        setIsSearching(true);
+        try {
+            const res = await axios.post(`${API_URL}/user-bikes/connect-lookup`, lookupIdentity, { withCredentials: true });
+            const data = res.data as any;
+            if (data.success) {
+                setLookupResult(data.data);
+                if (data.data.foundInSystem) {
+                    setFormData({
+                        ...formData,
+                        bikeModel: data.data.bikeModel,
+                        registrationNumber: data.data.registrationNumber,
+                        purchaseDate: data.data.purchaseDate ? new Date(data.data.purchaseDate).toISOString().split('T')[0] : "",
+                        lastServiceDate: data.data.lastServiceDate ? new Date(data.data.lastServiceDate).toISOString().split('T')[0] : "",
+                        serviceCount: data.data.serviceCount.toString()
+                    });
+                    setIsOfficial(false); // Use the custom model name found in sales
+                }
+            }
+        } catch (err) {
+            console.error("Lookup failed:", err);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
     const handleAddBike = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const res = await axios.post(`${API_URL}/user-bikes`, formData, { withCredentials: true });
-            if (res.data.success) {
-                setBikes([res.data.data, ...bikes]);
+            const data = res.data as any;
+            if (data.success) {
+                setBikes([data.data, ...bikes]);
                 setIsAdding(false);
                 setFormData({
                     bikeId: "",
@@ -148,7 +183,8 @@ export default function ProfilePage() {
         if (!confirm("Are you sure you want to remove this bike from your garage?")) return;
         try {
             const res = await axios.delete(`${API_URL}/user-bikes/${id}`, { withCredentials: true });
-            if (res.data.success) {
+            const data = res.data as any;
+            if (data.success) {
                 setBikes(bikes.filter(b => b._id !== id));
             }
         } catch (err) {
@@ -161,7 +197,8 @@ export default function ProfilePage() {
         setUpdatingProfile(true);
         try {
             const res = await axios.put(`${API_URL}/auth/profile`, profileFormData, { withCredentials: true });
-            if (res.data.success) {
+            const data = res.data as any;
+            if (data.success) {
                 await refreshUser();
                 setIsEditingProfile(false);
             }
@@ -201,7 +238,7 @@ export default function ProfilePage() {
                             </div>
                             <div className="flex-1">
                                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-black text-foreground uppercase tracking-tighter leading-tight">
-                                    My <span className="text-racing-blue">Garage</span>
+                                    My <span className="text-racing-blue">Profile</span>
                                 </h1>
                                 <div className="flex flex-col sm:flex-row flex-wrap items-center sm:items-start gap-x-4 gap-y-1 mt-2">
                                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{user.displayName}</p>
@@ -314,121 +351,198 @@ export default function ProfilePage() {
                         <div className="lg:col-span-2 space-y-6">
                             <AnimatePresence mode="wait">
                                 {isAdding ? (
-                                    <motion.form
+                                    <motion.div
                                         key="add-form"
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.95 }}
-                                        onSubmit={handleAddBike}
                                         className="glass p-8 rounded-[2.5rem] border border-racing-blue/30 shadow-2xl space-y-6"
                                     >
-                                        <h3 className="text-xl font-display font-black text-foreground uppercase tracking-tighter mb-4">Bike Details</h3>
+                                        <h3 className="text-xl font-display font-black text-foreground uppercase tracking-tighter mb-4">Connect Your Asset</h3>
 
-                                        <div className="flex gap-2 p-1 bg-muted rounded-xl mb-6 w-fit">
-                                            <button
-                                                type="button"
-                                                onClick={() => setIsOfficial(true)}
-                                                className={cn(
-                                                    "px-4 py-2 text-[8px] font-black uppercase tracking-widest rounded-lg transition-all",
-                                                    isOfficial ? "bg-racing-blue text-white shadow-lg shadow-racing-blue/20" : "text-muted-foreground hover:text-foreground"
-                                                )}
-                                            >
-                                                Yamaha Official
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setIsOfficial(false)}
-                                                className={cn(
-                                                    "px-4 py-2 text-[8px] font-black uppercase tracking-widest rounded-lg transition-all",
-                                                    !isOfficial ? "bg-racing-blue text-white shadow-lg shadow-racing-blue/20" : "text-muted-foreground hover:text-foreground"
-                                                )}
-                                            >
-                                                Custom Model
-                                            </button>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Bike Model</label>
-                                                {isOfficial ? (
-                                                    <select
-                                                        required
-                                                        className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all appearance-none cursor-pointer"
-                                                        value={formData.bikeId}
-                                                        onChange={(e) => setFormData({ ...formData, bikeId: e.target.value, bikeModel: "" })}
-                                                    >
-                                                        <option value="" disabled className="bg-card">Select Official Model</option>
-                                                        {officialBikes.map(bike => (
-                                                            <option key={bike._id} value={bike._id} className="bg-card text-foreground">{bike.name}</option>
-                                                        ))}
-                                                    </select>
-                                                ) : (
-                                                    <input
-                                                        type="text"
-                                                        required
-                                                        className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                                                        placeholder="e.g. Yamaha R15 V4"
-                                                        value={formData.bikeModel}
-                                                        onChange={(e) => setFormData({ ...formData, bikeModel: e.target.value, bikeId: "" })}
-                                                    />
-                                                )}
-                                            </div>
-                                            <div className="space-y-2">
-                                                <div className="flex justify-between items-center ml-1">
-                                                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Registration Number</label>
-                                                    <span className="text-[8px] font-black text-racing-blue/60 uppercase tracking-widest bg-racing-blue/5 px-2 py-0.5 rounded-full">Optional</span>
+                                        {/* Lookup Phase */}
+                                        {!lookupResult ? (
+                                            <div className="space-y-6">
+                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-relaxed">
+                                                    Enter your Registration or Chassis number to automatically sync your showroom data.
+                                                </p>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Registration Number</label>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all uppercase"
+                                                            placeholder="BR 01 AB 1234"
+                                                            value={lookupIdentity.registrationNumber}
+                                                            onChange={(e) => setLookupIdentity({ ...lookupIdentity, registrationNumber: e.target.value.toUpperCase() })}
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Chassis Number</label>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all uppercase"
+                                                            placeholder="ME1..."
+                                                            value={lookupIdentity.chassisNumber}
+                                                            onChange={(e) => setLookupIdentity({ ...lookupIdentity, chassisNumber: e.target.value.toUpperCase() })}
+                                                        />
+                                                    </div>
                                                 </div>
-                                                <input
-                                                    type="text"
-                                                    className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                                                    placeholder="e.g. BR 01 AB 1234 or 'New Bike'"
-                                                    value={formData.registrationNumber}
-                                                    onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
-                                                />
+                                                <div className="flex gap-4">
+                                                    <button
+                                                        onClick={handleLookup}
+                                                        disabled={isSearching || (!lookupIdentity.registrationNumber && !lookupIdentity.chassisNumber)}
+                                                        className="flex-1 bg-racing-blue text-white py-5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-racing-blue/30 disabled:opacity-50"
+                                                    >
+                                                        {isSearching ? "Searching Records..." : "Lookup Asset"}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setLookupResult({ foundInSystem: false })}
+                                                        className="px-8 bg-muted text-foreground py-5 rounded-2xl text-xs font-black uppercase tracking-[0.2em]"
+                                                    >
+                                                        Skip
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Purchase Date</label>
-                                                <input
-                                                    type="date"
-                                                    required
-                                                    className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                                                    value={formData.purchaseDate}
-                                                    onChange={(e) => setFormData({ ...formData, purchaseDate: e.target.value })}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Current Odometer Reading (Total KM)</label>
-                                                <input
-                                                    type="number"
-                                                    className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                                                    placeholder="e.g. 50 (Total distance traveled)"
-                                                    value={formData.mileage}
-                                                    onChange={(e) => setFormData({ ...formData, mileage: e.target.value })}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Previous Services Done</label>
-                                                <select
-                                                    className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                                                    value={formData.serviceCount}
-                                                    onChange={(e) => setFormData({ ...formData, serviceCount: e.target.value })}
-                                                >
-                                                    <option value="0" className="bg-card text-foreground font-bold">0 (New Bike)</option>
-                                                    <option value="1" className="bg-card text-foreground font-bold">1st Service Done</option>
-                                                    <option value="2" className="bg-card text-foreground font-bold">2nd Service Done</option>
-                                                    <option value="3" className="bg-card text-foreground font-bold">3rd Service Done</option>
-                                                    <option value="4" className="bg-card text-foreground font-bold">4th Service Done</option>
-                                                    <option value="5" className="bg-card text-foreground font-bold">5+ Services Done</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <button
-                                            type="submit"
-                                            className="w-full bg-racing-blue text-white py-5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-racing-blue/30"
-                                        >
-                                            Add to My Garage
-                                        </button>
-                                    </motion.form>
+                                        ) : (
+                                            <form onSubmit={handleAddBike} className="space-y-6">
+                                                {lookupResult.foundInSystem ? (
+                                                    <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center gap-4 mb-4">
+                                                        <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                                                        <div>
+                                                            <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none mb-1">Asset Identified</p>
+                                                            <p className="text-xs font-bold text-foreground/80 uppercase">Data synced from Showroom Records</p>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center gap-4 mb-4">
+                                                        <AlertCircle className="w-6 h-6 text-amber-500" />
+                                                        <div>
+                                                            <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1">Manual Entry</p>
+                                                            <p className="text-xs font-bold text-foreground/80 uppercase">Enter details manually if not found</p>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                <div className="flex gap-2 p-1 bg-muted rounded-xl mb-6 w-fit">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsOfficial(true)}
+                                                        className={cn(
+                                                            "px-4 py-2 text-[8px] font-black uppercase tracking-widest rounded-lg transition-all",
+                                                            isOfficial ? "bg-racing-blue text-white shadow-lg shadow-racing-blue/20" : "text-muted-foreground hover:text-foreground"
+                                                        )}
+                                                    >
+                                                        Yamaha Official
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsOfficial(false)}
+                                                        className={cn(
+                                                            "px-4 py-2 text-[8px] font-black uppercase tracking-widest rounded-lg transition-all",
+                                                            !isOfficial ? "bg-racing-blue text-white shadow-lg shadow-racing-blue/20" : "text-muted-foreground hover:text-foreground"
+                                                        )}
+                                                    >
+                                                        Custom Model
+                                                    </button>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Bike Model</label>
+                                                        {isOfficial ? (
+                                                            <select
+                                                                required
+                                                                className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all appearance-none cursor-pointer"
+                                                                value={formData.bikeId}
+                                                                onChange={(e) => setFormData({ ...formData, bikeId: e.target.value, bikeModel: "" })}
+                                                            >
+                                                                <option value="" disabled className="bg-card">Select Official Model</option>
+                                                                {officialBikes.map(bike => (
+                                                                    <option key={bike._id} value={bike._id} className="bg-card text-foreground">{bike.name}</option>
+                                                                ))}
+                                                            </select>
+                                                        ) : (
+                                                            <input
+                                                                type="text"
+                                                                required
+                                                                className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                                                placeholder="e.g. Yamaha R15 V4"
+                                                                value={formData.bikeModel}
+                                                                onChange={(e) => setFormData({ ...formData, bikeModel: e.target.value, bikeId: "" })}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <div className="flex justify-between items-center ml-1">
+                                                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Registration Number</label>
+                                                            <span className="text-[8px] font-black text-racing-blue/60 uppercase tracking-widest bg-racing-blue/5 px-2 py-0.5 rounded-full">Optional</span>
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                                            placeholder="e.g. BR 01 AB 1234 or 'New Bike'"
+                                                            value={formData.registrationNumber}
+                                                            onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Purchase Date</label>
+                                                        <input
+                                                            type="date"
+                                                            required
+                                                            className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                                            value={formData.purchaseDate}
+                                                            onChange={(e) => setFormData({ ...formData, purchaseDate: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Current Odometer Reading (Total KM)</label>
+                                                        <input
+                                                            type="number"
+                                                            className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                                            placeholder="e.g. 50 (Total distance traveled)"
+                                                            value={formData.mileage}
+                                                            onChange={(e) => setFormData({ ...formData, mileage: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Previous Services Done</label>
+                                                        <select
+                                                            className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                                            value={formData.serviceCount}
+                                                            onChange={(e) => setFormData({ ...formData, serviceCount: e.target.value })}
+                                                        >
+                                                            <option value="0" className="bg-card text-foreground font-bold">0 (New Bike)</option>
+                                                            <option value="1" className="bg-card text-foreground font-bold">1st Service Done</option>
+                                                            <option value="2" className="bg-card text-foreground font-bold">2nd Service Done</option>
+                                                            <option value="3" className="bg-card text-foreground font-bold">3rd Service Done</option>
+                                                            <option value="4" className="bg-card text-foreground font-bold">4th Service Done</option>
+                                                            <option value="5" className="bg-card text-foreground font-bold">5+ Services Done</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-4">
+                                                    <button
+                                                        type="submit"
+                                                        className="flex-1 bg-racing-blue text-white py-5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-racing-blue/30"
+                                                    >
+                                                        Add to My Garage
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setLookupResult(null);
+                                                            setLookupIdentity({ registrationNumber: "", chassisNumber: "" });
+                                                        }}
+                                                        className="px-8 bg-muted text-foreground py-5 rounded-2xl text-xs font-black uppercase tracking-[0.2em]"
+                                                    >
+                                                        Reset
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        )}
+                                    </motion.div>
                                 ) : (
                                     <motion.div
                                         key="bike-list"

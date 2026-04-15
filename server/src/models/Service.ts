@@ -5,6 +5,7 @@ export interface IService extends Document {
     serviceType: string;
     bikeModel: string;
     regNumber: string;
+    chassisNumber?: string;
     notes?: string;
     name: string;
     phone: string;
@@ -35,6 +36,7 @@ const ServiceSchema: Schema = new Schema({
     serviceType: { type: String, required: true },
     bikeModel: { type: String, required: true },
     regNumber: { type: String, required: true },
+    chassisNumber: { type: String },
     notes: { type: String },
     name: { type: String, required: true },
     phone: { type: String, required: true },

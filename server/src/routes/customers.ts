@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import mongoose from 'mongoose';
 import Customer from '../models/Customer';
 import Sale from '../models/Sale';
 import Service from '../models/Service';
@@ -15,24 +16,23 @@ router.get('/', async (req, res) => {
             // Find last sale for this customer
             const lastSale = await Sale.findOne({ customerId: customer._id }).sort({ createdAt: -1 });
 
+            // Find all bikes registered by this user (UserBike model)
+            const UserBike = mongoose.model('UserBike');
+            const userBikes = await UserBike.find({ userId: customer.googleId || customer._id });
+
             // Find service count (completed services)
             const serviceCount = await Service.countDocuments({ customerId: customer._id, status: 'completed' });
 
             // Find latest service (for vehicle info)
             const latestService = await Service.findOne({ customerId: customer._id }).sort({ createdAt: -1 });
-            const regNumber = latestService?.regNumber || "N/A";
+            const regNumber = latestService?.regNumber || (userBikes.length > 0 ? userBikes[0].registrationNumber : "N/A");
 
             // MAPPING LOGIC: Match this customer to any current scheduled service
             const matchedService = allServices.find(s => {
-                // Priority 1: Registration Number Match
                 if (regNumber !== "N/A" && s.regNumber === regNumber) return true;
-
-                // Priority 2: Phone + Name + Bike Model Match
                 const nameMatch = s.name.toLowerCase().trim() === customer.name.toLowerCase().trim();
                 const phoneMatch = s.phone.replace(/\D/g, '') === customer.phone.replace(/\D/g, '');
-                const modelMatch = lastSale && s.bikeModel.toLowerCase().trim() === lastSale.bikeName.toLowerCase().trim();
-
-                return nameMatch && phoneMatch && modelMatch;
+                return nameMatch && phoneMatch;
             });
 
             // Dynamic Service Tracker Logic
@@ -53,18 +53,7 @@ router.get('/', async (req, res) => {
                     const v = n % 100;
                     return n + (s[(v - 20) % 10] || s[v] || s[0]);
                 };
-
                 serviceMilestone = `${ordinal(milestoneNumber)} ${isFreeService ? 'FREE' : 'PAID'} SERVICE`;
-            }
-
-            // AUTO-STATUS LOGIC
-            let calculatedStatus = customer.reminderStatus || "";
-            if (matchedService) {
-                if (matchedService.status === 'booked') {
-                    calculatedStatus = "Service scheduled created by customer";
-                } else if (['in-progress', 'completed', 'delivered'].includes(matchedService.status)) {
-                    calculatedStatus = "Already Done Current Service";
-                }
             }
 
             return {
@@ -72,22 +61,31 @@ router.get('/', async (req, res) => {
                 nextServiceDue: nextServiceDue,
                 serviceMilestone: serviceMilestone,
                 isFreeService: isFreeService,
-                reminderStatus: calculatedStatus,
-                reminderRemarks: customer.reminderRemarks || "",
-                reminderCalled: customer.reminderCalled || false,
-                reminderMessaged: customer.reminderMessaged || false,
+                reminderStatus: customer.reminderStatus || "",
                 regNumber: regNumber,
+                chassisNumber: lastSale?.chassisNumber || (userBikes.length > 0 ? userBikes[0].chassisNumber : "N/A"),
+                engineNumber: lastSale?.engineNumber || "N/A",
                 lastSale: lastSale ? {
                     bikeName: lastSale.bikeName,
                     variant: lastSale.variant,
                     salePrice: lastSale.salePrice,
-                    saleDate: lastSale.createdAt
+                    saleDate: lastSale.createdAt,
+                    invoiceNumber: lastSale.invoiceNumber,
+                    deliveryDate: lastSale.deliveryDate
                 } : null,
+                userBikes: userBikes.map((ub: any) => ({
+                    model: ub.bikeModel,
+                    regNo: ub.registrationNumber,
+                    docs: ub.documents,
+                    mods: ub.modifications,
+                    score: ub.conditionScore
+                })),
                 serviceHistory: {
                     totalCount: serviceCount,
                     latest: latestService ? {
                         status: latestService.status,
-                        date: latestService.createdAt
+                        date: latestService.createdAt,
+                        serviceType: latestService.serviceType
                     } : null
                 }
             };
@@ -95,9 +93,10 @@ router.get('/', async (req, res) => {
 
         res.json({
             success: true,
-            data: enhancedCustomers.filter(c => c.lastSale !== null) // Only show actual customers in CRM
+            data: enhancedCustomers
         });
     } catch (error: any) {
+        console.error("Master DB Fetch Error:", error);
         res.status(500).json({ success: false, error: error.message });
     }
 });

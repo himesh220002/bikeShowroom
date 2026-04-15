@@ -28,6 +28,7 @@ export function ServiceBooking() {
     const [formData, setFormData] = useState({
         bikeModel: "",
         regNumber: "",
+        chassisNumber: "",
         notes: "",
         name: "",
         phone: "",
@@ -227,7 +228,12 @@ export function ServiceBooking() {
                                                 <button
                                                     key={bike._id}
                                                     type="button"
-                                                    onClick={() => setFormData(p => ({ ...p, bikeModel: bike.bikeModel, regNumber: bike.registrationNumber }))}
+                                                    onClick={() => setFormData(p => ({
+                                                        ...p,
+                                                        bikeModel: bike.bikeModel,
+                                                        regNumber: bike.registrationNumber,
+                                                        chassisNumber: bike.chassisNumber || ""
+                                                    }))}
                                                     className={cn(
                                                         "p-4 rounded-xl border text-left transition-all",
                                                         formData.regNumber === bike.registrationNumber
@@ -268,20 +274,30 @@ export function ServiceBooking() {
                                             <input
                                                 value={formData.regNumber}
                                                 onChange={(e) => setFormData(p => ({ ...p, regNumber: e.target.value }))}
-                                                placeholder="e.g. BR 11 XY 0000 or 'NEW BIKE'"
+                                                placeholder="e.g. BR 11 XY 0000"
                                                 className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all"
                                             />
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">Additional Notes</label>
-                                        <textarea
-                                            value={formData.notes}
-                                            onChange={(e) => setFormData(p => ({ ...p, notes: e.target.value }))}
-                                            placeholder="Describe any specific issues..."
-                                            rows={3}
-                                            className="w-full bg-background border border-border rounded-3xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all resize-none"
-                                        />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">Chassis Number</label>
+                                            <input
+                                                value={formData.chassisNumber}
+                                                onChange={(e) => setFormData(p => ({ ...p, chassisNumber: e.target.value }))}
+                                                placeholder="Vehicle Chassis ID (Optional)"
+                                                className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">Additional Notes</label>
+                                            <input
+                                                value={formData.notes}
+                                                onChange={(e) => setFormData(p => ({ ...p, notes: e.target.value }))}
+                                                placeholder="Any specific issues?"
+                                                className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-foreground text-sm focus:outline-none focus:border-racing-blue transition-all font-medium italic"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">

@@ -14,6 +14,7 @@ export interface ServiceBooking {
     phone: string;
     bikeModel: string;
     regNumber: string;
+    chassisNumber?: string;
     serviceType: string;
     status: 'booked' | 'in-progress' | 'completed' | 'delivered' | 'cancelled';
     priority?: 'High' | 'Normal';
@@ -171,6 +172,7 @@ export function ServicesTable({ services, onUpdate }: ServicesTableProps) {
                                 </div>
                             </th>
                             <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[140px]">Vehicle Reg #</th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[180px]">Chassis Number</th>
                             <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[160px]">Service Type</th>
                             <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[100px] text-center">SVC #</th>
                             <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[120px] text-center">Est. Bill</th>
@@ -246,6 +248,11 @@ export function ServicesTable({ services, onUpdate }: ServicesTableProps) {
                                 {/* Reg Number */}
                                 <td className="py-3 px-4 border-r border-border/10 uppercase tracking-widest text-[11px] font-black text-racing-blue">
                                     {service.regNumber || 'N/A'}
+                                </td>
+
+                                {/* Chassis */}
+                                <td className="py-3 px-4 border-r border-border/10 uppercase tracking-widest text-[10px] font-bold text-muted-foreground">
+                                    {service.chassisNumber || 'N/A'}
                                 </td>
 
                                 {/* Type */}

@@ -31,7 +31,7 @@ export function Navbar() {
 
     const navLinks = [
         { name: "Explore", href: "/#explore" },
-        { name: "Special Offers", href: "/#promotions" },
+        { name: "My Garage", href: "/garage" },
         { name: "Products", href: "/products" },
         { name: "Service & Spares", href: "/service" },
         { name: "Inquiry", href: "/#inquiry" },
@@ -125,8 +125,8 @@ export function Navbar() {
                                             exit={{ opacity: 0, y: 10 }}
                                             className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-2xl shadow-2xl py-2 z-50 overflow-hidden"
                                         >
-                                            <Link href="/profile" className="flex items-center gap-3 px-4 py-3 hover:bg-muted text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors">
-                                                <UserIcon className="w-4 h-4" /> My Garage
+                                            <Link href="/garage" className="flex items-center gap-3 px-4 py-3 hover:bg-muted text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors">
+                                                <UserIcon className="w-4 h-4" /> Profile
                                             </Link>
                                             <button
                                                 onClick={() => logout()}
@@ -217,7 +217,7 @@ export function Navbar() {
                                             </div>
                                             <div className="flex flex-col">
                                                 <span className="text-sm font-black text-foreground uppercase tracking-wider">{user.displayName}</span>
-                                                <Link href="/profile" onClick={() => setIsOpen(false)} className="text-[10px] font-black text-racing-blue uppercase tracking-[0.2em] mt-0.5">View Garage</Link>
+                                                <Link href="/garage" onClick={() => setIsOpen(false)} className="text-[10px] font-black text-racing-blue uppercase tracking-[0.2em] mt-0.5">View Garage</Link>
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
