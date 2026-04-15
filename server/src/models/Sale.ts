@@ -7,6 +7,10 @@ export interface ISale extends Document {
     customerPhone: string;
     bikeName: string;
     variant: string;
+    exShowroomPrice: string;
+    rtoRegistration?: string;
+    insurance?: string;
+    roadTax?: string;
     salePrice: string;
     saleDate: Date;
     paymentMethod?: 'Cash' | 'Finance' | 'EMI' | 'UPI';
@@ -29,6 +33,10 @@ const SaleSchema: Schema = new Schema({
     customerPhone: { type: String, required: true },
     bikeName: { type: String, required: true },
     variant: { type: String, required: true },
+    exShowroomPrice: { type: String, required: true },
+    rtoRegistration: { type: String },
+    insurance: { type: String },
+    roadTax: { type: String },
     salePrice: { type: String, required: true },
     saleDate: { type: Date, default: Date.now },
     paymentMethod: { type: String, enum: ['Cash', 'Finance', 'EMI', 'UPI'], default: 'Cash' },

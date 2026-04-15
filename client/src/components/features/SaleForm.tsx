@@ -16,13 +16,31 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
         customerPhone: "",
         bikeId: "",
         variant: "",
-        salePrice: "",
+        exShowroomPrice: "",
+        rtoRegistration: "",
+        insurance: "",
+        roadTax: "",
+        salePrice: "", // This will be the Total On-Road Price
         chassisNumber: "",
         engineNumber: "",
         paymentMethod: "Cash",
         invoiceNumber: "NON-TAX",
         salesperson: "Showroom Manager",
     });
+
+    const calculateTotal = (data: typeof formData) => {
+        const ex = parseFloat(data.exShowroomPrice) || 0;
+        const rto = parseFloat(data.rtoRegistration) || 0;
+        const ins = parseFloat(data.insurance) || 0;
+        const tax = parseFloat(data.roadTax) || 0;
+        return (ex + rto + ins + tax).toString();
+    };
+
+    const updatePriceField = (field: string, value: string) => {
+        const nextData = { ...formData, [field]: value };
+        const total = calculateTotal(nextData);
+        setFormData({ ...nextData, salePrice: total });
+    };
 
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -41,6 +59,10 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                     customerPhone: "",
                     bikeId: "",
                     variant: "",
+                    exShowroomPrice: "",
+                    rtoRegistration: "",
+                    insurance: "",
+                    roadTax: "",
                     salePrice: "",
                     chassisNumber: "",
                     engineNumber: "",
@@ -134,12 +156,19 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                                     const [bikeId, variantName] = e.target.value.split("|");
                                     const bike = bikes.find(b => b._id === bikeId);
                                     const colorInfo = bike?.colors.find((c: any) => c.name === variantName);
-                                    setFormData({
+                                    const exPrice = colorInfo?.price?.split('-')[0].replace(/[^0-9]/g, '') || bike?.price?.split('-')[0].replace(/[^0-9]/g, '') || "";
+
+                                    const nextData = {
                                         ...formData,
                                         bikeId: bikeId,
                                         variant: variantName,
-                                        salePrice: colorInfo?.price?.split('-')[0].replace(/[^0-9]/g, '') || bike?.price?.split('-')[0].replace(/[^0-9]/g, '') || ""
-                                    });
+                                        exShowroomPrice: exPrice,
+                                        rtoRegistration: "",
+                                        insurance: "",
+                                        roadTax: "",
+                                    };
+                                    const total = calculateTotal(nextData);
+                                    setFormData({ ...nextData, salePrice: total });
                                 }}
                             >
                                 <option value="">Select a bike variant</option>
@@ -153,18 +182,81 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                             </select>
                         </div>
 
-                        <div className="group">
-                            <label htmlFor="salePrice" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Final Sale Price</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="group">
+                                <label htmlFor="exShowroomPrice" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Ex-Showroom Price</label>
+                                <div className="relative">
+                                    <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-racing-blue" />
+                                    <input
+                                        id="exShowroomPrice"
+                                        type="number"
+                                        required
+                                        className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                        value={formData.exShowroomPrice}
+                                        onChange={(e) => updatePriceField("exShowroomPrice", e.target.value)}
+                                        placeholder="0"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="group">
+                                <label htmlFor="rtoRegistration" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">RTO Registration</label>
+                                <div className="relative">
+                                    <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-racing-blue" />
+                                    <input
+                                        id="rtoRegistration"
+                                        type="number"
+                                        className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                        value={formData.rtoRegistration}
+                                        onChange={(e) => updatePriceField("rtoRegistration", e.target.value)}
+                                        placeholder="0"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="group">
+                                <label htmlFor="insurance" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Insurance</label>
+                                <div className="relative">
+                                    <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-racing-blue" />
+                                    <input
+                                        id="insurance"
+                                        type="number"
+                                        className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                        value={formData.insurance}
+                                        onChange={(e) => updatePriceField("insurance", e.target.value)}
+                                        placeholder="0"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="group">
+                                <label htmlFor="roadTax" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Road Tax / Fees</label>
+                                <div className="relative">
+                                    <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-racing-blue" />
+                                    <input
+                                        id="roadTax"
+                                        type="number"
+                                        className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                        value={formData.roadTax}
+                                        onChange={(e) => updatePriceField("roadTax", e.target.value)}
+                                        placeholder="0"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="group bg-racing-blue/5 p-6 rounded-3xl border border-racing-blue/20">
+                            <label htmlFor="salePrice" className="block text-[10px] font-black uppercase tracking-widest text-racing-blue mb-2 ml-1">Total On-Road Price (Auto-calculated)</label>
                             <div className="relative">
-                                <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-racing-blue" />
+                                <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-racing-blue" />
                                 <input
                                     id="salePrice"
                                     type="number"
                                     required
-                                    className="w-full bg-background border border-border rounded-xl pl-12 pr-5 py-3.5 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                    readOnly
+                                    className="w-full bg-transparent border-none rounded-xl pl-12 pr-5 py-4 text-2xl font-display font-black text-foreground focus:outline-none"
                                     value={formData.salePrice}
-                                    onChange={(e) => setFormData({ ...formData, salePrice: e.target.value })}
-                                    placeholder="0.00"
+                                    placeholder="0"
                                 />
                             </div>
                         </div>
