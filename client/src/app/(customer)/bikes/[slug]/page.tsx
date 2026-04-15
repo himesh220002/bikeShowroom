@@ -142,7 +142,7 @@ export default function BikePage() {
                                             { text: "Spot exchange valuation", highlight: "Best Price" },
                                             { text: "Low interest EMI schemes", highlight: "Easy Finance" },
                                             { text: "Genuine Yamaha Spares", highlight: "100% Original" },
-                                            { text: "8-Year Extended Warranty", highlight: "Peace of Mind" },
+                                            { text: "1-Year Extended Warranty", highlight: "Peace of Mind" },
                                             { text: "Priority Service Slot", highlight: "Save Time" },
                                             { text: "Free First Service", highlight: "Zero Cost" }
                                         ].map((item, i) => (
