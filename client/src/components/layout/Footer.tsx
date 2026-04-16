@@ -24,12 +24,12 @@ export function Footer() {
                                     className="object-contain"
                                 />
                             </div>
-                            <div className="flex flex-col">
-                                <span className="text-xl font-display font-black tracking-tighter text-foreground leading-none">
-                                    CHOUDHARY YAMAHA
+                            <div className="flex flex-col gap-0 md:gap-1">
+                                <span className="text-base md:text-xl font-display font-black tracking-tighter text-gradient-text leading-none">
+                                    CHOUDHARY
                                 </span>
-                                <span className="text-[10px] uppercase font-black tracking-[0.3em] text-racing-blue -mt-0.5">
-                                    THE CALL OF THE BLUE
+                                <span className="text-[0.9rem] uppercase font-black tracking-[0.2em] text-red-500  -mt-0.5">
+                                    YAMAHA
                                 </span>
                             </div>
                         </Link>
@@ -94,7 +94,7 @@ export function Footer() {
                                 { name: "Genuine Spares", href: "/service#spares" },
                                 { name: "WhatsApp Connect", href: "https://wa.me/917004100062" },
                                 { name: "Yamaha India Official", href: "https://www.yamaha-motor-india.com/" },
-                                { name: "Careers", href: "/#inquiry" }
+                                { name: "Careers", href: "/careers" }
                             ].map((item) => (
                                 <li key={item.name}>
                                     <Link href={item.href} className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">

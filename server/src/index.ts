@@ -30,6 +30,7 @@ import campaignsRouter from './routes/campaigns';
 import notificationsRouter from './routes/notifications';
 import insightsRouter from './routes/insights';
 import employeesRouter from './routes/employees';
+import careerRouter from './routes/career';
 import bcrypt from 'bcryptjs';
 import Config from './models/Config';
 
@@ -189,6 +190,7 @@ app.use('/api/campaigns', campaignsRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/insights', insightsRouter);
 app.use('/api/employees', employeesRouter);
+app.use('/api/career', careerRouter);
 
 app.get('/', (req, res) => {
     res.send('Bike Showroom API is running with Socket.io...');
