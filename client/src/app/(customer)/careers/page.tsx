@@ -25,7 +25,8 @@ export default function CareersPage() {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
-        phone: ""
+        phone: "",
+        aboutYourself: ""
     });
     const [resume, setResume] = useState<File | null>(null);
 
@@ -58,6 +59,7 @@ export default function CareersPage() {
             formDataToSend.append("email", formData.email);
             formDataToSend.append("phone", formData.phone);
             formDataToSend.append("jobId", selectedJob._id);
+            formDataToSend.append("aboutYourself", formData.aboutYourself);
             formDataToSend.append("resume", resume);
 
             const res = await fetch(`${API_URL}/career/apply`, {
@@ -68,7 +70,7 @@ export default function CareersPage() {
             const data = await res.json();
             if (data.success) {
                 setSubmitted(true);
-                setFormData({ name: "", email: "", phone: "" });
+                setFormData({ name: "", email: "", phone: "", aboutYourself: "" });
                 setResume(null);
                 setTimeout(() => {
                     setSubmitted(false);
@@ -275,19 +277,19 @@ export default function CareersPage() {
             {/* Application Modal */}
             <AnimatePresence>
                 {selectedJob && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-background/80 backdrop-blur-md"
+                            className="absolute inset-0 bg-background/80 backdrop-blur-2xl"
                             onClick={() => !isSubmitting && setSelectedJob(null)}
                         />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="relative w-full max-w-2xl bg-card border border-border rounded-[3rem] shadow-2xl overflow-hidden"
+                            className="relative w-full max-w-2xl bg-card border-2 border-racing-blue/20 rounded-[3rem] shadow-2xl overflow-hidden"
                         >
                             {submitted ? (
                                 <div className="p-16 text-center space-y-6">
@@ -353,6 +355,25 @@ export default function CareersPage() {
                                             </div>
 
                                             <div className="space-y-2">
+                                                <div className="flex justify-between items-center ml-1">
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">About Yourself</label>
+                                                    <span className={cn(
+                                                        "text-[9px] font-black uppercase tracking-widest",
+                                                        formData.aboutYourself.trim().split(/\s+/).filter(w => w.length > 0).length < 10 ? "text-red-500" : "text-green-500"
+                                                    )}>
+                                                        {formData.aboutYourself.trim().split(/\s+/).filter(w => w.length > 0).length} / 10 WORDS MIN.
+                                                    </span>
+                                                </div>
+                                                <textarea
+                                                    required
+                                                    value={formData.aboutYourself}
+                                                    onChange={e => setFormData({ ...formData, aboutYourself: e.target.value })}
+                                                    className="w-full bg-muted/50 border border-border rounded-2xl px-6 py-4 text-sm font-bold focus:border-racing-blue transition-all min-h-[120px]"
+                                                    placeholder="Tell us about yourself and why you're a good fit... (At least 10 words)"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
                                                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Resume (PDF/DOC)</label>
                                                 <div className="relative">
                                                     <input
@@ -390,7 +411,7 @@ export default function CareersPage() {
 
                                         <button
                                             type="submit"
-                                            disabled={isSubmitting || !resume}
+                                            disabled={isSubmitting || !resume || formData.aboutYourself.trim().split(/\s+/).filter(w => w.length > 0).length < 10}
                                             className="w-full py-5 bg-racing-blue text-white rounded-3xl text-sm font-black uppercase tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-racing-blue/20 disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3"
                                         >
                                             {isSubmitting ? (

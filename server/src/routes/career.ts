@@ -50,7 +50,7 @@ router.get('/openings', async (req, res) => {
 // Submit a job application
 router.post('/apply', upload.single('resume'), async (req, res) => {
     try {
-        const { name, email, phone, jobId } = req.body;
+        const { name, email, phone, jobId, aboutYourself } = req.body;
 
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'Resume is required' });
@@ -63,6 +63,7 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
             email,
             phone,
             resumeUrl,
+            aboutYourself,
             jobId
         });
 
@@ -125,6 +126,30 @@ router.get('/admin/applications', async (req, res) => {
             .populate('jobId', 'title')
             .sort({ appliedAt: -1 });
         res.json({ success: true, data: applications });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Update application status (Admin)
+router.put('/admin/applications/:id/status', async (req, res) => {
+    try {
+        const { status } = req.body;
+        if (!['applied', 'rejected', 'shortlisted'].includes(status)) {
+            return res.status(400).json({ success: false, message: 'Invalid status' });
+        }
+
+        const application = await JobApplication.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { new: true }
+        );
+
+        if (!application) {
+            return res.status(404).json({ success: false, message: 'Application not found' });
+        }
+
+        res.json({ success: true, data: application });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
     }

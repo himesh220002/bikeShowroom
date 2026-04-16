@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Phone, Mail, Loader2, CheckCircle2, MapPin, Lock, ShieldCheck, AlertCircle, Users, Briefcase } from "lucide-react";
+import { Save, Phone, Mail, Loader2, CheckCircle2, MapPin, Lock, ShieldCheck, AlertCircle, Users, Briefcase, ChevronRight } from "lucide-react";
 import { API_URL } from "@/lib/config";
 import { EmployeeManagement } from "@/components/features/EmployeeManagement";
-import { CareerManagement } from "@/components/features/CareerManagement";
+import Link from "next/link";
 
 export default function SettingsPage() {
     const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
-    const [isCareerModalOpen, setIsCareerModalOpen] = useState(false);
     const [settings, setSettings] = useState({
         showroomPhone: "",
         showroomEmail: "",
@@ -281,14 +280,13 @@ export default function SettingsPage() {
                                 Manage Employees
                             </button>
 
-                            <button
-                                type="button"
-                                onClick={() => setIsCareerModalOpen(true)}
+                            <Link
+                                href="/admin/settings/careers"
                                 className="flex items-center gap-3 px-8 py-4 bg-zinc-900 border border-white/5 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-lg active:scale-95 h-fit whitespace-nowrap"
                             >
                                 <Briefcase className="w-4 h-4 text-racing-blue" />
                                 Manage Careers
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -297,10 +295,6 @@ export default function SettingsPage() {
             <EmployeeManagement
                 isOpen={isEmployeeModalOpen}
                 onClose={() => setIsEmployeeModalOpen(false)}
-            />
-            <CareerManagement
-                isOpen={isCareerModalOpen}
-                onClose={() => setIsCareerModalOpen(false)}
             />
 
             <div className="pt-8 border-t border-border">
