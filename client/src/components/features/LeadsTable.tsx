@@ -158,7 +158,7 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
 
     return (
         <div className="w-full space-y-4">
-            <div className="flex justify-between items-center px-4">
+            <div className="flex flex-col sm:flex-row justify-between items-center px-4">
                 <div className="flex items-center gap-3">
                     <div className="p-1.5 bg-racing-blue/10 rounded-lg">
                         <Users className="w-4 h-4 text-racing-blue" />
