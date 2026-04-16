@@ -10,6 +10,50 @@ import { type Bike } from "@/lib/constants/bikes";
 export function Viewer360({ bike }: { bike: Bike }) {
     const [activeMode, setActiveMode] = useState<"360" | "sound" | "tech">("360");
     const [isPlaying, setIsPlaying] = useState(false);
+    const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+
+    // Sound Mapping Logic
+    const getEngineSound = (bike: Bike) => {
+        const engine = bike.fullSpecs.engine.toLowerCase();
+        if (bike.slug === 'aerox') return '/EngineSound/Aerox 155.m4a';
+        if (bike.category === 'scooty' && engine.includes('125cc')) return '/EngineSound/125cc scooty yamaha.m4a';
+        if (engine.includes('149cc')) return '/EngineSound/149cc-yamaha-hybrid.mp3';
+        if (engine.includes('155cc')) return '/EngineSound/r15-exaust-note.mp3';
+        return null;
+    };
+
+    const soundPath = getEngineSound(bike);
+
+    useEffect(() => {
+        if (activeMode === "sound" && soundPath) {
+            const newAudio = new Audio(soundPath);
+            newAudio.loop = true;
+            setAudio(newAudio);
+
+            return () => {
+                newAudio.pause();
+                newAudio.currentTime = 0;
+                setIsPlaying(false);
+            };
+        } else {
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+            setIsPlaying(false);
+            setAudio(null);
+        }
+    }, [activeMode, soundPath]);
+
+    useEffect(() => {
+        if (!audio) return;
+        if (isPlaying) {
+            audio.play().catch(console.error);
+        } else {
+            audio.pause();
+        }
+    }, [isPlaying, audio]);
+
     const [gear, setGear] = useState<number | "N">("N");
     const GEAR_DATA: Record<number | "N", { speed: number; note: string; vva: boolean }> = {
         "N": { speed: 0, note: "Neutral gear - Engine idling", vva: false },
@@ -137,7 +181,11 @@ export function Viewer360({ bike }: { bike: Bike }) {
                             <div className="flex items-center gap-6">
                                 <button
                                     onClick={() => setIsPlaying(!isPlaying)}
-                                    className="w-24 h-24 rounded-full bg-racing-blue text-white flex items-center justify-center shadow-2xl shadow-racing-blue/40 hover:scale-110 active:scale-95 transition-all group"
+                                    disabled={!soundPath}
+                                    className={cn(
+                                        "w-24 h-24 rounded-full bg-racing-blue text-white flex items-center justify-center shadow-2xl shadow-racing-blue/40 hover:scale-110 active:scale-95 transition-all group disabled:opacity-50 disabled:cursor-not-allowed",
+                                        !soundPath && "bg-muted text-muted-foreground"
+                                    )}
                                 >
                                     {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
                                 </button>
@@ -168,7 +216,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
                                     animate={{ opacity: 1, y: 0 }}
                                     className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] animate-pulse mt-4"
                                 >
-                                    Establishing High-Fidelity Link...
+                                    {soundPath ? "Establishing High-Fidelity Link..." : "Engine Sound Unavailable"}
                                 </motion.p>
                             )}
                         </div>
