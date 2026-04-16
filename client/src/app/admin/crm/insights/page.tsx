@@ -185,7 +185,7 @@ export default function InsightsPage() {
             {/* Section 1: Sales Performance */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <InsightCard title="Monthly Sales vs Target" icon={BarChart3}>
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={300} debounce={100}>
                         <BarChart data={monthly}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#88888810" />
                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
@@ -199,7 +199,7 @@ export default function InsightsPage() {
                 </InsightCard>
 
                 <InsightCard title="Sales Distribution by Model" icon={PieIcon}>
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={300} debounce={100}>
                         <PieChart>
                             <Pie
                                 data={brandRevenue}
@@ -225,7 +225,7 @@ export default function InsightsPage() {
             {/* Section 2: Service & Engagement */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <InsightCard title="Service Scheduled vs Completed" icon={Activity}>
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={300} debounce={100}>
                         <LineChart data={monthly}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#88888810" />
                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
@@ -239,7 +239,7 @@ export default function InsightsPage() {
                 </InsightCard>
 
                 <InsightCard title="Lead Conversion Funnel" icon={Users}>
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={300} debounce={100}>
                         <FunnelChart>
                             <Tooltip contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }} />
                             <Funnel dataKey="value" data={leadFunnel} isAnimationActive>
@@ -256,7 +256,7 @@ export default function InsightsPage() {
             {/* Section 3: Inventory & Feedback */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <InsightCard title="Real-time Inventory Levels" icon={Box}>
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={300} debounce={100}>
                         <BarChart data={inventory} layout="vertical">
                             <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#88888810" />
                             <XAxis type="number" hide />
@@ -268,7 +268,7 @@ export default function InsightsPage() {
                 </InsightCard>
 
                 <InsightCard title="Revenue Distribution" icon={Wallet}>
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={300} debounce={100}>
                         <PieChart>
                             <Pie
                                 data={data?.financialSplit}
