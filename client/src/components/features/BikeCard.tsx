@@ -26,7 +26,7 @@ export function BikeCard({ bike, index = 0 }: BikeCardProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "0px" }}
                 transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.1 }}
-                className="group relative bg-card/70 backdrop-blur-md rounded-[2.5rem] p-8 h-[550px] border border-border hover:border-racing-blue/40 transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden will-change-transform gpu-accelerated"
+                className="group relative bg-card/70 backdrop-blur-md rounded-[2.5rem] p-8 h-[450px] sm:h-[500px] md:h-[550px] border border-border hover:border-racing-blue/40 transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden will-change-transform gpu-accelerated"
             >
                 {/* Dynamic Background Glow */}
                 <div
@@ -58,7 +58,7 @@ export function BikeCard({ bike, index = 0 }: BikeCardProps) {
                     </div> */}
                 </div>
 
-                <div className="relative z-20 flex items-end justify-between pt-8 border-t border-foreground/5">
+                <div className="relative z-20 flex items-end justify-between">
                     <div className="flex flex-col gap-1">
                         <span className="text-[9px] text-muted-foreground font-black uppercase tracking-[0.3em] flex items-center gap-2">
                             <span className="w-4 h-[1px] bg-muted-foreground/30" />
