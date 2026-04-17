@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
     Plus, Trash2, Edit2, CheckCircle, XCircle, Loader2,
     Save, X, Briefcase, Users, FileText, Download,
-    ChevronLeft, ExternalLink, Calendar, Mail, Phone, MapPin
+    ChevronLeft, ExternalLink, Calendar, Mail, Phone, MapPin,
+    Linkedin, Star, TrendingUp
 } from "lucide-react";
 import { API_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
@@ -27,12 +29,21 @@ interface JobApplication {
     phone: string;
     resumeUrl: string;
     aboutYourself: string;
-    status: 'applied' | 'rejected' | 'shortlisted';
+    linkedInProfile?: string;
+    status: 'applied' | 'rejected' | 'shortlisted' | 'potential';
     jobId: {
         _id: string;
         title: string;
     };
     appliedAt: string;
+    ratings?: {
+        skill: number;
+        impression: number;
+        education: number;
+        profession: number;
+        experience: number;
+    };
+    potentialTags?: string[];
 }
 
 export default function CareerManagementPage() {
@@ -43,11 +54,22 @@ export default function CareerManagementPage() {
     const [saving, setSaving] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [showForm, setShowForm] = useState(false);
-    const [appStatusFilter, setAppStatusFilter] = useState<'all' | 'applied' | 'shortlisted' | 'rejected'>('applied');
+    const [appStatusFilter, setAppStatusFilter] = useState<'all' | 'applied' | 'shortlisted' | 'rejected' | 'potential'>('applied');
 
     // Rejection states
     const [rejectionTarget, setRejectionTarget] = useState<JobApplication | null>(null);
     const [copySuccess, setCopySuccess] = useState(false);
+
+    // Rating / Potential states
+    const [ratingTarget, setRatingTarget] = useState<JobApplication | null>(null);
+    const [ratings, setRatings] = useState({
+        skill: 5,
+        impression: 5,
+        education: 5,
+        profession: 5,
+        experience: 5
+    });
+    const [potentialTags, setPotentialTags] = useState("");
 
     const [formData, setFormData] = useState({
         title: "",
@@ -57,6 +79,21 @@ export default function CareerManagementPage() {
         active: true,
         requirements: ""
     });
+
+    useEffect(() => {
+        // Mark all as viewed when admin opens the page
+        const markAllViewed = async () => {
+            try {
+                await fetch(`${API_URL}/career/admin/applications/mark-viewed`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (err) {
+                console.error("Failed to mark applications as viewed:", err);
+            }
+        };
+        markAllViewed();
+    }, []);
 
     useEffect(() => {
         if (activeTab === "openings") {
@@ -161,23 +198,47 @@ export default function CareerManagementPage() {
         });
     };
 
-    const handleStatusUpdate = async (id: string, newStatus: string) => {
+    const handleStatusUpdate = async (id: string, newStatus: string, extraData: any = {}) => {
         try {
             const res = await fetch(`${API_URL}/career/admin/applications/${id}/status`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: newStatus }),
+                body: JSON.stringify({ status: newStatus, ...extraData }),
                 credentials: "include"
             });
             const data = await res.json();
             if (data.success) {
                 setApplications(applications.map(app =>
-                    app._id === id ? { ...app, status: newStatus as any } : app
+                    app._id === id ? { ...app, status: newStatus as any, ...extraData } : app
                 ));
             }
         } catch (err) {
             console.error("Failed to update status:", err);
         }
+    };
+
+    const handleAddToPotential = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!ratingTarget) return;
+
+        setSaving(true);
+        try {
+            const tags = potentialTags.split(',').map(t => t.trim()).filter(t => t !== "");
+            await handleStatusUpdate(ratingTarget._id, 'potential', { ratings, potentialTags: tags });
+            setRatingTarget(null);
+            setPotentialTags("");
+            setRatings({ skill: 5, impression: 5, education: 5, profession: 5, experience: 5 });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const calculateAverageRating = (appRatings?: JobApplication['ratings']) => {
+        if (!appRatings) return 0;
+        const values = Object.values(appRatings);
+        if (values.length === 0) return 0;
+        const sum = values.reduce((a, b) => a + b, 0);
+        return (sum / values.length).toFixed(1);
     };
 
     const getRejectionMessage = (app: JobApplication) => {
@@ -215,10 +276,19 @@ Choudhary Yamaha Team`;
         ).length;
     };
 
-    const filteredApplications = applications.filter(app => {
-        if (appStatusFilter === 'all') return true;
-        return app.status === appStatusFilter;
-    });
+    const filteredApplications = applications
+        .filter(app => {
+            if (appStatusFilter === 'all') return true;
+            return app.status === appStatusFilter;
+        })
+        .sort((a, b) => {
+            if (appStatusFilter === 'potential') {
+                const avgA = parseFloat(calculateAverageRating(a.ratings) as string);
+                const avgB = parseFloat(calculateAverageRating(b.ratings) as string);
+                return avgB - avgA; // Sort by highest rating first
+            }
+            return new Date(b.appliedAt).getTime() - new Date(a.appliedAt).getTime();
+        });
 
     return (
         <div className="min-h-screen bg-background p-4 sm:p-8 max-w-[1600px] mx-auto">
@@ -449,7 +519,7 @@ Choudhary Yamaha Team`;
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <h2 className="text-xl font-display font-black text-foreground uppercase tracking-tight">Candidate Submissions</h2>
                         <div className="flex bg-card border border-border rounded-2xl p-1 h-fit">
-                            {(['applied', 'shortlisted', 'rejected', 'all'] as const).map((status) => (
+                            {(['applied', 'shortlisted', 'potential', 'rejected', 'all'] as const).map((status) => (
                                 <button
                                     key={status}
                                     onClick={() => setAppStatusFilter(status)}
@@ -490,10 +560,17 @@ Choudhary Yamaha Team`;
                                                             "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border",
                                                             app.status === 'applied' ? "bg-blue-500/5 text-blue-500 border-blue-500/20" :
                                                                 app.status === 'shortlisted' ? "bg-green-500/5 text-green-500 border-green-500/20" :
-                                                                    "bg-red-500/5 text-red-500 border-red-500/20"
+                                                                    app.status === 'potential' ? "bg-amber-500/5 text-amber-500 border-amber-500/20" :
+                                                                        "bg-red-500/5 text-red-500 border-red-500/20"
                                                         )}>
                                                             {app.status}
                                                         </span>
+                                                        {app.status === 'potential' && (
+                                                            <div className="flex items-center gap-1.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2 py-0.5 rounded-full text-[7px] font-black uppercase">
+                                                                <Star className="w-2.5 h-2.5 fill-current" />
+                                                                Rating: {calculateAverageRating(app.ratings)}/10
+                                                            </div>
+                                                        )}
                                                         {count > 1 && (
                                                             <span className="px-2 py-0.5 bg-racing-blue/10 text-racing-blue border border-racing-blue/20 rounded-full text-[7px] font-black uppercase tracking-tighter">
                                                                 {count} Applications
@@ -509,11 +586,40 @@ Choudhary Yamaha Team`;
                                                             <Calendar className="w-3.5 h-3.5 text-racing-blue" />
                                                             Applied: {new Date(app.appliedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                                                         </span>
+                                                        {app.linkedInProfile && (
+                                                            <a
+                                                                href={app.linkedInProfile}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-blue-500 hover:text-blue-600 transition-colors"
+                                                            >
+                                                                <Linkedin className="w-3.5 h-3.5" />
+                                                                LinkedIn Profile
+                                                            </a>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div className="flex flex-wrap items-center gap-3 h-fit">
+                                                {app.status === 'potential' && (
+                                                    <button
+                                                        onClick={() => handleStatusUpdate(app._id, 'applied')}
+                                                        className="flex items-center gap-2 px-6 py-3 bg-racing-blue/10 text-racing-blue hover:bg-racing-blue hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all font-bold"
+                                                    >
+                                                        <TrendingUp className="w-3.5 h-3.5" />
+                                                        Recall for Opening
+                                                    </button>
+                                                )}
+                                                {app.status !== 'potential' && app.status !== 'rejected' && (
+                                                    <button
+                                                        onClick={() => setRatingTarget(app)}
+                                                        className="flex items-center gap-2 px-6 py-3 bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all font-bold"
+                                                    >
+                                                        <Star className="w-3.5 h-3.5" />
+                                                        Add to Potential
+                                                    </button>
+                                                )}
                                                 {app.status !== 'rejected' && (
                                                     <button
                                                         onClick={() => {
@@ -526,7 +632,7 @@ Choudhary Yamaha Team`;
                                                         Reject
                                                     </button>
                                                 )}
-                                                {app.status !== 'shortlisted' && (
+                                                {app.status !== 'shortlisted' && app.status !== 'potential' && (
                                                     <button
                                                         onClick={() => handleStatusUpdate(app._id, 'shortlisted')}
                                                         className="flex items-center gap-2 px-6 py-3 bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all font-bold"
@@ -572,57 +678,146 @@ Choudhary Yamaha Team`;
             )}
 
             {/* Rejection Modal */}
-            {rejectionTarget && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-background/80 backdrop-blur-md" onClick={() => setRejectionTarget(null)} />
-                    <div className="relative w-full max-w-2xl bg-card border-2 border-red-500/20 rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-                        <div className="p-10 space-y-8">
-                            <div className="flex justify-between items-start">
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-3 text-red-500">
-                                        <XCircle className="w-6 h-6" />
-                                        <h3 className="text-2xl font-display font-black uppercase tracking-tight leading-none">Application Rejected</h3>
+            <AnimatePresence>
+                {rejectionTarget && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-background/80 backdrop-blur-md" onClick={() => setRejectionTarget(null)} />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative w-full max-w-2xl bg-card border-2 border-red-500/20 rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300"
+                        >
+                            <div className="p-10 space-y-8">
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-3 text-red-500">
+                                            <XCircle className="w-6 h-6" />
+                                            <h3 className="text-2xl font-display font-black uppercase tracking-tight leading-none">Application Rejected</h3>
+                                        </div>
+                                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest ml-9">Status updated to rejected. Use the message below to notify the candidate.</p>
                                     </div>
-                                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest ml-9">Status updated to rejected. Use the message below to notify the candidate.</p>
+                                    <button onClick={() => setRejectionTarget(null)} className="p-2 hover:bg-muted rounded-full transition-colors"><X className="w-6 h-6" /></button>
                                 </div>
-                                <button onClick={() => setRejectionTarget(null)} className="p-2 hover:bg-muted rounded-full transition-colors"><X className="w-6 h-6" /></button>
-                            </div>
 
-                            <div className="bg-muted/50 border border-border rounded-[2rem] p-8 space-y-6 relative group">
-                                <div className="flex items-center justify-between">
-                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-racing-blue">Professional Rejection Response</h4>
+                                <div className="bg-muted/50 border border-border rounded-[2rem] p-8 space-y-6 relative group">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-racing-blue">Professional Rejection Response</h4>
+                                        <button
+                                            onClick={() => handleCopyRejection(getRejectionMessage(rejectionTarget))}
+                                            className="flex items-center gap-2 px-4 py-2 bg-foreground text-background rounded-lg text-[8px] font-black uppercase tracking-widest hover:bg-racing-blue hover:text-white transition-all active:scale-95"
+                                        >
+                                            <Save className="w-3 h-3" />
+                                            {copySuccess ? "Copied!" : "Copy Message"}
+                                        </button>
+                                    </div>
+                                    <div className="text-sm text-muted-foreground leading-relaxed font-medium whitespace-pre-wrap max-h-[300px] overflow-y-auto pr-4 scrollbar-thin">
+                                        {getRejectionMessage(rejectionTarget)}
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end gap-4">
                                     <button
-                                        onClick={() => handleCopyRejection(getRejectionMessage(rejectionTarget))}
-                                        className="flex items-center gap-2 px-4 py-2 bg-foreground text-background rounded-lg text-[8px] font-black uppercase tracking-widest hover:bg-racing-blue hover:text-white transition-all active:scale-95"
+                                        onClick={() => setRejectionTarget(null)}
+                                        className="px-8 py-4 bg-muted text-foreground rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-muted/80 transition-all font-bold"
                                     >
-                                        <Save className="w-3 h-3" />
-                                        {copySuccess ? "Copied!" : "Copy Message"}
+                                        Close Dashboard
+                                    </button>
+                                    <a
+                                        href={`mailto:${rejectionTarget.email}?subject=Regarding your application for ${rejectionTarget.jobId?.title}&body=${encodeURIComponent(getRejectionMessage(rejectionTarget))}`}
+                                        className="px-10 py-4 bg-racing-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-racing-blue/20 flex items-center gap-2 group"
+                                    >
+                                        <Mail className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                        Send via Email
+                                    </a>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Rating Modal */}
+            <AnimatePresence>
+                {ratingTarget && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-background/80 backdrop-blur-md" onClick={() => setRatingTarget(null)} />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative w-full max-w-xl bg-card border-2 border-amber-500/20 rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300"
+                        >
+                            <form onSubmit={handleAddToPotential} className="p-10 space-y-8">
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-3 text-amber-500">
+                                            <Star className="w-6 h-6 fill-current" />
+                                            <h3 className="text-2xl font-display font-black uppercase tracking-tight leading-none">Rate Potential Profile</h3>
+                                        </div>
+                                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest ml-9">Evaluating <span className="text-foreground">{ratingTarget.name}</span></p>
+                                    </div>
+                                    <button type="button" onClick={() => setRatingTarget(null)} className="p-2 hover:bg-muted rounded-full transition-colors"><X className="w-6 h-6" /></button>
+                                </div>
+
+                                <div className="space-y-6">
+                                    {(['skill', 'impression', 'education', 'profession', 'experience'] as const).map((field) => (
+                                        <div key={field} className="space-y-3">
+                                            <div className="flex justify-between items-center px-1">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground capitalize">{field}</label>
+                                                <span className="text-sm font-black text-amber-500">{ratings[field]}/10</span>
+                                            </div>
+                                            <div className="relative h-2 bg-muted rounded-full overflow-hidden">
+                                                <input
+                                                    type="range"
+                                                    min="0"
+                                                    max="10"
+                                                    value={ratings[field]}
+                                                    onChange={(e) => setRatings({ ...ratings, [field]: parseInt(e.target.value) })}
+                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                />
+                                                <motion.div
+                                                    className="absolute inset-y-0 left-0 bg-amber-500"
+                                                    initial={false}
+                                                    animate={{ width: `${ratings[field] * 10}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    <div className="space-y-2 pt-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Internal Tags (e.g. Immediate Joiner, Needs Training)</label>
+                                        <input
+                                            value={potentialTags}
+                                            onChange={e => setPotentialTags(e.target.value)}
+                                            className="w-full bg-muted/50 border border-border rounded-2xl px-6 py-4 text-sm font-bold focus:border-amber-500 transition-all font-medium"
+                                            placeholder="Tag1, Tag2..."
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end gap-4 pt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setRatingTarget(null)}
+                                        className="px-8 py-4 bg-muted text-foreground rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-muted/80 transition-all font-bold"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={saving}
+                                        className="px-10 py-4 bg-amber-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-amber-500/20 disabled:opacity-50 flex items-center gap-2 font-bold"
+                                    >
+                                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                        Save to Potential List
                                     </button>
                                 </div>
-                                <div className="text-sm text-muted-foreground leading-relaxed font-medium whitespace-pre-wrap max-h-[300px] overflow-y-auto pr-4 scrollbar-thin">
-                                    {getRejectionMessage(rejectionTarget)}
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end gap-4">
-                                <button
-                                    onClick={() => setRejectionTarget(null)}
-                                    className="px-8 py-4 bg-muted text-foreground rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-muted/80 transition-all font-bold"
-                                >
-                                    Close Dashboard
-                                </button>
-                                <a
-                                    href={`mailto:${rejectionTarget.email}?subject=Regarding your application for ${rejectionTarget.jobId?.title}&body=${encodeURIComponent(getRejectionMessage(rejectionTarget))}`}
-                                    className="px-10 py-4 bg-racing-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-racing-blue/20 flex items-center gap-2 group"
-                                >
-                                    <Mail className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                    Send via Email
-                                </a>
-                            </div>
-                        </div>
+                            </form>
+                        </motion.div>
                     </div>
-                </div>
-            )}
+                )}
+            </AnimatePresence>
         </div>
     );
 }

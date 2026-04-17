@@ -50,7 +50,7 @@ router.get('/openings', async (req, res) => {
 // Submit a job application
 router.post('/apply', upload.single('resume'), async (req, res) => {
     try {
-        const { name, email, phone, jobId, aboutYourself } = req.body;
+        const { name, email, phone, jobId, aboutYourself, linkedInProfile } = req.body;
 
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'Resume is required' });
@@ -64,7 +64,8 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
             phone,
             resumeUrl,
             aboutYourself,
-            jobId
+            jobId,
+            linkedInProfile
         });
 
         await application.save();
@@ -131,17 +132,43 @@ router.get('/admin/applications', async (req, res) => {
     }
 });
 
-// Update application status (Admin)
+// Get unviewed applications count (Admin)
+router.get('/admin/notifications/unread', async (req, res) => {
+    try {
+        const unreadCount = await JobApplication.countDocuments({ viewed: false });
+        res.json({ success: true, count: unreadCount });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Mark all applications as viewed (Admin)
+router.post('/admin/applications/mark-viewed', async (req, res) => {
+    try {
+        await JobApplication.updateMany({ viewed: false }, { viewed: true });
+        res.json({ success: true, message: 'Marked all as viewed' });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Update application status and ratings (Admin)
 router.put('/admin/applications/:id/status', async (req, res) => {
     try {
-        const { status } = req.body;
-        if (!['applied', 'rejected', 'shortlisted'].includes(status)) {
+        const { status, ratings, potentialTags, viewed } = req.body;
+        if (status && !['applied', 'rejected', 'shortlisted', 'potential'].includes(status)) {
             return res.status(400).json({ success: false, message: 'Invalid status' });
         }
 
+        const updateData: any = {};
+        if (status) updateData.status = status;
+        if (ratings) updateData.ratings = ratings;
+        if (potentialTags) updateData.potentialTags = potentialTags;
+        if (viewed !== undefined) updateData.viewed = viewed;
+
         const application = await JobApplication.findByIdAndUpdate(
             req.params.id,
-            { status },
+            updateData,
             { new: true }
         );
 

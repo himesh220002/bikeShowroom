@@ -17,6 +17,7 @@ export default function SettingsPage() {
         serviceAddress: "",
         serviceMap: ""
     });
+    const [unreadApplications, setUnreadApplications] = useState(0);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -34,18 +35,27 @@ export default function SettingsPage() {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const res = await fetch(`${API_URL}/config`);
-                const data = await res.json();
-                if (data.success) {
+                const [configRes, unreadRes] = await Promise.all([
+                    fetch(`${API_URL}/config`),
+                    fetch(`${API_URL}/career/admin/notifications/unread`)
+                ]);
+
+                const configData = await configRes.json();
+                if (configData.success) {
                     setSettings({
-                        showroomPhone: data.data.showroomPhone || "",
-                        showroomEmail: data.data.showroomEmail || "",
-                        showroomAddress: data.data.showroomAddress || "",
-                        showroomMap: data.data.showroomMap || "",
-                        servicePhone: data.data.servicePhone || "",
-                        serviceAddress: data.data.serviceAddress || "",
-                        serviceMap: data.data.serviceMap || ""
+                        showroomPhone: configData.data.showroomPhone || "",
+                        showroomEmail: configData.data.showroomEmail || "",
+                        showroomAddress: configData.data.showroomAddress || "",
+                        showroomMap: configData.data.showroomMap || "",
+                        servicePhone: configData.data.servicePhone || "",
+                        serviceAddress: configData.data.serviceAddress || "",
+                        serviceMap: configData.data.serviceMap || ""
                     });
+                }
+
+                const unreadData = await unreadRes.json();
+                if (unreadData.success) {
+                    setUnreadApplications(unreadData.count);
                 }
             } catch (err) {
                 console.error("Failed to fetch settings:", err);
@@ -131,15 +141,23 @@ export default function SettingsPage() {
 
     return (
         <div className="space-y-12">
-            <div>
-                <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
-                    GENERAL SETTINGS
-                </h2>
+            <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                    <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
+                        GENERAL SETTINGS
+                    </h2>
+                    {unreadApplications > 0 && (
+                        <div className="flex items-center gap-2 px-3 py-1 bg-racing-blue/10 border border-racing-blue/20 rounded-full animate-pulse shadow-[0_0_15px_rgba(37,99,235,0.3)]">
+                            <div className="w-1.5 h-1.5 bg-racing-blue rounded-full" />
+                            <span className="text-[8px] font-black uppercase tracking-widest text-racing-blue">New Notifications</span>
+                        </div>
+                    )}
+                </div>
                 <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Configure showroom contact details and messaging defaults</p>
             </div>
 
             <form onSubmit={handleSave} className="max-w-5xl space-y-8">
-                <div className="bg-card border border-border rounded-[2.5rem] p-8 md:p-12 shadow-2xl space-y-8">
+                <div className={`bg-card border ${unreadApplications > 0 ? 'border-racing-blue/50 shadow-[0_0_30px_rgba(37,99,235,0.1)]' : 'border-border'} rounded-[2.5rem] p-8 md:p-12 shadow-2xl space-y-8 transition-all duration-500`}>
                     <div className="space-y-6">
                         <h3 className="text-sm font-black uppercase tracking-widest text-racing-blue border-b border-racing-blue/10 pb-2">Showroom Contact Info</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -282,10 +300,18 @@ export default function SettingsPage() {
 
                             <Link
                                 href="/admin/settings/careers"
-                                className="flex items-center gap-3 px-8 py-4 bg-zinc-900 border border-white/5 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-lg active:scale-95 h-fit whitespace-nowrap"
+                                className={`flex items-center gap-3 px-8 py-4 bg-zinc-900 border ${unreadApplications > 0 ? 'border-racing-blue animate-pulse' : 'border-white/5'} text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-lg active:scale-95 h-fit whitespace-nowrap relative`}
                             >
                                 <Briefcase className="w-4 h-4 text-racing-blue" />
                                 Manage Careers
+                                {unreadApplications > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-racing-blue opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-4 w-4 bg-racing-blue items-center justify-center text-[8px] font-black">
+                                            {unreadApplications}
+                                        </span>
+                                    </span>
+                                )}
                             </Link>
                         </div>
                     </div>

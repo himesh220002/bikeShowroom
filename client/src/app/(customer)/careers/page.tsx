@@ -26,7 +26,8 @@ export default function CareersPage() {
         name: "",
         email: "",
         phone: "",
-        aboutYourself: ""
+        aboutYourself: "",
+        linkedInProfile: ""
     });
     const [resume, setResume] = useState<File | null>(null);
 
@@ -60,6 +61,7 @@ export default function CareersPage() {
             formDataToSend.append("phone", formData.phone);
             formDataToSend.append("jobId", selectedJob._id);
             formDataToSend.append("aboutYourself", formData.aboutYourself);
+            formDataToSend.append("linkedInProfile", formData.linkedInProfile);
             formDataToSend.append("resume", resume);
 
             const res = await fetch(`${API_URL}/career/apply`, {
@@ -70,7 +72,7 @@ export default function CareersPage() {
             const data = await res.json();
             if (data.success) {
                 setSubmitted(true);
-                setFormData({ name: "", email: "", phone: "", aboutYourself: "" });
+                setFormData({ name: "", email: "", phone: "", aboutYourself: "", linkedInProfile: "" });
                 setResume(null);
                 setTimeout(() => {
                     setSubmitted(false);
@@ -254,7 +256,7 @@ export default function CareersPage() {
                                     <h3 className="text-2xl font-display font-black text-foreground uppercase tracking-tight">{job.title}</h3>
                                     <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{job.description}</p>
                                     <div className="flex flex-wrap gap-2">
-                                        {job.requirements.slice(0, 3).map(req => (
+                                        {job.requirements.slice(0, 5).map(req => (
                                             <span key={req} className="text-[8px] font-bold uppercase tracking-widest bg-muted/50 px-3 py-1.5 rounded-lg border border-border">
                                                 {req}
                                             </span>
@@ -277,7 +279,7 @@ export default function CareersPage() {
             {/* Application Modal */}
             <AnimatePresence>
                 {selectedJob && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-[999] flex items-center justify-center p-2 sm:p-4">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -351,6 +353,18 @@ export default function CareersPage() {
                                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                                                     className="w-full bg-muted/50 border border-border rounded-2xl px-6 py-4 text-sm font-bold focus:border-racing-blue transition-all"
                                                     placeholder="john@example.com"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between items-center ml-1">
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">LinkedIn Profile (Optional)</label>
+                                                </div>
+                                                <input
+                                                    value={formData.linkedInProfile}
+                                                    onChange={e => setFormData({ ...formData, linkedInProfile: e.target.value })}
+                                                    className="w-full bg-muted/50 border border-border rounded-2xl px-6 py-4 text-sm font-bold focus:border-racing-blue transition-all"
+                                                    placeholder="https://linkedin.com/in/username"
                                                 />
                                             </div>
 
