@@ -16,6 +16,7 @@ router.get('/', protect, async (req: any, res) => {
         const bikes = await UserBike.find({ userId: req.user._id }).sort({ createdAt: -1 });
         res.json({ success: true, data: bikes });
     } catch (error: any) {
+        console.error("Error in GET /api/user-bikes:", error);
         res.status(500).json({ success: false, error: error.message });
     }
 });

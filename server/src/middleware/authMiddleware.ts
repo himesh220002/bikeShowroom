@@ -18,12 +18,16 @@ export const protect = async (req: any, res: Response, next: NextFunction) => {
     try {
         const decoded: any = jwt.verify(token, JWT_SECRET);
 
-        if (decoded.id === 'admin_user_id') {
-            req.user = { _id: 'admin_user_id', role: 'admin', displayName: 'System Admin' };
+        if (decoded.id === 'ffffffffffffffffffffffff') {
+            req.user = { _id: 'ffffffffffffffffffffffff', role: 'admin', displayName: 'System Admin' };
             return next();
         }
 
-        req.user = await User.findById(decoded.id).select('-password');
+        const user = await User.findById(decoded.id).select('-password');
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Not authorized, user not found' });
+        }
+        req.user = user;
         next();
     } catch (error) {
         return res.status(401).json({ success: false, message: 'Not authorized, token failed' });

@@ -42,7 +42,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
         // Generate a token for the admin
         // Note: For simplicity, we're using a generic "admin" ID or similar if no real admin user object exists.
         // If there's an admin user in the User collection, it should be used instead.
-        const token = generateToken('admin_user_id');
+        const token = generateToken('ffffffffffffffffffffffff');
 
         res.cookie('token', token, {
             httpOnly: true,
