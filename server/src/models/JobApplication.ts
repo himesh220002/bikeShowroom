@@ -9,6 +9,9 @@ export interface IJobApplication extends Document {
     linkedInProfile?: string;
     jobId: mongoose.Types.ObjectId;
     status: 'applied' | 'rejected' | 'shortlisted' | 'potential';
+    immediateJoiner: boolean;
+    noticePeriod?: string;
+    experienceType: 'fresher' | 'professional';
     appliedAt: Date;
     viewed: boolean;
     ratings?: {
@@ -28,6 +31,9 @@ const JobApplicationSchema: Schema = new Schema({
     resumeUrl: { type: String, required: true },
     aboutYourself: { type: String, required: true },
     linkedInProfile: { type: String },
+    immediateJoiner: { type: Boolean, default: false },
+    noticePeriod: { type: String },
+    experienceType: { type: String, enum: ['fresher', 'professional'], default: 'fresher' },
     jobId: { type: Schema.Types.ObjectId, ref: 'JobOpening', required: true },
     status: { type: String, enum: ['applied', 'rejected', 'shortlisted', 'potential'], default: 'applied' },
     appliedAt: { type: Date, default: Date.now },

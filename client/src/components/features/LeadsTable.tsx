@@ -179,7 +179,7 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
                     />
                     <button
                         onClick={() => setIsAddModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-racing-blue/20"
+                        className="flex items-center gap-2 px-4 py-3 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-racing-blue/20"
                     >
                         <UserPlus className="w-3.5 h-3.5" />
                         Take Manual Inquiry

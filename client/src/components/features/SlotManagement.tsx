@@ -20,8 +20,9 @@ export function SlotManagement() {
         setLoading(true);
         try {
             const res = await axios.get(`${API_URL}/workshop-slots/available?date=${selectedDate}`);
-            if (res.data.success) {
-                setSlots(res.data.data);
+            const data = res.data as any;
+            if (data.success) {
+                setSlots(data.data);
             }
         } catch (err) {
             console.error("Failed to fetch slots:", err);
@@ -43,9 +44,10 @@ export function SlotManagement() {
                 slotTime: time,
                 capacity: Number(capacity)
             });
-            if (res.data.success) {
+            const data = res.data as any;
+            if (data.success) {
                 // Update local state
-                const updatedSlot = res.data.data;
+                const updatedSlot = data.data;
                 setSlots(prev => {
                     const exists = prev.find(s => s.slotTime === time);
                     if (exists) {
@@ -64,7 +66,7 @@ export function SlotManagement() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-muted/30 p-6 rounded-[2rem] border border-border">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-muted/30 p-4 sm:p-0 pb-2 rounded-[2rem] border border-border">
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
                         <Calendar className="w-6 h-6 text-racing-blue" />
@@ -107,7 +109,7 @@ export function SlotManagement() {
                     <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Syncing Capacity Data...</span>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
                     {STANDARD_SLOTS.map((time) => {
                         const slotInfo = slots.find(s => s.slotTime === time);
                         const capacity = slotInfo?.capacity ?? 5;

@@ -63,7 +63,7 @@ export default function LeadsPage() {
 
     return (
         <div className="space-y-12">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between p-4 sm:p-0 gap-4">
                 <div>
                     <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
                         INQUIRY STREAM

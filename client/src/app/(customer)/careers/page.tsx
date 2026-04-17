@@ -27,7 +27,10 @@ export default function CareersPage() {
         email: "",
         phone: "",
         aboutYourself: "",
-        linkedInProfile: ""
+        linkedInProfile: "",
+        immediateJoiner: false,
+        noticePeriod: "",
+        experienceType: "fresher"
     });
     const [resume, setResume] = useState<File | null>(null);
 
@@ -62,6 +65,9 @@ export default function CareersPage() {
             formDataToSend.append("jobId", selectedJob._id);
             formDataToSend.append("aboutYourself", formData.aboutYourself);
             formDataToSend.append("linkedInProfile", formData.linkedInProfile);
+            formDataToSend.append("immediateJoiner", String(formData.immediateJoiner));
+            formDataToSend.append("noticePeriod", formData.noticePeriod);
+            formDataToSend.append("experienceType", formData.experienceType);
             formDataToSend.append("resume", resume);
 
             const res = await fetch(`${API_URL}/career/apply`, {
@@ -72,7 +78,7 @@ export default function CareersPage() {
             const data = await res.json();
             if (data.success) {
                 setSubmitted(true);
-                setFormData({ name: "", email: "", phone: "", aboutYourself: "", linkedInProfile: "" });
+                setFormData({ name: "", email: "", phone: "", aboutYourself: "", linkedInProfile: "", immediateJoiner: false, noticePeriod: "", experienceType: "fresher" });
                 setResume(null);
                 setTimeout(() => {
                     setSubmitted(false);
@@ -279,7 +285,7 @@ export default function CareersPage() {
             {/* Application Modal */}
             <AnimatePresence>
                 {selectedJob && (
-                    <div className="fixed inset-0 z-[999] flex items-center justify-center p-2 sm:p-4">
+                    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -322,6 +328,27 @@ export default function CareersPage() {
 
                                     <form onSubmit={handleApply} className="p-8 space-y-8 overflow-y-auto">
                                         <div className="space-y-6">
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Experience Type</label>
+                                                <div className="flex gap-4">
+                                                    {["fresher", "professional"].map((type) => (
+                                                        <button
+                                                            key={type}
+                                                            type="button"
+                                                            onClick={() => setFormData({ ...formData, experienceType: type as any })}
+                                                            className={cn(
+                                                                "flex-1 py-4 px-6 rounded-2xl border text-[10px] font-black uppercase tracking-[0.2em] transition-all",
+                                                                formData.experienceType === type
+                                                                    ? "bg-racing-blue border-racing-blue text-white shadow-xl shadow-racing-blue/20"
+                                                                    : "bg-muted/50 border-border text-muted-foreground hover:border-racing-blue/30"
+                                                            )}
+                                                        >
+                                                            {type}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                                 <div className="space-y-2">
                                                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Full Name</label>
@@ -366,6 +393,44 @@ export default function CareersPage() {
                                                     className="w-full bg-muted/50 border border-border rounded-2xl px-6 py-4 text-sm font-bold focus:border-racing-blue transition-all"
                                                     placeholder="https://linkedin.com/in/username"
                                                 />
+                                            </div>
+
+                                            <div className="space-y-6">
+                                                <div className="flex items-center gap-3 bg-muted/30 p-4 rounded-2xl border border-border/50">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="immediateJoiner"
+                                                        checked={formData.immediateJoiner}
+                                                        onChange={e => setFormData({ ...formData, immediateJoiner: e.target.checked })}
+                                                        className="w-5 h-5 rounded border-border text-racing-blue focus:ring-racing-blue bg-background"
+                                                    />
+                                                    <label htmlFor="immediateJoiner" className="text-xs font-bold uppercase tracking-widest text-foreground cursor-pointer">
+                                                        I am an Immediate Joiner
+                                                    </label>
+                                                </div>
+
+                                                {!formData.immediateJoiner && (
+                                                    <div className="space-y-3">
+                                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Notice Period</label>
+                                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                                            {["15 Days", "30 Days", "2 Month", "3 Month"].map((period) => (
+                                                                <button
+                                                                    key={period}
+                                                                    type="button"
+                                                                    onClick={() => setFormData({ ...formData, noticePeriod: period })}
+                                                                    className={cn(
+                                                                        "py-3 px-2 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all",
+                                                                        formData.noticePeriod === period
+                                                                            ? "bg-racing-blue border-racing-blue text-white shadow-lg shadow-racing-blue/20"
+                                                                            : "bg-muted/50 border-border text-muted-foreground hover:border-racing-blue/30"
+                                                                    )}
+                                                                >
+                                                                    {period}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <div className="space-y-2">

@@ -184,7 +184,7 @@ export function AdManager() {
 
     return (
         <div className="space-y-8 text-foreground">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 sm:p-0">
                 <div>
                     <h2 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter">
                         AD MANAGEMENT

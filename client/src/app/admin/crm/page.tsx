@@ -73,7 +73,7 @@ export default function CRMPage() {
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-2 sm:p-0 pb-2">
                 <div className="flex items-center gap-4">
                     <div className="p-3 bg-racing-blue/10 rounded-2xl">
                         <BarChart3 className="w-6 h-6 text-racing-blue" />
@@ -88,13 +88,7 @@ export default function CRMPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => router.push("/admin/crm/insights")}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-card border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-muted hover:border-racing-blue/50 transition-all shadow-xl shadow-black/5"
-                    >
-                        <BarChart3 className="w-4 h-4 text-racing-blue" />
-                        Intelligence
-                    </button>
+
 
                     <button
                         onClick={() => {

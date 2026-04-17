@@ -711,7 +711,7 @@ export default function ProfilePage() {
                                                                                     <p className="py-4 italic text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-widest">No service records found for this registration.</p>
                                                                                 ) : (
                                                                                     bikeServices[bike._id].map((svc, idx) => (
-                                                                                        <div key={idx} className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                                                                        <div key={idx} className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/50 flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 sm:p-0">
                                                                                             <div className="flex items-center gap-3 sm:gap-4">
                                                                                                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-background border border-border flex items-center justify-center shrink-0">
                                                                                                     <CheckCircle2 className={cn("w-4 h-4 sm:w-5 sm:h-5", (svc.status === 'delivered' || svc.status === 'completed') ? "text-success" : "text-muted-foreground")} />

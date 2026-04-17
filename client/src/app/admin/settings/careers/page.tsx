@@ -6,7 +6,7 @@ import {
     Plus, Trash2, Edit2, CheckCircle, XCircle, Loader2,
     Save, X, Briefcase, Users, FileText, Download,
     ChevronLeft, ExternalLink, Calendar, Mail, Phone, MapPin,
-    Linkedin, Star, TrendingUp
+    Linkedin, Star, TrendingUp, Clock, CheckCircle2
 } from "lucide-react";
 import { API_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
@@ -30,6 +30,9 @@ interface JobApplication {
     resumeUrl: string;
     aboutYourself: string;
     linkedInProfile?: string;
+    immediateJoiner: boolean;
+    noticePeriod?: string;
+    experienceType: 'fresher' | 'professional';
     status: 'applied' | 'rejected' | 'shortlisted' | 'potential';
     jobId: {
         _id: string;
@@ -572,7 +575,7 @@ Choudhary Yamaha Team`;
                                                             </div>
                                                         )}
                                                         {count > 1 && (
-                                                            <span className="px-2 py-0.5 bg-racing-blue/10 text-racing-blue border border-racing-blue/20 rounded-full text-[7px] font-black uppercase tracking-tighter">
+                                                            <span className="px-2 py-0.5 bg-racing-blue/10 text-racing-blue border border-racing-blue/20 rounded-full text-[8px] font-black uppercase tracking-tighter">
                                                                 {count} Applications
                                                             </span>
                                                         )}
@@ -581,11 +584,31 @@ Choudhary Yamaha Team`;
                                                         <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-racing-blue">
                                                             <Briefcase className="w-3.5 h-3.5" />
                                                             {app.jobId?.title || "Unknown Position"}
+                                                            <span className="mx-2 opacity-20">|</span>
+                                                            <span className={cn(
+                                                                "px-2 py-0.5 rounded italic",
+                                                                app.experienceType === 'professional' ? "bg-purple-500/10 text-purple-500" : "bg-zinc-500/10 text-zinc-500"
+                                                            )}>
+                                                                {app.experienceType}
+                                                            </span>
                                                         </span>
                                                         <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                                             <Calendar className="w-3.5 h-3.5 text-racing-blue" />
                                                             Applied: {new Date(app.appliedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                                                         </span>
+                                                        {app.immediateJoiner ? (
+                                                            <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-green-500">
+                                                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                                                Immediate Joiner
+                                                            </span>
+                                                        ) : (
+                                                            app.noticePeriod && (
+                                                                <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-amber-500">
+                                                                    <Clock className="w-3.5 h-3.5" />
+                                                                    Notice: {app.noticePeriod}
+                                                                </span>
+                                                            )
+                                                        )}
                                                         {app.linkedInProfile && (
                                                             <a
                                                                 href={app.linkedInProfile}
@@ -774,7 +797,7 @@ Choudhary Yamaha Team`;
                                                     max="10"
                                                     value={ratings[field]}
                                                     onChange={(e) => setRatings({ ...ratings, [field]: parseInt(e.target.value) })}
-                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                    className="absolute inset-0 w-full h-full opacity-10 cursor-pointer z-10"
                                                 />
                                                 <motion.div
                                                     className="absolute inset-y-0 left-0 bg-amber-500"

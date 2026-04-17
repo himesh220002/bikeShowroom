@@ -50,7 +50,7 @@ router.get('/openings', async (req, res) => {
 // Submit a job application
 router.post('/apply', upload.single('resume'), async (req, res) => {
     try {
-        const { name, email, phone, jobId, aboutYourself, linkedInProfile } = req.body;
+        const { name, email, phone, jobId, aboutYourself, linkedInProfile, immediateJoiner, noticePeriod, experienceType } = req.body;
 
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'Resume is required' });
@@ -65,7 +65,10 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
             resumeUrl,
             aboutYourself,
             jobId,
-            linkedInProfile
+            linkedInProfile,
+            immediateJoiner: immediateJoiner === 'true' || immediateJoiner === true,
+            noticePeriod,
+            experienceType: experienceType || 'fresher'
         });
 
         await application.save();

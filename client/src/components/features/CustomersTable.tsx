@@ -136,7 +136,7 @@ Reply to this message to confirm your appointment!`;
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center px-4">
+            <div className="flex justify-between items-center p-4">
                 <div className="flex items-center gap-3">
                     <div className="p-1.5 bg-racing-blue/10 rounded-lg">
                         <UserCircle className="w-4 h-4 text-racing-blue" />

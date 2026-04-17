@@ -47,7 +47,7 @@ export function AdminTableControls({
     };
 
     return (
-        <div className={cn("flex flex-wrap items-center gap-4 w-full", className)}>
+        <div className={cn("flex flex-wrap items-center p-4 sm:p-0 gap-4 w-full", className)}>
             {/* Search Input */}
             <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />

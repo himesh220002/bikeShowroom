@@ -300,8 +300,8 @@ export default function AdminDashboard() {
     }, [customers, searchQuery, sortBy]);
 
     return (
-        <div className="space-y-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+        <div className="space-y-4 sm:space-y-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end p-4 sm:p-0 gap-4">
                 <div>
                     <h1 className="text-2xl font-display font-black text-gradient uppercase tracking-tighter italic">
                         Admin Command Center
@@ -314,7 +314,7 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 p-4 sm:p-0">
 
                 {stats.map((stat) => (
                     <button
@@ -327,7 +327,7 @@ export default function AdminDashboard() {
                                 router.push(stat.href);
                             }
                         }}
-                        className="p-6 bg-card border border-border rounded-[2rem] shadow-xl group hover:border-racing-blue/50 transition-all text-left w-full hover:scale-[1.02] active:scale-[0.98]"
+                        className="p-4 sm:p-6 bg-card border border-border rounded-[1.5rem] sm:rounded-[2rem] shadow-xl group hover:border-racing-blue/50 transition-all text-left w-full hover:scale-[1.02] active:scale-[0.98]"
                     >
                         <div className="flex justify-between items-start mb-4">
                             <div className="w-10 h-10 bg-muted border border-border rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
