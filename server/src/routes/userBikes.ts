@@ -243,7 +243,21 @@ router.post('/connect-lookup', protect, async (req: any, res) => {
         }
 
         // Return found details
+        let bikeId = saleFound?.bikeId || "";
+
+        // If no bikeId from sale, try to find by model name in official catalog
+        if (!bikeId) {
+            const modelName = saleFound?.bikeName || serviceFound?.bikeModel;
+            if (modelName) {
+                const officialBike = await Bike.findOne({ name: modelName });
+                if (officialBike) {
+                    bikeId = officialBike._id;
+                }
+            }
+        }
+
         const details = {
+            bikeId: bikeId || "",
             bikeModel: saleFound?.bikeName || serviceFound?.bikeModel || "",
             purchaseDate: saleFound?.saleDate || null,
             registrationNumber: registrationNumber || "",

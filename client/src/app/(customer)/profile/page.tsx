@@ -140,13 +140,14 @@ export default function ProfilePage() {
                 if (data.data.foundInSystem) {
                     setFormData({
                         ...formData,
-                        bikeModel: data.data.bikeModel,
+                        bikeId: data.data.bikeId || "",
+                        bikeModel: data.data.bikeId ? "" : data.data.bikeModel,
                         registrationNumber: data.data.registrationNumber,
                         purchaseDate: data.data.purchaseDate ? new Date(data.data.purchaseDate).toISOString().split('T')[0] : "",
                         lastServiceDate: data.data.lastServiceDate ? new Date(data.data.lastServiceDate).toISOString().split('T')[0] : "",
                         serviceCount: data.data.serviceCount.toString()
                     });
-                    setIsOfficial(false); // Use the custom model name found in sales
+                    setIsOfficial(!!data.data.bikeId);
                 }
             }
         } catch (err) {
