@@ -8,9 +8,19 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "Choudhary Yamaha | Authorized Yamaha Dealer",
-  description: "Experience the best of Yamaha at Choudhary Yamaha in Katihar. Book test rides, services, and explore the latest Yamaha motorcycles including R15, MT-15, and FZ series.",
-  keywords: ["Choudhary Yamaha", "Yamaha bikes Katihar", "Yamaha service Katihar", "R15 Katihar", "MT-15 Katihar"],
+  title: "Choudhary Yamaha Katihar | Authorized Yamaha Dealer & Service Center",
+  description: "Official Yamaha showroom in Katihar. Best price for Yamaha R15 V4, MT-15 V2, FZ series, and Aerox 155 in Katihar. Authorized service center, genuine parts, and expert repair near Mirchaibari.",
+  keywords: [
+    "Choudhary Yamaha Katihar",
+    "Yamaha showroom Katihar",
+    "Yamaha service center Katihar",
+    "Yamaha bike dealers Katihar",
+    "Authorized Yamaha dealer Katihar",
+    "Yamaha R15 V4 price Katihar",
+    "Yamaha MT 15 V2 on-road price Katihar",
+    "Yamaha bike repair Katihar",
+    "Bike showroom near Mirchaibari Katihar"
+  ],
 };
 
 export const viewport = {

@@ -108,11 +108,31 @@ export default function Home() {
       <Testimonials />
 
       {/* SEO/Local Keywords Footer */}
-      <section className="py-12 bg-zinc-950/80 border-t border-zinc-900">
+      <section className="py-16 bg-zinc-950/80 border-t border-zinc-900">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] text-center leading-relaxed max-w-4xl mx-auto">
-            Leading Yamaha Dealer - Choudhary Yamaha • Best Price for R15M • Yamaha MT-15 V2 Katihar Showroom • Authorized Yamaha Service Center • Yamaha Genuine Spares • Purnea • Kishanganj • Araria • Seemanchal Region
-          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed">
+            <div className="space-y-2">
+              <p className="text-racing-blue/60 mb-2">Showroom & Dealers</p>
+              <p>Yamaha Showroom Katihar • Choudhary Yamaha Katihar • Yamaha Bike Dealers Katihar • Authorized Yamaha Dealer Katihar • Yamaha Motorcycle Sales Katihar • Best Bike Showroom Katihar</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-racing-blue/60 mb-2">Popular Models</p>
+              <p>Yamaha R15 V4 Price Katihar • Yamaha MT 15 V2 On-Road Price Katihar • Yamaha FZ Series Katihar Showroom • Yamaha Aerox 155 Katihar • Yamaha XSR 155 Katihar • Yamaha Scooters Katihar</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-racing-blue/60 mb-2">Service & Support</p>
+              <p>Yamaha Bike Service Katihar • Yamaha Bike Repair Katihar • Yamaha Genuine Parts Katihar • Yamaha Bike EMI Katihar • Yamaha Test Ride Katihar • Yamaha Authorized Service</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-racing-blue/60 mb-2">Location & Reach</p>
+              <p>Bike Showroom Near Mirchaibari Katihar • Yamaha Dealer Near DS College Katihar • Yamaha Showroom Near Sonali Katihar • Purnea • Kishanganj • Araria • Seemanchal Region</p>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-zinc-900 text-center">
+            <p className="text-[9px] text-gray-600 font-medium uppercase tracking-[0.3em]">
+              Choudhary Yamaha Bikes Katihar • Yamaha Bike Offers Katihar • Yamaha Finance Katihar Showroom
+            </p>
+          </div>
         </div>
       </section>
     </div>

@@ -44,7 +44,7 @@ export function Hero() {
                             <Star className="w-3 h-3 text-white fill-white" />
                         </div>
                         <span className="text-gray-400 text-[10px] font-black uppercase tracking-[0.3em]">
-                            The Call of the Blue • Authorized Yamaha Dealer
+                            The Call of the Blue • Authorized Yamaha Dealer Katihar
                         </span>
                     </motion.div>
 

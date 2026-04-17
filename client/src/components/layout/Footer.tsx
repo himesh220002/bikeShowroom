@@ -34,9 +34,8 @@ export function Footer() {
                             </div>
                         </Link>
                         <p className="text-sm text-muted-foreground text-center leading-relaxed font-medium">
-                            Choudhary Yamaha - Your definitive Yamaha destination in Katihar. Engineering thrill,
-                            delivering excellence, and building a community of riders
-                            since 2022.
+                            Choudhary Yamaha - Your authorized Yamaha showroom in Katihar. Engineering thrill,
+                            delivering excellence, and building a community of riders near Mirchaibari since 2022.
                         </p>
                         <div className="flex gap-4 justify-center">
                             {[

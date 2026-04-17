@@ -22,11 +22,11 @@ export default function ServicePage() {
                     </div>
                     <div className="space-y-8">
                         <h1 className="text-3xl md:text-5xl xl:text-7xl font-display font-black text-white uppercase tracking-tighter leading-none">
-                            EXPERT <span className="text-gradient">SERVICE & SPARES</span>
+                            YAMAHA <span className="text-gradient">SERVICE CENTER KATIHAR</span>
                         </h1>
                         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
                             <p className="text-gray-400 font-medium leading-relaxed max-w-2xl">
-                                Experience world-class maintenance at our Yamaha-certified facility. From high-speed tuning to genuine part replacements, we ensure your ride stays at its peak performance.
+                                Experience world-class authorized Yamaha repair at Choudhary Yamaha. Our certified service center in Katihar ensures your ride stays at its peak performance with genuine parts.
                             </p>
                             {/* <div className="flex flex-wrap gap-4 shrink-0">
                                 <div className="px-6 py-4 bg-zinc-900/50 border border-zinc-800 rounded-3xl flex items-center gap-4">
