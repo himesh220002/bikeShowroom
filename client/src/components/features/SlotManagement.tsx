@@ -112,7 +112,7 @@ export function SlotManagement() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
                     {STANDARD_SLOTS.map((time) => {
                         const slotInfo = slots.find(s => s.slotTime === time);
-                        const capacity = slotInfo?.capacity ?? 5;
+                        const capacity = slotInfo?.capacity ?? 4;
                         const bookedCount = slotInfo?.bookedCount ?? 0;
                         const isSaving = saving === time;
 

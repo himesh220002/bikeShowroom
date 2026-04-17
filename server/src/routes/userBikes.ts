@@ -173,6 +173,27 @@ router.put('/:id', protect, async (req: any, res) => {
     }
 });
 
+// @desc    Update bike details by chassis number (Admin use)
+// @route   PUT /api/user-bikes/by-chassis/:chassisNumber
+router.put('/by-chassis/:chassisNumber', protect, async (req: any, res) => {
+    try {
+        const bike = await UserBike.findOne({ chassisNumber: req.params.chassisNumber });
+        if (!bike) {
+            return res.status(404).json({ success: false, message: 'No user bike record found for this chassis number' });
+        }
+
+        const { registrationNumber } = req.body;
+        if (registrationNumber) {
+            bike.registrationNumber = registrationNumber;
+        }
+
+        await bike.save();
+        res.json({ success: true, data: bike });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // @desc    Add modification
 // @route   POST /api/user-bikes/:id/modifications
 router.post('/:id/modifications', protect, async (req: any, res) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     ShieldCheck, FileText, RefreshCw, Wrench,
@@ -403,6 +403,16 @@ function AccordionItem({ section }: { section: { heading: string; content: strin
 
 export default function LegalPage() {
     const [activePolicy, setActivePolicy] = useState("terms");
+
+    // Sync with URL params
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab && policies.some(p => p.id === tab)) {
+            setActivePolicy(tab);
+        }
+    }, []);
+
     const current = policies.find(p => p.id === activePolicy) || policies[0];
     const Icon = current.icon;
 

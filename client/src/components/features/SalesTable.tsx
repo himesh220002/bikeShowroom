@@ -1,10 +1,12 @@
 "use client";
 
-import { ShoppingCart, Bike, User, IndianRupee, Calendar, Hash, UserCircle, CreditCard, Tag } from "lucide-react";
+import { ShoppingCart, Bike, User, IndianRupee, Calendar, Hash, UserCircle, CreditCard, Tag, Edit3, Save, X, CheckCircle2, AlertCircle } from "lucide-react";
 import { ExportButton } from "@/components/ui/ExportButton";
 import { cn } from "@/lib/utils/cn";
 import { useState, useMemo } from "react";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import axios from "axios";
+import { API_URL } from "@/lib/config";
 
 interface SalesTableProps {
     sales: any[];
@@ -23,6 +25,28 @@ export function SalesTable({ sales }: SalesTableProps) {
 
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 50;
+    const [isUpdatingReg, setIsUpdatingReg] = useState<string | null>(null);
+    const [newReg, setNewReg] = useState("");
+    const [allSales, setAllSales] = useState(sales);
+
+    const handleUpdateRegistration = async (saleId: string, chassisNumber: string) => {
+        if (!newReg) return;
+        try {
+            // 1. Update Sale record registration (if needed/supported by API)
+            // 2. Update UserBike record linked by chassis
+            const res = await axios.put(`${API_URL}/user-bikes/by-chassis/${chassisNumber}`, { registrationNumber: newReg }, { withCredentials: true });
+            const data = res.data as any;
+
+            if (data.success) {
+                setAllSales(prev => prev.map(s => s._id === saleId ? { ...s, registrationNumber: newReg } : s));
+                setIsUpdatingReg(null);
+                setNewReg("");
+            }
+        } catch (err) {
+            console.error("Failed to update registration:", err);
+            alert("Failed to update registration number. Please ensure the user has added this bike to their profile.");
+        }
+    };
 
     const sortedSales = useMemo(() => {
         return [...sales].sort((a, b) => {
@@ -37,7 +61,8 @@ export function SalesTable({ sales }: SalesTableProps) {
                 'variant': 'variant',
                 'payment': 'paymentMethod',
                 'date': 'saleDate',
-                'price': 'salePrice'
+                'price': 'salePrice',
+                'reg': 'registrationNumber'
             };
 
             const targetKey = keyMap[key] || key;
@@ -59,12 +84,12 @@ export function SalesTable({ sales }: SalesTableProps) {
             if (aVal > bVal) return direction === 'asc' ? 1 : -1;
             return 0;
         });
-    }, [sales, sortConfig]);
+    }, [allSales, sortConfig]);
 
-    const totalPages = Math.ceil(sales.length / pageSize);
+    const totalPages = Math.ceil(allSales.length / pageSize);
     const currentSales = sortedSales.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-    if (sales.length === 0) {
+    if (allSales.length === 0) {
         return (
             <div className="py-20 flex flex-col items-center justify-center text-muted-foreground gap-4">
                 <ShoppingCart className="w-12 h-12 opacity-10" />
@@ -87,7 +112,7 @@ export function SalesTable({ sales }: SalesTableProps) {
                 </div>
 
                 <ExportButton
-                    data={sales}
+                    data={allSales}
                     filename="Yamaha_Sales_Report"
                     sheetName="Sales"
                 />
@@ -138,6 +163,16 @@ export function SalesTable({ sales }: SalesTableProps) {
                                 </div>
                             </th>
                             <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[180px]">Chassis #</th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[160px] cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('reg')}>
+                                <div className="flex items-center gap-1">
+                                    Registration #
+                                    {sortConfig?.key === 'reg' ? (
+                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                    ) : (
+                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                    )}
+                                </div>
+                            </th>
                             <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[180px]">Engine #</th>
                             <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[120px] text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('price')}>
                                 <div className="flex items-center justify-center gap-1">
@@ -205,6 +240,37 @@ export function SalesTable({ sales }: SalesTableProps) {
                                 {/* Chassis */}
                                 <td className="py-3 px-4 border-r border-border/10 font-mono text-[11px] font-bold text-muted-foreground tracking-tighter uppercase whitespace-nowrap">
                                     {sale.chassisNumber || "—"}
+                                </td>
+
+                                {/* Registration */}
+                                <td className="py-3 px-4 border-r border-border/10">
+                                    <div className="flex items-center gap-2 h-6">
+                                        {isUpdatingReg === sale._id ? (
+                                            <div className="flex items-center gap-1">
+                                                <input
+                                                    type="text"
+                                                    value={newReg}
+                                                    onChange={(e) => setNewReg(e.target.value.toUpperCase())}
+                                                    className="w-28 bg-background border border-racing-blue/30 rounded px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest focus:outline-none"
+                                                    autoFocus
+                                                />
+                                                <button onClick={() => handleUpdateRegistration(sale._id, sale.chassisNumber)} className="text-green-500 hover:text-green-600"><Save className="w-3 h-3" /></button>
+                                                <button onClick={() => setIsUpdatingReg(null)} className="text-red-500 hover:text-red-600"><X className="w-3 h-3" /></button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2 cursor-pointer group/reg" onClick={() => {
+                                                setIsUpdatingReg(sale._id);
+                                                setNewReg(sale.registrationNumber || "");
+                                            }}>
+                                                {sale.registrationNumber ? (
+                                                    <span className="text-[11px] font-black text-foreground uppercase tracking-wider">{sale.registrationNumber}</span>
+                                                ) : (
+                                                    <span className="text-[9px] font-bold text-racing-blue/60 uppercase italic tracking-tighter">PENDING</span>
+                                                )}
+                                                <Edit3 className="w-3 h-3 text-racing-blue opacity-0 group-hover/reg:opacity-100 transition-opacity" />
+                                            </div>
+                                        )}
+                                    </div>
                                 </td>
 
                                 {/* Engine */}

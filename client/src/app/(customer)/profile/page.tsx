@@ -33,6 +33,8 @@ export default function ProfilePage() {
     const [isOfficial, setIsOfficial] = useState(true);
     const [isUpdatingOdometer, setIsUpdatingOdometer] = useState<string | null>(null);
     const [newOdometer, setNewOdometer] = useState("");
+    const [isUpdatingReg, setIsUpdatingReg] = useState<string | null>(null);
+    const [newReg, setNewReg] = useState("");
     const [formData, setFormData] = useState({
         bikeId: "",
         bikeModel: "",
@@ -119,6 +121,22 @@ export default function ProfilePage() {
             }
         } catch (err) {
             console.error("Failed to update odometer:", err);
+        }
+    };
+
+    const handleUpdateRegistration = async (id: string) => {
+        if (!newReg) return;
+        try {
+            const res = await axios.put(`${API_URL}/user-bikes/${id}`, { registrationNumber: newReg }, { withCredentials: true });
+            const data = res.data as any;
+            if (data.success) {
+                setBikes(bikes.map(b => b._id === id ? { ...b, registrationNumber: newReg } : b));
+                setIsUpdatingReg(null);
+                setNewReg("");
+            }
+        } catch (err) {
+            console.error("Failed to update registration:", err);
+            alert("Failed to update registration number");
         }
     };
 
@@ -596,20 +614,44 @@ export default function ProfilePage() {
                                                                             </span>
                                                                         </div>
 
-                                                                        <p className={cn(
-                                                                            "text-[9px] sm:text-[10px] font-black uppercase tracking-widest flex items-center justify-center sm:justify-start gap-2",
-                                                                            bike.registrationNumber ? "text-muted-foreground" : "text-racing-blue"
-                                                                        )}>
-                                                                            {bike.registrationNumber ? (
-                                                                                <>
-                                                                                    <CheckCircle2 className="w-3 h-3 text-green-500" /> {bike.registrationNumber}
-                                                                                </>
+                                                                        <div className="flex items-center justify-center sm:justify-start gap-2 h-6">
+                                                                            {isUpdatingReg === bike._id ? (
+                                                                                <div className="flex items-center gap-1">
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        value={newReg}
+                                                                                        onChange={(e) => setNewReg(e.target.value.toUpperCase())}
+                                                                                        className="w-32 bg-background border border-racing-blue/30 rounded px-2 py-0.5 text-[10px] font-black uppercase tracking-widest focus:outline-none"
+                                                                                        autoFocus
+                                                                                        placeholder="BR 01 AB 1234"
+                                                                                    />
+                                                                                    <button onClick={() => handleUpdateRegistration(bike._id)} className="text-green-500 hover:text-green-600"><Save className="w-3 h-3" /></button>
+                                                                                    <button onClick={() => setIsUpdatingReg(null)} className="text-red-500 hover:text-red-600"><X className="w-3 h-3" /></button>
+                                                                                </div>
                                                                             ) : (
-                                                                                <>
-                                                                                    <AlertCircle className="w-3 h-3" /> Registration Pending
-                                                                                </>
+                                                                                <p className={cn(
+                                                                                    "text-[9px] sm:text-[10px] font-black uppercase tracking-widest flex items-center justify-center sm:justify-start gap-2 cursor-pointer group/reg",
+                                                                                    bike.registrationNumber ? "text-muted-foreground" : "text-racing-blue"
+                                                                                )}
+                                                                                    onClick={() => {
+                                                                                        setIsUpdatingReg(bike._id);
+                                                                                        setNewReg(bike.registrationNumber || "");
+                                                                                    }}
+                                                                                >
+                                                                                    {bike.registrationNumber ? (
+                                                                                        <>
+                                                                                            <CheckCircle2 className="w-3 h-3 text-green-500" /> {bike.registrationNumber}
+                                                                                            <Edit3 className="w-3 h-3 opacity-0 group-hover/reg:opacity-100 transition-opacity" />
+                                                                                        </>
+                                                                                    ) : (
+                                                                                        <>
+                                                                                            <AlertCircle className="w-3 h-3" /> Registration Pending
+                                                                                            <Edit3 className="w-3 h-3 opacity-0 group-hover/reg:opacity-100 transition-opacity" />
+                                                                                        </>
+                                                                                    )}
+                                                                                </p>
                                                                             )}
-                                                                        </p>
+                                                                        </div>
                                                                         <div className="flex items-center justify-center sm:justify-start gap-6 mt-4">
 
                                                                             <div className="flex flex-col">

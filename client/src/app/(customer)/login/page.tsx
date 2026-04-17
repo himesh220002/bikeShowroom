@@ -3,6 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { LogIn, Bike, ChevronRight, ShieldCheck, Mail, Lock, User as UserIcon, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils/cn";
@@ -60,7 +61,7 @@ export default function LoginPage() {
                             className="object-contain"
                         />
                     </div>
-                    <h1 className="text-3xl font-display font-black text-white uppercase tracking-tighter mb-2">
+                    <h1 className="text-3xl font-display font-black text-foreground uppercase tracking-tighter mb-2">
                         {mode === 'options' ? 'Join the Garage' : mode === 'login' ? 'Welcome Back' : 'Create Account'}
                     </h1>
                     <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest px-4">
@@ -79,7 +80,7 @@ export default function LoginPage() {
                         >
                             <button
                                 onClick={login}
-                                className="w-full bg-white text-black hover:bg-gray-200 py-5 rounded-[2rem] flex items-center justify-center gap-4 transition-all group active:scale-95 shadow-2xl shadow-white/5"
+                                className="w-full bg-gray-100 text-black hover:bg-gray-200 py-5 rounded-[2rem] flex items-center justify-center gap-4 transition-all group active:scale-95 shadow-2xl shadow-white/5"
                             >
                                 <div className="relative w-5 h-5">
                                     <Image
@@ -210,7 +211,7 @@ export default function LoginPage() {
                 </AnimatePresence>
 
                 <p className="mt-10 text-center text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-relaxed">
-                    By signing in, you agree to our <span className="text-zinc-600 underline">Terms</span> and <span className="text-zinc-600 underline">Privacy Policy</span>.
+                    By signing in, you agree to our <Link href="/legal?tab=terms" className="text-zinc-600 underline hover:text-racing-blue transition-colors">Terms</Link> and <Link href="/legal?tab=privacy" className="text-zinc-600 underline hover:text-racing-blue transition-colors">Privacy Policy</Link>.
                 </p>
             </motion.div>
         </div>
