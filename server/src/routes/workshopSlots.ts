@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import WorkshopSlot from '../models/WorkshopSlot';
+import Config from '../models/Config';
 
 const router = Router();
 
@@ -10,7 +11,18 @@ router.get('/available', async (req, res) => {
         if (!date) return res.status(400).json({ success: false, message: 'Date is required' });
 
         const slots = await WorkshopSlot.find({ date: date as string });
-        res.json({ success: true, data: slots });
+
+        // Get default capacity from config
+        const defaultCapacityConfig = await Config.findOne({ key: 'workshop_default_capacity' });
+        const defaultCapacity = defaultCapacityConfig ? Number(defaultCapacityConfig.value) : 5;
+
+        // Ensure all slots returned have the correct capacity (if newly found or if we want to ensure consistency)
+        const mappedSlots = slots.map(slot => ({
+            ...slot.toObject(),
+            capacity: slot.capacity ?? defaultCapacity
+        }));
+
+        res.json({ success: true, data: mappedSlots, defaultCapacity });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
     }

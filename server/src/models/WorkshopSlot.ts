@@ -10,7 +10,7 @@ export interface IWorkshopSlot extends Document {
 const WorkshopSlotSchema: Schema = new Schema({
     date: { type: String, required: true },
     slotTime: { type: String, required: true },
-    capacity: { type: Number, default: 5 },
+    capacity: { type: Number, default: 4 },
     bookedCount: { type: Number, default: 0 }
 });
 

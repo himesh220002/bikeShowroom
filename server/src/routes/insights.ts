@@ -154,8 +154,8 @@ router.get('/crm', async (req, res) => {
         const inventoryHealth = inventoryQuery.length > 0 ? Math.round((healthyModels / inventoryQuery.length) * 100) : 0;
 
         const avgNPS = await Service.aggregate([
-            { $match: { createdAt: { $gte: startDate }, rating: { $exists: true } } },
-            { $group: { _id: null, avg: { $avg: "$rating" } } }
+            { $match: { "feedback.rating": { $exists: true } } },
+            { $group: { _id: null, avg: { $avg: "$feedback.rating" }, count: { $sum: 1 } } }
         ]);
 
         const recentFeedback = await Service.find({
@@ -184,14 +184,99 @@ router.get('/crm', async (req, res) => {
                     { name: 'Service', value: totalServiceRevenue },
                     { name: 'Accessories', value: totalSalesRevenue * 0.05 }
                 ],
+                colorSales: await Sale.aggregate([
+                    { $match: { saleDate: { $gte: startDate } } },
+                    {
+                        $group: {
+                            _id: {
+                                bike: "$bikeName",
+                                color: "$variant",
+                                month: { $month: "$saleDate" }
+                            },
+                            units: { $sum: 1 }
+                        }
+                    },
+                    { $sort: { units: -1 } },
+                    {
+                        $group: {
+                            _id: {
+                                bike: "$_id.bike",
+                                month: "$_id.month"
+                            },
+                            topColors: {
+                                $push: {
+                                    color: "$_id.color",
+                                    units: "$units"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            topColors: { $slice: ["$topColors", 3] }
+                        }
+                    },
+                    { $sort: { "_id.month": -1, "_id.bike": 1 } }
+                ]),
+                inventoryIntelligence: await (async () => {
+                    const allBikes = await Bike.find().select('name colors.stock');
+                    const bikeList = allBikes.map(b => ({
+                        name: b.name,
+                        stock: b.colors.reduce((sum, c) => sum + (c.stock || 0), 0)
+                    }));
+
+                    const days = Math.max(1, Math.round((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
+                    const thirtyDaysAgo = new Date();
+                    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+                    const salesByModel = await Sale.aggregate([
+                        { $match: { saleDate: { $gte: startDate } } },
+                        { $group: { _id: "$bikeName", units: { $sum: 1 } } }
+                    ]);
+
+                    const recentSalesByModel = await Sale.aggregate([
+                        { $match: { saleDate: { $gte: thirtyDaysAgo } } },
+                        { $group: { _id: "$bikeName", units: { $sum: 1 } } }
+                    ]);
+
+                    return bikeList.map(bike => {
+                        const s = salesByModel.find(s => s._id === bike.name);
+                        const unitsSold = s?.units || 0;
+
+                        const recentS = recentSalesByModel.find(rs => rs._id === bike.name)?.units || 0;
+                        const v = unitsSold / days;
+                        const recentV = recentS / 30;
+
+                        const effectiveV = Math.max(v, recentV);
+                        const daysToOut = effectiveV > 0 ? Math.round(bike.stock / effectiveV) : 999;
+
+                        return {
+                            model: bike.name,
+                            unitsSold,
+                            recentUnitsSold: recentS,
+                            velocity: v.toFixed(2),
+                            recentVelocity: recentV.toFixed(2),
+                            stock: bike.stock,
+                            daysToOut,
+                            status: daysToOut < 7 ? 'Critical' : (daysToOut < 15 ? 'Low' : 'Healthy')
+                        };
+                    }).sort((a, b) => a.daysToOut - b.daysToOut);
+                })(),
+                modelColors: await Bike.find().select('name colors.name colors.hex'),
                 overview: {
                     totalCustomers,
-                    totalRevenue: totalSalesRevenue + totalServiceRevenue,
+                    totalRevenue: totalSalesRevenue + totalServiceRevenue + (totalServiceRevenue * 0.15), // Including estimated Accessories (15% of service/spares)
                     activeServices: await Service.countDocuments({ status: { $in: ['booked', 'in-progress'] } }),
                     nps: avgNPS[0]?.avg || 0,
+                    npsCount: avgNPS[0]?.count || 0,
                     serviceCompletionRate,
                     inventoryHealth,
-                    noShowRate
+                    noShowRate,
+                    revenueSplit: [
+                        { name: 'Vehicle Sales', value: totalSalesRevenue, color: '#2D6AFF', scalingNote: 'Core volume driver. High revenue, but lower frequency.' },
+                        { name: 'Service Revenue', value: totalServiceRevenue, color: '#10B981', scalingNote: 'Recurring revenue anchor. High margin opportunity.' },
+                        { name: 'Accessories', value: Math.round(totalServiceRevenue * 0.15), color: '#F59E0B', scalingNote: 'High Growth Potential. Currently estimated at 15% of service volume. Target: 25%.' }
+                    ]
                 }
             }
         });

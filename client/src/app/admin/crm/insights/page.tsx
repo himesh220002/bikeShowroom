@@ -5,7 +5,7 @@ import { API_URL } from "@/lib/config";
 import {
     LineChart, Line, AreaChart, Area, BarChart, Bar,
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    Legend, Cell, PieChart, Pie, FunnelChart, Funnel, LabelList
+    Legend, Cell, PieChart, Pie, FunnelChart, Funnel, LabelList, ComposedChart
 } from "recharts";
 import {
     ArrowLeft, TrendingUp, Users, DollarSign,
@@ -63,7 +63,9 @@ export default function InsightsPage() {
         monthly = [],
         brandRevenue = [],
         leadFunnel = [],
-        inventory = [],
+        inventoryIntelligence = [],
+        colorSales = [],
+        modelColors = [],
         financeStats = [],
         financialSplit = [],
         overview = {
@@ -92,7 +94,7 @@ export default function InsightsPage() {
                 </div>
                 <div className="w-2 h-2 rounded-full bg-racing-blue animate-pulse" />
             </div>
-            <div className="h-[300px] w-full">
+            <div className="h-auto w-full">
                 {children}
             </div>
         </motion.div>
@@ -183,42 +185,136 @@ export default function InsightsPage() {
             </div>
 
             {/* Section 1: Sales Performance */}
+            <InsightCard title="Monthly Sales vs Target" icon={BarChart3}>
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
+                    <BarChart data={monthly}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#88888810" />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
+                        <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }} />
+                        <Legend wrapperStyle={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em' }} />
+                        <Bar dataKey="target" name="Monthly Target" fill="#2D6AFF20" radius={[10, 10, 0, 0]} />
+                        <Bar dataKey="sales" name="Actual Performance" fill="#2D6AFF" radius={[10, 10, 0, 0]} />
+                    </BarChart>
+                </ResponsiveContainer>
+            </InsightCard>
+
+            {/* Section 1: Core Performance Ratios */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <InsightCard title="Monthly Sales vs Target" icon={BarChart3}>
-                    <ResponsiveContainer width="100%" height={300} debounce={100}>
-                        <BarChart data={monthly}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#88888810" />
-                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
-                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
-                            <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }} />
-                            <Legend wrapperStyle={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em' }} />
-                            <Bar dataKey="target" name="Monthly Target" fill="#2D6AFF20" radius={[10, 10, 0, 0]} />
-                            <Bar dataKey="sales" name="Actual Performance" fill="#2D6AFF" radius={[10, 10, 0, 0]} />
-                        </BarChart>
-                    </ResponsiveContainer>
+                <InsightCard title="Sales Distribution by Model" icon={PieIcon}>
+                    <div className="flex flex-col h-full">
+                        <div className="flex-1">
+                            <ResponsiveContainer width="100%" height={220} debounce={100}>
+                                <PieChart>
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }}
+                                        itemStyle={{ color: '#fff' }}
+                                    />
+                                    <Pie
+                                        data={brandRevenue}
+                                        dataKey="units"
+                                        nameKey="_id"
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={85}
+                                        paddingAngle={5}
+                                        stroke="none"
+                                    >
+                                        {brandRevenue?.map((entry: any, index: number) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        <div className="space-y-3 mt-2 overflow-y-auto h-[180px] pr-2 custom-scrollbar">
+                            {brandRevenue?.map((item: any, i: number) => {
+                                const totalUnits = brandRevenue.reduce((acc: number, curr: any) => acc + curr.units, 0);
+                                const percentage = ((item.units / totalUnits) * 100).toFixed(1);
+                                const isDominant = parseFloat(percentage) > 30;
+                                return (
+                                    <div key={i} className="p-2 bg-muted/20 border border-border/50 rounded-xl group/model">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                                                <span className="text-[10px] font-black uppercase text-foreground">{item._id.replace(/^Yamaha\s+/i, '')}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-display font-black text-foreground italic">{item.units} Units</span>
+                                                <span className="text-[10px] font-display font-black text-racing-blue italic">{percentage}%</span>
+                                            </div>
+                                        </div>
+                                        <p className="text-[8px] font-medium text-muted-foreground leading-relaxed italic group-hover/model:text-foreground transition-colors uppercase tracking-widest">
+                                            {isDominant ? "Market Dominant • Key Volume Driver" : "Targeted Performance • Niche Growth Segment"}
+                                        </p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </InsightCard>
 
-                <InsightCard title="Sales Distribution by Model" icon={PieIcon}>
-                    <ResponsiveContainer width="100%" height={300} debounce={100}>
-                        <PieChart>
-                            <Pie
-                                data={brandRevenue}
-                                dataKey="units"
-                                nameKey="_id"
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={80}
-                                outerRadius={120}
-                                paddingAngle={5}
-                            >
-                                {brandRevenue?.map((entry: any, index: number) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }} />
-                            <Legend layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ fontSize: "7px", fontWeight: "900", maxWidth: "150px" }} />
-                        </PieChart>
-                    </ResponsiveContainer>
+                <InsightCard title="Revenue Stream Intelligence" icon={Wallet}>
+                    <div className="flex flex-col h-full">
+                        <div className="flex-1">
+                            <ResponsiveContainer width="100%" height={220} debounce={100}>
+                                <PieChart>
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }}
+                                        itemStyle={{ color: '#fff' }}
+                                    />
+                                    <Pie
+                                        data={overview.revenueSplit}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={85}
+                                        paddingAngle={5}
+                                        stroke="none"
+                                    >
+                                        {overview.revenueSplit?.map((entry: any, index: number) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        <div className="space-y-3 mt-2 overflow-y-auto h-[180px] pr-2 custom-scrollbar">
+                            {overview.revenueSplit?.map((item: any, i: number) => {
+                                const percentage = ((item.value / overview.totalRevenue) * 100).toFixed(1);
+                                return (
+                                    <div key={i} className="p-2 bg-muted/20 border border-border/50 rounded-xl group/rev">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                                                <span className="text-[9px] font-black uppercase text-foreground">{item.name}</span>
+                                            </div>
+                                            <span className="text-[10px] font-display font-black text-racing-blue italic">{percentage}%</span>
+                                        </div>
+                                        <p className="text-[8px] font-medium text-muted-foreground leading-relaxed italic group-hover/rev:text-foreground transition-colors">
+                                            {item.scalingNote}
+                                        </p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-border/50">
+                            <h5 className="text-[8px] font-black uppercase tracking-tighter text-amber-500 flex items-center gap-1 mb-2">
+                                <Zap className="w-2 h-2 fill-amber-500" /> Future Scaling Thought
+                            </h5>
+                            <p className="text-[9px] font-black text-foreground italic leading-tight">
+                                {overview.revenueSplit?.[2]?.value / overview.totalRevenue < 0.1
+                                    ? "Accessories are currently under-leveraged. Aim to bundle 1 premium accessory with every bike sale to optimize capital ratio."
+                                    : "Revenue ratios are healthy. Scale service capacity by 20% to capture spillover demand from high volume vehicle sales."}
+                            </p>
+                        </div>
+                    </div>
                 </InsightCard>
             </div>
 
@@ -230,7 +326,10 @@ export default function InsightsPage() {
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#88888810" />
                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
                             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
-                            <Tooltip contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }} />
+                            <Tooltip
+                                contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }}
+                                itemStyle={{ color: '#fff' }}
+                            />
                             <Legend />
                             <Line type="monotone" dataKey="services" name="Total Scheduled" stroke="#93C5FD" strokeWidth={4} dot={{ r: 6, fill: '#93C5FD' }} strokeDasharray="5 5" />
                             <Line type="monotone" dataKey="growth" name="Completed Jobs" stroke="#2D6AFF" strokeWidth={4} dot={{ r: 6, fill: '#2D6AFF' }} />
@@ -241,7 +340,10 @@ export default function InsightsPage() {
                 <InsightCard title="Lead Conversion Funnel" icon={Users}>
                     <ResponsiveContainer width="100%" height={300} debounce={100}>
                         <FunnelChart>
-                            <Tooltip contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }} />
+                            <Tooltip
+                                contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }}
+                                itemStyle={{ color: '#fff' }}
+                            />
                             <Funnel dataKey="value" data={leadFunnel} isAnimationActive>
                                 <LabelList position="right" fill="#888" stroke="none" dataKey="stage" fontSize={10} fontWeight={900} />
                                 {leadFunnel?.map((entry: any, index: number) => (
@@ -253,46 +355,169 @@ export default function InsightsPage() {
                 </InsightCard>
             </div>
 
-            {/* Section 3: Inventory & Feedback */}
+            {/* NEW Section: Sales Velocity & Stock Prediction */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <InsightCard title="Real-time Inventory Levels" icon={Box}>
-                    <ResponsiveContainer width="100%" height={300} debounce={100}>
-                        <BarChart data={inventory} layout="vertical">
-                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#88888810" />
-                            <XAxis type="number" hide />
-                            <YAxis dataKey="_id" type="category" width={100} axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
-                            <Tooltip />
-                            <Bar dataKey="stock" fill="#2D6AFF" radius={[0, 10, 10, 0]} barSize={20} />
-                        </BarChart>
-                    </ResponsiveContainer>
+                <InsightCard title="Inventory Depletion Urgency" icon={TrendingUp}>
+                    <div className="space-y-4 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
+                        {inventoryIntelligence.filter((v: any) => v.unitsSold > 0 || v.recentUnitsSold > 0).map((v: any, i: number) => (
+                            <div key={i} className="flex items-center justify-between p-4 bg-muted/20 border border-border/50 rounded-2xl hover:border-racing-blue/30 transition-all group">
+                                <div className="space-y-1">
+                                    <h4 className="text-[10px] font-black uppercase text-foreground">{v.model.replace(/^Yamaha\s+/i, '')}</h4>
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] font-black uppercase text-racing-blue">Recent Rate: {Math.round(v.recentVelocity * 30)} units/month</span>
+                                            <span className="text-[8px] font-black uppercase text-muted-foreground opacity-40">({v.recentUnitsSold} sold in 30d)</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] font-black uppercase text-muted-foreground">Period Rate: {Math.round(v.velocity * 30)} units/month</span>
+                                            <span className={cn(
+                                                "px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest",
+                                                v.status === 'Critical' ? "bg-red-500/10 text-red-500 animate-pulse" : (v.status === 'Low' ? "bg-amber-500/10 text-amber-500" : "bg-emerald-500/10 text-emerald-500")
+                                            )}>
+                                                {v.status}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-xs font-display font-black text-foreground italic">{v.daysToOut < 999 ? `${v.daysToOut} Days` : 'Infinite'}</div>
+                                    <p className="text-[7px] font-black uppercase text-muted-foreground opacity-60">To Out of Stock</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </InsightCard>
 
-                <InsightCard title="Revenue Distribution" icon={Wallet}>
+                <InsightCard title="Top Selling Colorways" icon={Sparkles}>
+                    <div className="space-y-6 overflow-y-auto h-[300px] pr-2 custom-scrollbar">
+                        {colorSales.map((group: any, i: number) => {
+                            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                            return (
+                                <div key={i} className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-[10px] font-black uppercase text-foreground italic flex items-center gap-2">
+                                            {group._id.bike.replace(/^Yamaha\s+/i, '')}
+                                            <span className="px-2 py-0.5 bg-muted rounded text-[7px] font-black text-muted-foreground">{months[group._id.month - 1]}</span>
+                                        </h4>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        {group.topColors.map((c: any, ci: number) => {
+                                            const mColor = modelColors.find((mc: any) => mc.name === group._id.bike)?.colors.find((color: any) => color.name === c.color);
+                                            return (
+                                                <div
+                                                    key={ci}
+                                                    className="flex-1 group/color relative"
+                                                    title={c.color}
+                                                >
+                                                    <div className="flex items-center justify-between mb-1 px-1">
+                                                        <span className="text-[7px] font-black text-muted-foreground uppercase opacity-0 group-hover/color:opacity-100 transition-opacity whitespace-nowrap overflow-hidden text-ellipsis max-w-[50px]">
+                                                            {c.color}
+                                                        </span>
+                                                        <span className="text-[9px] font-display font-black text-foreground italic">{c.units}</span>
+                                                    </div>
+                                                    <div
+                                                        className="h-1.5 rounded-full shadow-lg transition-all group-hover/color:scale-y-150"
+                                                        style={{ backgroundColor: mColor?.hex || COLORS[ci % COLORS.length] }}
+                                                    />
+
+                                                    {/* Tooltip on hover */}
+                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-black text-white rounded-lg opacity-0 group-hover/color:opacity-100 transition-all pointer-events-none z-50 shadow-2xl border border-white/10 min-w-max">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: mColor?.hex || COLORS[ci % COLORS.length] }} />
+                                                            <span className="text-[8px] font-black uppercase tracking-widest">{c.color} &bull; {c.units} Sold</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                        {/* Fill empty slots if less than 3 colors sold */}
+                                        {Array.from({ length: Math.max(0, 3 - group.topColors.length) }).map((_, ei) => (
+                                            <div key={`empty-${ei}`} className="flex-1">
+                                                <div className="h-1.5 bg-muted/20 rounded-full" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </InsightCard>
+            </div>
+
+            {/* Section 3: Inventory Intelligence */}
+            <div className="grid grid-cols-1 gap-8">
+                <InsightCard title="Inventory Supply vs Market Demand" icon={Box}>
                     <ResponsiveContainer width="100%" height={300} debounce={100}>
-                        <PieChart>
-                            <Pie
-                                data={data?.financialSplit}
-                                dataKey="value"
-                                nameKey="name"
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={60}
-                                outerRadius={100}
-                                label={({ name, percent }) => `${name} ${(percent ? percent * 100 : 0).toFixed(0)}%`}
-                            >
-                                {data?.financialSplit?.map((entry: any, index: number) => (
-                                    <Cell key={`cell-${index}`} fill={index === 0 ? "#2D6AFF" : COLORS[index + 1]} />
-                                ))}
-                            </Pie>
-                            <Tooltip />
-                        </PieChart>
+                        <ComposedChart
+                            data={inventoryIntelligence.map((v: any) => {
+                                const demand = Math.round(v.recentVelocity * 30);
+                                let color = "#10B981"; // Green (Healthy)
+                                if (v.stock < demand) color = "#EF4444"; // Red (Critical)
+                                else if (v.stock < demand * 2) color = "#2D6AFF"; // Blue (Balanced)
+
+                                return {
+                                    name: v.model.replace(/^Yamaha\s+/i, ''),
+                                    stock: v.stock,
+                                    demand: demand,
+                                    color
+                                };
+                            })}
+                        >
+                            <XAxis
+                                dataKey="name"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 9, fontWeight: 900, fill: '#888888' }}
+                                width={150}
+                            />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
+                            <Tooltip
+                                contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }}
+                                itemStyle={{ color: '#fff' }}
+                            />
+                            <Legend />
+                            <Bar dataKey="stock" name="Current Stock" radius={[10, 10, 0, 0]}>
+                                {inventoryIntelligence.map((v: any, index: number) => {
+                                    const demand = Math.round(v.recentVelocity * 30);
+                                    let color = "#10B981";
+                                    if (v.stock < demand) color = "#EF4444";
+                                    else if (v.stock < demand * 2) color = "#2D6AFF";
+                                    return <Cell key={`cell-${index}`} fill={color} />;
+                                })}
+                                <LabelList dataKey="stock" position="top" fill="#888" fontSize={9} fontWeight={900} />
+                            </Bar>
+                            <Line
+                                type="monotone"
+                                dataKey="demand"
+                                name="Market Demand (30d)"
+                                stroke="#F59E0B"
+                                strokeWidth={3}
+                                dot={{ r: 4, fill: '#F59E0B' }}
+                            />
+                        </ComposedChart>
                     </ResponsiveContainer>
                 </InsightCard>
             </div>
 
             {/* Section 4: Customer Feedback */}
-            <InsightCard title="Recent Customer Feedback" icon={MessageSquare}>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar p-2">
+            <InsightCard
+                title="Recent Customer Feedback"
+                icon={MessageSquare}
+                className="overflow-hidden"
+                subtitle={
+                    <div className="flex items-center gap-4 mt-1">
+                        <div className="flex items-center gap-1.5">
+                            <Zap className="w-3 h-3 text-amber-500 fill-amber-500" />
+                            <span className="text-[10px] font-black text-foreground">{overview.nps?.toFixed(1) || '0.0'} / 5.0</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 border-l border-border/50 pl-4">
+                            <TrendingUp className="w-3 h-3 text-racing-blue" />
+                            <span className="text-[10px] font-black text-muted-foreground uppercase">{overview.npsCount || 0} Total Votes</span>
+                        </div>
+                    </div>
+                }
+            >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-[300px] overflow-y-auto pr-2 custom-scrollbar p-2">
                     {data?.recentFeedback?.length > 0 ? (
                         data.recentFeedback.map((fb: any, i: number) => (
                             <div key={i} className="p-4 bg-muted/30 rounded-2xl border border-border/50 space-y-2 hover:border-racing-blue/30 transition-all group">
@@ -342,11 +567,13 @@ export default function InsightsPage() {
                         },
                         {
                             type: "Focus Area",
-                            title: "Finance Uptake",
-                            desc: `Current finance uptake is ${financeUptake}% of total sales. A stronger EMI pitch and low-interest campaigns are needed to reach the industry average of 50%.`,
-                            icon: TrendingUp,
-                            color: "text-racing-blue",
-                            bg: "bg-racing-blue/10"
+                            title: "Restock Priority",
+                            desc: inventoryIntelligence.find((v: any) => v.status === 'Critical')
+                                ? `URGENT: ${inventoryIntelligence.find((v: any) => v.status === 'Critical').model.replace(/^Yamaha\s+/i, '')} has a monthly sale rate of ${Math.round(inventoryIntelligence.find((v: any) => v.status === 'Critical').recentVelocity * 30)} units with only ${inventoryIntelligence.find((v: any) => v.status === 'Critical').stock} left. Restock within ${inventoryIntelligence.find((v: any) => v.status === 'Critical').daysToOut} days.`
+                                : `Inventory levels are currently stable across all high-velocity models. Continue monitoring stock levels.`,
+                            icon: Box,
+                            color: "text-amber-500",
+                            bg: "bg-amber-500/10"
                         }
                     ].map((rec, i) => (
                         <motion.div
@@ -371,7 +598,7 @@ export default function InsightsPage() {
 
             {/* Section 5: External Analytics */}
             <div className="grid grid-cols-1 gap-8">
-                <InsightCard title="Web Traffic Intelligence" icon={Activity} className="border-racing-blue/10 bg-gradient-to-br from-card to-racing-blue/5">
+                <InsightCard title="Web Traffic Intelligence" icon={Activity} className="border-racing-blue/10 bg-gradient-to-br from-card to-racing-blue/50">
                     <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
                         <div className="relative">
                             <div className="absolute inset-0 bg-racing-blue/20 blur-3xl rounded-full animate-pulse" />
@@ -379,7 +606,7 @@ export default function InsightsPage() {
                         </div>
                         <div className="space-y-2 max-w-md">
                             <h4 className="text-xl font-display font-black uppercase italic tracking-tighter">Vercel <span className="text-racing-blue">Real-time</span> Analytics</h4>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-relaxed opacity-70">
+                            <p className="text-[10px] font-bold text-foreground uppercase tracking-widest leading-relaxed opacity-70">
                                 Detailed visitor demographics, page views, and conversion path analysis are processed externally to ensure showroom performance remains optimal.
                             </p>
                         </div>

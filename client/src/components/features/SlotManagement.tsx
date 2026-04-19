@@ -13,6 +13,7 @@ export function SlotManagement() {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [slots, setSlots] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [defaultCapacity, setDefaultCapacity] = useState(4);
     const [saving, setSaving] = useState<string | null>(null);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -23,6 +24,7 @@ export function SlotManagement() {
             const data = res.data as any;
             if (data.success) {
                 setSlots(data.data);
+                if (data.defaultCapacity) setDefaultCapacity(data.defaultCapacity);
             }
         } catch (err) {
             console.error("Failed to fetch slots:", err);
@@ -112,7 +114,7 @@ export function SlotManagement() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
                     {STANDARD_SLOTS.map((time) => {
                         const slotInfo = slots.find(s => s.slotTime === time);
-                        const capacity = slotInfo?.capacity ?? 4;
+                        const capacity = slotInfo?.capacity ?? defaultCapacity;
                         const bookedCount = slotInfo?.bookedCount ?? 0;
                         const isSaving = saving === time;
 

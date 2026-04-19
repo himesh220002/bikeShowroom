@@ -164,7 +164,7 @@ export default function AdminDashboard() {
     const stats = [
         { label: "Active Inquiries", value: leads.length.toString(), icon: Users, change: "Live", trend: "up", tab: "leads" as const },
         { label: "Hot Leads 🔥", value: qualifiedLeads.length.toString(), icon: Rocket, change: "Escalating", trend: "up", tab: "hot" as const },
-        { label: "Workshop Queue", value: services.length.toString(), icon: Wrench, change: "Live", trend: "up", tab: "services" as const },
+        { label: "Workshop Queue", value: services.length.toString(), icon: Wrench, change: "Live", trend: "up", href: "/admin/services" },
         { label: "Inventory", value: totalStock.toString(), icon: Package, change: "Stable", trend: "neutral", href: "/admin/inventory" },
     ];
 

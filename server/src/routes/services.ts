@@ -2,6 +2,7 @@ import { Router } from 'express';
 import Service from '../models/Service';
 import Customer from '../models/Customer';
 import WorkshopSlot from '../models/WorkshopSlot';
+import Config from '../models/Config';
 import { protect } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -39,7 +40,12 @@ router.post('/', async (req, res) => {
         const { appointmentDate, appointmentTime, bikeModel } = rest;
         if (appointmentDate && appointmentTime) {
             const slot = await WorkshopSlot.findOne({ date: appointmentDate, slotTime: appointmentTime });
-            const capacity = slot?.capacity ?? 5;
+
+            // Get default capacity from config
+            const defaultCapacityConfig = await Config.findOne({ key: 'workshop_default_capacity' });
+            const defaultCapacity = defaultCapacityConfig ? Number(defaultCapacityConfig.value) : 5;
+
+            const capacity = slot?.capacity ?? defaultCapacity;
             const bookedCount = slot?.bookedCount ?? 0;
 
             if (bookedCount >= capacity) {
@@ -126,7 +132,11 @@ router.put('/:id/status', async (req, res) => {
         } else if (service.status === 'cancelled' && status !== 'cancelled') {
             // Re-activating a cancelled service - Check Capacity First
             const slot = await WorkshopSlot.findOne({ date: service.appointmentDate, slotTime: service.appointmentTime });
-            const capacity = slot?.capacity ?? 5;
+
+            const defaultCapacityConfig = await Config.findOne({ key: 'workshop_default_capacity' });
+            const defaultCapacity = defaultCapacityConfig ? Number(defaultCapacityConfig.value) : 5;
+
+            const capacity = slot?.capacity ?? defaultCapacity;
             const bookedCount = slot?.bookedCount ?? 0;
 
             if (bookedCount >= capacity) {
@@ -205,7 +215,11 @@ router.put('/:id', async (req, res) => {
 
             // Check Capacity in New Slot
             const slot = await WorkshopSlot.findOne({ date: nextDate, slotTime: nextTime });
-            const capacity = slot?.capacity ?? 5;
+
+            const defaultCapacityConfig = await Config.findOne({ key: 'workshop_default_capacity' });
+            const defaultCapacity = defaultCapacityConfig ? Number(defaultCapacityConfig.value) : 5;
+
+            const capacity = slot?.capacity ?? defaultCapacity;
             const bookedCount = slot?.bookedCount ?? 0;
 
             if (bookedCount >= capacity) {

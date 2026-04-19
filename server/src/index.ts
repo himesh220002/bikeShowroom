@@ -149,6 +149,17 @@ mongoose.connect(MONGO_URI)
                 description: 'Service Center Google Maps URL'
             });
         }
+
+        // Seed default workshop capacity
+        const workshopCapacity = await Config.findOne({ key: 'workshop_default_capacity' });
+        if (!workshopCapacity) {
+            await Config.create({
+                key: 'workshop_default_capacity',
+                value: 4,
+                description: 'Default capacity for workshop slots'
+            });
+            console.log('Default workshop capacity initialized to 4');
+        }
     })
     .catch((err) => console.error('MongoDB connection error:', err));
 

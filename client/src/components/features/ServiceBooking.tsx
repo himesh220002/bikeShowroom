@@ -21,6 +21,7 @@ export function ServiceBooking() {
     const [userBikes, setUserBikes] = useState<any[]>([]);
     const [availableSlots, setAvailableSlots] = useState<any[]>([]);
     const [loadingSlots, setLoadingSlots] = useState(false);
+    const [defaultCapacity, setDefaultCapacity] = useState(4);
 
     const STANDARD_SLOTS = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
 
@@ -66,6 +67,7 @@ export function ServiceBooking() {
                     const res: any = await axios.get(`${API_URL}/workshop-slots/available?date=${formData.appointmentDate}`);
                     if (res.data.success) {
                         setAvailableSlots(res.data.data);
+                        if (res.data.defaultCapacity) setDefaultCapacity(res.data.defaultCapacity);
                     }
                 } catch (err) {
                     console.error("Failed to fetch slots:", err);
@@ -381,7 +383,7 @@ export function ServiceBooking() {
                                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                                                 {STANDARD_SLOTS.map(time => {
                                                     const slotInfo = availableSlots.find(s => s.slotTime === time);
-                                                    const capacity = slotInfo?.capacity ?? 5;
+                                                    const capacity = slotInfo?.capacity ?? defaultCapacity;
                                                     const bookedCount = slotInfo?.bookedCount ?? 0;
                                                     const isFull = bookedCount >= capacity;
                                                     const isSelected = formData.appointmentTime === time;
