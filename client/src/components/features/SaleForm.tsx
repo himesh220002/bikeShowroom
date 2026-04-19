@@ -18,7 +18,6 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
         bikeId: "",
         variant: "",
         exShowroomPrice: "",
-        rtoRegistration: "",
         insurance: "",
         roadTax: "",
         extendedWarranty: "777",
@@ -35,13 +34,12 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
 
     const calculateTotal = (data: typeof formData) => {
         const ex = parseFloat(data.exShowroomPrice) || 0;
-        const rto = parseFloat(data.rtoRegistration) || 0;
         const ins = parseFloat(data.insurance) || 0;
         const tax = parseFloat(data.roadTax) || 0;
         const ew = parseFloat(data.extendedWarranty) || 0;
         const rsa = parseFloat(data.rsa) || 0;
         const hc = parseFloat(data.hcCharge) || 0;
-        return (ex + rto + ins + tax + ew + rsa + hc).toString();
+        return (ex + ins + tax + ew + rsa + hc).toString();
     };
 
     const updatePriceField = (field: string, value: string) => {
@@ -68,7 +66,6 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                     bikeId: "",
                     variant: "",
                     exShowroomPrice: "",
-                    rtoRegistration: "",
                     insurance: "",
                     roadTax: "",
                     extendedWarranty: "777",
@@ -175,7 +172,6 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                                         bikeId: bikeId,
                                         variant: variantName,
                                         exShowroomPrice: exPrice,
-                                        rtoRegistration: "",
                                         insurance: "",
                                         roadTax: "",
                                         // Reset to defaults on bike change to ensure accuracy
@@ -198,7 +194,7 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                             </select>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div className="group">
                                 <label htmlFor="exShowroomPrice" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Ex-Showroom Price</label>
                                 <div className="relative">
@@ -216,18 +212,22 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                             </div>
 
                             <div className="group">
-                                <label htmlFor="rtoRegistration" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">RTO Registration</label>
+                                <label htmlFor="insurance" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Insurance (1+5 Yrs)</label>
                                 <div className="relative">
                                     <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-racing-blue" />
                                     <input
-                                        id="rtoRegistration"
+                                        id="insurance"
                                         type="number"
                                         className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                                        value={formData.rtoRegistration}
-                                        onChange={(e) => updatePriceField("rtoRegistration", e.target.value)}
-                                        placeholder="0"
+                                        value={formData.insurance}
+                                        onChange={(e) => updatePriceField("insurance", e.target.value)}
+                                        placeholder={(() => {
+                                            const bike = bikes.find(b => b._id === formData.bikeId);
+                                            return bike?.category === 'scooty' ? "7,490 - 13,250" : "8,136 - 19,250";
+                                        })()}
                                     />
                                 </div>
+                                <p className="text-[8px] font-bold text-muted-foreground/50 uppercase tracking-widest mt-1 ml-1 italic">Variable by vehicle type</p>
                             </div>
 
                             <div className="group">
@@ -249,24 +249,7 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                                 <p className="text-[8px] font-bold text-muted-foreground/50 uppercase tracking-widest mt-1 ml-1 italic">Range based on model category</p>
                             </div>
 
-                            <div className="group">
-                                <label htmlFor="insurance" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Insurance (1+5 Yrs)</label>
-                                <div className="relative">
-                                    <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-racing-blue" />
-                                    <input
-                                        id="insurance"
-                                        type="number"
-                                        className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                                        value={formData.insurance}
-                                        onChange={(e) => updatePriceField("insurance", e.target.value)}
-                                        placeholder={(() => {
-                                            const bike = bikes.find(b => b._id === formData.bikeId);
-                                            return bike?.category === 'scooty' ? "7,490 - 13,250" : "8,136 - 19,250";
-                                        })()}
-                                    />
-                                </div>
-                                <p className="text-[8px] font-bold text-muted-foreground/50 uppercase tracking-widest mt-1 ml-1 italic">Variable by vehicle type</p>
-                            </div>
+
                         </div>
 
                         {/* Mandatory Extras Breakdown */}

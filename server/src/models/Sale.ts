@@ -8,7 +8,6 @@ export interface ISale extends Document {
     bikeName: string;
     variant: string;
     exShowroomPrice: string;
-    rtoRegistration?: string;
     insurance?: string;
     roadTax?: string;
     salePrice: string;
@@ -38,7 +37,6 @@ const SaleSchema: Schema = new Schema({
     bikeName: { type: String, required: true },
     variant: { type: String, required: true },
     exShowroomPrice: { type: String, required: true },
-    rtoRegistration: { type: String },
     insurance: { type: String },
     roadTax: { type: String },
     salePrice: { type: String, required: true },
