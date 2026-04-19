@@ -83,7 +83,7 @@ export default function InsightsPage() {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={cn("bg-card border border-border/50 rounded-[2.5rem] p-8 shadow-2xl space-y-6 group hover:border-racing-blue/20 transition-all", className)}
+            className={cn("bg-card border border-border/50 rounded-[2.5rem] p-8 shadow-lg space-y-6 group hover:border-racing-blue/20 transition-all", className)}
         >
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -112,7 +112,7 @@ export default function InsightsPage() {
     return (
         <div className="space-y-12 pb-20 animate-in fade-in duration-700">
             {/* Header & Quick Sync */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-center bg-background rounded-[1.5rem] p-4 shadow-inner shadow-foreground/20 justify-between gap-6">
                 <div className="flex items-center gap-6">
                     <button
                         onClick={() => router.back()}
@@ -292,11 +292,11 @@ export default function InsightsPage() {
                                         <div className="flex items-center justify-between mb-1">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
-                                                <span className="text-[9px] font-black uppercase text-foreground">{item.name}</span>
+                                                <span className="text-[10px] font-black uppercase text-foreground">{item.name}</span>
                                             </div>
                                             <span className="text-[10px] font-display font-black text-racing-blue italic">{percentage}%</span>
                                         </div>
-                                        <p className="text-[8px] font-medium text-muted-foreground leading-relaxed italic group-hover/rev:text-foreground transition-colors">
+                                        <p className="text-[9px] font-medium text-muted-foreground leading-relaxed italic group-hover/rev:text-foreground transition-colors">
                                             {item.scalingNote}
                                         </p>
                                     </div>
