@@ -194,6 +194,7 @@ export function SalesTable({ sales }: SalesTableProps) {
                                     )}
                                 </div>
                             </th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[160px]">Finance Provider</th>
                             <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[140px]">Invoice #</th>
                             <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[180px]">Salesperson</th>
                             <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[140px] text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('date')}>
@@ -292,10 +293,23 @@ export function SalesTable({ sales }: SalesTableProps) {
                                         "text-[9px] font-black uppercase px-2 py-0.5 rounded border tracking-widest",
                                         sale.paymentMethod === 'Cash' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" :
                                             sale.paymentMethod === 'UPI' ? "bg-blue-500/10 text-blue-600 border-blue-500/20" :
-                                                "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                                sale.paymentMethod === 'EMI' ? "bg-purple-500/10 text-purple-600 border-purple-500/20" :
+                                                    "bg-amber-500/10 text-amber-600 border-amber-500/20"
                                     )}>
                                         {sale.paymentMethod || "Cash"}
                                     </span>
+                                </td>
+
+                                {/* Finance Provider */}
+                                <td className="py-3 px-4 border-r border-border/10">
+                                    {sale.financeProvider ? (
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">{sale.financeProvider}</span>
+                                            <span className="text-[8px] font-bold text-muted-foreground uppercase opacity-50">Authorized Loan</span>
+                                        </div>
+                                    ) : (
+                                        <span className="text-[9px] font-bold text-muted-foreground/30 uppercase italic">—</span>
+                                    )}
                                 </td>
 
                                 {/* Invoice */}

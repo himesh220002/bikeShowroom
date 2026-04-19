@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ShoppingCart, User, Phone, CheckCircle2, Loader2, IndianRupee, Bike } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { API_URL } from "@/lib/config";
 
 interface SaleFormProps {
@@ -20,10 +21,14 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
         rtoRegistration: "",
         insurance: "",
         roadTax: "",
-        salePrice: "", // This will be the Total On-Road Price
+        extendedWarranty: "777",
+        rsa: "307",
+        hcCharge: "999",
+        salePrice: "2083", // Default sum of 777 + 307 + 999
         chassisNumber: "",
         engineNumber: "",
         paymentMethod: "Cash",
+        financeProvider: "",
         invoiceNumber: "NON-TAX",
         salesperson: "Showroom Manager",
     });
@@ -33,7 +38,10 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
         const rto = parseFloat(data.rtoRegistration) || 0;
         const ins = parseFloat(data.insurance) || 0;
         const tax = parseFloat(data.roadTax) || 0;
-        return (ex + rto + ins + tax).toString();
+        const ew = parseFloat(data.extendedWarranty) || 0;
+        const rsa = parseFloat(data.rsa) || 0;
+        const hc = parseFloat(data.hcCharge) || 0;
+        return (ex + rto + ins + tax + ew + rsa + hc).toString();
     };
 
     const updatePriceField = (field: string, value: string) => {
@@ -63,10 +71,14 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                     rtoRegistration: "",
                     insurance: "",
                     roadTax: "",
+                    extendedWarranty: "777",
+                    rsa: "307",
+                    hcCharge: "999",
                     salePrice: "",
                     chassisNumber: "",
                     engineNumber: "",
                     paymentMethod: "Cash",
+                    financeProvider: "",
                     invoiceNumber: "NON-TAX",
                     salesperson: "Showroom Manager",
                 });
@@ -166,6 +178,10 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                                         rtoRegistration: "",
                                         insurance: "",
                                         roadTax: "",
+                                        // Reset to defaults on bike change to ensure accuracy
+                                        extendedWarranty: "777",
+                                        rsa: "307",
+                                        hcCharge: "999",
                                     };
                                     const total = calculateTotal(nextData);
                                     setFormData({ ...nextData, salePrice: total });
@@ -215,22 +231,7 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                             </div>
 
                             <div className="group">
-                                <label htmlFor="insurance" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Insurance</label>
-                                <div className="relative">
-                                    <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-racing-blue" />
-                                    <input
-                                        id="insurance"
-                                        type="number"
-                                        className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                                        value={formData.insurance}
-                                        onChange={(e) => updatePriceField("insurance", e.target.value)}
-                                        placeholder="0"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="group">
-                                <label htmlFor="roadTax" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Road Tax / Fees</label>
+                                <label htmlFor="roadTax" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">RTO & HSRPA / Road Tax</label>
                                 <div className="relative">
                                     <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-racing-blue" />
                                     <input
@@ -239,7 +240,73 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                                         className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
                                         value={formData.roadTax}
                                         onChange={(e) => updatePriceField("roadTax", e.target.value)}
-                                        placeholder="0"
+                                        placeholder={(() => {
+                                            const bike = bikes.find(b => b._id === formData.bikeId);
+                                            return bike?.category === 'scooty' ? "10,850 - 17,210" : "14,314 - 52,290";
+                                        })()}
+                                    />
+                                </div>
+                                <p className="text-[8px] font-bold text-muted-foreground/50 uppercase tracking-widest mt-1 ml-1 italic">Range based on model category</p>
+                            </div>
+
+                            <div className="group">
+                                <label htmlFor="insurance" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Insurance (1+5 Yrs)</label>
+                                <div className="relative">
+                                    <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-racing-blue" />
+                                    <input
+                                        id="insurance"
+                                        type="number"
+                                        className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                        value={formData.insurance}
+                                        onChange={(e) => updatePriceField("insurance", e.target.value)}
+                                        placeholder={(() => {
+                                            const bike = bikes.find(b => b._id === formData.bikeId);
+                                            return bike?.category === 'scooty' ? "7,490 - 13,250" : "8,136 - 19,250";
+                                        })()}
+                                    />
+                                </div>
+                                <p className="text-[8px] font-bold text-muted-foreground/50 uppercase tracking-widest mt-1 ml-1 italic">Variable by vehicle type</p>
+                            </div>
+                        </div>
+
+                        {/* Mandatory Extras Breakdown */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                            <div className="group">
+                                <label htmlFor="extendedWarranty" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Extended Warranty</label>
+                                <div className="relative">
+                                    <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground" />
+                                    <input
+                                        id="extendedWarranty"
+                                        type="number"
+                                        className="w-full bg-muted/30 border border-border rounded-xl pl-8 pr-4 py-2 text-xs font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                        value={formData.extendedWarranty}
+                                        onChange={(e) => updatePriceField("extendedWarranty", e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <div className="group">
+                                <label htmlFor="rsa" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Road Side Assistance</label>
+                                <div className="relative">
+                                    <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground" />
+                                    <input
+                                        id="rsa"
+                                        type="number"
+                                        className="w-full bg-muted/30 border border-border rounded-xl pl-8 pr-4 py-2 text-xs font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                        value={formData.rsa}
+                                        onChange={(e) => updatePriceField("rsa", e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <div className="group">
+                                <label htmlFor="hcCharge" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">HC / Handling Charges</label>
+                                <div className="relative">
+                                    <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground" />
+                                    <input
+                                        id="hcCharge"
+                                        type="number"
+                                        className="w-full bg-muted/30 border border-border rounded-xl pl-8 pr-4 py-2 text-xs font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
+                                        value={formData.hcCharge}
+                                        onChange={(e) => updatePriceField("hcCharge", e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -298,14 +365,41 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                                     required
                                     className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[12px] font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
                                     value={formData.paymentMethod}
-                                    onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
+                                    onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value, financeProvider: e.target.value === 'Finance' ? formData.financeProvider : "" })}
                                 >
-                                    <option value="Cash">Cash</option>
-                                    <option value="Finance">Finance</option>
-                                    <option value="EMI">EMI</option>
-                                    <option value="UPI">UPI</option>
+                                    <option value="Cash">Cash / Full Payment</option>
+                                    <option value="Finance">Finance / Loan</option>
+                                    <option value="EMI">EMI / Installments</option>
+                                    <option value="UPI">UPI / Digital</option>
                                 </select>
                             </div>
+
+                            <AnimatePresence>
+                                {formData.paymentMethod === 'Finance' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        className="group"
+                                    >
+                                        <label htmlFor="financeProvider" className="block text-[9px] font-black uppercase tracking-widest text-racing-blue mb-2 ml-1">Finance Provider</label>
+                                        <select
+                                            id="financeProvider"
+                                            required
+                                            className="w-full bg-racing-blue/5 border border-racing-blue/20 rounded-xl px-4 py-3 text-[12px] font-black uppercase text-racing-blue focus:outline-none focus:border-racing-blue transition-all"
+                                            value={formData.financeProvider}
+                                            onChange={(e) => setFormData({ ...formData, financeProvider: e.target.value })}
+                                        >
+                                            <option value="">Select Provider</option>
+                                            <option value="L&T Finance">L&T Finance</option>
+                                            <option value="Bajaj Finserv">Bajaj Finserv</option>
+                                            <option value="IDFC First Bank">IDFC First Bank</option>
+                                            <option value="HDFC Bank">HDFC Bank</option>
+                                            <option value="Custom / Others">Custom / Others</option>
+                                        </select>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                             <div className="group">
                                 <label htmlFor="invoiceNumber" className="block text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1 group-focus-within:text-racing-blue transition-colors">Document No. / INV</label>
                                 <input

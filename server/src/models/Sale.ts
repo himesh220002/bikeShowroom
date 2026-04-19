@@ -13,7 +13,11 @@ export interface ISale extends Document {
     roadTax?: string;
     salePrice: string;
     saleDate: Date;
+    extendedWarranty?: string;
+    rsa?: string;
+    hcCharge?: string;
     paymentMethod?: 'Cash' | 'Finance' | 'EMI' | 'UPI';
+    financeProvider?: string;
     invoiceNumber?: string;
     chassisNumber?: string;
     engineNumber?: string;
@@ -39,7 +43,11 @@ const SaleSchema: Schema = new Schema({
     roadTax: { type: String },
     salePrice: { type: String, required: true },
     saleDate: { type: Date, default: Date.now },
+    extendedWarranty: { type: String, default: '0' },
+    rsa: { type: String, default: '0' },
+    hcCharge: { type: String, default: '0' },
     paymentMethod: { type: String, enum: ['Cash', 'Finance', 'EMI', 'UPI'], default: 'Cash' },
+    financeProvider: { type: String },
     invoiceNumber: { type: String },
     chassisNumber: { type: String },
     engineNumber: { type: String },
