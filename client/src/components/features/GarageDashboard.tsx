@@ -33,6 +33,42 @@ interface IDocument {
     expiryDate?: string;
 }
 
+interface IPartStatus {
+    _id?: string;
+    part: string;
+    status: "healthy" | "watch" | "critical" | "fixed";
+    note?: string;
+    updatedAt: string;
+}
+
+interface IIssueReport {
+    _id?: string;
+    title: string;
+    system: string;
+    severity: "low" | "medium" | "high";
+    status: "open" | "in_progress" | "fixed";
+    observedAt: string;
+    fixedAt?: string;
+    note?: string;
+}
+
+interface IDiagnosticReport {
+    _id?: string;
+    title: string;
+    summary: string;
+    healthScore: number;
+    generatedAt: string;
+}
+
+interface IRideAnalytics {
+    _id?: string;
+    periodLabel: string;
+    distanceKm: number;
+    efficiencyKmpl: number;
+    activeHours: number;
+    generatedAt: string;
+}
+
 interface IConsumables {
     tires: number;
     chain: number;
@@ -42,17 +78,24 @@ interface IConsumables {
 
 interface UserBike {
     _id: string;
+    bikeId?: string;
     bikeModel: string;
     bikeImage?: string;
     registrationNumber: string;
     registrationVerified?: boolean;
     chassisNumber?: string;
+    identitySource?: "owner" | "sale_ledger";
+    salePrice?: number;
     purchaseDate: string;
     mileage: number;
     consumables: IConsumables;
     conditionScore: number;
     modifications: IModification[];
     documents: IDocument[];
+    partStatuses?: IPartStatus[];
+    issueReports?: IIssueReport[];
+    diagnosticReports?: IDiagnosticReport[];
+    rideAnalytics?: IRideAnalytics[];
     nextServiceDate: string;
 }
 
@@ -70,20 +113,55 @@ interface IService {
     status: string;
 }
 
+const PROBLEM_LIBRARY: Record<string, { label: string; probableCause: string; recommendedFix: string }[]> = {
+    engine: [
+        { label: "Engine knocking noise", probableCause: "Low oil quality, timing issue, or abnormal combustion.", recommendedFix: "Run engine diagnostics, inspect timing chain, and replace engine oil/filter." },
+        { label: "Hard starting", probableCause: "Weak battery, injector clog, or spark plug wear.", recommendedFix: "Check battery health, clean injector path, and inspect/replace spark plug." },
+        { label: "Power drop at high RPM", probableCause: "Fuel-air imbalance, ignition coil weakness, or clogged air filter.", recommendedFix: "Scan ECU, clean throttle body, inspect ignition system, and replace air filter." }
+    ],
+    brakes: [
+        { label: "Soft brake feel", probableCause: "Air in brake line or low brake fluid.", recommendedFix: "Bleed brake lines and refill with spec brake fluid." },
+        { label: "Brake squeal/noise", probableCause: "Worn pads or glazing on rotor surface.", recommendedFix: "Inspect pad thickness, clean caliper, and resurface/replace rotor if needed." },
+        { label: "Brake vibration", probableCause: "Rotor runout or uneven pad wear.", recommendedFix: "Measure rotor runout and replace damaged components." }
+    ],
+    electrical: [
+        { label: "Battery drains quickly", probableCause: "Charging leak, alternator weakness, or battery age.", recommendedFix: "Load test battery and charging circuit; replace battery if below spec." },
+        { label: "Headlight flicker", probableCause: "Loose connector or voltage fluctuation.", recommendedFix: "Inspect harness connection and regulator output." },
+        { label: "Self-start intermittent", probableCause: "Starter relay wear or low voltage under load.", recommendedFix: "Check relay and starter motor current draw." }
+    ],
+    connectivity: [
+        { label: "App disconnects frequently", probableCause: "Bluetooth pairing conflict or outdated firmware.", recommendedFix: "Re-pair device, clear app cache, and update communication firmware." },
+        { label: "Trip sync missing", probableCause: "Mobile permission block or sync timeout.", recommendedFix: "Enable location/background permissions and perform manual sync diagnostics." },
+        { label: "Navigation data lag", probableCause: "Low signal quality or unit software latency.", recommendedFix: "Check connectivity module logs and update software package." }
+    ]
+};
+
 export function GarageDashboard() {
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const [bikes, setBikes] = useState<UserBike[]>([]);
     const [selectedBike, setSelectedBike] = useState<UserBike | null>(null);
     const [services, setServices] = useState<IService[]>([]);
+    const [officialBikes, setOfficialBikes] = useState<{ _id: string; name: string; price: string }[]>([]);
     const [loading, setLoading] = useState(true);
 
     // Form States
     const [activeTab, setActiveTab] = useState<"overview" | "mods" | "docs" | "timeline">("overview");
     const [showModModal, setShowModModal] = useState(false);
+    const [showStatusModal, setShowStatusModal] = useState(false);
+    const [showIssueModal, setShowIssueModal] = useState(false);
+    const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
+    const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
+    const [showDocModal, setShowDocModal] = useState(false);
     const [isManaging, setIsManaging] = useState(false);
     const [manageFormData, setManageFormData] = useState({ registrationNumber: "", chassisNumber: "", mileage: 0 });
     const [newMod, setNewMod] = useState({ partName: "", brand: "", cost: 0, date: new Date().toISOString().split('T')[0], location: "" });
+    const [partStatusForm, setPartStatusForm] = useState({ part: "engine", status: "healthy", note: "" });
+    const [issueForm, setIssueForm] = useState({ title: "", system: "engine", problem: PROBLEM_LIBRARY.engine[0].label, severity: "medium", note: "" });
+    const [diagnosticForm, setDiagnosticForm] = useState({ title: "", summary: "", healthScore: 100 });
+    const [analyticsForm, setAnalyticsForm] = useState({ periodLabel: "Last 30 Days", distanceKm: 0, efficiencyKmpl: 0, activeHours: 0, odometerKm: 0 });
+    const [docForm, setDocForm] = useState({ docType: "", docUrl: "", expiryDate: "" });
+    const [serviceCenter, setServiceCenter] = useState({ serviceAddress: "Nearest Yamaha Service Center", servicePhone: "N/A" });
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -92,6 +170,15 @@ export function GarageDashboard() {
         }
         if (user) {
             fetchBikes();
+            fetchOfficialBikes();
+            axios.get<any>(`${API_URL}/config`).then((res) => {
+                if (res.data.success) {
+                    setServiceCenter({
+                        serviceAddress: res.data.data.serviceAddress || "Nearest Yamaha Service Center",
+                        servicePhone: res.data.data.servicePhone || "N/A"
+                    });
+                }
+            }).catch(() => undefined);
         }
     }, [user, authLoading, router]);
 
@@ -109,6 +196,17 @@ export function GarageDashboard() {
             console.error(err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchOfficialBikes = async () => {
+        try {
+            const res = await axios.get<any>(`${API_URL}/bikes`);
+            if (res.data.success) {
+                setOfficialBikes(res.data.data || []);
+            }
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -152,6 +250,126 @@ export function GarageDashboard() {
         }
     };
 
+    const syncUpdatedBike = (updatedBike: UserBike) => {
+        setBikes((prev) => prev.map((b) => (b._id === updatedBike._id ? updatedBike : b)));
+        setSelectedBike(updatedBike);
+    };
+
+    const handleUpdatePartStatus = async () => {
+        if (!selectedBike) return;
+        try {
+            const res = await axios.patch<any>(
+                `${API_URL}/user-bikes/${selectedBike._id}/part-status`,
+                partStatusForm,
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                syncUpdatedBike(res.data.data);
+                setShowStatusModal(false);
+                setPartStatusForm({ part: "engine", status: "healthy", note: "" });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleAddIssue = async () => {
+        if (!selectedBike) return;
+        try {
+            const selectedProblem = (PROBLEM_LIBRARY[issueForm.system] || []).find((p) => p.label === issueForm.problem);
+            const autoGeneratedDetail = selectedProblem
+                ? `Detected issue: ${selectedProblem.label}. Probable cause: ${selectedProblem.probableCause} Recommended action: ${selectedProblem.recommendedFix} Service recommendation: Visit ${serviceCenter.serviceAddress}. Contact: ${serviceCenter.servicePhone}.`
+                : issueForm.note;
+            const res = await axios.post<any>(
+                `${API_URL}/user-bikes/${selectedBike._id}/issues`,
+                {
+                    title: issueForm.title || issueForm.problem,
+                    system: issueForm.system,
+                    severity: issueForm.severity,
+                    note: `${autoGeneratedDetail}${issueForm.note ? ` Owner note: ${issueForm.note}` : ""}`
+                },
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                syncUpdatedBike(res.data.data);
+                setShowIssueModal(false);
+                setIssueForm({ title: "", system: "engine", problem: PROBLEM_LIBRARY.engine[0].label, severity: "medium", note: "" });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleUpdateIssueStatus = async (issueId: string, status: "open" | "in_progress" | "fixed") => {
+        if (!selectedBike) return;
+        try {
+            const res = await axios.patch<any>(
+                `${API_URL}/user-bikes/${selectedBike._id}/issues/${issueId}`,
+                { status },
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                syncUpdatedBike(res.data.data);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleAddDiagnostic = async () => {
+        if (!selectedBike) return;
+        try {
+            const res = await axios.post<any>(
+                `${API_URL}/user-bikes/${selectedBike._id}/diagnostics`,
+                diagnosticForm,
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                syncUpdatedBike(res.data.data);
+                setShowDiagnosticModal(false);
+                setDiagnosticForm({ title: "", summary: "", healthScore: 100 });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleAddAnalytics = async () => {
+        if (!selectedBike) return;
+        try {
+            const res = await axios.post<any>(
+                `${API_URL}/user-bikes/${selectedBike._id}/ride-analytics`,
+                analyticsForm,
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                syncUpdatedBike(res.data.data);
+                setShowAnalyticsModal(false);
+                setAnalyticsForm({ periodLabel: "Last 30 Days", distanceKm: 0, efficiencyKmpl: 0, activeHours: 0, odometerKm: 0 });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleAddDocument = async () => {
+        if (!selectedBike) return;
+        try {
+            const res = await axios.post<any>(
+                `${API_URL}/user-bikes/${selectedBike._id}/documents`,
+                docForm,
+                { withCredentials: true }
+            );
+            if (res.data.success) {
+                syncUpdatedBike(res.data.data);
+                setShowDocModal(false);
+                setDocForm({ docType: "", docUrl: "", expiryDate: "" });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     if (loading || authLoading) return (
         <div className="min-h-screen bg-white flex items-center justify-center">
             <div className="w-12 h-12 border-4 border-racing-blue border-t-transparent rounded-full animate-spin" />
@@ -171,12 +389,56 @@ export function GarageDashboard() {
         </div>
     );
 
-    const totalInvestment = (selectedBike.modifications?.reduce((acc, mod) => acc + mod.cost, 0) || 0) + 0; // Purchase price could be added later
+    const parsePriceToNumber = (price: string | undefined) => {
+        if (!price) return 0;
+        const numeric = Number(String(price).replace(/[^0-9.]/g, ""));
+        return Number.isFinite(numeric) ? numeric : 0;
+    };
+    const formatInrCompact = (value: number) =>
+        new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 1, notation: "compact" }).format(value);
+
+    const matchedOfficialBike = officialBikes.find((bike) =>
+        (selectedBike.bikeId && bike._id === selectedBike.bikeId) ||
+        bike.name.toLowerCase() === selectedBike.bikeModel.toLowerCase()
+    );
+    const purchaseValue = selectedBike.salePrice && selectedBike.salePrice > 0
+        ? selectedBike.salePrice
+        : parsePriceToNumber(matchedOfficialBike?.price);
+    const modsCost = selectedBike.modifications?.reduce((acc, mod) => acc + (mod.cost || 0), 0) || 0;
+    const totalInvestment = purchaseValue + modsCost;
+    const latestAnalytics = selectedBike.rideAnalytics?.[0];
+    const latestDiagnostic = selectedBike.diagnosticReports?.[0];
+    const selectedProblemDetail = (PROBLEM_LIBRARY[issueForm.system] || []).find((p) => p.label === issueForm.problem);
+    const timelineEvents = [
+        ...(selectedBike.issueReports || []).map((issue) => ({
+            id: issue._id || `${issue.title}-${issue.observedAt}`,
+            date: issue.fixedAt || issue.observedAt,
+            title: issue.fixedAt ? `Issue fixed: ${issue.title}` : `Issue reported: ${issue.title}`,
+            desc: `${issue.system} • ${issue.severity.toUpperCase()} • ${issue.status.replace("_", " ").toUpperCase()}`,
+            premium: !!issue.fixedAt
+        })),
+        ...(selectedBike.modifications || []).map((mod) => ({
+            id: mod._id || `${mod.partName}-${mod.date}`,
+            date: mod.date,
+            title: `Modification: ${mod.partName}`,
+            desc: `${mod.brand} • ₹${(mod.cost || 0).toLocaleString()}`,
+            premium: true
+        })),
+        ...(services || []).map((svc) => ({
+            id: svc._id,
+            date: svc.appointmentDate,
+            title: `Service: ${svc.serviceType}`,
+            desc: `${svc.status.toUpperCase()} • ₹${(svc.cost || 0).toLocaleString()}`,
+            premium: svc.status === "completed" || svc.status === "delivered"
+        }))
+    ]
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 12);
 
     return (
-        <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-racing-blue/10 pt-20">
+        <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-racing-blue/10">
             {/* Header / Hero */}
-            <div className="relative h-[45vh] overflow-hidden border-b border-zinc-100 bg-zinc-50/50">
+            <div className="relative h-[50vh] overflow-hidden border-b border-zinc-100 bg-zinc-50/50">
                 <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent z-10" />
                 <motion.div
                     initial={{ scale: 1.1, opacity: 0 }}
@@ -188,7 +450,7 @@ export function GarageDashboard() {
                 <div className="relative z-20 max-w-[1400px] mx-auto h-full flex flex-col justify-end pb-12 px-8">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                         <div>
-                            <div className="flex items-center gap-3 mb-6">
+                            <div className="flex items-center gap-3 mb-0">
                                 <span className="px-4 py-1 bg-racing-blue text-white text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-racing-blue/20">Primary Asset</span>
                                 <span className="px-4 py-1 bg-white text-emerald-600 border border-emerald-100 shadow-sm text-[9px] font-black uppercase tracking-widest rounded-full">Score: {selectedBike.conditionScore || 100}%</span>
                             </div>
@@ -293,32 +555,58 @@ export function GarageDashboard() {
 
                                 {/* Riding Analytics Preview */}
                                 <div>
-                                    <h3 className="text-[10px] font-black uppercase tracking-widest mb-8 text-gray-400 flex items-center gap-2">
-                                        <MapPin className="w-4 h-4 text-racing-blue" /> Riding Analytics
-                                    </h3>
+                                    <div className="flex items-center justify-between mb-8">
+                                        <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 flex items-center gap-2">
+                                            <MapPin className="w-4 h-4 text-racing-blue" /> Riding Analytics
+                                        </h3>
+                                        <button
+                                            onClick={() => setShowAnalyticsModal(true)}
+                                            className="px-4 py-2 bg-white border border-zinc-200 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-sm"
+                                        >
+                                            <Plus className="w-3.5 h-3.5" /> Add Ride Snapshot
+                                        </button>
+                                    </div>
                                     <div className="p-10 bg-zinc-50 border border-zinc-100 rounded-[2.5rem] grid grid-cols-1 md:grid-cols-3 gap-8">
                                         <div className="space-y-3">
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Last 30 Days</p>
-                                            <p className="text-3xl font-display font-black text-zinc-900">482 <span className="text-xs font-sans text-gray-400">KM</span></p>
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{latestAnalytics?.periodLabel || "Last 30 Days"}</p>
+                                            <p className="text-3xl font-display font-black text-zinc-900">{latestAnalytics?.distanceKm || 0} <span className="text-xs font-sans text-gray-400">KM</span></p>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[9px] font-black text-emerald-600">+12% vs last month</span>
+                                                <span className="text-[9px] font-black text-emerald-600">Recorded {latestAnalytics ? new Date(latestAnalytics.generatedAt).toLocaleDateString() : "manually"}</span>
                                             </div>
                                         </div>
                                         <div className="space-y-3">
                                             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Avg. Efficiency</p>
-                                            <p className="text-3xl font-display font-black text-zinc-900">18.4 <span className="text-xs font-sans text-gray-400">KM/L</span></p>
+                                            <p className="text-3xl font-display font-black text-zinc-900">{latestAnalytics?.efficiencyKmpl || 0} <span className="text-xs font-sans text-gray-400">KM/L</span></p>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[9px] font-black text-amber-600">-2% (Aggressive riding)</span>
+                                                <span className="text-[9px] font-black text-amber-600">Strictly owner-entered ride data</span>
                                             </div>
                                         </div>
                                         <div className="space-y-3">
                                             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Active Hours</p>
-                                            <p className="text-3xl font-display font-black text-zinc-900">12.5 <span className="text-xs font-sans text-gray-400">HRS</span></p>
+                                            <p className="text-3xl font-display font-black text-zinc-900">{latestAnalytics?.activeHours || 0} <span className="text-xs font-sans text-gray-400">HRS</span></p>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[9px] font-black text-gray-400">Weekend Warrior Profile</span>
+                                                <span className="text-[9px] font-black text-gray-400">{(selectedBike.rideAnalytics?.length || 0)} snapshots logged</span>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <button
+                                        onClick={() => setShowStatusModal(true)}
+                                        className="p-6 bg-white border border-zinc-200 rounded-3xl text-left hover:bg-zinc-50 transition-all cursor-pointer"
+                                    >
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Owner Part Updates</p>
+                                        <p className="text-lg font-display font-black text-zinc-900">Update engine, brakes, electrical status</p>
+                                    </button>
+                                    <button
+                                        onClick={() => setShowIssueModal(true)}
+                                        className="p-6 bg-red-200/50 border border-zinc-200 rounded-3xl text-left hover:bg-zinc-50 transition-all cursor-pointer"
+                                    >
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Issue Reporting <span className="text-[14px] font-bold text-gray-700 uppercase tracking-widest">Update here</span></p>
+                                        <p className="text-lg font-display font-black text-zinc-900">Log unusual behavior and track fix status</p>
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Report issues like vibration, noise, or performance degradation</p>
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -367,32 +655,61 @@ export function GarageDashboard() {
 
                         {activeTab === "docs" && (
                             <div className="space-y-8">
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-8">Document Vault & Certification</h3>
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Document Vault & Certification</h3>
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => setShowDiagnosticModal(true)}
+                                            className="px-4 py-2 bg-white border border-zinc-200 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-sm"
+                                        >
+                                            <Plus className="w-3.5 h-3.5" /> Add Diagnostic
+                                        </button>
+                                        <button
+                                            onClick={() => setShowDocModal(true)}
+                                            className="px-4 py-2 bg-white border border-zinc-200 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-sm"
+                                        >
+                                            <Plus className="w-3.5 h-3.5" /> Add Document
+                                        </button>
+                                    </div>
+                                </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {[
-                                        { type: "Registration Certificate (RC)", desc: "Valid until 2029", icon: FileText },
-                                        { type: "Luxury Insurance Policy", desc: "Expires in 42 days", icon: Shield, warning: true },
-                                        { type: "Purchase Invoice", desc: "Verifiable Service History Original", icon: DollarSign },
-                                        { type: "Extended Warranty", desc: "Active Tier 1 Protection", icon: CheckCircle2 },
-                                    ].map((doc) => (
-                                        <div key={doc.type} className={`p-8 bg-zinc-50/50 rounded-3xl border transition-all ${doc.warning ? 'border-amber-200 bg-amber-50/30' : 'border-zinc-100 hover:bg-white hover:shadow-xl hover:shadow-black/5'}`}>
+                                    {(selectedBike.documents || []).map((doc, idx) => {
+                                        const expiringSoon = doc.expiryDate && new Date(doc.expiryDate).getTime() < (Date.now() + 45 * 24 * 60 * 60 * 1000);
+                                        return (
+                                        <div key={doc._id || idx} className={`p-8 bg-zinc-50/50 rounded-3xl border transition-all ${expiringSoon ? 'border-amber-200 bg-amber-50/30' : 'border-zinc-100 hover:bg-white hover:shadow-xl hover:shadow-black/5'}`}>
                                             <div className="flex justify-between items-start mb-8">
-                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${doc.warning ? 'bg-amber-100' : 'bg-zinc-100'}`}>
-                                                    <doc.icon className={`w-6 h-6 ${doc.warning ? 'text-amber-600' : 'text-zinc-600'}`} />
+                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${expiringSoon ? 'bg-amber-100' : 'bg-zinc-100'}`}>
+                                                    <FileText className={`w-6 h-6 ${expiringSoon ? 'text-amber-600' : 'text-zinc-600'}`} />
                                                 </div>
-                                                <button className="p-3 hover:bg-zinc-100 rounded-xl transition-all">
-                                                    <Download className="w-5 h-5 text-gray-400" />
-                                                </button>
+                                                <a href={doc.docUrl} target="_blank" rel="noreferrer" className="p-3 hover:bg-zinc-100 rounded-xl transition-all">
+                                                    <ExternalLink className="w-5 h-5 text-gray-400" />
+                                                </a>
                                             </div>
-                                            <h4 className="text-sm font-black uppercase text-zinc-900 mb-1">{doc.type}</h4>
-                                            <p className={`text-[10px] font-bold uppercase tracking-wider ${doc.warning ? 'text-amber-600' : 'text-gray-400'}`}>{doc.desc}</p>
+                                            <h4 className="text-sm font-black uppercase text-zinc-900 mb-1">{doc.docType}</h4>
+                                            <p className={`text-[10px] font-bold uppercase tracking-wider ${expiringSoon ? 'text-amber-600' : 'text-gray-400'}`}>
+                                                {doc.expiryDate ? `Expires ${new Date(doc.expiryDate).toLocaleDateString()}` : "No expiry"}
+                                            </p>
+                                        </div>
+                                    )})}
+                                </div>
+
+                                {(selectedBike.documents || []).length === 0 && (
+                                    <div className="w-full py-8 bg-zinc-50/50 border-2 border-dashed border-zinc-100 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 text-center">
+                                        No documents yet. Add RC, insurance, warranty, and invoices.
+                                    </div>
+                                )}
+
+                                <div className="space-y-4">
+                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Latest Diagnostics</h4>
+                                    {(selectedBike.diagnosticReports || []).slice(0, 3).map((report, idx) => (
+                                        <div key={report._id || idx} className="p-6 bg-zinc-50 border border-zinc-100 rounded-2xl">
+                                            <p className="text-sm font-black uppercase text-zinc-900">{report.title}</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mt-1">{new Date(report.generatedAt).toLocaleString()}</p>
+                                            <p className="text-xs text-zinc-600 mt-3">{report.summary}</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-racing-blue mt-3">Health Score: {report.healthScore}%</p>
                                         </div>
                                     ))}
                                 </div>
-
-                                <button className="w-full py-8 bg-zinc-50/50 border-2 border-dashed border-zinc-100 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:bg-white hover:border-racing-blue/30 hover:text-racing-blue transition-all">
-                                    + Add New Document to Vault
-                                </button>
                             </div>
                         )}
 
@@ -402,18 +719,38 @@ export function GarageDashboard() {
                                 <div className="relative space-y-12">
                                     <div className="absolute left-0 top-2 bottom-2 w-px bg-zinc-100" />
 
-                                    {[
-                                        { date: "Oct 24, 2025", title: "Ceramic Coating Applied", desc: "9H Protection layer by Showroom Detailers", icon: Zap, premium: true },
-                                        { date: "Aug 12, 2025", title: "1st Periodic Service", desc: "Oil change, chain adjustment, software sync", icon: CheckCircle2 },
-                                        { date: "Jun 02, 2025", title: "Asset Delivery", desc: "Brought home from Yamaha Blue Square", icon: ImageIcon, premium: true },
-                                    ].map((event, idx) => (
-                                        <div key={idx} className="relative pl-12 group">
+                                    {timelineEvents.length === 0 && (
+                                        <div className="p-8 bg-zinc-50 border border-zinc-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                            No timeline events yet. Add modifications, issues, or service updates.
+                                        </div>
+                                    )}
+                                    {timelineEvents.map((event, idx) => (
+                                        <div key={event.id || idx} className="relative pl-12 group">
                                             <div className={`absolute left-[-6px] top-2 w-3 h-3 rounded-full border-4 border-white transition-all group-hover:scale-125 ${event.premium ? 'bg-racing-blue shadow-[0_0_15px_rgba(0,149,255,0.4)]' : 'bg-zinc-300'}`} />
                                             <div>
-                                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">{event.date}</p>
+                                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">{new Date(event.date).toLocaleString()}</p>
                                                 <h4 className={`text-base font-black uppercase mb-1 ${event.premium ? 'text-racing-blue' : 'text-zinc-900'}`}>{event.title}</h4>
                                                 <p className="text-xs font-medium text-gray-500 leading-relaxed max-w-sm">{event.desc}</p>
                                             </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="space-y-4">
+                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Issue Tracker</h4>
+                                    {(selectedBike.issueReports || []).slice(0, 6).map((issue) => (
+                                        <div key={issue._id || `${issue.title}-${issue.observedAt}`} className="p-5 bg-zinc-50 border border-zinc-100 rounded-2xl flex items-center justify-between gap-4">
+                                            <div>
+                                                <p className="text-sm font-black uppercase text-zinc-900">{issue.title}</p>
+                                                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{issue.system} • {issue.severity.toUpperCase()} • {issue.status.replace("_", " ").toUpperCase()}</p>
+                                            </div>
+                                            {issue._id && issue.status !== "fixed" && (
+                                                <button
+                                                    onClick={() => handleUpdateIssueStatus(issue._id!, "fixed")}
+                                                    className="px-3 py-2 bg-racing-blue text-white text-[9px] font-black uppercase tracking-widest rounded-lg"
+                                                >
+                                                    Mark Fixed
+                                                </button>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -435,11 +772,11 @@ export function GarageDashboard() {
                             <div className="space-y-4">
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
                                     <span className="text-gray-400">Purchase Value</span>
-                                    <span className="text-zinc-600">₹5.4L</span>
+                                    <span className="text-zinc-600">{purchaseValue > 0 ? formatInrCompact(purchaseValue) : "Not Available"}</span>
                                 </div>
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
                                     <span className="text-gray-400">Mods Cost</span>
-                                    <span className="text-zinc-600">₹{(selectedBike.modifications?.reduce((acc, m) => acc + (m.cost || 0), 0) || 0).toLocaleString()}</span>
+                                    <span className="text-zinc-600">₹{modsCost.toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>
@@ -554,6 +891,183 @@ export function GarageDashboard() {
                     </div>
                 )}
 
+                {showStatusModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowStatusModal(false)} className="absolute inset-0 bg-zinc-900/60 backdrop-blur-md" />
+                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10">
+                            <h2 className="text-3xl font-display font-black uppercase mb-8 text-zinc-900">Update Part Condition</h2>
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-6">Select bike part and current condition observed by owner.</p>
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Bike part / entity</label>
+                                    <input className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={partStatusForm.part} onChange={(e) => setPartStatusForm({ ...partStatusForm, part: e.target.value.toLowerCase() })} placeholder="Example: engine, brakes, clutch, chain, battery" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Current condition status</label>
+                                    <select className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={partStatusForm.status} onChange={(e) => setPartStatusForm({ ...partStatusForm, status: e.target.value as "healthy" | "watch" | "critical" | "fixed" })}>
+                                    <option value="healthy">Healthy</option>
+                                    <option value="watch">Watch</option>
+                                    <option value="critical">Critical</option>
+                                    <option value="fixed">Fixed</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Observation note</label>
+                                    <textarea className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={partStatusForm.note} onChange={(e) => setPartStatusForm({ ...partStatusForm, note: e.target.value })} placeholder="Example: slight knocking sound during cold start between 2k-3k RPM" />
+                                </div>
+                                <button onClick={handleUpdatePartStatus} className="w-full py-5 bg-racing-blue text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl">Save Part Status</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {showIssueModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowIssueModal(false)} className="absolute inset-0 bg-zinc-900/60 backdrop-blur-md" />
+                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10">
+                            <h2 className="text-3xl font-display font-black uppercase mb-8 text-zinc-900">Report New Issue</h2>
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-6">Choose issue from dropdowns. System auto-generates probable cause and recommended Yamaha fix.</p>
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Issue title (optional)</label>
+                                    <input className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={issueForm.title} onChange={(e) => setIssueForm({ ...issueForm, title: e.target.value })} placeholder="Example: engine knocking after long ride" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Bike system</label>
+                                    <select
+                                    className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none"
+                                    value={issueForm.system}
+                                    onChange={(e) => {
+                                        const nextSystem = e.target.value;
+                                        const nextProblem = PROBLEM_LIBRARY[nextSystem]?.[0]?.label || "";
+                                        setIssueForm({ ...issueForm, system: nextSystem, problem: nextProblem });
+                                    }}
+                                >
+                                    <option value="engine">Engine</option>
+                                    <option value="brakes">Brakes</option>
+                                    <option value="electrical">Electrical</option>
+                                    <option value="connectivity">Connectivity</option>
+                                </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Observed problem</label>
+                                    <select
+                                    className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none"
+                                    value={issueForm.problem}
+                                    onChange={(e) => setIssueForm({ ...issueForm, problem: e.target.value })}
+                                >
+                                    {(PROBLEM_LIBRARY[issueForm.system] || []).map((problem) => (
+                                        <option key={problem.label} value={problem.label}>{problem.label}</option>
+                                    ))}
+                                </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Severity level</label>
+                                    <select className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={issueForm.severity} onChange={(e) => setIssueForm({ ...issueForm, severity: e.target.value as "low" | "medium" | "high" })}>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Owner note (optional)</label>
+                                    <textarea className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={issueForm.note} onChange={(e) => setIssueForm({ ...issueForm, note: e.target.value })} placeholder="Example: issue appears after 25-30 minutes of city traffic" />
+                                </div>
+                                <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Auto Generated Issue Details</p>
+                                    <p className="text-xs text-zinc-700"><strong>Probable cause:</strong> {selectedProblemDetail?.probableCause || "N/A"}</p>
+                                    <p className="text-xs text-zinc-700 mt-1"><strong>Recommended fix:</strong> {selectedProblemDetail?.recommendedFix || "N/A"}</p>
+                                    <p className="text-xs text-racing-blue mt-2"><strong>Nearest Yamaha service:</strong> {serviceCenter.serviceAddress} ({serviceCenter.servicePhone})</p>
+                                </div>
+                                <button onClick={handleAddIssue} className="w-full py-5 bg-racing-blue text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl">Submit Issue</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {showDiagnosticModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowDiagnosticModal(false)} className="absolute inset-0 bg-zinc-900/60 backdrop-blur-md" />
+                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10">
+                            <h2 className="text-3xl font-display font-black uppercase mb-8 text-zinc-900">Add Diagnostic Report</h2>
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-6">Use after workshop checkup or self-diagnostic scan.</p>
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Report title</label>
+                                    <input className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={diagnosticForm.title} onChange={(e) => setDiagnosticForm({ ...diagnosticForm, title: e.target.value })} placeholder="Example: 10,000 KM major service inspection" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Diagnostic summary</label>
+                                    <textarea className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={diagnosticForm.summary} onChange={(e) => setDiagnosticForm({ ...diagnosticForm, summary: e.target.value })} placeholder="Example: chain replaced, brake pads at 60%, ECU scan clean" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Overall health score (0-100)</label>
+                                    <input type="number" min={0} max={100} className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={diagnosticForm.healthScore} onChange={(e) => setDiagnosticForm({ ...diagnosticForm, healthScore: Number(e.target.value) })} placeholder="Example: 87" />
+                                </div>
+                                <button onClick={handleAddDiagnostic} className="w-full py-5 bg-racing-blue text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl">Save Diagnostic</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {showAnalyticsModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowAnalyticsModal(false)} className="absolute inset-0 bg-zinc-900/60 backdrop-blur-md" />
+                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10">
+                            <h2 className="text-3xl font-display font-black uppercase mb-8 text-zinc-900">Add Ride Analytics</h2>
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-6">Enter measured values for the selected ride period. Use odometer/trip meter data for accuracy.</p>
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Period label</label>
+                                    <input className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={analyticsForm.periodLabel} onChange={(e) => setAnalyticsForm({ ...analyticsForm, periodLabel: e.target.value })} placeholder="Example: Last 30 days / April week 2 / Weekend trip" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total distance ridden (KM)</label>
+                                    <input type="number" className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={analyticsForm.distanceKm} onChange={(e) => setAnalyticsForm({ ...analyticsForm, distanceKm: Number(e.target.value) })} placeholder="Example: 482" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Average efficiency (KM/L)</label>
+                                    <input type="number" className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={analyticsForm.efficiencyKmpl} onChange={(e) => setAnalyticsForm({ ...analyticsForm, efficiencyKmpl: Number(e.target.value) })} placeholder="Example: 18.4" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Engine-on riding time (hours)</label>
+                                    <input type="number" className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={analyticsForm.activeHours} onChange={(e) => setAnalyticsForm({ ...analyticsForm, activeHours: Number(e.target.value) })} placeholder="Example: 12.5" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Current odometer reading (KM)</label>
+                                    <input type="number" className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={analyticsForm.odometerKm} onChange={(e) => setAnalyticsForm({ ...analyticsForm, odometerKm: Number(e.target.value) })} placeholder="Example: 15420 (this updates top odometer log)" />
+                                </div>
+                                <button onClick={handleAddAnalytics} className="w-full py-5 bg-racing-blue text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl">Save Ride Analytics</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {showDocModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowDocModal(false)} className="absolute inset-0 bg-zinc-900/60 backdrop-blur-md" />
+                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10">
+                            <h2 className="text-3xl font-display font-black uppercase mb-8 text-zinc-900">Add Document</h2>
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-6">Attach important bike ownership documents for your vault.</p>
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Document type</label>
+                                    <input className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={docForm.docType} onChange={(e) => setDocForm({ ...docForm, docType: e.target.value })} placeholder="Example: Registration Certificate, Insurance, Invoice, Warranty" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Document link / URL</label>
+                                    <input className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={docForm.docUrl} onChange={(e) => setDocForm({ ...docForm, docUrl: e.target.value })} placeholder="Example: https://drive.google.com/... or uploaded file URL" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Expiry date (optional)</label>
+                                    <input type="date" className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={docForm.expiryDate} onChange={(e) => setDocForm({ ...docForm, expiryDate: e.target.value })} />
+                                </div>
+                                <button onClick={handleAddDocument} className="w-full py-5 bg-racing-blue text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl">Save Document</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
                 {isManaging && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
                         <motion.div
@@ -570,6 +1084,11 @@ export function GarageDashboard() {
                             className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 overflow-hidden shadow-2xl shadow-black/10"
                         >
                             <h2 className="text-3xl font-display font-black uppercase mb-10 text-zinc-900">Manage Machine Identity</h2>
+                            {selectedBike.identitySource === "sale_ledger" && (
+                                <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2 mb-6 inline-block">
+                                    Auto-synced from Sales Ledger
+                                </p>
+                            )}
                             <div className="space-y-8">
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Registration Number</label>

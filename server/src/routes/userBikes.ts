@@ -9,11 +9,75 @@ import Customer from '../models/Customer';
 
 const router = Router();
 
+const defaultPartStatuses = () => ([
+    { part: 'engine', status: 'healthy', note: 'No unusual noise', updatedAt: new Date() },
+    { part: 'brakes', status: 'healthy', note: 'Brake bite stable', updatedAt: new Date() },
+    { part: 'electrical', status: 'healthy', note: 'All lights and sensors working', updatedAt: new Date() },
+    { part: 'connectivity', status: 'watch', note: 'Intermittent app reconnect', updatedAt: new Date() }
+]);
+
+const ensureDynamicDefaults = (bike: any) => {
+    if (!Array.isArray(bike.partStatuses) || bike.partStatuses.length === 0) {
+        bike.partStatuses = defaultPartStatuses();
+    }
+    if (!Array.isArray(bike.issueReports)) {
+        bike.issueReports = [];
+    }
+    if (!Array.isArray(bike.diagnosticReports) || bike.diagnosticReports.length === 0) {
+        bike.diagnosticReports = [{
+            title: 'Baseline Health Scan',
+            summary: 'Initial automated health baseline. Update this after every major service.',
+            healthScore: bike.conditionScore || 100,
+            generatedAt: new Date()
+        }];
+    }
+    if (!Array.isArray(bike.rideAnalytics) || bike.rideAnalytics.length === 0) {
+        bike.rideAnalytics = [{
+            periodLabel: 'Last 30 Days',
+            distanceKm: 0,
+            efficiencyKmpl: 0,
+            activeHours: 0,
+            generatedAt: new Date()
+        }];
+    }
+};
+
+const parseSalePrice = (rawPrice: string | number | undefined) => {
+    if (typeof rawPrice === 'number') return rawPrice;
+    if (!rawPrice) return 0;
+    const parsed = Number(String(rawPrice).replace(/[^0-9.]/g, ''));
+    return Number.isFinite(parsed) ? parsed : 0;
+};
+
 // @desc    Get all bikes for the logged-in user
 // @route   GET /api/user-bikes
 router.get('/', protect, async (req: any, res) => {
     try {
         const bikes = await UserBike.find({ userId: req.user._id }).sort({ createdAt: -1 });
+        await Promise.all(bikes.map(async (bike: any) => {
+            ensureDynamicDefaults(bike);
+            const sale = await Sale.findOne({
+                $or: [
+                    ...(bike.chassisNumber ? [{ chassisNumber: bike.chassisNumber }] : []),
+                    ...(bike.registrationNumber ? [{ registrationNumber: bike.registrationNumber }] : [])
+                ]
+            }).sort({ createdAt: -1 });
+
+            if (sale) {
+                if ((!bike.salePrice || bike.salePrice <= 0) && sale.salePrice) {
+                    bike.salePrice = parseSalePrice(sale.salePrice);
+                }
+                if (!bike.chassisNumber && sale.chassisNumber) {
+                    bike.chassisNumber = sale.chassisNumber;
+                    bike.identitySource = 'sale_ledger';
+                }
+                if (!bike.registrationNumber && sale.registrationNumber) {
+                    bike.registrationNumber = sale.registrationNumber;
+                    bike.identitySource = 'sale_ledger';
+                }
+            }
+            await bike.save();
+        }));
         res.json({ success: true, data: bikes });
     } catch (error: any) {
         console.error("Error in GET /api/user-bikes:", error);
@@ -44,11 +108,23 @@ router.post('/', protect, async (req: any, res) => {
         // Inherit registration from Sale if available
         let finalReg = registrationNumber;
         let regVerified = false;
+        let finalSalePrice = 0;
+        let identitySource: 'owner' | 'sale_ledger' = 'owner';
         if (chassisNumber) {
             const sale = await Sale.findOne({ chassisNumber });
             if (sale && sale.registrationNumber) {
                 finalReg = sale.registrationNumber;
                 regVerified = sale.registrationVerified || false;
+                identitySource = 'sale_ledger';
+            }
+            if (sale?.salePrice) {
+                finalSalePrice = parseSalePrice(sale.salePrice);
+            }
+        }
+        if (!finalSalePrice && registrationNumber) {
+            const saleByReg = await Sale.findOne({ registrationNumber }).sort({ createdAt: -1 });
+            if (saleByReg?.salePrice) {
+                finalSalePrice = parseSalePrice(saleByReg.salePrice);
             }
         }
 
@@ -60,12 +136,28 @@ router.post('/', protect, async (req: any, res) => {
             registrationNumber: finalReg,
             registrationVerified: regVerified,
             chassisNumber,
+            identitySource,
+            salePrice: finalSalePrice || undefined,
             purchaseDate,
             lastServiceDate,
             nextServiceDate: nextDate,
             nextServiceKm: nextKm,
             mileage,
-            serviceCount
+            serviceCount,
+            partStatuses: defaultPartStatuses(),
+            diagnosticReports: [{
+                title: 'Baseline Health Scan',
+                summary: 'Initial automated health baseline. Update this after every major service.',
+                healthScore: 100,
+                generatedAt: new Date()
+            }],
+            rideAnalytics: [{
+                periodLabel: 'Last 30 Days',
+                distanceKm: 0,
+                efficiencyKmpl: 0,
+                activeHours: 0,
+                generatedAt: new Date()
+            }]
         });
 
         await newBike.save();
@@ -234,6 +326,164 @@ router.post('/:id/modifications', protect, async (req: any, res) => {
     }
 });
 
+// @desc    Upsert status for a bike part (owner observation)
+// @route   PATCH /api/user-bikes/:id/part-status
+router.patch('/:id/part-status', protect, async (req: any, res) => {
+    try {
+        const { part, status, note } = req.body;
+        const bike: any = await UserBike.findOne({ _id: req.params.id, userId: req.user._id });
+        if (!bike) {
+            return res.status(404).json({ success: false, message: 'Bike not found' });
+        }
+        if (!part || !status) {
+            return res.status(400).json({ success: false, message: 'part and status are required' });
+        }
+
+        ensureDynamicDefaults(bike);
+
+        const existing = bike.partStatuses.find((item: any) => item.part.toLowerCase() === String(part).toLowerCase());
+        if (existing) {
+            existing.status = status;
+            existing.note = note || existing.note;
+            existing.updatedAt = new Date();
+        } else {
+            bike.partStatuses.push({ part, status, note, updatedAt: new Date() });
+        }
+
+        await bike.save();
+        res.json({ success: true, data: bike });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// @desc    Add bike issue report (noticed by owner)
+// @route   POST /api/user-bikes/:id/issues
+router.post('/:id/issues', protect, async (req: any, res) => {
+    try {
+        const { title, system, severity = 'medium', note } = req.body;
+        const bike: any = await UserBike.findOne({ _id: req.params.id, userId: req.user._id });
+        if (!bike) {
+            return res.status(404).json({ success: false, message: 'Bike not found' });
+        }
+        if (!title || !system) {
+            return res.status(400).json({ success: false, message: 'title and system are required' });
+        }
+
+        ensureDynamicDefaults(bike);
+        bike.issueReports.unshift({
+            title,
+            system,
+            severity,
+            status: 'open',
+            observedAt: new Date(),
+            note
+        });
+        await bike.save();
+        res.json({ success: true, data: bike });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// @desc    Update issue status after repair/inspection
+// @route   PATCH /api/user-bikes/:id/issues/:issueId
+router.patch('/:id/issues/:issueId', protect, async (req: any, res) => {
+    try {
+        const { status, note } = req.body;
+        const bike: any = await UserBike.findOne({ _id: req.params.id, userId: req.user._id });
+        if (!bike) {
+            return res.status(404).json({ success: false, message: 'Bike not found' });
+        }
+
+        ensureDynamicDefaults(bike);
+        const issue = bike.issueReports.id(req.params.issueId);
+        if (!issue) {
+            return res.status(404).json({ success: false, message: 'Issue not found' });
+        }
+
+        issue.status = status || issue.status;
+        issue.note = note || issue.note;
+        if (status === 'fixed') {
+            issue.fixedAt = new Date();
+        }
+        await bike.save();
+        res.json({ success: true, data: bike });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// @desc    Add diagnostic report
+// @route   POST /api/user-bikes/:id/diagnostics
+router.post('/:id/diagnostics', protect, async (req: any, res) => {
+    try {
+        const { title, summary, healthScore } = req.body;
+        const bike: any = await UserBike.findOne({ _id: req.params.id, userId: req.user._id });
+        if (!bike) {
+            return res.status(404).json({ success: false, message: 'Bike not found' });
+        }
+        if (!title || !summary) {
+            return res.status(400).json({ success: false, message: 'title and summary are required' });
+        }
+
+        ensureDynamicDefaults(bike);
+        bike.diagnosticReports.unshift({
+            title,
+            summary,
+            healthScore: typeof healthScore === 'number' ? healthScore : bike.conditionScore || 100,
+            generatedAt: new Date()
+        });
+        if (typeof healthScore === 'number') {
+            bike.conditionScore = Math.max(0, Math.min(100, healthScore));
+        }
+        await bike.save();
+        res.json({ success: true, data: bike });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// @desc    Add riding analytics snapshot
+// @route   POST /api/user-bikes/:id/ride-analytics
+router.post('/:id/ride-analytics', protect, async (req: any, res) => {
+    try {
+        const { periodLabel = 'Last 30 Days', distanceKm, efficiencyKmpl, activeHours, odometerKm } = req.body;
+        const bike: any = await UserBike.findOne({ _id: req.params.id, userId: req.user._id });
+        if (!bike) {
+            return res.status(404).json({ success: false, message: 'Bike not found' });
+        }
+
+        const parsedDistance = Number(distanceKm) || 0;
+        const parsedOdometer = Number(odometerKm) || 0;
+
+        ensureDynamicDefaults(bike);
+        bike.rideAnalytics.unshift({
+            periodLabel,
+            distanceKm: parsedDistance,
+            efficiencyKmpl: Number(efficiencyKmpl) || 0,
+            activeHours: Number(activeHours) || 0,
+            generatedAt: new Date()
+        });
+        bike.rideAnalytics = bike.rideAnalytics.slice(0, 12);
+
+        // Keep odometer and analytics consistent.
+        if (parsedOdometer > 0) {
+            bike.mileage = parsedOdometer;
+            bike.lastMileage = parsedOdometer;
+        } else if ((!bike.mileage || bike.mileage === 0) && parsedDistance > 0) {
+            // Backward compatible fallback for old forms that don't send odometer yet.
+            bike.mileage = parsedDistance;
+            bike.lastMileage = parsedDistance;
+        }
+
+        await bike.save();
+        res.json({ success: true, data: bike });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // @desc    Add document
 // @route   POST /api/user-bikes/:id/documents
 router.post('/:id/documents', protect, async (req: any, res) => {
@@ -276,11 +526,10 @@ router.post('/connect-lookup', protect, async (req: any, res) => {
         }
 
         if (registrationNumber) {
-            serviceFound = await Service.findOne({ regNumber: registrationNumber }).sort({ createdAt: -1 });
             if (!saleFound) {
-                // Try finding sale by reg number if we had it there (Sale doesn't have it, but maybe we can link via customer?)
-                // Sale doesn't have regNumber, but it has chassisNumber.
+                saleFound = await Sale.findOne({ registrationNumber }).sort({ createdAt: -1 });
             }
+            serviceFound = await Service.findOne({ regNumber: registrationNumber }).sort({ createdAt: -1 });
         }
 
         // Return found details

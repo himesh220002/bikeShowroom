@@ -41,10 +41,13 @@ export function NotificationBell() {
         if (!user) return;
 
         fetchNotifications();
+        let hasReportedConnectionError = false;
 
         const socket = io(API_BASE_URL, {
             withCredentials: true,
-            transports: ['websocket', 'polling']
+            transports: ['polling', 'websocket'],
+            timeout: 8000,
+            reconnectionAttempts: 5
         } as any);
 
         socket.on("connect", () => {
@@ -57,7 +60,10 @@ export function NotificationBell() {
         });
 
         socket.on("connect_error", (err: Error) => {
-            console.error("Socket.io connection error:", err.message);
+            if (!hasReportedConnectionError) {
+                console.warn("Realtime notifications unavailable, using API refresh only.");
+                hasReportedConnectionError = true;
+            }
         });
 
         socket.on("new_notification", (notification: Notification) => {

@@ -39,6 +39,7 @@ export default function ProfilePage() {
         bikeId: "",
         bikeModel: "",
         registrationNumber: "",
+        chassisNumber: "",
         purchaseDate: "",
         lastServiceDate: "",
         mileage: "",
@@ -161,6 +162,7 @@ export default function ProfilePage() {
                         bikeId: data.data.bikeId || "",
                         bikeModel: data.data.bikeId ? "" : data.data.bikeModel,
                         registrationNumber: data.data.registrationNumber,
+                        chassisNumber: data.data.chassisNumber || lookupIdentity.chassisNumber || "",
                         purchaseDate: data.data.purchaseDate ? new Date(data.data.purchaseDate).toISOString().split('T')[0] : "",
                         lastServiceDate: data.data.lastServiceDate ? new Date(data.data.lastServiceDate).toISOString().split('T')[0] : "",
                         serviceCount: data.data.serviceCount.toString()
@@ -187,6 +189,7 @@ export default function ProfilePage() {
                     bikeId: "",
                     bikeModel: "",
                     registrationNumber: "",
+                    chassisNumber: "",
                     purchaseDate: "",
                     lastServiceDate: "",
                     mileage: "",
@@ -501,6 +504,19 @@ export default function ProfilePage() {
                                                             placeholder="e.g. BR 01 AB 1234 or 'New Bike'"
                                                             value={formData.registrationNumber}
                                                             onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <div className="flex justify-between items-center ml-1">
+                                                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Chassis Number</label>
+                                                            <span className="text-[8px] font-black text-racing-blue/60 uppercase tracking-widest bg-racing-blue/5 px-2 py-0.5 rounded-full">Recommended</span>
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all uppercase"
+                                                            placeholder="e.g. ME1..."
+                                                            value={formData.chassisNumber}
+                                                            onChange={(e) => setFormData({ ...formData, chassisNumber: e.target.value.toUpperCase() })}
                                                         />
                                                     </div>
                                                     <div className="space-y-2">

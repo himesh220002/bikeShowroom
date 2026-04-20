@@ -21,6 +21,38 @@ export interface IConsumables {
     coolant: number;
 }
 
+export interface IPartStatus {
+    part: string;
+    status: 'healthy' | 'watch' | 'critical' | 'fixed';
+    note?: string;
+    updatedAt: Date;
+}
+
+export interface IIssueReport {
+    title: string;
+    system: string;
+    severity: 'low' | 'medium' | 'high';
+    status: 'open' | 'in_progress' | 'fixed';
+    observedAt: Date;
+    fixedAt?: Date;
+    note?: string;
+}
+
+export interface IDiagnosticReport {
+    title: string;
+    summary: string;
+    healthScore: number;
+    generatedAt: Date;
+}
+
+export interface IRideAnalytics {
+    periodLabel: string;
+    distanceKm: number;
+    efficiencyKmpl: number;
+    activeHours: number;
+    generatedAt: Date;
+}
+
 export interface IUserBike extends Document {
     userId: mongoose.Types.ObjectId;
     bikeId?: mongoose.Types.ObjectId;
@@ -29,6 +61,8 @@ export interface IUserBike extends Document {
     registrationNumber: string;
     registrationVerified?: boolean;
     chassisNumber?: string;
+    identitySource?: 'owner' | 'sale_ledger';
+    salePrice?: number;
     purchaseDate: Date;
     lastServiceDate: Date;
     nextServiceDate: Date;
@@ -40,6 +74,10 @@ export interface IUserBike extends Document {
     documents: IDocument[];
     consumables: IConsumables;
     conditionScore: number;
+    partStatuses: IPartStatus[];
+    issueReports: IIssueReport[];
+    diagnosticReports: IDiagnosticReport[];
+    rideAnalytics: IRideAnalytics[];
     insuranceExpiry?: Date;
     createdAt: Date;
 }
@@ -52,6 +90,8 @@ const UserBikeSchema: Schema = new Schema({
     registrationNumber: { type: String },
     registrationVerified: { type: Boolean, default: false },
     chassisNumber: { type: String },
+    identitySource: { type: String, enum: ['owner', 'sale_ledger'], default: 'owner' },
+    salePrice: { type: Number },
     purchaseDate: { type: Date, required: true },
     lastServiceDate: { type: Date },
     nextServiceDate: { type: Date },
@@ -78,6 +118,34 @@ const UserBikeSchema: Schema = new Schema({
         coolant: { type: Number, default: 100 }
     },
     conditionScore: { type: Number, default: 100 },
+    partStatuses: [{
+        part: { type: String, required: true },
+        status: { type: String, enum: ['healthy', 'watch', 'critical', 'fixed'], required: true },
+        note: { type: String },
+        updatedAt: { type: Date, default: Date.now }
+    }],
+    issueReports: [{
+        title: { type: String, required: true },
+        system: { type: String, required: true },
+        severity: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' },
+        status: { type: String, enum: ['open', 'in_progress', 'fixed'], default: 'open' },
+        observedAt: { type: Date, default: Date.now },
+        fixedAt: { type: Date },
+        note: { type: String }
+    }],
+    diagnosticReports: [{
+        title: { type: String, required: true },
+        summary: { type: String, required: true },
+        healthScore: { type: Number, min: 0, max: 100, default: 100 },
+        generatedAt: { type: Date, default: Date.now }
+    }],
+    rideAnalytics: [{
+        periodLabel: { type: String, required: true },
+        distanceKm: { type: Number, default: 0 },
+        efficiencyKmpl: { type: Number, default: 0 },
+        activeHours: { type: Number, default: 0 },
+        generatedAt: { type: Date, default: Date.now }
+    }],
     insuranceExpiry: { type: Date },
     createdAt: { type: Date, default: Date.now },
 });

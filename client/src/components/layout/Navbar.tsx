@@ -12,6 +12,7 @@ import { LogIn, User as UserIcon, LogOut, ChevronDown } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { NotificationBell } from "@/components/features/NotificationBell";
 import { useConfig } from "@/components/providers/ConfigProvider";
+import { Compass, Warehouse, Bike, Wrench, MessageCircle } from "lucide-react";
 
 export function Navbar() {
     const pathname = usePathname();
@@ -30,11 +31,11 @@ export function Navbar() {
     }, []);
 
     const navLinks = [
-        { name: "Explore", href: "/#explore" },
-        { name: "My Garage", href: "/garage" },
-        { name: "Products", href: "/products" },
-        { name: "Service & Spares", href: "/service" },
-        { name: "Inquiry", href: "/#inquiry" },
+        { name: "Explore", href: "/#explore", icon: Compass },
+        { name: "My Garage", href: "/garage", icon: Warehouse },
+        { name: "Products", href: "/products", icon: Bike },
+        { name: "Service & Spares", href: "/service", icon: Wrench },
+        { name: "Inquiry", href: "/#inquiry", icon: MessageCircle },
     ];
 
     return (
@@ -174,16 +175,29 @@ export function Navbar() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="2xl:hidden absolute top-full left-0 w-full bg-background/95 backdrop-blur-2xl border-t border-border shadow-2xl"
+                        className="2xl:hidden fixed inset-0 min-h-screen bg-background shadow-2xl"
                     >
-                        <div className="p-8 space-y-6">
-                            <div className="flex items-center justify-between pb-4 border-b border-border">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Interface theme / NOTIFICATIONS</span>
-                                <div className="flex items-center gap-4">
-                                    <ThemeToggle />
-                                    {user && <NotificationBell />}
+                        <div className="h-screen flex flex-col">
+                            <div className="px-6 pt-6 pb-4 border-b border-border bg-background">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Menu</span>
+                                    <button
+                                        onClick={() => setIsOpen(false)}
+                                        aria-label="Close mobile menu"
+                                        className="p-2.5 rounded-xl bg-muted border border-border text-foreground hover:text-racing-blue transition-colors"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+                                <div className="flex items-center justify-between pt-4">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Interface theme / Notifications</span>
+                                    <div className="flex items-center gap-4">
+                                        <ThemeToggle />
+                                        {user && <NotificationBell />}
+                                    </div>
                                 </div>
                             </div>
+                            <div className="flex-1 overflow-y-auto px-6 py-4">
                             {navLinks.map((link, idx) => (
                                 <motion.div
                                     key={link.name}
@@ -194,13 +208,17 @@ export function Navbar() {
                                     <Link
                                         href={link.href}
                                         onClick={() => setIsOpen(false)}
-                                        className="block text-xl font-display font-black text-foreground uppercase tracking-tight py-3 border-b border-border"
+                                        className="flex items-center justify-between text-xl font-display font-black text-foreground uppercase tracking-tight py-4 border-b border-border group"
                                     >
-                                        {link.name}
+                                        <span className="flex items-center gap-3">
+                                            <link.icon className="w-5 h-5 text-racing-blue" />
+                                            {link.name}
+                                        </span>
+                                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
                                     </Link>
                                 </motion.div>
                             ))}
-                            <div className="pt-4 space-y-4">
+                            <div className="pt-6 pb-10 space-y-4">
                                 {authLoading ? (
                                     <div className="h-14 bg-muted rounded-3xl animate-pulse" />
                                 ) : user ? (
@@ -261,6 +279,7 @@ export function Navbar() {
                                 >
                                     Contact Dealer: {config.showroomPhone}
                                 </Link>
+                            </div>
                             </div>
                         </div>
                     </motion.div>
