@@ -13,7 +13,9 @@ interface CustomerCRM {
     address?: string;
     preferredContact?: string;
     lifetimeValue?: number;
-    feedbackScore?: number;
+    rating?: number;
+    engagement?: number;
+    milestone?: string;
 }
 
 interface CustomerEditModalProps {
@@ -29,7 +31,9 @@ export function CustomerEditModal({ customer, isOpen, onClose, onUpdate }: Custo
         address: customer.address || "",
         preferredContact: customer.preferredContact || "Phone",
         lifetimeValue: customer.lifetimeValue || 0,
-        feedbackScore: customer.feedbackScore || 0
+        rating: customer.rating || 0,
+        engagement: customer.engagement || 0,
+        milestone: customer.milestone || "New Customer"
     });
 
     if (!isOpen) return null;
@@ -121,20 +125,43 @@ export function CustomerEditModal({ customer, isOpen, onClose, onUpdate }: Custo
                         </div>
                     </div>
 
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Engagement Score (%)</label>
+                            <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                value={formData.engagement}
+                                onChange={(e) => setFormData({ ...formData, engagement: parseInt(e.target.value) })}
+                                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-xs font-bold text-foreground outline-none focus:border-racing-blue/30 transition-all font-mono"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Current Milestone</label>
+                            <input
+                                type="text"
+                                value={formData.milestone}
+                                onChange={(e) => setFormData({ ...formData, milestone: e.target.value })}
+                                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-xs font-bold text-foreground outline-none focus:border-racing-blue/30 transition-all uppercase"
+                            />
+                        </div>
+                    </div>
+
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Customer Satisfaction Score</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Intelligence Rating</label>
                         <div className="flex justify-between items-center bg-muted/20 p-4 rounded-2xl border border-border/50">
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <button
                                     key={star}
                                     type="button"
-                                    onClick={() => setFormData({ ...formData, feedbackScore: star })}
+                                    onClick={() => setFormData({ ...formData, rating: star })}
                                     className="p-1 transition-transform hover:scale-125"
                                 >
                                     <Star
                                         className={cn(
                                             "w-8 h-8 transition-colors",
-                                            star <= formData.feedbackScore ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30"
+                                            star <= formData.rating ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30"
                                         )}
                                     />
                                 </button>

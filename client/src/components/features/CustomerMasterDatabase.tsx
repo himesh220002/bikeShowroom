@@ -12,6 +12,11 @@ interface CustomerMasterData {
     email?: string;
     avatar?: string;
     address?: string;
+    preferredContact?: string;
+    lifetimeValue?: number;
+    rating?: number;
+    engagement?: number;
+    milestone?: string;
     regNumber: string;
     chassisNumber: string;
     engineNumber: string;
@@ -21,6 +26,12 @@ interface CustomerMasterData {
         salePrice: string;
         saleDate: string;
         invoiceNumber?: string;
+        paymentMethod?: string;
+        financeProvider?: string;
+        salesperson?: string;
+        chassisNumber?: string;
+        registrationNumber?: string;
+        engineNumber?: string;
     } | null;
     userBikes: {
         model: string;
@@ -68,8 +79,11 @@ export function CustomerMasterDatabase({ data }: { data: CustomerMasterData[] })
         }
 
         filtered.sort((a, b) => {
-            const aVal = (a as any)[sortConfig.key] || "";
-            const bVal = (b as any)[sortConfig.key] || "";
+            const getVal = (obj: any, path: string) => {
+                return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+            };
+            const aVal = getVal(a, sortConfig.key as string) || "";
+            const bVal = getVal(b, sortConfig.key as string) || "";
             if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
             if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
             return 0;
@@ -97,95 +111,134 @@ export function CustomerMasterDatabase({ data }: { data: CustomerMasterData[] })
             </div>
 
             <div className="overflow-x-auto rounded-3xl border border-white/5 bg-white">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full text-left border-collapse min-w-[2500px] table-fixed">
                     <thead>
-                        <tr className="border-b border-white/5 bg-zinc-900/50">
+                        <tr className="border-b border-zinc-100 bg-zinc-50">
                             {[
-                                { label: "Customer", key: "name" },
-                                { label: "Machine Data", key: "regNumber" },
-                                { label: "Purchase History", key: "lastSale.saleDate" },
-                                { label: "Service Lifecycle", key: "nextServiceDue" },
-                                { label: "Score", key: "conditionScore" }
+                                { label: "Owner Name", key: "name", w: "200px" },
+                                { label: "Phone Number", key: "phone", w: "140px" },
+                                { label: "Residing Address", key: "address", w: "250px" },
+                                { label: "Pref Contact", key: "preferredContact", w: "120px" },
+                                { label: "Primary Machine", key: "lastSale.bikeName", w: "180px" },
+                                { label: "Variant", key: "lastSale.variant", w: "140px" },
+                                { label: "Purchase Dt", key: "lastSale.saleDate", w: "130px" },
+                                { label: "Lifetime Value", key: "lifetimeValue", w: "140px" },
+                                { label: "Milestone", key: "serviceMilestone", w: "180px" },
+                                { label: "Engagement", key: "engagement", w: "120px" },
+                                { label: "Chassis #", key: "lastSale.chassisNumber", w: "180px" },
+                                { label: "Registration #", key: "regNumber", w: "140px" },
+                                { label: "Engine #", key: "lastSale.engineNumber", w: "180px" },
+                                { label: "Sale Price", key: "lastSale.salePrice", w: "130px" },
+                                { label: "Payment", key: "lastSale.paymentMethod", w: "120px" },
+                                { label: "Finance Provider", key: "lastSale.financeProvider", w: "160px" },
+                                { label: "Invoice #", key: "lastSale.invoiceNumber", w: "140px" },
+                                { label: "Salesperson", key: "lastSale.salesperson", w: "160px" },
+                                { label: "Rating", key: "rating", w: "100px" },
+                                { label: "Service Due", key: "nextServiceDue", w: "130px" },
+                                { label: "Action", key: "", w: "100px" }
                             ].map((col) => (
                                 <th
-                                    key={col.key}
-                                    onClick={() => handleSort(col.key)}
-                                    className="px-6 py-4 text-[10px] font-black text-gray-100 uppercase tracking-widest cursor-pointer hover:text-racing-blue transition-colors group"
+                                    key={col.label}
+                                    style={{ width: col.w }}
+                                    onClick={() => col.key && handleSort(col.key)}
+                                    className={cn(
+                                        "px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest border-r border-zinc-100/50 transition-colors group",
+                                        col.key && "cursor-pointer hover:bg-zinc-100 hover:text-racing-blue"
+                                    )}
                                 >
                                     <div className="flex items-center gap-2">
                                         {col.label}
-                                        <ArrowUpDown className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        {col.key && <ArrowUpDown className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />}
                                     </div>
                                 </th>
                             ))}
-                            <th className="px-6 py-4"></th>
                         </tr>
                     </thead>
                     <tbody>
                         {processedData.map((customer) => (
                             <tr
                                 key={customer._id}
-                                className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group"
+                                className="border-b border-zinc-100 group hover:bg-zinc-50/50 transition-colors"
                             >
-                                <td className="px-6 py-5">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-zinc-300 border border-white/10 flex items-center justify-center font-bold text-racing-blue">
-                                            {customer.name[0]}
-                                        </div>
-                                        <div>
-                                            <div className="text-sm font-black text-black uppercase italic">{customer.name}</div>
-                                            <div className="text-[10px] text-gray-500 font-bold">{customer.phone}</div>
-                                        </div>
+                                <td className="px-6 py-5 border-r border-zinc-100/30">
+                                    <div className="text-sm font-black text-black uppercase italic truncate">{customer.name}</div>
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30 font-bold text-[11px] text-gray-600 tracking-wider">
+                                    {customer.phone}
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30 text-[10px] font-bold text-gray-500 uppercase truncate">
+                                    {customer.address || "—"}
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30">
+                                    <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-zinc-100 text-zinc-600 border border-zinc-200">
+                                        {customer.preferredContact || "Phone"}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30">
+                                    <p className="text-[11px] font-black text-racing-blue uppercase italic truncate">{customer.lastSale?.bikeName || "INQUIRY"}</p>
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30">
+                                    <span className="text-[9px] font-black text-racing-blue bg-racing-blue/5 border border-racing-blue/10 px-2 py-0.5 rounded uppercase tracking-tighter">
+                                        {customer.lastSale?.variant || "—"}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30 whitespace-nowrap text-[11px] font-bold text-gray-500">
+                                    {customer.lastSale ? new Date(customer.lastSale.saleDate).toLocaleDateString() : "—"}
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30 font-black text-[12px] text-emerald-600">
+                                    ₹{(customer.lifetimeValue || 0).toLocaleString()}
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30">
+                                    <span className="text-[9px] font-black uppercase text-racing-blue bg-racing-blue/5 px-2 py-0.5 rounded truncate block text-center">
+                                        {customer.serviceMilestone}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30">
+                                    <div className="w-full bg-zinc-100 h-1 rounded-full overflow-hidden">
+                                        <div className="h-full bg-racing-blue" style={{ width: `${customer.engagement || 0}%` }} />
                                     </div>
                                 </td>
-                                <td className="px-6 py-5">
-                                    <div className="space-y-1">
-                                        <div className="text-[11px] font-black text-racing-blue uppercase tracking-wider">
-                                            {customer.regNumber}
-                                        </div>
-                                        <div className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">
-                                            VIN: {customer.chassisNumber}
-                                        </div>
+                                <td className="px-6 py-5 border-r border-zinc-100/30 font-mono text-[10px] font-bold text-gray-500 uppercase">
+                                    {customer.lastSale?.chassisNumber || "—"}
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30 font-black text-[11px] text-black uppercase">
+                                    {customer.regNumber}
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30 font-mono text-[10px] font-bold text-gray-500 uppercase">
+                                    {customer.lastSale?.engineNumber || "—"}
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30 font-black text-[12px] text-black">
+                                    {customer.lastSale ? `₹${Number(customer.lastSale.salePrice).toLocaleString()}` : "—"}
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30">
+                                    <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded border border-zinc-200 text-gray-600">
+                                        {customer.lastSale?.paymentMethod || "—"}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30 text-[10px] font-black text-amber-600 uppercase italic">
+                                    {customer.lastSale?.financeProvider || "—"}
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30 font-black text-[10px] text-gray-500 uppercase">
+                                    {customer.lastSale?.invoiceNumber || "—"}
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30 text-[10px] font-bold text-gray-400 uppercase italic">
+                                    {customer.lastSale?.salesperson || "Showroom"}
+                                </td>
+                                <td className="px-6 py-5 border-r border-zinc-100/30 text-center">
+                                    <div className="flex items-center gap-1 justify-center">
+                                        <Search className={cn("w-3 h-3", (customer.rating || 0) >= 1 ? "text-amber-500 fill-amber-500" : "text-gray-200")} />
+                                        <span className="text-[10px] font-black">{customer.rating || 0}</span>
                                     </div>
                                 </td>
-                                <td className="px-6 py-5">
-                                    {customer.lastSale ? (
-                                        <div className="space-y-1">
-                                            <div className="text-[11px] font-black text-white uppercase tracking-tighter">
-                                                {customer.lastSale.bikeName}
-                                            </div>
-                                            <div className="text-[9px] text-gray-500 font-bold uppercase">
-                                                {new Date(customer.lastSale.saleDate).toLocaleDateString()} • ₹{customer.lastSale.salePrice}
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <span className="text-[10px] font-bold text-gray-600 uppercase italic">Inquiry Only</span>
-                                    )}
+                                <td className="px-6 py-5 border-r border-zinc-100/30 whitespace-nowrap text-[11px] font-bold text-gray-500">
+                                    {customer.nextServiceDue ? new Date(customer.nextServiceDue).toLocaleDateString() : "TBD"}
                                 </td>
-                                <td className="px-6 py-5">
-                                    <div className="space-y-1">
-                                        <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">
-                                            {customer.serviceMilestone}
-                                        </div>
-                                        <div className="text-[9px] text-gray-500 font-bold">
-                                            Next: {customer.nextServiceDue ? new Date(customer.nextServiceDue).toLocaleDateString() : "TBD"}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-5">
-                                    <div className="w-12 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-racing-blue"
-                                            style={{ width: `${customer.userBikes?.[0]?.score || 100}%` }}
-                                        />
-                                    </div>
-                                </td>
-                                <td className="px-6 py-5 text-right">
+                                <td className="px-6 py-5 text-center">
                                     <button
                                         onClick={() => setSelectedCustomer(customer)}
-                                        className="p-2 rounded-xl bg-zinc-800 border border-white/10 text-gray-400 hover:text-white hover:border-racing-blue/50 transition-all opacity-0 group-hover:opacity-100"
+                                        className="p-1.5 border border-zinc-200 rounded-lg text-gray-400 hover:text-racing-blue hover:border-racing-blue transition-all"
                                     >
-                                        <ChevronRight className="w-5 h-5" />
+                                        <ChevronRight className="w-4 h-4" />
                                     </button>
                                 </td>
                             </tr>

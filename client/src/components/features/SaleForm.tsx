@@ -348,7 +348,14 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                                     required
                                     className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[12px] font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
                                     value={formData.paymentMethod}
-                                    onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value, financeProvider: e.target.value === 'Finance' ? formData.financeProvider : "" })}
+                                    onChange={(e) => {
+                                        const method = e.target.value;
+                                        setFormData({
+                                            ...formData,
+                                            paymentMethod: method,
+                                            financeProvider: (method === 'Finance' || method === 'EMI') ? formData.financeProvider : ""
+                                        });
+                                    }}
                                 >
                                     <option value="Cash">Cash / Full Payment</option>
                                     <option value="Finance">Finance / Loan</option>
@@ -358,7 +365,7 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                             </div>
 
                             <AnimatePresence>
-                                {formData.paymentMethod === 'Finance' && (
+                                {(formData.paymentMethod === 'Finance' || formData.paymentMethod === 'EMI') && (
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}

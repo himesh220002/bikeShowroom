@@ -15,6 +15,9 @@ export interface ICustomer extends Document {
     reminderRemarks?: string;
     reminderCalled?: boolean;
     reminderMessaged?: boolean;
+    engagement?: number;
+    rating?: number;
+    milestone?: string;
     lastUpdated?: Date;
     createdAt: Date;
     updatedAt: Date;
@@ -35,6 +38,9 @@ const CustomerSchema: Schema = new Schema({
     reminderRemarks: { type: String },
     reminderCalled: { type: Boolean, default: false },
     reminderMessaged: { type: Boolean, default: false },
+    engagement: { type: Number, default: 0 },
+    rating: { type: Number, default: 0 },
+    milestone: { type: String, default: 'New Customer' },
     lastUpdated: { type: Date, default: Date.now }
 }, {
     timestamps: true,

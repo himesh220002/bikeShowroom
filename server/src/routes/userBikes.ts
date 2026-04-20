@@ -41,12 +41,24 @@ router.post('/', protect, async (req: any, res) => {
         const { nextDate, nextKm } = calculateNextService(finalBikeModel, new Date(purchaseDate), serviceCount);
         console.log(`Calculated for ${finalBikeModel}: Next Date - ${nextDate}, Next KM - ${nextKm}`);
 
+        // Inherit registration from Sale if available
+        let finalReg = registrationNumber;
+        let regVerified = false;
+        if (chassisNumber) {
+            const sale = await Sale.findOne({ chassisNumber });
+            if (sale && sale.registrationNumber) {
+                finalReg = sale.registrationNumber;
+                regVerified = sale.registrationVerified || false;
+            }
+        }
+
         const newBike = new UserBike({
             userId: req.user._id,
             bikeId: bikeId || null,
             bikeModel: finalBikeModel,
             bikeImage: finalBikeImage,
-            registrationNumber,
+            registrationNumber: finalReg,
+            registrationVerified: regVerified,
             chassisNumber,
             purchaseDate,
             lastServiceDate,
@@ -164,6 +176,13 @@ router.put('/:id', protect, async (req: any, res) => {
         delete updates.userId; // Prevent changing ownership
         delete updates._id;
 
+        // Prevent modification of verified registration by non-admins
+        if (bike.registrationVerified && updates.registrationNumber && updates.registrationNumber !== bike.registrationNumber) {
+            if (!req.user.isAdmin) { // Assuming req.user.isAdmin exists in protect middleware logic or handled by role
+                return res.status(403).json({ success: false, message: 'Registration is verified and locked by showroom' });
+            }
+        }
+
         Object.assign(bike, updates);
         await bike.save();
 
@@ -185,6 +204,7 @@ router.put('/by-chassis/:chassisNumber', protect, async (req: any, res) => {
         const { registrationNumber } = req.body;
         if (registrationNumber) {
             bike.registrationNumber = registrationNumber;
+            bike.registrationVerified = true;
         }
 
         await bike.save();

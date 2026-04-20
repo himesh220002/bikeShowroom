@@ -32,9 +32,8 @@ export function SalesTable({ sales }: SalesTableProps) {
     const handleUpdateRegistration = async (saleId: string, chassisNumber: string) => {
         if (!newReg) return;
         try {
-            // 1. Update Sale record registration (if needed/supported by API)
-            // 2. Update UserBike record linked by chassis
-            const res = await axios.put(`${API_URL}/user-bikes/by-chassis/${chassisNumber}`, { registrationNumber: newReg }, { withCredentials: true });
+            // Updated to hit Sales Registration endpoint which also syncs with UserBike
+            const res = await axios.put(`${API_URL}/sales/${saleId}/registration`, { registrationNumber: newReg }, { withCredentials: true });
             const data = res.data as any;
 
             if (data.success) {
@@ -44,7 +43,7 @@ export function SalesTable({ sales }: SalesTableProps) {
             }
         } catch (err) {
             console.error("Failed to update registration:", err);
-            alert("Failed to update registration number. Please ensure the user has added this bike to their profile.");
+            alert("Failed to update registration number.");
         }
     };
 
@@ -338,13 +337,25 @@ export function SalesTable({ sales }: SalesTableProps) {
 
                                 {/* Actions */}
                                 <td className="py-3 px-4 text-center">
-                                    <button
-                                        onClick={() => window.location.href = `/admin/crm?search=${sale.customerPhone}`}
-                                        className="p-1.5 border border-border rounded-lg hover:bg-racing-blue/10 hover:border-racing-blue/50 text-muted-foreground hover:text-racing-blue transition-all"
-                                        title="View CRM Profile"
-                                    >
-                                        <UserCircle className="w-4 h-4" />
-                                    </button>
+                                    <div className="flex items-center justify-center gap-2">
+                                        <button
+                                            onClick={() => {
+                                                setIsUpdatingReg(sale._id);
+                                                setNewReg(sale.registrationNumber || "");
+                                            }}
+                                            className="p-1.5 border border-border rounded-lg hover:bg-racing-blue/10 hover:border-racing-blue/50 text-muted-foreground hover:text-racing-blue transition-all"
+                                            title="Edit Registration"
+                                        >
+                                            <Edit3 className="w-3.5 h-3.5" />
+                                        </button>
+                                        <button
+                                            onClick={() => window.location.href = `/admin/crm?search=${sale.customerPhone}`}
+                                            className="p-1.5 border border-border rounded-lg hover:bg-racing-blue/10 hover:border-racing-blue/50 text-muted-foreground hover:text-racing-blue transition-all"
+                                            title="View CRM Profile"
+                                        >
+                                            <UserCircle className="w-4 h-4" />
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

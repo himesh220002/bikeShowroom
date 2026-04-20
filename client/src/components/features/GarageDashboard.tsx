@@ -45,6 +45,7 @@ interface UserBike {
     bikeModel: string;
     bikeImage?: string;
     registrationNumber: string;
+    registrationVerified?: boolean;
     chassisNumber?: string;
     purchaseDate: string;
     mileage: number;
@@ -578,7 +579,11 @@ export function GarageDashboard() {
                                         value={manageFormData.registrationNumber}
                                         onChange={(e) => setManageFormData({ ...manageFormData, registrationNumber: e.target.value.toUpperCase() })}
                                         placeholder="e.g. MH 12 AB 1234"
+                                        disabled={selectedBike.registrationVerified}
                                     />
+                                    {selectedBike.registrationVerified && (
+                                        <p className="text-[9px] font-bold text-racing-blue uppercase tracking-widest mt-1">Verified by Showroom (Locked)</p>
+                                    )}
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Chassis Number</label>

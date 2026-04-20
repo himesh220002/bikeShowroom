@@ -27,6 +27,7 @@ export interface IUserBike extends Document {
     bikeModel: string;
     bikeImage?: string;
     registrationNumber: string;
+    registrationVerified?: boolean;
     chassisNumber?: string;
     purchaseDate: Date;
     lastServiceDate: Date;
@@ -49,6 +50,7 @@ const UserBikeSchema: Schema = new Schema({
     bikeModel: { type: String, required: true },
     bikeImage: { type: String },
     registrationNumber: { type: String },
+    registrationVerified: { type: Boolean, default: false },
     chassisNumber: { type: String },
     purchaseDate: { type: Date, required: true },
     lastServiceDate: { type: Date },

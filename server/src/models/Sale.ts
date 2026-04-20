@@ -20,6 +20,8 @@ export interface ISale extends Document {
     invoiceNumber?: string;
     chassisNumber?: string;
     engineNumber?: string;
+    registrationNumber?: string;
+    registrationVerified?: boolean;
     salesperson?: string;
 
     deliveryDate?: Date;
@@ -49,6 +51,8 @@ const SaleSchema: Schema = new Schema({
     invoiceNumber: { type: String },
     chassisNumber: { type: String },
     engineNumber: { type: String },
+    registrationNumber: { type: String },
+    registrationVerified: { type: Boolean, default: false },
     salesperson: { type: String },
 
     deliveryDate: { type: Date },

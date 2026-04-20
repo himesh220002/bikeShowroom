@@ -71,7 +71,13 @@ router.get('/', async (req, res) => {
                     salePrice: lastSale.salePrice,
                     saleDate: lastSale.createdAt,
                     invoiceNumber: lastSale.invoiceNumber,
-                    deliveryDate: lastSale.deliveryDate
+                    deliveryDate: lastSale.deliveryDate,
+                    paymentMethod: lastSale.paymentMethod,
+                    financeProvider: lastSale.financeProvider,
+                    salesperson: lastSale.salesperson,
+                    chassisNumber: lastSale.chassisNumber,
+                    registrationNumber: lastSale.registrationNumber,
+                    engineNumber: lastSale.engineNumber
                 } : null,
                 userBikes: userBikes.map((ub: any) => ({
                     model: ub.bikeModel,

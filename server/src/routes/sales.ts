@@ -2,6 +2,7 @@ import { Router } from 'express';
 import Sale from '../models/Sale';
 import Bike from '../models/Bike';
 import Customer from '../models/Customer';
+import UserBike from '../models/UserBike';
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.post('/', async (req, res) => {
             chassisNumber,
             engineNumber,
             paymentMethod,
+            financeProvider,
             invoiceNumber,
             salesperson
         } = req.body;
@@ -68,6 +70,7 @@ router.post('/', async (req, res) => {
             chassisNumber,
             engineNumber,
             paymentMethod,
+            financeProvider,
             invoiceNumber,
             salesperson
         });
@@ -99,6 +102,42 @@ router.get('/', async (req, res) => {
     try {
         const sales = await Sale.find().sort({ createdAt: -1 });
         res.json({ success: true, data: sales });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Update registration number and sync with UserBike
+router.put('/:id/registration', async (req, res) => {
+    try {
+        const { registrationNumber } = req.body;
+        const sale = await Sale.findById(req.params.id);
+
+        if (!sale) {
+            return res.status(404).json({ success: false, message: 'Sale record not found' });
+        }
+
+        sale.registrationNumber = registrationNumber;
+        sale.registrationVerified = true;
+        await sale.save();
+
+        // Sync with UserBike if it exists
+        if (sale.chassisNumber) {
+            const normalizedChassis = sale.chassisNumber.trim().toUpperCase();
+            const userBike = await UserBike.findOne({
+                chassisNumber: { $regex: new RegExp(`^${normalizedChassis}$`, 'i') }
+            });
+            if (userBike) {
+                userBike.registrationNumber = registrationNumber;
+                userBike.registrationVerified = true;
+                await userBike.save();
+                console.log(`Synced registration ${registrationNumber} to UserBike for chassis ${normalizedChassis}`);
+            } else {
+                console.log(`No UserBike found for chassis ${normalizedChassis} to sync registration.`);
+            }
+        }
+
+        res.json({ success: true, data: sale, message: 'Registration updated and synced' });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
     }

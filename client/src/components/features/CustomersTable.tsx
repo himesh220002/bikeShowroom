@@ -17,13 +17,23 @@ interface CustomerCRM {
     address?: string;
     preferredContact?: string;
     lifetimeValue?: number;
-    feedbackScore?: number;
+    rating?: number;
+    engagement?: number;
+    milestone?: string;
+    regNumber?: string;
     lastSale: {
         bikeName: string;
         variant: string;
         salePrice: string;
         saleDate: string;
         createdAt: string;
+        chassisNumber?: string;
+        registrationNumber?: string;
+        engineNumber?: string;
+        paymentMethod?: string;
+        financeProvider?: string;
+        invoiceNumber?: string;
+        salesperson?: string;
     } | null;
     nextServiceDue: string | null;
     serviceMilestone: string;
@@ -165,39 +175,54 @@ Reply to this message to confirm your appointment!`;
             </div>
 
             <div className="overflow-x-auto min-h[300px] border border-border rounded-xl bg-card">
-                <table className="w-full text-left border-collapse min-w-[1800px] table-fixed">
+                <table className="w-full text-left border-collapse min-w-[2800px] table-fixed">
                     <thead>
                         <tr className="border-b border-border bg-muted/30">
                             {isCampaignMode && <th className="py-4 px-4 w-[60px] text-center border-r border-border/10">#</th>}
-                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[200px] cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('name')}>
-                                <div className="flex items-center gap-1">
-                                    Owner Name
-                                    {sortConfig?.key === 'name' ? (
-                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
-                                    ) : (
-                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
+                            {[
+                                { label: "Owner Name", key: "name", w: "200px" },
+                                { label: "Phone Number", key: "phone", w: "140px" },
+                                { label: "Residing Address", key: "address", w: "250px" },
+                                { label: "Pref Contact", key: "preferredContact", w: "120px" },
+                                { label: "Primary Machine", key: "lastSale.bikeName", w: "180px" },
+                                { label: "Variant", key: "lastSale.variant", w: "140px" },
+                                { label: "Purchase Dt", key: "lastSale.saleDate", w: "130px" },
+                                { label: "Lifetime Value", key: "lifetimeValue", w: "140px" },
+                                { label: "Milestone", key: "serviceMilestone", w: "180px" },
+                                { label: "Engagement", key: "engagement", w: "120px" },
+                                { label: "Chassis #", key: "lastSale.chassisNumber", w: "180px" },
+                                { label: "Registration #", key: "regNumber", w: "140px" },
+                                { label: "Engine #", key: "lastSale.engineNumber", w: "180px" },
+                                { label: "Sale Price", key: "lastSale.salePrice", w: "130px" },
+                                { label: "Payment", key: "lastSale.paymentMethod", w: "120px" },
+                                { label: "Finance Provider", key: "lastSale.financeProvider", w: "160px" },
+                                { label: "Invoice #", key: "lastSale.invoiceNumber", w: "140px" },
+                                { label: "Salesperson", key: "lastSale.salesperson", w: "160px" },
+                                { label: "Rating", key: "rating", w: "100px" },
+                                { label: "Service Due", key: "nextServiceDue", w: "130px" },
+                                { label: "Action", key: "", w: "120px" }
+                            ].map((col) => (
+                                <th
+                                    key={col.label}
+                                    style={{ width: col.w }}
+                                    onClick={() => col.key && handleSort(col.key)}
+                                    className={cn(
+                                        "py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 transition-colors group",
+                                        col.key && "cursor-pointer hover:bg-muted/50"
                                     )}
-                                </div>
-                            </th>
-                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[140px]">Phone Number</th>
-                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[250px]">Residing Address</th>
-                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[120px] text-center">Pref Contact</th>
-                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[180px] cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('bikeModel')}>
-                                <div className="flex items-center gap-1">
-                                    Primary Machine
-                                    {sortConfig?.key === 'bikeModel' ? (
-                                        sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
-                                    ) : (
-                                        <ArrowUpDown className="w-3 h-3 opacity-30" />
-                                    )}
-                                </div>
-                            </th>
-                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[120px] text-center">Purchase Dt</th>
-                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[120px] text-center">Lifetime Value</th>
-                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[120px] text-center">Rating</th>
-                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[140px] text-center">Service Due</th>
-                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[150px] text-center">Milestone</th>
-                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground w-[150px] text-center">Engagement</th>
+                                >
+                                    <div className="flex items-center gap-1">
+                                        {col.label}
+                                        {col.key && (
+                                            sortConfig?.key === col.key ? (
+                                                sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                                            ) : (
+                                                <ArrowUpDown className="w-3 h-3 opacity-30 group-hover:opacity-100 transition-opacity" />
+                                            )
+                                        )}
+                                    </div>
+                                </th>
+                            ))}
                         </tr>
                     </thead>
                     <tbody>
@@ -223,79 +248,89 @@ Reply to this message to confirm your appointment!`;
                                 <td className="py-3 px-4 border-r border-border/10">
                                     <p className="text-[13px] font-black text-foreground uppercase tracking-tight truncate">{customer.name}</p>
                                 </td>
-
                                 <td className="py-3 px-4 border-r border-border/10 uppercase tracking-wider text-[12px] font-bold text-muted-foreground">
                                     {customer.phone}
                                 </td>
-
                                 <td className="py-3 px-4 border-r border-border/10">
                                     <div className="flex items-center gap-2">
                                         <MapPin className="w-3 h-3 text-muted-foreground/30 flex-shrink-0" />
                                         <p className="text-[11px] font-bold text-muted-foreground uppercase truncate">{customer.address || "—"}</p>
                                     </div>
                                 </td>
-
                                 <td className="py-3 px-4 border-r border-border/10 text-center">
                                     <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">{customer.preferredContact || "Phone"}</span>
                                 </td>
-
-                                <td className="py-3 px-4 border-r border-border/10">
-                                    <div className="flex items-center gap-2">
-                                        <Bike className="w-3.5 h-3.5 text-racing-blue/40" />
-                                        <p className="text-[13px] font-black text-foreground uppercase tracking-tighter italic truncate">{customer.lastSale?.bikeName || "N/A"}</p>
-                                    </div>
+                                <td className="py-3 px-4 border-r border-border/10 text-center">
+                                    <p className="text-[13px] font-black text-racing-blue uppercase tracking-tighter italic truncate">{customer.lastSale?.bikeName || "N/A"}</p>
                                 </td>
-
+                                <td className="py-3 px-4 border-r border-border/10 text-center">
+                                    <span className="text-[10px] font-black text-racing-blue bg-racing-blue/5 px-2 py-0.5 rounded border border-racing-blue/10 uppercase">{customer.lastSale?.variant || "—"}</span>
+                                </td>
                                 <td className="py-3 px-4 border-r border-border/10 text-center uppercase tracking-wider text-[11px] font-bold text-muted-foreground">
                                     {customer.lastSale ? new Date(customer.lastSale.saleDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : "—"}
                                 </td>
-
                                 <td className="py-3 px-4 border-r border-border/10 text-center">
-                                    <div className="text-[12px] font-black text-racing-blue italic">
+                                    <div className="text-[12px] font-black text-emerald-600 italic">
                                         ₹{(customer.lifetimeValue || 0).toLocaleString('en-IN')}
                                     </div>
                                 </td>
-
+                                <td className="py-3 px-4 border-r border-border/10 text-center">
+                                    <span className="text-[9px] font-black px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border/50 uppercase tracking-widest">
+                                        {customer.milestone || "—"}
+                                    </span>
+                                </td>
+                                <td className="py-3 px-4 border-r border-border/10 text-center">
+                                    <div className="w-full bg-muted h-1 rounded-full overflow-hidden">
+                                        <div className="h-full bg-racing-blue" style={{ width: `${customer.engagement || 0}%` }} />
+                                    </div>
+                                </td>
+                                <td className="py-3 px-4 border-r border-border/10 text-center font-mono text-[10px] text-muted-foreground">
+                                    {customer.lastSale?.chassisNumber || "—"}
+                                </td>
+                                <td className="py-3 px-4 border-r border-border/10 text-center font-black text-[11px] uppercase">
+                                    {customer.regNumber || "—"}
+                                </td>
+                                <td className="py-3 px-4 border-r border-border/10 text-center font-mono text-[10px] text-muted-foreground">
+                                    {customer.lastSale?.engineNumber || "—"}
+                                </td>
+                                <td className="py-3 px-4 border-r border-border/10 text-center font-black text-[11px]">
+                                    {customer.lastSale ? `₹${Number(customer.lastSale.salePrice).toLocaleString('en-IN')}` : "—"}
+                                </td>
+                                <td className="py-3 px-4 border-r border-border/10 text-center">
+                                    <span className="text-[9px] font-black uppercase border border-border px-2 py-0.5 rounded text-muted-foreground">{customer.lastSale?.paymentMethod || "—"}</span>
+                                </td>
+                                <td className="py-3 px-4 border-r border-border/10 text-center text-[10px] font-black text-amber-600 uppercase italic">
+                                    {customer.lastSale?.financeProvider || "—"}
+                                </td>
+                                <td className="py-3 px-4 border-r border-border/10 text-center text-[10px] font-black text-muted-foreground">
+                                    {customer.lastSale?.invoiceNumber || "—"}
+                                </td>
+                                <td className="py-3 px-4 border-r border-border/10 text-center text-[10px] font-bold text-muted-foreground italic">
+                                    {customer.lastSale?.salesperson || "—"}
+                                </td>
                                 <td className="py-3 px-4 border-r border-border/10 text-center">
                                     <div className="flex items-center justify-center gap-0.5">
                                         {[...Array(5)].map((_, i) => (
-                                            <Star key={i} className={cn("w-2 h-2", i < (customer.feedbackScore || 0) ? "fill-amber-400 text-amber-400" : "text-muted/20")} />
+                                            <Star key={i} className={cn("w-2 h-2", i < (customer.rating || 0) ? "fill-amber-400 text-amber-400" : "text-muted/20")} />
                                         ))}
                                     </div>
                                 </td>
-
                                 <td className="py-3 px-4 border-r border-border/10 text-center">
                                     {customer.nextServiceDue ? (
-                                        <div className="flex flex-col items-center gap-0.5">
-                                            <span className={cn(
-                                                "text-[11px] font-black uppercase tracking-widest",
-                                                new Date() > new Date(customer.nextServiceDue) ? "text-red-500" : "text-emerald-500"
-                                            )}>
-                                                {new Date(customer.nextServiceDue).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
-                                            </span>
-                                            <div className={cn(
-                                                "w-1 h-1 rounded-full",
-                                                new Date() > new Date(customer.nextServiceDue) ? "bg-red-500 animate-pulse" : "bg-emerald-500"
-                                            )} />
-                                        </div>
+                                        <span className={cn(
+                                            "text-[11px] font-black uppercase tracking-widest",
+                                            new Date() > new Date(customer.nextServiceDue) ? "text-red-500" : "text-emerald-500"
+                                        )}>
+                                            {new Date(customer.nextServiceDue).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                                        </span>
                                     ) : <span className="text-[9px] text-muted-foreground/30 font-black">N/A</span>}
                                 </td>
-
-                                <td className="py-3 px-4 border-r border-border/10 text-center">
-                                    <span className={cn(
-                                        "text-[9px] font-black px-2 py-0.5 rounded-full border uppercase tracking-widest",
-                                        customer.isFreeService ? "bg-racing-blue/5 border-racing-blue/20 text-racing-blue" : "bg-muted border-border/50 text-muted-foreground"
-                                    )}>
-                                        {customer.serviceMilestone || "—"}
-                                    </span>
-                                </td>
-
-                                <td className="py-3 px-4">
+                                <td className="py-3 px-4 text-center">
                                     <div className="flex items-center justify-center gap-2">
                                         <button
                                             onClick={() => { setEditingCustomer(customer); setOpenMenuId(null); }}
                                             className="p-1.5 border border-border rounded-lg hover:bg-muted transition-all text-muted-foreground hover:text-racing-blue"
-                                            title="View History"
+                                            title="Edit Profile"
                                         >
                                             <History className="w-4 h-4" />
                                         </button>
