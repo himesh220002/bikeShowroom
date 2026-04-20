@@ -9,7 +9,7 @@ const router = Router();
 // Configure multer storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadPath = path.join(__dirname, '../../../client/public/images/ads');
+        const uploadPath = path.join(__dirname, '../../public/uploads/ads');
         if (!fs.existsSync(uploadPath)) {
             fs.mkdirSync(uploadPath, { recursive: true });
         }
@@ -99,8 +99,8 @@ router.post('/', upload.single('image'), async (req, res) => {
             return res.status(400).json({ success: false, message: 'Image is required' });
         }
 
-        // Return path relative to client's public folder
-        const imagePath = `/images/ads/${req.file.filename}`;
+        // Return path relative to server's static folder
+        const imagePath = `/uploads/ads/${req.file.filename}`;
 
         const adCount = await Ad.countDocuments();
 
@@ -168,8 +168,8 @@ router.put('/:id', upload.single('image'), async (req, res) => {
 
             // Cleanup old image
             const oldAd = await Ad.findById(req.params.id);
-            if (oldAd && oldAd.image) {
-                const oldPath = path.join(__dirname, '../../../client/public', oldAd.image);
+            if (oldAd && oldAd.image && oldAd.image.startsWith('/uploads/')) {
+                const oldPath = path.join(__dirname, '../../public', oldAd.image);
                 if (fs.existsSync(oldPath)) {
                     fs.unlinkSync(oldPath);
                 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Upload, Link as LinkIcon, Eye, Trash2, Plus, Loader2, X, Image as ImageIcon, CheckCircle2, GripVertical, Edit3 } from "lucide-react";
-import { API_URL } from "@/lib/config";
+import { API_URL, API_BASE_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
 import { motion, Reorder } from "framer-motion";
 
@@ -165,7 +165,7 @@ export function AdManager() {
         setType(ad.type);
         setLink(ad.link);
         setDescription(ad.description || "");
-        setPreviewUrl(ad.image);
+        setPreviewUrl(ad.image.startsWith('/uploads') ? `${API_BASE_URL}${ad.image}` : ad.image);
         setMonth(ad.month || "");
         setStartDate(ad.startDate ? new Date(ad.startDate).toISOString().split('T')[0] : "");
         setEndDate(ad.endDate ? new Date(ad.endDate).toISOString().split('T')[0] : "");
@@ -387,7 +387,11 @@ export function AdManager() {
                                     <GripVertical className="w-5 h-5" />
                                 </div>
                                 <div className="w-20 h-20 bg-muted rounded-2xl overflow-hidden border border-border flex-shrink-0">
-                                    <img src={camp.image} alt={camp.name} className="w-full h-full object-cover" />
+                                    <img
+                                        src={camp.image.startsWith('/uploads') ? `${API_BASE_URL}${camp.image}` : camp.image}
+                                        alt={camp.name}
+                                        className="w-full h-full object-cover"
+                                    />
                                 </div>
                                 <div className="space-y-1">
                                     <h4 className="text-lg font-display font-black text-foreground uppercase tracking-tight">{camp.name}</h4>

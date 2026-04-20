@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
+import path from 'path';
+import fs from 'fs';
 import mongoose from 'mongoose';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -73,6 +75,13 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+
+// Serve static files from the public/uploads directory
+const publicPath = path.join(__dirname, '../public');
+if (!fs.existsSync(publicPath)) {
+    fs.mkdirSync(publicPath, { recursive: true });
+}
+app.use('/uploads', express.static(path.join(publicPath, 'uploads')));
 
 // Session Configuration
 app.use(session({
