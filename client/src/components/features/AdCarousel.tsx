@@ -21,7 +21,7 @@ export function AdCarousel() {
     useEffect(() => {
         const fetchAds = async () => {
             try {
-                const res = await fetch(`${API_URL}/ads`);
+                const res = await fetch(`${API_URL}/promos`);
                 const data = await res.json();
                 if (data.success) {
                     setAds(data.data

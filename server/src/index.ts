@@ -20,7 +20,7 @@ import eventsRouter from './routes/events';
 import servicesRouter from './routes/services';
 
 import qualifiedLeadsRouter from './routes/qualifiedLeads';
-import adsRouter from './routes/ads';
+import promosRouter from './routes/promos';
 import salesRouter from './routes/sales';
 import customersRouter from './routes/customers';
 import configRouter from './routes/config';
@@ -200,7 +200,7 @@ app.use('/api/services', servicesRouter);
 app.use('/api/qualified-leads', qualifiedLeadsRouter);
 app.use('/api/bikes', bikesRouter);
 app.use('/api/events', eventsRouter);
-app.use('/api/ads', adsRouter);
+app.use('/api/promos', promosRouter);
 app.use('/api/sales', salesRouter);
 app.use('/api/customers', customersRouter);
 app.use('/api/config', configRouter);

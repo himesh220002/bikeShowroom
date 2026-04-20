@@ -44,7 +44,7 @@ export function AdManager() {
 
     const fetchAds = async () => {
         try {
-            const res = await fetch(`${API_URL}/ads`);
+            const res = await fetch(`${API_URL}/promos`);
             const data = await res.json();
             if (data.success) setCampaigns(data.data);
         } catch (err) {
@@ -84,7 +84,7 @@ export function AdManager() {
         if (endDate) formData.append('endDate', endDate);
 
         try {
-            const url = editingAd ? `${API_URL}/ads/${editingAd._id}` : `${API_URL}/ads`;
+            const url = editingAd ? `${API_URL}/promos/${editingAd._id}` : `${API_URL}/promos`;
             const method = editingAd ? "PUT" : "POST";
 
             const res = await fetch(url, {
@@ -119,7 +119,7 @@ export function AdManager() {
         }));
 
         try {
-            await fetch(`${API_URL}/ads/reorder`, {
+            await fetch(`${API_URL}/promos/reorder`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ads: reorderData })
@@ -133,7 +133,7 @@ export function AdManager() {
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this campaign?")) return;
         try {
-            const res = await fetch(`${API_URL}/ads/${id}`, {
+            const res = await fetch(`${API_URL}/promos/${id}`, {
                 method: "DELETE"
             });
             const data = await res.json();

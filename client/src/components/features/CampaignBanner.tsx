@@ -29,7 +29,7 @@ export function CampaignBanner() {
     useEffect(() => {
         const fetchCampaign = async () => {
             try {
-                const res = await fetch(`${API_URL}/ads`);
+                const res = await fetch(`${API_URL}/promos`);
                 const data = await res.json();
                 if (data.success) {
                     // Find the first active Banner ad
