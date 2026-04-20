@@ -5,7 +5,7 @@ import { BIKES } from "@/lib/constants/bikes";
 import { BikeCard } from "@/components/features/BikeCard";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ChevronRight, Zap } from "lucide-react";
+import { ChevronRight, Search, Zap } from "lucide-react";
 import { API_URL } from "@/lib/config";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/utils/cn";
@@ -137,14 +137,14 @@ export default function ProductsPage() {
                     <div className="flex flex-col sm:flex-row items-center gap-4 w-full xl:w-auto">
                         <div className="relative w-full sm:w-80 group">
                             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                                <Zap className="w-4 h-4 text-racing-blue group-focus-within:scale-110 transition-transform" />
+                                <Search className="w-4 h-4 text-racing-blue group-focus-within:scale-110 transition-transform" />
                             </div>
                             <input
                                 type="text"
                                 placeholder="Search machines..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 rounded-2xl py-4 pl-12 pr-6 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-racing-blue/50 transition-all font-bold"
+                                className="w-full bg-zinc-400 border border-white/5 rounded-2xl py-4 pl-12 pr-6 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-racing-blue/50 transition-all font-bold"
                             />
                         </div>
                         <div className="flex items-center gap-2 p-1 bg-zinc-900 rounded-2xl border border-white/5 w-full sm:w-auto">

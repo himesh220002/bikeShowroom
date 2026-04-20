@@ -12,7 +12,7 @@ const FAQ_DATA = [
     },
     {
         question: "Do you offer finance and easy EMI options?",
-        answer: "Yes, we provide seamless finance options through our premium partners: \n1. L&T Finance: Quick processing and minimal documentation. \n2. Bajaj Finance: Instant approval and attractive EMI subvention schemes. \n3. IDFC First Bank: Competitive interest rates and flexible tenures. \nWe also work with HDFC and Yamaha Financial Services to ensure you get the best deal."
+        answer: "Yes, we provide seamless finance options through our premium partners: \n1. L&T Finance: Quick processing and minimal documentation. \n2. Bajaj Finance: Instant approval and attractive EMI subvention schemes. \n3. IDFC First Bank: Competitive interest rates and flexible tenures. \n4. TATA Capital: Quick processing and minimal documentation. \nWe provide Yamaha Financial Services to ensure you get the best deal."
     },
     {
         question: "How long does the registration (RC) process take?",

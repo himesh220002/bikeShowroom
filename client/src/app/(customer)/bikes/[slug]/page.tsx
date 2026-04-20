@@ -20,10 +20,10 @@ async function getBike(slug: string) {
 }
 
 export async function generateMetadata(
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
-    const slug = params.slug.toLowerCase();
-    const bike = await getBike(slug);
+    const { slug } = await params;
+    const bike = await getBike(slug.toLowerCase());
 
     if (!bike) {
         return {
@@ -46,9 +46,9 @@ export async function generateMetadata(
     };
 }
 
-export default async function BikePage({ params }: { params: { slug: string } }) {
-    const slug = params.slug.toLowerCase();
-    const bike = await getBike(slug);
+export default async function BikePage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const bike = await getBike(slug.toLowerCase());
 
     if (!bike) {
         return notFound();

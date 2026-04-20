@@ -377,7 +377,7 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                                             <option value="L&T Finance">L&T Finance</option>
                                             <option value="Bajaj Finserv">Bajaj Finserv</option>
                                             <option value="IDFC First Bank">IDFC First Bank</option>
-                                            <option value="HDFC Bank">HDFC Bank</option>
+                                            <option value="Tata Capital">Tata Capital</option>
                                             <option value="Custom / Others">Custom / Others</option>
                                         </select>
                                     </motion.div>
