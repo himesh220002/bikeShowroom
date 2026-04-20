@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import mongoose from 'mongoose';
 import Sale from '../models/Sale';
 import Bike from '../models/Bike';
 import Customer from '../models/Customer';
@@ -124,17 +125,27 @@ router.put('/:id/registration', async (req, res) => {
         // Sync with UserBike if it exists
         if (sale.chassisNumber) {
             const normalizedChassis = sale.chassisNumber.trim().toUpperCase();
-            const userBike = await UserBike.findOne({
-                chassisNumber: { $regex: new RegExp(`^${normalizedChassis}$`, 'i') }
-            });
-            if (userBike) {
-                userBike.registrationNumber = registrationNumber;
-                userBike.registrationVerified = true;
-                await userBike.save();
-                console.log(`Synced registration ${registrationNumber} to UserBike for chassis ${normalizedChassis}`);
-            } else {
-                console.log(`No UserBike found for chassis ${normalizedChassis} to sync registration.`);
-            }
+
+            // Find the User by phone to ensure we hit the right garage
+            const User = mongoose.model('User');
+            const matchedUser = await User.findOne({ phone: sale.customerPhone });
+
+            const result = await UserBike.updateMany(
+                {
+                    $or: [
+                        { chassisNumber: { $regex: new RegExp(`^${normalizedChassis}$`, 'i') } },
+                        ...(matchedUser ? [{ userId: matchedUser._id }] : [])
+                    ],
+                    bikeModel: sale.bikeName
+                },
+                {
+                    $set: {
+                        registrationNumber: registrationNumber,
+                        registrationVerified: true
+                    }
+                }
+            );
+            console.log(`Synced registration ${registrationNumber} to ${result.modifiedCount} UserBike records.`);
         }
 
         res.json({ success: true, data: sale, message: 'Registration updated and synced' });

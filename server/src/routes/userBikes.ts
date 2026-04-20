@@ -301,7 +301,7 @@ router.post('/connect-lookup', protect, async (req: any, res) => {
             bikeId: bikeId || "",
             bikeModel: saleFound?.bikeName || serviceFound?.bikeModel || "",
             purchaseDate: saleFound?.saleDate || null,
-            registrationNumber: registrationNumber || "",
+            registrationNumber: registrationNumber || saleFound?.registrationNumber || "",
             chassisNumber: chassisNumber || saleFound?.chassisNumber || "",
             lastServiceDate: serviceFound?.appointmentDate || null,
             serviceCount: serviceFound?.serviceNumber || 0,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Save, User, MapPin, Contact, IndianRupee, Star } from "lucide-react";
+import { X, Save, User, MapPin, Contact, IndianRupee, Star, Bike } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { API_URL } from "@/lib/config";
 
@@ -16,6 +16,7 @@ interface CustomerCRM {
     rating?: number;
     engagement?: number;
     milestone?: string;
+    regNumber?: string;
 }
 
 interface CustomerEditModalProps {
@@ -33,7 +34,8 @@ export function CustomerEditModal({ customer, isOpen, onClose, onUpdate }: Custo
         lifetimeValue: customer.lifetimeValue || 0,
         rating: customer.rating || 0,
         engagement: customer.engagement || 0,
-        milestone: customer.milestone || "New Customer"
+        milestone: customer.milestone || "New Customer",
+        registrationNumber: customer.regNumber || ""
     });
 
     if (!isOpen) return null;
@@ -146,6 +148,20 @@ export function CustomerEditModal({ customer, isOpen, onClose, onUpdate }: Custo
                                 className="w-full bg-background border border-border rounded-xl px-4 py-3 text-xs font-bold text-foreground outline-none focus:border-racing-blue/30 transition-all uppercase"
                             />
                         </div>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Machine Registration Number</label>
+                        <div className="relative">
+                            <Bike className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <input
+                                type="text"
+                                value={formData.registrationNumber}
+                                onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value.toUpperCase() })}
+                                placeholder="e.g. BR01AB1234"
+                                className="w-full bg-background border border-border rounded-xl pl-11 pr-4 py-3 text-xs font-bold text-foreground outline-none focus:border-racing-blue/30 transition-all uppercase"
+                            />
+                        </div>
+                        <p className="text-[8px] font-bold text-racing-blue uppercase tracking-widest px-1">Source of Truth (Syncs to Sales & Garage)</p>
                     </div>
 
                     <div className="space-y-4">

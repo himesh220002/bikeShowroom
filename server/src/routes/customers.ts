@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
 
             // Find latest service (for vehicle info)
             const latestService = await Service.findOne({ customerId: customer._id }).sort({ createdAt: -1 });
-            const regNumber = latestService?.regNumber || (userBikes.length > 0 ? userBikes[0].registrationNumber : "N/A");
+            const regNumber = latestService?.regNumber || lastSale?.registrationNumber || (userBikes.length > 0 ? userBikes[0].registrationNumber : "N/A");
 
             // MAPPING LOGIC: Match this customer to any current scheduled service
             const matchedService = allServices.find(s => {
@@ -109,15 +109,53 @@ router.get('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     try {
+        const { registrationNumber, ...customerData } = req.body;
+
+        // 1. Update Customer Model
         const customer = await Customer.findByIdAndUpdate(
             req.params.id,
-            { $set: req.body },
+            { $set: customerData },
             { new: true }
         );
         if (!customer) return res.status(404).json({ success: false, message: 'Customer not found' });
 
+        // 2. If registrationNumber is provided, sync it across Sale and UserBike
+        if (registrationNumber) {
+            // Update latest Sale
+            const lastSale = await Sale.findOne({ customerId: customer._id }).sort({ createdAt: -1 });
+            if (lastSale) {
+                lastSale.registrationNumber = registrationNumber;
+                lastSale.registrationVerified = true;
+                await lastSale.save();
+
+                // Find the actual User record by phone to sync to their individual garage
+                const User = mongoose.model('User');
+                const matchedUser = await User.findOne({ phone: customer.phone });
+
+                // Update UserBike (Source of Truth)
+                const UserBike = mongoose.model('UserBike');
+                await UserBike.updateMany(
+                    {
+                        $or: [
+                            { chassisNumber: { $regex: new RegExp(`^${lastSale.chassisNumber?.trim()}$`, 'i') } },
+                            ...(matchedUser ? [{ userId: matchedUser._id }] : []),
+                            { userId: customer.googleId }
+                        ],
+                        bikeModel: lastSale.bikeName
+                    },
+                    {
+                        $set: {
+                            registrationNumber: registrationNumber,
+                            registrationVerified: true
+                        }
+                    }
+                );
+            }
+        }
+
         res.json({ success: true, data: customer });
     } catch (error: any) {
+        console.error("Customer Update Error:", error);
         res.status(400).json({ success: false, error: error.message });
     }
 });

@@ -190,7 +190,7 @@ export function GarageDashboard() {
                         <div>
                             <div className="flex items-center gap-3 mb-6">
                                 <span className="px-4 py-1 bg-racing-blue text-white text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-racing-blue/20">Primary Asset</span>
-                                <span className="px-4 py-1 bg-white text-emerald-600 border border-emerald-100 shadow-sm text-[9px] font-black uppercase tracking-widest rounded-full">Score: {selectedBike.conditionScore}%</span>
+                                <span className="px-4 py-1 bg-white text-emerald-600 border border-emerald-100 shadow-sm text-[9px] font-black uppercase tracking-widest rounded-full">Score: {selectedBike.conditionScore || 100}%</span>
                             </div>
                             <h1 className="text-6xl md:text-8xl font-display font-black uppercase tracking-tighter mb-4 text-zinc-900">
                                 {selectedBike.bikeModel}
@@ -200,7 +200,7 @@ export function GarageDashboard() {
                                 <div className="h-10 w-px bg-zinc-200 hidden md:block" />
                                 <div className="hidden md:block">
                                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">Odometer Log</p>
-                                    <p className="text-xl font-display font-black uppercase text-zinc-900">{selectedBike.mileage.toLocaleString()} <span className="text-[10px] font-sans text-gray-400">KM</span></p>
+                                    <p className="text-xl font-display font-black uppercase text-zinc-900">{(selectedBike.mileage || 0).toLocaleString()} <span className="text-[10px] font-sans text-gray-400">KM</span></p>
                                 </div>
                             </div>
                         </div>
@@ -209,9 +209,9 @@ export function GarageDashboard() {
                             <button
                                 onClick={() => {
                                     setManageFormData({
-                                        registrationNumber: selectedBike.registrationNumber,
+                                        registrationNumber: selectedBike.registrationNumber || "",
                                         chassisNumber: selectedBike.chassisNumber || "",
-                                        mileage: selectedBike.mileage
+                                        mileage: selectedBike.mileage || 0
                                     });
                                     setIsManaging(true);
                                 }}
@@ -349,7 +349,7 @@ export function GarageDashboard() {
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-lg font-display font-black uppercase text-zinc-900">₹{mod.cost.toLocaleString()}</p>
+                                                    <p className="text-lg font-display font-black uppercase text-zinc-900">₹{(mod.cost || 0).toLocaleString()}</p>
                                                     {mod.location && (
                                                         <p className="text-[9px] font-black text-racing-blue uppercase tracking-widest">Slot: {mod.location}</p>
                                                     )}
@@ -428,7 +428,7 @@ export function GarageDashboard() {
                             <div className="space-y-1">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Investment</p>
                                 <p className="text-4xl font-display font-black text-zinc-900 uppercase tracking-tighter">
-                                    ₹{totalInvestment.toLocaleString()}
+                                    ₹{(totalInvestment || 0).toLocaleString()}
                                 </p>
                             </div>
                             <div className="h-px bg-zinc-200" />
@@ -439,7 +439,7 @@ export function GarageDashboard() {
                                 </div>
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
                                     <span className="text-gray-400">Mods Cost</span>
-                                    <span className="text-zinc-600">₹{selectedBike.modifications?.reduce((acc, m) => acc + m.cost, 0).toLocaleString()}</span>
+                                    <span className="text-zinc-600">₹{(selectedBike.modifications?.reduce((acc, m) => acc + (m.cost || 0), 0) || 0).toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>
