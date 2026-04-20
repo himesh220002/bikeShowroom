@@ -3,6 +3,8 @@ import Customer from '../models/Customer';
 import Sale from '../models/Sale';
 import Service from '../models/Service';
 import Bike from '../models/Bike';
+import Spare from '../models/Spare';
+import RestockDemand from '../models/RestockDemand';
 import Inquiry from '../models/Lead';
 import mongoose from 'mongoose';
 
@@ -141,7 +143,32 @@ router.get('/crm', async (req, res) => {
         // 7. Overall Metrics
         const totalCustomers = await Customer.countDocuments({ createdAt: { $gte: startDate } });
         const totalSalesRevenue = salesDataQuery.reduce((acc, curr) => acc + curr.revenue, 0);
-        const totalServiceRevenue = serviceDataQuery.reduce((acc, curr) => acc + curr.revenue, 0);
+
+        // Precise Revenue Splitting: Accessories vs Service
+        const completedServices = await Service.find({
+            createdAt: { $gte: startDate },
+            status: { $in: ['completed', 'delivered'] }
+        });
+
+        let actualAccessoryRevenue = 0;
+        let actualServiceRevenue = 0;
+
+        for (const s of completedServices) {
+            // Accessory-focused jobs: entirely counted as accessory revenue
+            if (['Spares', 'Accessory Sale'].includes(s.serviceType)) {
+                actualAccessoryRevenue += s.cost;
+            } else {
+                // Service-focused jobs: split between labor (Service) and add-on items (Accessories)
+                let accInThisJob = 0;
+                if (s.items && Array.isArray(s.items)) {
+                    accInThisJob = s.items.reduce((sum, item) => {
+                        return item.itemType === 'accessory' ? sum + (item.price * (item.quantity || 1)) : sum;
+                    }, 0);
+                }
+                actualAccessoryRevenue += accInThisJob;
+                actualServiceRevenue += (s.cost - accInThisJob);
+            }
+        }
 
         const totalServices = serviceDataQuery.reduce((acc, curr) => acc + curr.services, 0);
         const totalCompleted = serviceDataQuery.reduce((acc, curr) => acc + curr.completed, 0);
@@ -180,9 +207,9 @@ router.get('/crm', async (req, res) => {
                 recentFeedback,
                 financeStats: financeStatsRaw,
                 financialSplit: [
-                    { name: 'Sales', value: totalSalesRevenue },
-                    { name: 'Service', value: totalServiceRevenue },
-                    { name: 'Accessories', value: totalSalesRevenue * 0.05 }
+                    { name: 'Vehicle Sales', value: totalSalesRevenue },
+                    { name: 'Service Revenue', value: actualServiceRevenue },
+                    { name: 'Accessories', value: actualAccessoryRevenue }
                 ],
                 colorSales: await Sale.aggregate([
                     { $match: { saleDate: { $gte: startDate } } },
@@ -262,10 +289,56 @@ router.get('/crm', async (req, res) => {
                         };
                     }).sort((a, b) => a.daysToOut - b.daysToOut);
                 })(),
+                accessoryIntelligence: await (async () => {
+                    // Updated filter: Include specific accessory categories OR anything with bikeId 'common' (universal)
+                    const accessoryCategories = ['Accessory', 'Helmet', 'Body', 'General', 'Safety', 'Clothing', 'Merchandise', 'Protection'];
+                    const accessories = await Spare.find({
+                        $or: [
+                            { category: { $in: accessoryCategories } },
+                            { bikeId: null }, // Items not linked to a specific bike are often accessories
+                            { bikeId: { $exists: false } }
+                        ]
+                    }).select('name stock category');
+                    const thirtyDaysAgo = new Date();
+                    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+                    // 1. Get Restock Demands by Accessory
+                    const demandData = await RestockDemand.aggregate([
+                        { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+                        { $group: { _id: "$spareId", count: { $sum: 1 } } }
+                    ]);
+
+                    // 2. Get Actual Usage from Services
+                    const usageData = await Service.aggregate([
+                        { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+                        { $unwind: "$items" },
+                        { $match: { "items.itemType": "accessory" } },
+                        { $group: { _id: "$items.itemId", count: { $sum: "$items.quantity" } } }
+                    ]);
+
+                    return accessories.map(acc => {
+                        const demands = demandData.find(d => d._id?.toString() === acc._id.toString())?.count || 0;
+                        const usage = usageData.find(u => u._id?.toString() === acc._id.toString())?.count || 0;
+                        const totalDemand = demands + usage;
+
+                        // Velocity is total demand (interest + sales) over 30 days
+                        const velocity = totalDemand / 30;
+                        const daysToOut = velocity > 0 ? Math.round(acc.stock / velocity) : 999;
+
+                        return {
+                            name: acc.name,
+                            stock: acc.stock,
+                            demand: totalDemand,
+                            velocity: velocity.toFixed(2),
+                            daysToOut,
+                            status: acc.stock === 0 ? 'Out of Stock' : (daysToOut < 7 ? 'Critical' : (daysToOut < 15 ? 'Low' : 'Healthy'))
+                        };
+                    }).sort((a, b) => a.daysToOut - b.daysToOut);
+                })(),
                 modelColors: await Bike.find().select('name colors.name colors.hex'),
                 overview: {
                     totalCustomers,
-                    totalRevenue: totalSalesRevenue + totalServiceRevenue + (totalServiceRevenue * 0.15), // Including estimated Accessories (15% of service/spares)
+                    totalRevenue: totalSalesRevenue + actualServiceRevenue + actualAccessoryRevenue,
                     activeServices: await Service.countDocuments({ status: { $in: ['booked', 'in-progress'] } }),
                     nps: avgNPS[0]?.avg || 0,
                     npsCount: avgNPS[0]?.count || 0,
@@ -274,8 +347,8 @@ router.get('/crm', async (req, res) => {
                     noShowRate,
                     revenueSplit: [
                         { name: 'Vehicle Sales', value: totalSalesRevenue, color: '#2D6AFF', scalingNote: 'Core volume driver. High revenue, but lower frequency.' },
-                        { name: 'Service Revenue', value: totalServiceRevenue, color: '#10B981', scalingNote: 'Recurring revenue anchor. High margin opportunity.' },
-                        { name: 'Accessories', value: Math.round(totalServiceRevenue * 0.15), color: '#F59E0B', scalingNote: 'High Growth Potential. Currently estimated at 15% of service volume. Target: 25%.' }
+                        { name: 'Service Revenue', value: actualServiceRevenue, color: '#10B981', scalingNote: 'Recurring revenue anchor. High margin opportunity.' },
+                        { name: 'Accessories', value: actualAccessoryRevenue, color: '#F59E0B', scalingNote: 'Direct sales and add-ons. High growth potential.' }
                     ]
                 }
             }

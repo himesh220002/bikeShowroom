@@ -5,7 +5,7 @@ import axios from "axios";
 import { API_URL } from "@/lib/config";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wrench, Calendar, Clock, Bike, Package, CheckCircle2, ChevronRight, User } from "lucide-react";
+import { Wrench, Calendar, Clock, Bike, Package, CheckCircle2, ChevronRight, User, Plus, Minus, Trash2, Search, ShieldAlert, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { submitServiceBooking } from "@/lib/actions/serviceActions";
 import Link from "next/link";
@@ -14,14 +14,55 @@ type ServiceType = "General" | "Periodic" | "Repair" | "Spares";
 
 export function ServiceBooking() {
     const { user } = useAuth();
+    const [extraNotes, setExtraNotes] = useState("");
+    const [blinkingId, setBlinkingId] = useState<string | null>(null);
+    const [demandedIds, setDemandedIds] = useState<string[]>([]);
     const [step, setStep] = useState(1);
-    const [serviceType, setServiceType] = useState<ServiceType>("General");
+    const [serviceType, setServiceType] = useState<ServiceType[]>(["General"]);
+    const [cart, setCart] = useState<{ [id: string]: { item: any, quantity: number } }>({});
+    const [spares, setSpares] = useState<any[]>([]);
+    const [showSparePicker, setShowSparePicker] = useState(false);
+    const [spareSearchQuery, setSpareSearchQuery] = useState("");
     const [submitted, setSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [userBikes, setUserBikes] = useState<any[]>([]);
     const [availableSlots, setAvailableSlots] = useState<any[]>([]);
     const [loadingSlots, setLoadingSlots] = useState(false);
     const [defaultCapacity, setDefaultCapacity] = useState(4);
+
+    const updateCart = (newCart: { [id: string]: { item: any, quantity: number } }) => {
+        localStorage.setItem('spares_cart', JSON.stringify(newCart));
+        window.dispatchEvent(new Event('spares_cart_updated'));
+        setCart(newCart);
+    };
+
+    const handleQtyChange = (itemId: string, delta: number) => {
+        const entry = cart[itemId];
+        if (!entry) return;
+
+        if (delta > 0 && entry.quantity >= entry.item.stock) {
+            setBlinkingId(itemId);
+            setTimeout(() => setBlinkingId(null), 1000);
+            return;
+        }
+
+        const newCart = { ...cart };
+        if (delta < 0 && entry.quantity === 1) {
+            delete newCart[itemId];
+        } else {
+            newCart[itemId] = {
+                ...entry,
+                quantity: entry.quantity + delta
+            };
+        }
+        updateCart(newCart);
+    };
+
+    const handleRemoveItem = (itemId: string) => {
+        const newCart = { ...cart };
+        delete newCart[itemId];
+        updateCart(newCart);
+    };
 
     const STANDARD_SLOTS = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
 
@@ -79,6 +120,60 @@ export function ServiceBooking() {
         fetchSlots();
     }, [formData.appointmentDate]);
 
+    useEffect(() => {
+        const fetchSpares = async () => {
+            try {
+                const res = await fetch(`${API_URL}/spares`);
+                const data = await res.json();
+                if (data.success) {
+                    setSpares(data.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch spares:", err);
+            }
+        };
+        fetchSpares();
+    }, []);
+
+    const handleDemandRestock = async (spareId: string) => {
+        try {
+            const res = await axios.post(`${API_URL}/spares/${spareId}/demand`);
+            const data = res.data as any;
+            if (data.success) {
+                setDemandedIds(prev => [...prev, spareId]);
+            }
+        } catch (err) {
+            console.error("Failed to demand restock:", err);
+        }
+    };
+
+    useEffect(() => {
+        const syncCart = () => {
+            const savedCart = localStorage.getItem('spares_cart');
+            if (savedCart) {
+                try {
+                    const cartData = JSON.parse(savedCart);
+                    setCart(cartData);
+
+                    if (Object.keys(cartData).length > 0) {
+                        setServiceType(prev => prev.includes("Spares") ? prev : [...prev, "Spares"]);
+                    } else {
+                        setServiceType(prev => prev.filter(t => t !== "Spares"));
+                    }
+                } catch (e) {
+                    console.error("Failed to sync cart", e);
+                }
+            } else {
+                setCart({});
+                setServiceType(prev => prev.filter(t => t !== "Spares"));
+            }
+        };
+
+        syncCart();
+        window.addEventListener('spares_cart_updated', syncCart);
+        return () => window.removeEventListener('spares_cart_updated', syncCart);
+    }, []);
+
     const serviceOptions = [
         { id: "General", label: "General Checkup", icon: Wrench, desc: "Standard 21-point inspection" },
         { id: "Periodic", label: "Periodic Service", icon: Calendar, desc: "Based on mileage/time" },
@@ -86,20 +181,38 @@ export function ServiceBooking() {
         { id: "Spares", label: "Genuine Spares", icon: Package, desc: "Order specific parts" },
     ];
 
+    const cartItems = Object.values(cart).map((entry: any) => ({
+        itemId: entry.item._id,
+        name: entry.item.name,
+        price: entry.item.price,
+        quantity: entry.quantity,
+        itemType: (entry.item.category === 'Accessory' || !entry.item.bikeId || !['Engine', 'Transmission', 'Electrical'].includes(entry.item.category)) ? 'accessory' : 'spare'
+    }));
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Final frontend validation check
+        if (!formData.bikeModel || !formData.name || !formData.phone) {
+            alert("Please fill in all required fields (Bike Model, Name, and Phone).");
+            return;
+        }
+
         setIsSubmitting(true);
 
         const result = await submitServiceBooking({
             ...formData,
-            serviceType
+            serviceType: serviceType.join(" + "),
+            items: cartItems
         });
 
         setIsSubmitting(false);
         if (result.success) {
             setSubmitted(true);
+            localStorage.removeItem('spares_cart');
+            window.dispatchEvent(new Event('spares_cart_updated'));
         } else {
-            alert("Booking failed. Please try again.");
+            alert(result.message || "Booking failed. Please check your details and try again.");
         }
     };
 
@@ -176,20 +289,31 @@ export function ServiceBooking() {
                                         <button
                                             key={opt.id}
                                             type="button"
-                                            onClick={() => setServiceType(opt.id as any)}
+                                            onClick={() => {
+                                                setServiceType(prev =>
+                                                    prev.includes(opt.id as any)
+                                                        ? prev.filter(t => t !== opt.id)
+                                                        : [...prev, opt.id as any]
+                                                );
+                                            }}
                                             className={cn(
                                                 "p-6 rounded-2xl border text-left transition-all group",
-                                                serviceType === opt.id
+                                                serviceType.includes(opt.id as any)
                                                     ? "bg-racing-blue/10 border-racing-blue"
                                                     : "bg-background/50 border-border hover:border-racing-blue/30"
                                             )}
                                         >
                                             <div className="flex items-center gap-4">
                                                 <div className={cn(
-                                                    "w-12 h-12 rounded-xl flex items-center justify-center transition-colors",
-                                                    serviceType === opt.id ? "bg-racing-blue text-white" : "bg-muted text-muted-foreground group-hover:text-foreground"
+                                                    "w-12 h-12 rounded-xl flex items-center justify-center transition-colors relative",
+                                                    serviceType.includes(opt.id as any) ? "bg-racing-blue text-white" : "bg-muted text-muted-foreground group-hover:text-foreground"
                                                 )}>
                                                     <opt.icon className="w-6 h-6" />
+                                                    {serviceType.includes(opt.id as any) && (
+                                                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center">
+                                                            <CheckCircle2 className="w-2.5 h-2.5 text-white" />
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <h4 className="text-sm font-black text-foreground uppercase tracking-widest mb-1">{opt.label}</h4>
@@ -199,10 +323,198 @@ export function ServiceBooking() {
                                         </button>
                                     ))}
                                 </div>
+
+                                {serviceType.includes("Spares") && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-[10px] font-black text-foreground uppercase tracking-[0.2em]">Selected Spares</h4>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowSparePicker(true)}
+                                                className="flex items-center gap-2 text-[10px] font-black text-racing-blue uppercase tracking-widest bg-racing-blue/5 px-4 py-2 rounded-xl hover:bg-racing-blue/10 transition-all border border-racing-blue/20"
+                                            >
+                                                <Package className="w-3.5 h-3.5" /> Add Spare / Accessory
+                                            </button>
+                                        </div>
+
+                                        {cartItems.length > 0 ? (
+                                            <div className="space-y-2">
+                                                {cartItems.map((item, idx) => (
+                                                    <div key={idx} className="flex items-center justify-between p-4 bg-muted/20 border border-border rounded-2xl group/item">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[10px] font-black uppercase tracking-tight text-foreground">{item.name}</span>
+                                                            <span className="text-[8px] font-bold text-muted-foreground uppercase">{item.itemType} • ₹{item.price} each</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="flex items-center gap-2 bg-background/50 rounded-xl p-1 border border-border">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleQtyChange(item.itemId, -1)}
+                                                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-card hover:bg-red-500/10 text-red-500 transition-all border border-border/50 shadow-sm"
+                                                                >
+                                                                    <Minus className="w-3 h-3" />
+                                                                </button>
+                                                                <span className="text-xs font-black min-w-[1.5rem] text-center">{item.quantity}</span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleQtyChange(item.itemId, 1)}
+                                                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-card hover:bg-racing-blue/10 text-racing-blue transition-all border border-border/50 shadow-sm"
+                                                                >
+                                                                    <Plus className="w-3 h-3" />
+                                                                </button>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleRemoveItem(item.itemId)}
+                                                                className="p-2.5 text-red-500 hover:bg-red-500/10 rounded-xl transition-all opacity-40 group-hover/item:opacity-100"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="p-8 border-2 border-dashed border-border rounded-[2rem] flex flex-col items-center justify-center text-center opacity-60">
+                                                <Package className="w-8 h-8 text-muted-foreground mb-3" />
+                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">No spares selected yet</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Spare Picker Popover (Booking Form version) */}
+                                {showSparePicker && (
+                                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+                                        <div className="absolute inset-0 bg-background/80 backdrop-blur-md" onClick={() => setShowSparePicker(false)} />
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="relative w-full max-w-xl bg-card border border-border shadow-2xl rounded-[2.5rem] p-8 max-h-[80vh] flex flex-col"
+                                        >
+                                            <div className="flex items-center justify-between mb-8">
+                                                <div>
+                                                    <h4 className="text-xl font-display font-black text-foreground uppercase tracking-tighter">SELECT <span className="text-gradient">SPARE</span></h4>
+                                                    <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest">Add genuine parts to your service booking</p>
+                                                </div>
+                                                <button onClick={() => setShowSparePicker(false)} className="p-2.5 bg-muted hover:bg-racing-blue hover:text-white rounded-xl transition-all"><ChevronRight className="w-5 h-5 rotate-180" /></button>
+                                            </div>
+
+                                            <div className="relative mb-6">
+                                                <Wrench className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search spares..."
+                                                    className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-xs font-bold text-foreground focus:border-racing-blue outline-none"
+                                                    value={spareSearchQuery}
+                                                    onChange={(e) => setSpareSearchQuery(e.target.value)}
+                                                    autoFocus
+                                                />
+                                            </div>
+
+                                            <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-2">
+                                                {spares.filter(s => s.name.toLowerCase().includes(spareSearchQuery.toLowerCase())).map((spare) => (
+                                                    <button
+                                                        key={spare._id}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (spare.stock === 0) {
+                                                                handleDemandRestock(spare._id);
+                                                                return;
+                                                            }
+                                                            const entry = cart[spare._id];
+                                                            if (entry) {
+                                                                if (entry.quantity >= spare.stock) {
+                                                                    setBlinkingId(spare._id);
+                                                                    setTimeout(() => setBlinkingId(null), 1000);
+                                                                    return;
+                                                                }
+                                                                const newCart = { ...cart };
+                                                                newCart[spare._id] = {
+                                                                    ...entry,
+                                                                    quantity: entry.quantity + 1
+                                                                };
+                                                                updateCart(newCart);
+                                                            } else {
+                                                                const newCart = { ...cart };
+                                                                newCart[spare._id] = {
+                                                                    item: spare,
+                                                                    quantity: 1
+                                                                };
+                                                                updateCart(newCart);
+                                                            }
+                                                        }}
+                                                        className={cn(
+                                                            "w-full flex items-center justify-between p-5 rounded-2xl transition-all group/item border",
+                                                            spare.stock === 0
+                                                                ? (demandedIds.includes(spare._id) ? "bg-muted/30 border-border opacity-60 cursor-not-allowed" : "bg-red-500/5 border-red-500/20 hover:bg-red-500/10 hover:border-red-500/40")
+                                                                : (blinkingId === spare._id ? "bg-red-500/10 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.15)] scale-[1.02]" : "bg-muted/20 hover:bg-racing-blue/5 border-border hover:border-racing-blue/30")
+                                                        )}
+                                                    >
+                                                        <div className="flex flex-col text-left">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <span className={cn(
+                                                                    "text-xs font-black uppercase tracking-tight transition-colors",
+                                                                    spare.stock === 0 ? "text-red-500" : "text-foreground group-hover/item:text-racing-blue"
+                                                                )}>
+                                                                    {spare.name}
+                                                                </span>
+                                                                {spare.stock === 0 && (
+                                                                    <span className="text-[7px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-sm">OUT OF STOCK</span>
+                                                                )}
+                                                            </div>
+                                                            <span className="text-[9px] font-bold text-muted-foreground uppercase">
+                                                                {spare.category} • ₹{spare.price}
+                                                                {spare.stock > 0 && ` • ${spare.stock} in stock`}
+                                                                {cart[spare._id] && ` • ${cart[spare._id].quantity} added`}
+                                                            </span>
+                                                        </div>
+                                                        <div className={cn(
+                                                            "p-2 rounded-lg transition-all",
+                                                            spare.stock === 0
+                                                                ? (demandedIds.includes(spare._id) ? "bg-muted text-muted-foreground" : "bg-red-500 text-white shadow-lg shadow-red-500/20")
+                                                                : (cart[spare._id] ? "bg-racing-blue text-white opacity-100" : "bg-racing-blue/10 text-racing-blue opacity-0 group-hover/item:opacity-100")
+                                                        )}>
+                                                            {spare.stock === 0 ? (
+                                                                demandedIds.includes(spare._id) ? <UserCheck className="w-4 h-4" /> : <ShieldAlert className="w-4 h-4" />
+                                                            ) : (
+                                                                <CheckCircle2 className="w-4 h-4" />
+                                                            )}
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <div className="mt-8 pt-8 border-t border-border flex justify-end">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowSparePicker(false)}
+                                                    className="px-8 py-4 bg-racing-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-racing-blue/20"
+                                                >
+                                                    Done Selection
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    </div>
+                                )}
                                 <button
                                     type="button"
-                                    onClick={() => setStep(2)}
-                                    className="w-full py-5 bg-racing-blue text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-racing-blue/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                                    onClick={() => {
+                                        if (serviceType.length === 0) {
+                                            alert("Please select at least one service type.");
+                                            return;
+                                        }
+                                        if (serviceType.includes("Spares") && cartItems.length === 0) {
+                                            alert("You selected Genuine Spares. Please add at least one spare part or unselect Spares.");
+                                            return;
+                                        }
+                                        setStep(2);
+                                    }}
+                                    className={cn(
+                                        "w-full py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2",
+                                        serviceType.length === 0
+                                            ? "bg-muted text-muted-foreground cursor-not-allowed"
+                                            : "bg-racing-blue text-white shadow-lg shadow-racing-blue/20 hover:scale-[1.02] active:scale-[0.98]"
+                                    )}
                                 >
                                     Select Vehicle Details <ChevronRight className="w-4 h-4" />
                                 </button>
@@ -312,8 +624,19 @@ export function ServiceBooking() {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setStep(3)}
-                                        className="py-5 bg-racing-blue text-white rounded-2xl font-black text-xs md:text-sm uppercase tracking-[0.2em] shadow-lg shadow-racing-blue/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 w-full"
+                                        onClick={() => {
+                                            if (!formData.bikeModel) {
+                                                alert("Please select or enter your bike model.");
+                                                return;
+                                            }
+                                            setStep(3);
+                                        }}
+                                        className={cn(
+                                            "py-5 rounded-2xl font-black text-xs md:text-sm uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 w-full",
+                                            !formData.bikeModel
+                                                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                                                : "bg-racing-blue text-white shadow-lg shadow-racing-blue/20 hover:scale-[1.02] active:scale-[0.98]"
+                                        )}
                                     >
                                         Next: Date & Time <ChevronRight className="w-4 h-4" />
                                     </button>

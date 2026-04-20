@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import Spare from '../models/Spare';
 import Bike from '../models/Bike';
+import RestockDemand from '../models/RestockDemand';
 
 const router = Router();
 
@@ -62,6 +63,25 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a spare
+// Create a restock demand
+router.post('/:id/demand', async (req, res) => {
+    try {
+        const { customerName, customerPhone, userId } = req.body;
+        const demand = new RestockDemand({
+            spareId: req.params.id,
+            customerName,
+            customerPhone,
+            userId,
+            status: 'pending'
+        });
+        await demand.save();
+
+        res.status(201).json({ success: true, message: 'Demand recorded successfully' });
+    } catch (error: any) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+
 router.delete('/:id', async (req, res) => {
     try {
         const spare = await Spare.findByIdAndDelete(req.params.id);

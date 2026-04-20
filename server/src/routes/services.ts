@@ -3,6 +3,7 @@ import Service from '../models/Service';
 import Customer from '../models/Customer';
 import WorkshopSlot from '../models/WorkshopSlot';
 import Config from '../models/Config';
+import Spare from '../models/Spare';
 import { protect } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -25,6 +26,22 @@ router.get('/user', protect, async (req: any, res) => {
     }
 });
 
+const updateStock = async (items: any[], direction: number) => {
+    for (const item of items) {
+        if (item.itemId) {
+            await Spare.findByIdAndUpdate(item.itemId, {
+                $inc: { stock: direction * (item.quantity || 1) }
+            });
+            // Update status based on new stock
+            const updated = await Spare.findById(item.itemId);
+            if (updated) {
+                updated.status = updated.stock > 0 ? 'In Stock' : 'Out of Stock';
+                await updated.save();
+            }
+        }
+    }
+};
+
 router.post('/', async (req, res) => {
     try {
         const { name, phone, ...rest } = req.body;
@@ -36,12 +53,39 @@ router.post('/', async (req, res) => {
             await customer.save();
         }
 
-        // 2. Manage Workshop Slot with Overbooking Protection
+        // 2. Compute service number and create instance for validation
         const { appointmentDate, appointmentTime, bikeModel } = rest;
+        const priorCount = await Service.countDocuments({
+            phone,
+            bikeModel,
+            status: { $nin: ['cancelled'] }
+        });
+        const serviceNumber = priorCount + 1;
+        const autoBillingType: 'free' | 'paid' = serviceNumber <= 4 ? 'free' : 'paid';
+
+        const { items, ...serviceData } = rest;
+        let calculatedCost = rest.cost || 0;
+        if (items && Array.isArray(items)) {
+            calculatedCost = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+        }
+
+        const service = new Service({
+            ...serviceData,
+            name,
+            phone,
+            customerId: customer._id,
+            serviceNumber,
+            billingType: rest.billingType || autoBillingType,
+            items: items || [],
+            cost: calculatedCost
+        });
+
+        // 3. Explicit Validation (to prevent slot leakage if fields are missing)
+        await service.validate();
+
+        // 4. Manage Workshop Slot (only if validation passes)
         if (appointmentDate && appointmentTime) {
             const slot = await WorkshopSlot.findOne({ date: appointmentDate, slotTime: appointmentTime });
-
-            // Get default capacity from config
             const defaultCapacityConfig = await Config.findOne({ key: 'workshop_default_capacity' });
             const defaultCapacity = defaultCapacityConfig ? Number(defaultCapacityConfig.value) : 5;
 
@@ -62,29 +106,13 @@ router.post('/', async (req, res) => {
             );
         }
 
-        // 3. Compute service number for this phone + bikeModel combo
-        //    Count all prior services (non-cancelled) to determine the sequence number
-        const priorCount = await Service.countDocuments({
-            phone,
-            bikeModel,
-            status: { $nin: ['cancelled'] }
-        });
-        const serviceNumber = priorCount + 1;
-
-        // Services 1–4 are complimentary (free), 5+ are paid.
-        // Admin can always override from the Full Job Edit form.
-        const autoBillingType: 'free' | 'paid' = serviceNumber <= 4 ? 'free' : 'paid';
-
-        // 4. Create Service linked to Customer
-        const service = new Service({
-            ...rest,
-            name,
-            phone,
-            customerId: customer._id,
-            serviceNumber,
-            billingType: rest.billingType || autoBillingType
-        });
+        // 5. Final Save
         await service.save();
+
+        // 6. Update Item Stock
+        if (items && items.length > 0) {
+            await updateStock(items, -1);
+        }
 
         // Emit to all connected admin dashboards
         const io = (req as any).io;
@@ -129,6 +157,11 @@ router.put('/:id/status', async (req, res) => {
                 { date: service.appointmentDate, slotTime: service.appointmentTime },
                 { $inc: { bookedCount: -1 } }
             );
+
+            // Increment stock back if items existed
+            if (service.items && service.items.length > 0) {
+                await updateStock(service.items, 1);
+            }
         } else if (service.status === 'cancelled' && status !== 'cancelled') {
             // Re-activating a cancelled service - Check Capacity First
             const slot = await WorkshopSlot.findOne({ date: service.appointmentDate, slotTime: service.appointmentTime });
@@ -197,10 +230,17 @@ router.put('/:id/status', async (req, res) => {
 // Update full service details
 router.put('/:id', async (req, res) => {
     try {
-        const { name, phone, ...updateData } = req.body;
+        const { name, phone, items, ...updateData } = req.body;
         const updateFields: any = { ...updateData };
         if (name !== undefined) updateFields.name = name;
         if (phone !== undefined) updateFields.phone = phone;
+        if (items !== undefined) {
+            updateFields.items = items;
+            // Re-calculate cost if items are provided and cost is not explicitly set
+            if (req.body.cost === undefined) {
+                updateFields.cost = items.reduce((sum: number, item: any) => sum + (item.price * (item.quantity || 1)), 0);
+            }
+        }
 
         const service = await Service.findById(req.params.id);
         if (!service) return res.status(404).json({ success: false, message: 'Service not found' });

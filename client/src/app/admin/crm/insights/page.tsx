@@ -76,7 +76,8 @@ export default function InsightsPage() {
             serviceCompletionRate: 0,
             inventoryHealth: 0,
             noShowRate: 0
-        }
+        },
+        accessoryIntelligence = []
     } = data || {};
 
     const InsightCard = ({ title, icon: Icon, children, className }: any) => (
@@ -499,7 +500,71 @@ export default function InsightsPage() {
                 </InsightCard>
             </div>
 
-            {/* Section 4: Customer Feedback */}
+            {/* Section 4: Accessories Intelligence */}
+            <div className="grid grid-cols-1 gap-8">
+                <InsightCard title="Accessories Supply vs Market Demand" icon={Zap}>
+                    <ResponsiveContainer width="100%" height={300} debounce={100}>
+                        <ComposedChart
+                            data={accessoryIntelligence.map((acc: any) => {
+                                let color = "#10B981"; // Green (Healthy)
+                                if (acc.status === 'Critical' || acc.status === 'Out of Stock') color = "#EF4444"; // Red
+                                else if (acc.status === 'Low') color = "#F59E0B"; // Amber
+                                else if (acc.status === 'Balanced') color = "#2D6AFF"; // Blue
+
+                                return {
+                                    name: acc.name,
+                                    stock: acc.stock,
+                                    demand: Math.round(acc.demand),
+                                    color
+                                };
+                            })}
+                        >
+                            <XAxis
+                                dataKey="name"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 9, fontWeight: 900, fill: '#888888' }}
+                            />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#888888' }} />
+                            <Tooltip
+                                contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '16px', color: '#fff' }}
+                                itemStyle={{ color: '#fff' }}
+                            />
+                            <Legend />
+                            <Bar dataKey="stock" name="Current Stock" radius={[10, 10, 0, 0]}>
+                                {accessoryIntelligence.map((acc: any, index: number) => {
+                                    let color = "#10B981";
+                                    if (acc.status === 'Critical' || acc.status === 'Out of Stock') color = "#EF4444";
+                                    else if (acc.status === 'Low') color = "#F59E0B";
+                                    return <Cell key={`cell-${index}`} fill={color} />;
+                                })}
+                                <LabelList dataKey="stock" position="top" fill="#888" fontSize={9} fontWeight={900} />
+                            </Bar>
+                            <Line
+                                type="monotone"
+                                dataKey="demand"
+                                name="Market Demand (30d)"
+                                stroke="#F59E0B"
+                                strokeWidth={3}
+                                dot={{ r: 4, fill: '#F59E0B' }}
+                            />
+                        </ComposedChart>
+                    </ResponsiveContainer>
+                    <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {accessoryIntelligence.filter((acc: any) => acc.status !== 'Healthy').slice(0, 4).map((acc: any, i: number) => (
+                            <div key={i} className="p-3 bg-muted/20 border border-border/50 rounded-xl space-y-1">
+                                <h4 className="text-[9px] font-black uppercase text-foreground truncate">{acc.name}</h4>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[8px] font-black text-muted-foreground uppercase">{acc.status}</span>
+                                    <span className="text-[9px] font-display font-black text-racing-blue italic">{acc.daysToOut < 999 ? `${acc.daysToOut}d` : '∞'}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </InsightCard>
+            </div>
+
+            {/* Section 5: Customer Feedback */}
             <InsightCard
                 title="Recent Customer Feedback"
                 icon={MessageSquare}
@@ -568,9 +633,19 @@ export default function InsightsPage() {
                         {
                             type: "Focus Area",
                             title: "Restock Priority",
-                            desc: inventoryIntelligence.find((v: any) => v.status === 'Critical')
-                                ? `URGENT: ${inventoryIntelligence.find((v: any) => v.status === 'Critical').model.replace(/^Yamaha\s+/i, '')} has a monthly sale rate of ${Math.round(inventoryIntelligence.find((v: any) => v.status === 'Critical').recentVelocity * 30)} units with only ${inventoryIntelligence.find((v: any) => v.status === 'Critical').stock} left. Restock within ${inventoryIntelligence.find((v: any) => v.status === 'Critical').daysToOut} days.`
-                                : `Inventory levels are currently stable across all high-velocity models. Continue monitoring stock levels.`,
+                            desc: (() => {
+                                const criticalBike = inventoryIntelligence.find((v: any) => v.status === 'Critical');
+                                const criticalAcc = accessoryIntelligence.find((v: any) => v.status === 'Critical' || v.status === 'Out of Stock');
+
+                                if (criticalBike && criticalAcc) {
+                                    return `URGENT: ${criticalBike.model.replace(/^Yamaha\s+/i, '')} remains critical. Additionally, ${criticalAcc.name} is ${criticalAcc.status === 'Out of Stock' ? 'completely stocked out' : 'depleting rapidly'}. Prioritize consolidated shipment.`;
+                                } else if (criticalBike) {
+                                    return `URGENT: ${criticalBike.model.replace(/^Yamaha\s+/i, '')} has a monthly sale rate of ${Math.round(criticalBike.recentVelocity * 30)} units with only ${criticalBike.stock} left. Restock within ${criticalBike.daysToOut} days.`;
+                                } else if (criticalAcc) {
+                                    return `URGENT: ${criticalAcc.name} is ${criticalAcc.status === 'Out of Stock' ? 'out of stock' : 'at critical level'}. Current demand is ${Math.round(criticalAcc.demand)} units/30d. Restock immediately.`;
+                                }
+                                return `Inventory levels are currently stable across all high-velocity models and accessories. Continue monitoring stock levels.`;
+                            })(),
                             icon: Box,
                             color: "text-amber-500",
                             bg: "bg-amber-500/10"

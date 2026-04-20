@@ -13,13 +13,15 @@ import {
     LogOut,
     Calendar,
     UserCheck,
+    Wrench,
     Sun,
-    Moon
+    Moon,
+    Menu,
+    X
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
 
 const menuItems = [
     { icon: LayoutDashboard, label: "Overview", href: "/admin" },
@@ -27,6 +29,7 @@ const menuItems = [
     { icon: UserCheck, label: "Customer CRM", href: "/admin/crm" },
     { icon: BarChart2, label: "Ads & Marketing", href: "/admin/ads" },
     { icon: Calendar, label: "Service Schedule", href: "/admin/services" },
+    { icon: Wrench, label: "Accessories Billing", href: "/admin/accessories" },
     { icon: Package, label: "Inventory", href: "/admin/inventory" },
 ];
 

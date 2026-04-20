@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { Calendar, Clock, Plus, User, Bike, CheckCircle2, AlertCircle, MoreVertical, Search, Filter, Wrench, Loader2, Phone, ShieldAlert, ChevronDown, UserCheck, X, Save, MessageSquare, IndianRupee, Tag, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Calendar, Clock, Plus, User, Bike, CheckCircle2, AlertCircle, MoreVertical, Search, Filter, Wrench, Loader2, Phone, ShieldAlert, ChevronDown, UserCheck, X, Save, MessageSquare, IndianRupee, Tag, ArrowUpDown, ArrowUp, ArrowDown, Package, Minus, Trash2 } from "lucide-react";
 
 import { API_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
@@ -29,12 +29,16 @@ export function ServiceSchedule() {
         priority: "Normal",
         technician: "",
         billingType: "paid" as 'free' | 'paid',
-        cost: 0
+        cost: 0,
+        items: [] as any[]
     });
+    const [spares, setSpares] = useState<any[]>([]);
+    const [showSparePicker, setShowSparePicker] = useState(false);
     const [updating, setUpdating] = useState(false);
     const [openStatusId, setOpenStatusId] = useState<string | null>(null);
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [spareSearchQuery, setSpareSearchQuery] = useState("");
 
     const [sortBy, setSortBy] = useState("newest");
     const [filterStatus, setFilterStatus] = useState("all");
@@ -46,6 +50,12 @@ export function ServiceSchedule() {
     const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 50;
+
+    useEffect(() => {
+        if (!isEditModalOpen) {
+            setShowSparePicker(false);
+        }
+    }, [isEditModalOpen]);
 
     const handleSort = (key: string) => {
         let direction: 'asc' | 'desc' = 'asc';
@@ -101,8 +111,10 @@ export function ServiceSchedule() {
             priority: job.priority,
             technician: job.technician === "Unassigned" ? "" : job.technician,
             billingType: job.billingType || 'paid',
-            cost: job.cost || 0
+            cost: job.cost || 0,
+            items: job.items || []
         });
+        setShowSparePicker(false);
         setIsEditModalOpen(true);
     };
 
@@ -124,7 +136,8 @@ export function ServiceSchedule() {
                     priority: editForm.priority,
                     technicianName: editForm.technician,
                     billingType: editForm.billingType,
-                    cost: editForm.cost
+                    cost: editForm.cost,
+                    items: editForm.items
                 })
             });
             const data = await res.json();
@@ -144,7 +157,8 @@ export function ServiceSchedule() {
                         priority: updated.priority,
                         technician: updated.technicianName || "Unassigned",
                         billingType: updated.billingType || 'paid',
-                        cost: updated.cost || 0
+                        cost: updated.cost || 0,
+                        items: updated.items || []
                     } : job
                 ));
                 setIsEditModalOpen(false);
@@ -235,6 +249,7 @@ export function ServiceSchedule() {
                     cost: updatedService.cost || 0,
                     billingType: updatedService.billingType || 'paid',
                     serviceNumber: updatedService.serviceNumber || 1,
+                    items: updatedService.items || [],
                     deliveredAt: updatedService.deliveredAt || null
                 } : job
             ));
@@ -258,6 +273,7 @@ export function ServiceSchedule() {
                 cost: newService.cost || 0,
                 billingType: newService.billingType || 'paid',
                 serviceNumber: newService.serviceNumber || 1,
+                items: newService.items || [],
                 deliveredAt: newService.deliveredAt || null
             };
             setJobs(prev => [formatted, ...prev]);
@@ -291,6 +307,7 @@ export function ServiceSchedule() {
                         cost: s.cost || 0,
                         billingType: s.billingType || 'paid',
                         serviceNumber: s.serviceNumber || 1,
+                        items: s.items || [],
                         deliveredAt: s.deliveredAt || null
                     }));
                     setJobs(formatted);
@@ -301,7 +318,18 @@ export function ServiceSchedule() {
                 setLoading(false);
             }
         };
+        const fetchSpares = async () => {
+            try {
+                const res = await fetch(`${API_URL}/spares`);
+                const data = await res.json();
+                if (data.success) setSpares(data.data);
+            } catch (err) {
+                console.error("Failed to fetch spares:", err);
+            }
+        };
+
         fetchServices();
+        fetchSpares();
     }, []);
 
     const processedJobs = useMemo(() => {
@@ -906,7 +934,7 @@ export function ServiceSchedule() {
                         >
                             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-racing-blue/50 via-racing-blue to-racing-blue/50" />
 
-                            <div className="p-8 md:p-12">
+                            <div className="p-8 md:p-12 max-h-[90vh] overflow-y-auto custom-scrollbar relative">
                                 <div className="flex items-center justify-between mb-8">
                                     <div>
                                         <h3 className="text-xl font-display font-black text-foreground uppercase tracking-tighter">
@@ -975,7 +1003,6 @@ export function ServiceSchedule() {
                                                     value={editForm.regNumber}
                                                     onChange={(e) => setEditForm({ ...editForm, regNumber: e.target.value })}
                                                     className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-3.5 text-xs font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all"
-                                                    required
                                                 />
                                             </div>
                                         </div>
@@ -1053,6 +1080,194 @@ export function ServiceSchedule() {
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* Items & Accessories Section */}
+                                    <div className="border border-border/60 rounded-2xl p-5 space-y-4 bg-muted/5">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+                                                <Package className="w-3.5 h-3.5" /> Items & Accessories
+                                            </p>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowSparePicker(true)}
+                                                className="px-3 py-1.5 bg-racing-blue text-white rounded-lg text-[8px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-racing-blue/20 flex items-center gap-1.5"
+                                            >
+                                                <Plus className="w-3 h-3" /> Add Item
+                                            </button>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            {editForm.items.length === 0 ? (
+                                                <p className="text-[10px] text-muted-foreground italic text-center py-4 border border-dashed border-border rounded-xl">No items added to this job yet.</p>
+                                            ) : (
+                                                <div className="max-h-40 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+                                                    {editForm.items.map((item, idx) => (
+                                                        <div key={idx} className="flex items-center justify-between p-3 bg-background border border-border rounded-xl group/item">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-[10px] font-black uppercase tracking-tight text-foreground">{item.name}</span>
+                                                                <span className="text-[8px] font-bold text-muted-foreground uppercase">{item.itemType} • ₹{item.price} each</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-4">
+                                                                <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-0.5 border border-border">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            const newItems = [...editForm.items];
+                                                                            newItems[idx].quantity = Math.max(1, newItems[idx].quantity - 1);
+                                                                            const newCost = newItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                                                                            setEditForm({ ...editForm, items: newItems, cost: newCost });
+                                                                        }}
+                                                                        className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-red-50 text-red-500 transition-colors shadow-sm"
+                                                                    >
+                                                                        <Minus className="w-2.5 h-2.5" />
+                                                                    </button>
+                                                                    <span className="text-[10px] font-black w-4 text-center">{item.quantity}</span>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            const spare = spares.find(s => s._id === item.itemId);
+                                                                            if (spare && item.quantity >= spare.stock) {
+                                                                                alert(`Sorry, only ${spare.stock} units available.`);
+                                                                                return;
+                                                                            }
+                                                                            const newItems = [...editForm.items];
+                                                                            newItems[idx].quantity += 1;
+                                                                            const newCost = newItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                                                                            setEditForm({ ...editForm, items: newItems, cost: newCost });
+                                                                        }}
+                                                                        className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-green-50 text-green-500 transition-colors shadow-sm"
+                                                                    >
+                                                                        <Plus className="w-2.5 h-2.5" />
+                                                                    </button>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const newItems = editForm.items.filter((_, i) => i !== idx);
+                                                                        const newCost = newItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                                                                        setEditForm({ ...editForm, items: newItems, cost: newCost });
+                                                                    }}
+                                                                    className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Spare Picker Popover */}
+                                    {showSparePicker && (
+                                        <div
+                                            className="absolute inset-0 z-[110] bg-card/95 backdrop-blur-md p-8 md:p-12 flex flex-col cursor-pointer"
+                                            onClick={() => setShowSparePicker(false)}
+                                        >
+                                            <div
+                                                className="flex-1 flex flex-col cursor-default"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <div className="flex items-center justify-between mb-8">
+                                                    <div>
+                                                        <h4 className="text-lg font-display font-black text-foreground uppercase tracking-tighter">SELECT <span className="text-gradient">SPARE / ACCESSORY</span></h4>
+                                                        <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest">Search and add genuine Yamaha parts</p>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowSparePicker(false)}
+                                                        className="p-2 hover:bg-muted rounded-xl transition-colors"
+                                                    >
+                                                        <X className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+
+                                                <div className="relative mb-6">
+                                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Search by part name, category or bike..."
+                                                        className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-3.5 text-xs font-bold text-foreground focus:border-racing-blue outline-none"
+                                                        autoFocus
+                                                        value={spareSearchQuery}
+                                                        onChange={(e) => setSpareSearchQuery(e.target.value)}
+                                                    />
+                                                </div>
+
+                                                <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1">
+                                                    {spares.filter(s =>
+                                                        s.name.toLowerCase().includes(spareSearchQuery.toLowerCase()) ||
+                                                        s.category.toLowerCase().includes(spareSearchQuery.toLowerCase()) ||
+                                                        (s.bikeId?.name || "").toLowerCase().includes(spareSearchQuery.toLowerCase())
+                                                    ).map((spare) => {
+                                                        const isAdded = editForm.items.some(i => i.itemId === spare._id);
+                                                        return (
+                                                            <button
+                                                                key={spare._id}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const existingIdx = editForm.items.findIndex(i => i.itemId === spare._id);
+                                                                    let newItems = [...editForm.items];
+                                                                    if (existingIdx > -1) {
+                                                                        if (newItems[existingIdx].quantity >= spare.stock) {
+                                                                            alert(`Sorry, only ${spare.stock} units available.`);
+                                                                            return;
+                                                                        }
+                                                                        newItems[existingIdx].quantity += 1;
+                                                                    } else {
+                                                                        if (spare.stock < 1) {
+                                                                            alert("Sorry, out of stock.");
+                                                                            return;
+                                                                        }
+                                                                        newItems.push({
+                                                                            itemId: spare._id,
+                                                                            name: spare.name,
+                                                                            price: spare.price,
+                                                                            quantity: 1,
+                                                                            itemType: spare.category === 'Accessory' ? 'accessory' : 'spare'
+                                                                        });
+                                                                    }
+                                                                    const newCost = newItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                                                                    setEditForm({ ...editForm, items: newItems, cost: newCost });
+                                                                    // Do NOT close picker for rapid selection
+                                                                }}
+                                                                className={cn(
+                                                                    "w-full flex items-center justify-between p-4 border rounded-2xl transition-all group/part",
+                                                                    isAdded
+                                                                        ? "bg-racing-blue/5 border-racing-blue"
+                                                                        : "bg-muted/30 hover:bg-racing-blue/5 border-border hover:border-racing-blue/30"
+                                                                )}
+                                                            >
+                                                                <div className="flex flex-col text-left">
+                                                                    <span className="text-[10px] font-black uppercase tracking-tight text-foreground group-hover/part:text-racing-blue transition-colors">
+                                                                        {spare.name}
+                                                                        {isAdded && <span className="ml-2 bg-racing-blue text-white text-[7px] px-1.5 py-0.5 rounded-full">ADDED</span>}
+                                                                    </span>
+                                                                    <span className="text-[8px] font-bold text-muted-foreground uppercase">{spare.bikeId?.name || "All Bikes"} • {spare.category}</span>
+                                                                </div>
+                                                                <div className="flex flex-col items-end">
+                                                                    <span className="text-xs font-display font-black text-foreground">₹{spare.price}</span>
+                                                                    <span className={cn("text-[7px] font-black uppercase tracking-widest", spare.stock > 0 ? "text-emerald-500" : "text-red-500")}>
+                                                                        {spare.stock > 0 ? `In Stock (${spare.stock})` : "Out of Stock"}
+                                                                    </span>
+                                                                </div>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                                <div className="mt-4 pt-4 border-t border-border flex justify-end">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowSparePicker(false)}
+                                                        className="px-6 py-2 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                                    >
+                                                        Done Selection
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {/* Billing Section */}
                                     <div className="border border-border/60 rounded-2xl p-5 space-y-4 bg-muted/10">

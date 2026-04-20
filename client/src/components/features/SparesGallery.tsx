@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ChevronRight, Package, Info, ShoppingCart } from "lucide-react";
+import { Search, ChevronRight, Package, Info, ShoppingCart, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import axios from "axios";
 import { API_URL } from "@/lib/config";
+import { submitServiceBooking } from "@/lib/actions/serviceActions";
 
 export function SparesGallery() {
     const [bikes, setBikes] = useState<any[]>([]);
@@ -13,13 +14,80 @@ export function SparesGallery() {
     const [spares, setSpares] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [cart, setCart] = useState<{ [id: string]: { item: any, quantity: number } }>({});
+    const [blinkingId, setBlinkingId] = useState<string | null>(null);
+    const [demandedIds, setDemandedIds] = useState<string[]>([]);
+
+    // Load cart from localStorage on mount
+    useEffect(() => {
+        const savedCart = localStorage.getItem('spares_cart');
+        if (savedCart) {
+            try {
+                setCart(JSON.parse(savedCart));
+            } catch (e) {
+                console.error("Failed to parse cart", e);
+            }
+        }
+    }, []);
+
+    // Save cart to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('spares_cart', JSON.stringify(cart));
+        // Dispatch a custom event to notify ServiceBooking if it's on the same page
+        window.dispatchEvent(new Event('spares_cart_updated'));
+    }, [cart]);
+
+    const addToCart = (item: any) => {
+        const currentQty = cart[item._id]?.quantity || 0;
+        if (currentQty >= item.stock) {
+            setBlinkingId(item._id);
+            setTimeout(() => setBlinkingId(null), 1000);
+            return;
+        }
+        setCart(prev => ({
+            ...prev,
+            [item._id]: {
+                item,
+                quantity: currentQty + 1
+            }
+        }));
+    };
+
+    const removeFromCart = (id: string) => {
+        setCart(prev => {
+            if (!prev[id]) return prev;
+            const newCart = { ...prev };
+            if (newCart[id].quantity > 1) {
+                newCart[id].quantity -= 1;
+            } else {
+                delete newCart[id];
+            }
+            return newCart;
+        });
+    };
+
+    const handleDemandRestock = async (spareId: string) => {
+        try {
+            const res = await axios.post(`${API_URL}/spares/${spareId}/demand`);
+            const data = res.data as any;
+            if (data.success) {
+                setDemandedIds(prev => [...prev, spareId]);
+            }
+        } catch (err) {
+            console.error("Failed to demand restock:", err);
+        }
+    };
+
+    const cartCount = Object.values(cart).reduce((sum, entry) => sum + entry.quantity, 0);
+    const cartTotal = Object.values(cart).reduce((sum, entry) => sum + (entry.item.price * entry.quantity), 0);
 
     useEffect(() => {
         // Fetch bikes for selection
         axios.get(`${API_URL}/bikes`)
             .then(res => {
-                if (res.data.success) {
-                    const fetchedBikes = res.data.data;
+                const data = res.data as any;
+                if (data.success) {
+                    const fetchedBikes = data.data;
                     setBikes(fetchedBikes);
                     // Default to 'Common Spares' if it exists or define a placeholder
                     setSelectedBike({ _id: 'common', name: 'Common Spares' });
@@ -37,10 +105,14 @@ export function SparesGallery() {
 
             axios.get(url)
                 .then(res => {
-                    if (res.data.success) setSpares(res.data.data);
+                    const data = res.data as any;
+                    if (data.success) setSpares(data.data);
+                    setLoading(false);
                 })
-                .catch(err => console.error("Failed to fetch spares:", err))
-                .finally(() => setLoading(false));
+                .catch(err => {
+                    console.error("Failed to fetch spares:", err);
+                    setLoading(false);
+                });
         }
     }, [selectedBike]);
 
@@ -119,6 +191,22 @@ export function SparesGallery() {
                             Viewing: <span className="text-racing-blue">{selectedBike?.name}</span>
                         </h3>
                     </div>
+                    {cartCount > 0 && (
+                        <div className="flex-shrink-0 bg-racing-blue/10 border border-racing-blue/20 rounded-2xl px-6 py-3 flex items-center gap-4 animate-in fade-in slide-in-from-right-4 duration-500">
+                            <div className="flex flex-col">
+                                <span className="text-[8px] font-black uppercase tracking-widest text-racing-blue leading-none mb-1">Cart Summary</span>
+                                <span className="text-sm font-display font-black text-white italic tracking-tighter line-clamp-1">
+                                    {cartCount} Items • ₹{cartTotal}
+                                </span>
+                            </div>
+                            <button
+                                onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}
+                                className="p-2.5 bg-racing-blue text-white rounded-xl hover:scale-110 active:scale-95 transition-all shadow-lg shadow-racing-blue/20"
+                            >
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="min-h-[400px] relative">
@@ -147,7 +235,7 @@ export function SparesGallery() {
                                                 alt={spare.name}
                                                 className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                                             />
-                                            {spare.status === 'Out of Stock' && (
+                                            {spare.stock === 0 && (
                                                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
                                                     <span className="text-[10px] font-black uppercase tracking-widest text-red-500 border border-red-500/50 px-4 py-2 rounded-full">Out of Stock</span>
                                                 </div>
@@ -169,13 +257,67 @@ export function SparesGallery() {
                                             </p>
                                         </div>
 
-                                        <button
-                                            disabled={spare.status === 'Out of Stock'}
-                                            className="w-full py-4 bg-muted hover:bg-racing-blue text-foreground hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 mt-auto disabled:opacity-50 disabled:cursor-not-allowed group/btn"
-                                        >
-                                            <Info className="w-4 h-4 opacity-50 group-hover/btn:opacity-100" />
-                                            Request Quote
-                                        </button>
+                                        <div className="mt-auto">
+                                            {spare.stock === 0 ? (
+                                                <button
+                                                    onClick={() => handleDemandRestock(spare._id)}
+                                                    disabled={demandedIds.includes(spare._id)}
+                                                    className={cn(
+                                                        "w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg",
+                                                        demandedIds.includes(spare._id)
+                                                            ? "bg-muted text-muted-foreground border border-border cursor-not-allowed"
+                                                            : "bg-red-500 text-white hover:bg-red-600 shadow-red-500/20 active:scale-95"
+                                                    )}
+                                                >
+                                                    {demandedIds.includes(spare._id) ? "RESTOCK DEMANDED" : "DEMAND RESTOCK"}
+                                                </button>
+                                            ) : cart[spare._id] ? (
+                                                <motion.div
+                                                    animate={blinkingId === spare._id ? {
+                                                        borderColor: ['rgba(255,0,0,0.2)', 'rgba(255,0,0,0.8)', 'rgba(255,0,0,0.2)'],
+                                                        backgroundColor: ['rgba(255,0,0,0)', 'rgba(255,0,0,0.05)', 'rgba(255,0,0,0)']
+                                                    } : {}}
+                                                    transition={{ duration: 0.2, repeat: blinkingId === spare._id ? 5 : 0 }}
+                                                    className={cn(
+                                                        "flex items-center gap-2 bg-racing-blue/5 rounded-2xl p-1 border border-racing-blue/20",
+                                                        blinkingId === spare._id && "border-red-500 bg-red-500/5 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                                                    )}
+                                                >
+                                                    <button
+                                                        onClick={() => removeFromCart(spare._id)}
+                                                        className="w-10 h-10 flex items-center justify-center bg-muted hover:bg-red-500/10 text-foreground hover:text-red-500 rounded-xl transition-all"
+                                                    >
+                                                        <Minus className="w-4 h-4" />
+                                                    </button>
+                                                    <div className="flex-1 text-center flex flex-col">
+                                                        <span className="text-xs font-black text-foreground">{cart[spare._id].quantity}</span>
+                                                        <span className="text-[7px] font-bold text-muted-foreground uppercase">of {spare.stock}</span>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => addToCart(spare)}
+                                                        disabled={cart[spare._id].quantity >= spare.stock}
+                                                        className={cn(
+                                                            "w-10 h-10 flex items-center justify-center rounded-xl transition-all",
+                                                            cart[spare._id].quantity >= spare.stock
+                                                                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                                                                : "bg-racing-blue text-white hover:scale-105"
+                                                        )}
+                                                    >
+                                                        <Plus className="w-4 h-4" />
+                                                    </button>
+                                                </motion.div>
+                                            ) : (
+                                                <button
+                                                    onClick={() => addToCart(spare)}
+                                                    className="w-full py-4 bg-muted hover:bg-racing-blue text-foreground hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3 group/btn border border-border hover:border-racing-blue shadow-lg shadow-black/5"
+                                                >
+                                                    <div className="p-1.5 bg-background group-hover/btn:bg-white/20 rounded-lg transition-colors">
+                                                        <ShoppingCart className="w-3.5 h-3.5" />
+                                                    </div>
+                                                    Add to Cart
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </motion.div>

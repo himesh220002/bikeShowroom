@@ -23,6 +23,13 @@ export interface IService extends Document {
     cost: number;
     billingType: 'free' | 'paid';
     serviceNumber: number;   // 1-based count per phone+bikeModel; 1-4 = free, 5+ = paid
+    items?: {
+        itemId?: mongoose.Types.ObjectId;
+        name: string;
+        price: number;
+        quantity: number;
+        itemType: 'spare' | 'accessory' | 'labour';
+    }[];
     rating?: number;
     ratedAt?: Date;
     feedback?: string;
@@ -35,7 +42,7 @@ const ServiceSchema: Schema = new Schema({
     customerId: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
     serviceType: { type: String, required: true },
     bikeModel: { type: String, required: true },
-    regNumber: { type: String, required: true },
+    regNumber: { type: String },
     chassisNumber: { type: String },
     notes: { type: String },
     name: { type: String, required: true },
@@ -53,6 +60,13 @@ const ServiceSchema: Schema = new Schema({
     cost: { type: Number, default: 0 },
     billingType: { type: String, enum: ['free', 'paid'], default: 'paid' },
     serviceNumber: { type: Number, default: 1 },
+    items: [{
+        itemId: { type: Schema.Types.ObjectId, ref: 'Spare' },
+        name: { type: String, required: true },
+        price: { type: Number, required: true },
+        quantity: { type: Number, default: 1 },
+        itemType: { type: String, enum: ['spare', 'accessory', 'labour'], default: 'spare' }
+    }],
     rating: { type: Number, min: 0, max: 10 },
     ratedAt: { type: Date },
     feedback: { type: String },
