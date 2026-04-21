@@ -6,7 +6,12 @@ import type { Metadata } from "next";
 
 async function getBike(slug: string) {
     try {
-        const res = await fetch(`${API_URL}/bikes/slug/${slug}`, { next: { revalidate: 3600 } });
+        const res = await fetch(`${API_URL}/bikes/slug/${slug}`, {
+            next: {
+                revalidate: 300,
+                tags: ['bikes', `bike-${slug}`]
+            }
+        });
         const data = await res.json();
         if (data.success) {
             return data.data;

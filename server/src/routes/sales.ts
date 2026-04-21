@@ -4,6 +4,7 @@ import Sale from '../models/Sale';
 import Bike from '../models/Bike';
 import Customer from '../models/Customer';
 import UserBike from '../models/UserBike';
+import { triggerRevalidation } from '../utils/revalidate';
 
 const router = Router();
 
@@ -90,6 +91,10 @@ router.post('/', async (req, res) => {
             io.emit('sale_recorded', sale.toObject());
             io.emit('inventory_updated', bike.toObject());
         }
+
+        // Trigger Next.js revalidation
+        triggerRevalidation('bikes');
+        triggerRevalidation(`bike-${bike.slug}`);
 
         res.status(201).json({ success: true, data: sale });
     } catch (error: any) {

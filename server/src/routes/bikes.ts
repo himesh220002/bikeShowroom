@@ -3,6 +3,7 @@ import { z } from 'zod';
 import Bike from '../models/Bike';
 import { validate } from '../middleware/validation';
 import { requestQueue } from '../middleware/request-queue';
+import { triggerRevalidation } from '../utils/revalidate';
 
 const router = Router();
 
@@ -82,6 +83,10 @@ router.put('/:id', bikeQueue, validate(updateBikeSchema), async (req, res) => {
             (req as any).io.emit('inventory_updated', bike);
         }
 
+        // Trigger Next.js revalidation
+        triggerRevalidation('bikes');
+        triggerRevalidation(`bike-${bike.slug}`);
+
         res.json({ success: true, data: bike });
     } catch (error: any) {
         res.status(400).json({ success: false, error: error.message });
@@ -98,6 +103,9 @@ router.delete('/:id', bikeQueue, async (req, res) => {
         if ((req as any).io) {
             (req as any).io.emit('inventory_synced', await Bike.find({}));
         }
+
+        // Trigger Next.js revalidation
+        triggerRevalidation('bikes');
 
         res.json({ success: true, message: 'Bike deleted successfully' });
     } catch (error: any) {
