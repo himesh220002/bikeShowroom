@@ -9,13 +9,16 @@ const router = Router();
 router.post('/', async (req, res) => {
     try {
         const spareData = { ...req.body };
-        if (spareData.bikeId === "") spareData.bikeId = null;
+        if (spareData.bikeId && !spareData.bikeIds) {
+            spareData.bikeIds = [spareData.bikeId];
+        }
+        if (!spareData.bikeIds) spareData.bikeIds = [];
         const spare = new Spare(spareData);
         await spare.save();
 
         const io = (req as any).io;
         if (io) {
-            const updatedSpares = await Spare.find().populate('bikeId');
+            const updatedSpares = await Spare.find().populate('bikeIds');
             io.emit('spares_updated', updatedSpares);
         }
 
@@ -31,11 +34,11 @@ router.get('/', async (req, res) => {
         const { bikeId } = req.query;
         let query = {};
         if (bikeId === 'common') {
-            query = { bikeId: null };
+            query = { bikeIds: { $size: 0 } };
         } else if (bikeId) {
-            query = { bikeId };
+            query = { bikeIds: bikeId };
         }
-        const spares = await Spare.find(query).populate('bikeId').sort({ createdAt: -1 });
+        const spares = await Spare.find(query).populate('bikeIds').sort({ createdAt: -1 });
         res.json({ success: true, data: spares });
     } catch (error: any) {
         res.status(500).json({ success: false, error: error.message });
@@ -46,13 +49,16 @@ router.get('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const updateData = { ...req.body };
-        if (updateData.bikeId === "") updateData.bikeId = null;
+        if (updateData.bikeId && !updateData.bikeIds) {
+            updateData.bikeIds = [updateData.bikeId];
+        }
+        if (!updateData.bikeIds) updateData.bikeIds = [];
         const spare = await Spare.findByIdAndUpdate(req.params.id, updateData, { new: true });
         if (!spare) return res.status(404).json({ success: false, message: 'Spare not found' });
 
         const io = (req as any).io;
         if (io) {
-            const updatedSpares = await Spare.find().populate('bikeId');
+            const updatedSpares = await Spare.find().populate('bikeIds');
             io.emit('spares_updated', updatedSpares);
         }
 
@@ -89,7 +95,7 @@ router.delete('/:id', async (req, res) => {
 
         const io = (req as any).io;
         if (io) {
-            const updatedSpares = await Spare.find().populate('bikeId');
+            const updatedSpares = await Spare.find().populate('bikeIds');
             io.emit('spares_updated', updatedSpares);
         }
 

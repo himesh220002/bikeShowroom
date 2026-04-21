@@ -6,8 +6,9 @@ export interface ISpare extends Document {
     price: number;
     description: string;
     image: string;
-    bikeId: mongoose.Types.ObjectId;
+    bikeIds: mongoose.Types.ObjectId[];
     category: string;
+    subCategory?: string;
     stock: number;
     status: 'In Stock' | 'Out of Stock';
 }
@@ -18,8 +19,9 @@ const SpareSchema: Schema = new Schema({
     price: { type: Number, required: true },
     description: { type: String, required: true },
     image: { type: String, required: true },
-    bikeId: { type: Schema.Types.ObjectId, ref: 'Bike' },
+    bikeIds: [{ type: Schema.Types.ObjectId, ref: 'Bike' }],
     category: { type: String, default: 'General' },
+    subCategory: { type: String, enum: ['Apparels', 'Helmets', 'Accessories', ''], default: '' },
     stock: { type: Number, default: 0 },
     status: { type: String, enum: ['In Stock', 'Out of Stock'], default: 'In Stock' }
 }, { timestamps: true });

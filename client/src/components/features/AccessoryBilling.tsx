@@ -57,6 +57,7 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                 name: spare.name,
                 price: spare.price,
                 quantity: 1,
+                stock: spare.stock,
                 itemType: (spare.category === 'Accessory' || !spare.bikeId || !['Engine', 'Transmission', 'Electrical'].includes(spare.category)) ? 'accessory' : 'spare'
             }];
         }
@@ -122,7 +123,8 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
 
     const filteredSpares = spares.filter(s =>
         s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.category.toLowerCase().includes(searchQuery.toLowerCase())
+        s.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.bikeIds?.some((b: any) => b.name?.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     return (
@@ -207,7 +209,14 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                                         >
                                             <div className="flex flex-col">
                                                 <span className="text-sm font-display font-black text-foreground uppercase tracking-tight">{item.name}</span>
-                                                <span className="text-[9px] font-bold text-muted-foreground uppercase">₹{item.price} • {item.itemType}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[9px] font-bold text-muted-foreground uppercase">₹{item.price} • {item.itemType}</span>
+                                                    {item.quantity > item.stock && (
+                                                        <span className="text-[8px] font-black bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">
+                                                            Low Stock: {item.stock} Avail.
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                             <div className="flex items-center gap-6">
                                                 <div className="flex items-center gap-3 bg-background border border-border p-1 rounded-xl">
@@ -342,7 +351,11 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                                                 </div>
                                                 <div className="text-left">
                                                     <span className="text-xs font-black uppercase tracking-tight text-foreground block group-hover/item:text-orange-500 transition-colors">{spare.name}</span>
-                                                    <span className="text-[10px] font-bold text-muted-foreground uppercase">{spare.category} • {spare.bikeId?.name || "All Bikes"}</span>
+                                                    <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                                                        {spare.category} • {spare.bikeIds && spare.bikeIds.length > 0
+                                                            ? (spare.bikeIds.length > 1 ? `${spare.bikeIds[0].name} +${spare.bikeIds.length - 1}` : spare.bikeIds[0].name)
+                                                            : "All Bikes"}
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div className="flex flex-col items-end">

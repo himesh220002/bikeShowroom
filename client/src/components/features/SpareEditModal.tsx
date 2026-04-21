@@ -22,8 +22,9 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
         price: 0,
         description: "",
         image: "",
-        bikeId: "",
+        bikeIds: [] as string[],
         category: "General",
+        subCategory: "",
         stock: 0,
         status: "In Stock"
     });
@@ -32,7 +33,7 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
         if (spare) {
             setFormData({
                 ...spare,
-                bikeId: spare.bikeId?._id || spare.bikeId || ""
+                bikeIds: spare.bikeIds?.map((b: any) => b._id || b) || (spare.bikeId ? [spare.bikeId?._id || spare.bikeId] : [])
             });
         } else {
             setFormData({
@@ -41,8 +42,9 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                 price: 0,
                 description: "",
                 image: "",
-                bikeId: bikes[0]?._id || "",
+                bikeIds: [],
                 category: "General",
+                subCategory: "",
                 stock: 0,
                 status: "In Stock"
             });
@@ -143,16 +145,39 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                                     <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">
                                         <Box className="w-3 h-3" /> Compatible Bike
                                     </label>
-                                    <select
-                                        value={formData.bikeId}
-                                        onChange={(e) => setFormData({ ...formData, bikeId: e.target.value })}
-                                        className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all appearance-none"
-                                    >
-                                        <option value="">Common / Universal (No Bike)</option>
+                                    <div className="bg-background border border-border rounded-2xl p-4 max-h-[160px] overflow-y-auto custom-scrollbar space-y-2">
+                                        <label className="flex items-center gap-3 p-2 hover:bg-muted/50 rounded-xl cursor-not-allowed opacity-50 transition-colors group">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.bikeIds.length === 0}
+                                                readOnly
+                                                className="w-4 h-4 rounded border-border text-racing-blue focus:ring-racing-blue cursor-not-allowed"
+                                            />
+                                            <span className="text-xs font-bold uppercase tracking-tight">Common / Universal</span>
+                                        </label>
+                                        <div className="h-px bg-border/50 mx-2" />
                                         {bikes.map(bike => (
-                                            <option key={bike._id} value={bike._id}>{bike.name}</option>
+                                            <label key={bike._id} className="flex items-center gap-3 p-2 hover:bg-muted/50 rounded-xl cursor-pointer transition-colors group">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.bikeIds.includes(bike._id)}
+                                                    onChange={(e) => {
+                                                        const newIds = e.target.checked
+                                                            ? [...formData.bikeIds, bike._id]
+                                                            : formData.bikeIds.filter((id: string) => id !== bike._id);
+                                                        setFormData({ ...formData, bikeIds: newIds });
+                                                    }}
+                                                    className="w-4 h-4 rounded border-border text-racing-blue focus:ring-racing-blue cursor-pointer"
+                                                />
+                                                <span className={cn(
+                                                    "text-xs font-bold uppercase tracking-tight transition-colors",
+                                                    formData.bikeIds.includes(bike._id) ? "text-racing-blue" : "text-muted-foreground group-hover:text-foreground"
+                                                )}>
+                                                    {bike.name}
+                                                </span>
+                                            </label>
                                         ))}
-                                    </select>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-2">
@@ -213,14 +238,37 @@ export function SpareEditModal({ isOpen, onClose, spare, bikes, onSave }: SpareE
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Category</label>
-                                    <input
-                                        value={formData.category}
-                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                        placeholder="e.g. Engine, Electronics, Body"
-                                        className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
-                                    />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Category</label>
+                                        <select
+                                            value={formData.category}
+                                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                            className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                        >
+                                            <option value="General">General</option>
+                                            <option value="Body">Body</option>
+                                            <option value="Engine">Engine</option>
+                                            <option value="Electronics">Electronics</option>
+                                            <option value="Service">Service</option>
+                                            <option value="Tyres">Tyres</option>
+                                            <option value="Lubricants">Lubricants</option>
+                                            <option value="Accessory">Accessory</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Sub Category</label>
+                                        <select
+                                            value={formData.subCategory || ""}
+                                            onChange={(e) => setFormData({ ...formData, subCategory: e.target.value })}
+                                            className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-racing-blue transition-all"
+                                        >
+                                            <option value="">None</option>
+                                            <option value="Apparels">Apparels</option>
+                                            <option value="Helmets">Helmets</option>
+                                            <option value="Accessories">Accessories</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </form>

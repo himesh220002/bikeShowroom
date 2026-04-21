@@ -99,9 +99,14 @@ export function SparesGallery() {
     useEffect(() => {
         if (selectedBike) {
             setLoading(true);
-            const url = selectedBike._id === 'common'
-                ? `${API_URL}/spares?bikeId=common`
-                : `${API_URL}/spares?bikeId=${selectedBike._id}`;
+            let url = `${API_URL}/spares`;
+            if (selectedBike._id === 'common') {
+                url = `${API_URL}/spares?bikeId=common`;
+            } else if (selectedBike._id === 'all') {
+                url = `${API_URL}/spares`;
+            } else {
+                url = `${API_URL}/spares?bikeId=${selectedBike._id}`;
+            }
 
             axios.get(url)
                 .then(res => {
@@ -116,13 +121,21 @@ export function SparesGallery() {
         }
     }, [selectedBike]);
 
-    const filteredSpares = spares.filter(s =>
+    const sortedSpares = [...spares].sort((a, b) => {
+        const subA = a.subCategory || "ZZZ"; // Put items without subCategory at the end
+        const subB = b.subCategory || "ZZZ";
+        return subA.localeCompare(subB);
+    });
+
+    const filteredSpares = sortedSpares.filter(s =>
         s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.category.toLowerCase().includes(searchQuery.toLowerCase())
+        s.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.subCategory?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.bikeIds?.some((b: any) => b.name?.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     return (
-        <div className="space-y-12">
+        <div className="w-full space-y-12">
             {/* Selection Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-border">
                 <div className="space-y-4">
@@ -148,6 +161,7 @@ export function SparesGallery() {
                                 onChange={(e) => {
                                     const val = e.target.value;
                                     if (val === 'common') setSelectedBike({ _id: 'common', name: 'Common Spares' });
+                                    else if (val === 'all') setSelectedBike({ _id: 'all', name: 'All Available Spares' });
                                     else {
                                         const bike = bikes.find(b => b._id === val);
                                         if (bike) setSelectedBike(bike);
@@ -156,6 +170,7 @@ export function SparesGallery() {
                                 className="w-full bg-muted/80 border border-border rounded-2xl px-6 py-4 text-sm text-foreground focus:outline-none focus:border-racing-blue transition-all appearance-none cursor-pointer hover:bg-muted"
                             >
                                 <option value="common">Common & Universal Spares (Oils, Filters etc.)</option>
+                                <option value="all">All Genuine Spares & Accessories</option>
                                 <optgroup label="Bikes & Scooters">
                                     {bikes.map(bike => (
                                         <option key={bike._id} value={bike._id}>{bike.name}</option>
@@ -249,7 +264,7 @@ export function SparesGallery() {
                                                 </span>
                                                 <span className="text-sm font-display font-black text-foreground italic tracking-tighter">₹ {spare.price}</span>
                                             </div>
-                                            <h4 className="text-lg font-display font-black text-foreground uppercase tracking-tight mb-2 group-hover:text-racing-blue transition-colors">
+                                            <h4 className="text-xl font-display font-black text-foreground tracking-tight mb-2 group-hover:text-racing-blue transition-colors">
                                                 {spare.name}
                                             </h4>
                                             <p className="text-[12px] text-muted-foreground font-medium leading-relaxed line-clamp-2">
@@ -328,7 +343,7 @@ export function SparesGallery() {
                                 className="py-20 text-center"
                             >
                                 <Package className="w-12 h-12 text-muted mx-auto mb-4" />
-                                <h4 className="text-lg font-display font-black text-foreground uppercase tracking-tight">No Spares Found</h4>
+                                <h4 className="text-lg font-display font-black text-gray-400 uppercase tracking-tight">No Spares Found</h4>
                                 <p className="text-xs text-muted-foreground font-medium max-w-xs mx-auto mt-2">Try adjusting your search or selecting a different model</p>
                             </motion.div>
                         )}

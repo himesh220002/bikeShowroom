@@ -326,8 +326,9 @@ export default function InventoryPage() {
     const renderSpares = () => {
         const filteredSpares = spares.filter(s =>
             s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            s.bikeId?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            s.category.toLowerCase().includes(searchQuery.toLowerCase())
+            s.bikeIds?.some((b: any) => b.name?.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            s.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            s.subCategory?.toLowerCase().includes(searchQuery.toLowerCase())
         );
 
         return (
@@ -355,10 +356,16 @@ export default function InventoryPage() {
 
                         <div className="mb-4">
                             <span className="text-[8px] font-black uppercase tracking-widest text-racing-blue bg-racing-blue/10 px-2 py-0.5 rounded-full mb-2 inline-block">
-                                {spare.bikeId?.name || "All Bikes"}
+                                {spare.bikeIds && spare.bikeIds.length > 0
+                                    ? (spare.bikeIds.length > 2
+                                        ? `${spare.bikeIds[0].name} + ${spare.bikeIds.length - 1} more`
+                                        : spare.bikeIds.map((b: any) => b.name).join(", "))
+                                    : "All Bikes"}
                             </span>
                             <h4 className="text-lg font-display font-black text-foreground uppercase tracking-tight line-clamp-1">{spare.name}</h4>
-                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{spare.category}</p>
+                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
+                                {spare.category} {spare.subCategory && `• ${spare.subCategory}`}
+                            </p>
                         </div>
 
                         <div className="mt-auto pt-4 border-t border-border/10 flex justify-between items-center">
