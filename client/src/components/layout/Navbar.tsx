@@ -35,13 +35,13 @@ export function Navbar() {
         { name: "My Garage", href: "/garage", icon: Warehouse },
         { name: "Products", href: "/products", icon: Bike },
         { name: "Service & Spares", href: "/service", icon: Wrench },
-        { name: "Inquiry", href: "/#inquiry", icon: MessageCircle },
+        { name: "Inquiry", href: "/inquiry", icon: MessageCircle },
     ];
 
     return (
         <nav className={cn(
             "fixed top-0 w-full z-50 transition-all duration-500 py-4",
-            (isScrolled || isAdmin || isService || pathname === "/" || pathname === "/products" || pathname === "/garage") ? "glass shadow-lg shadow-black/5" : "bg-transparent",
+            (isScrolled || isAdmin || isService || pathname === "/" || pathname === "/products" || pathname === "/garage") ? "glass shadow-lg shadow-black/5" : "glass shadow-lg shadow-black/5",
             isAdmin && "lg:left-64 lg:w-[calc(100%-16rem)] border-b border-border"
         )}>
             <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -150,13 +150,16 @@ export function Navbar() {
                         )}
 
                         <Link
-                            href="/#inquiry"
+                            href="/inquiry"
                             className="bg-yamaha-blue hover:bg-dark-racing text-white px-8 py-3.5 rounded-full text-[11px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-xl shadow-yamaha-blue/20 flex items-center gap-2"
                         >
                             Book Test Ride
                             <ChevronRight className="w-3.5 h-3.5" />
                         </Link>
                     </div>
+
+                    <div className="flex 2xl:hidden gap-2 items-center">
+                    <Link href="/inquiry" className="px-4 py-2 text-white font-medium bg-gradient-to-r from-blue-900 to-purple-700 rounded-xl hover:bg-green-900">Inquiry</Link>
 
                     {/* Mobile Menu Button */}
                     <button
@@ -165,6 +168,7 @@ export function Navbar() {
                     >
                         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
+                    </div>
                 </div>
             </div>
 
@@ -179,8 +183,8 @@ export function Navbar() {
                     >
                         <div className="h-screen flex flex-col">
                             <div className="px-6 pt-6 pb-4 border-b border-border bg-background">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Menu</span>
+                                <div className="flex items-center justify-end">
+                                    {/* <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Menu</span> */}
                                     <button
                                         onClick={() => setIsOpen(false)}
                                         aria-label="Close mobile menu"
@@ -189,8 +193,10 @@ export function Navbar() {
                                         <X className="w-5 h-5" />
                                     </button>
                                 </div>
-                                <div className="flex items-center justify-between pt-4">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Interface theme / Notifications</span>
+                                <div className="flex items-center justify-around pt-4">
+                                    {/* <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Theme / Notifications</span> */}
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Menu</span>
+
                                     <div className="flex items-center gap-4">
                                         <ThemeToggle />
                                         {user && <NotificationBell />}
@@ -208,7 +214,7 @@ export function Navbar() {
                                     <Link
                                         href={link.href}
                                         onClick={() => setIsOpen(false)}
-                                        className="flex items-center justify-between text-xl font-display font-black text-foreground uppercase tracking-tight py-4 border-b border-border group"
+                                        className="flex items-center justify-center gap-10 text-xl font-display font-black text-foreground uppercase tracking-tight py-4 border-b border-border group"
                                     >
                                         <span className="flex items-center gap-3">
                                             <link.icon className="w-5 h-5 text-racing-blue" />
@@ -246,7 +252,7 @@ export function Navbar() {
                                                 <LogOut className="w-4 h-4 mr-2" /> Sign Out
                                             </button>
                                             <Link
-                                                href="/#inquiry"
+                                                href="/inquiry"
                                                 onClick={() => setIsOpen(false)}
                                                 className="bg-racing-blue text-white py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]"
                                             >
@@ -264,7 +270,7 @@ export function Navbar() {
                                             <LogIn className="w-4 h-4 mr-2" /> Sign In
                                         </Link>
                                         <Link
-                                            href="/#inquiry"
+                                            href="/inquiry"
                                             onClick={() => setIsOpen(false)}
                                             className="bg-racing-blue text-white py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]"
                                         >

@@ -34,65 +34,65 @@ function ImageFrame({ id, smoothIndex, loaded, baseUrl, totalImages }: { id: num
 // ----------------------------------------------------------------------------
 // InfiniteGrid: Professional architectural background (Max Visibility)
 // ----------------------------------------------------------------------------
-function InfiniteGrid() {
-    return (
-        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-background">
-            {/* Major "CM" Scale (40px Grid H & V) - High contrast for light mode */}
-            <div
-                className="absolute inset-0 opacity-[0.45] dark:opacity-[0.15]"
-                style={{
-                    backgroundImage: `
-                        linear-gradient(to right, #000 1.5px, transparent 1.5px),
-                        linear-gradient(to bottom, #000 1.5px, transparent 1.5px)
-                    `,
-                    backgroundSize: '40px 40px',
-                    maskImage: 'radial-gradient(circle at center, black 60%, transparent 98%)',
-                    WebkitMaskImage: 'radial-gradient(circle at center, black 60%, transparent 98%)',
-                }}
-            />
-            {/* Major Grid White Inversion for Dark Theme */}
-            <div
-                className="absolute inset-0 hidden dark:block opacity-[0.15]"
-                style={{
-                    backgroundImage: `
-                        linear-gradient(to right, #fff 1px, transparent 1px),
-                        linear-gradient(to bottom, #fff 1px, transparent 1px)
-                    `,
-                    backgroundSize: '40px 40px',
-                    maskImage: 'radial-gradient(circle at center, black 60%, transparent 98%)',
-                    WebkitMaskImage: 'radial-gradient(circle at center, black 60%, transparent 98%)',
-                }}
-            />
+// function InfiniteGrid() {
+//     return (
+//         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-background">
+//             {/* Major "CM" Scale (40px Grid H & V) - High contrast for light mode */}
+//             <div
+//                 className="absolute inset-0 opacity-[0.45] dark:opacity-[0.15]"
+//                 style={{
+//                     backgroundImage: `
+//                         linear-gradient(to right, #000 1.5px, transparent 1.5px),
+//                         linear-gradient(to bottom, #000 1.5px, transparent 1.5px)
+//                     `,
+//                     backgroundSize: '40px 40px',
+//                     maskImage: 'radial-gradient(circle at center, black 60%, transparent 98%)',
+//                     WebkitMaskImage: 'radial-gradient(circle at center, black 60%, transparent 98%)',
+//                 }}
+//             />
+//             {/* Major Grid White Inversion for Dark Theme */}
+//             <div
+//                 className="absolute inset-0 hidden dark:block opacity-[0.15]"
+//                 style={{
+//                     backgroundImage: `
+//                         linear-gradient(to right, #fff 1px, transparent 1px),
+//                         linear-gradient(to bottom, #fff 1px, transparent 1px)
+//                     `,
+//                     backgroundSize: '40px 40px',
+//                     maskImage: 'radial-gradient(circle at center, black 60%, transparent 98%)',
+//                     WebkitMaskImage: 'radial-gradient(circle at center, black 60%, transparent 98%)',
+//                 }}
+//             />
 
-            {/* Minor "MM" Scale (10px Grid H & V) - Precision detailing (Increased visibility) */}
-            <div
-                className="absolute inset-0 opacity-[0.4] dark:opacity-[0.12]"
-                style={{
-                    backgroundImage: `
-                        linear-gradient(to right, #000 0.5px, transparent 0.5px),
-                        linear-gradient(to bottom, #000 0.5px, transparent 0.5px)
-                    `,
-                    backgroundSize: '10px 10px',
-                    maskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
-                    WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
-                }}
-            />
-            {/* Minor Grid White Inversion for Dark Theme */}
-            <div
-                className="absolute inset-0 hidden dark:block opacity-[0.12]"
-                style={{
-                    backgroundImage: `
-                        linear-gradient(to right, #fff 0.5px, transparent 0.5px),
-                        linear-gradient(to bottom, #fff 0.5px, transparent 0.5px)
-                    `,
-                    backgroundSize: '10px 10px',
-                    maskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
-                    WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
-                }}
-            />
-        </div>
-    );
-}
+//             {/* Minor "MM" Scale (10px Grid H & V) - Precision detailing (Increased visibility) */}
+//             <div
+//                 className="absolute inset-0 opacity-[0.4] dark:opacity-[0.12]"
+//                 style={{
+//                     backgroundImage: `
+//                         linear-gradient(to right, #000 0.5px, transparent 0.5px),
+//                         linear-gradient(to bottom, #000 0.5px, transparent 0.5px)
+//                     `,
+//                     backgroundSize: '10px 10px',
+//                     maskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
+//                     WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
+//                 }}
+//             />
+//             {/* Minor Grid White Inversion for Dark Theme */}
+//             <div
+//                 className="absolute inset-0 hidden dark:block opacity-[0.12]"
+//                 style={{
+//                     backgroundImage: `
+//                         linear-gradient(to right, #fff 0.5px, transparent 0.5px),
+//                         linear-gradient(to bottom, #fff 0.5px, transparent 0.5px)
+//                     `,
+//                     backgroundSize: '10px 10px',
+//                     maskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
+//                     WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 85%)',
+//                 }}
+//             />
+//         </div>
+//     );
+// }
 
 // ----------------------------------------------------------------------------
 // Main Component
@@ -213,7 +213,7 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
     const [displayIndex, setDisplayIndex] = useState(1);
     useEffect(() => {
         return smoothIndex.on("change", (latestVal) => {
-            let normalized = ((latestVal - 1) % TOTAL_IMAGES + TOTAL_IMAGES) % TOTAL_IMAGES + 1;
+            const normalized = ((latestVal - 1) % TOTAL_IMAGES + TOTAL_IMAGES) % TOTAL_IMAGES + 1;
             let rounded = Math.round(normalized);
             if (rounded > TOTAL_IMAGES) rounded = 1;
             if (rounded < 1) rounded = TOTAL_IMAGES;

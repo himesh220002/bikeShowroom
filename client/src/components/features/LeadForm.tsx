@@ -22,16 +22,17 @@ const categories = [
         name: "Performance Scooters",
         items: [
             { id: "AEROX", label: "Aerox 155", score: 9 },
-            { id: "SCOOTER", label: "RayZR / Fascino", score: 7 },
+            { id: "RAYZR", label: "RayZR", score: 7 },
+            { id: "FASCINO", label: "Fascino", score: 7 },
         ]
     },
     {
         name: "Services & Offers",
         items: [
             { id: "SERVICE", label: "Service", score: 6 },
-            { id: "EMI", label: "Finance/EMI", bonus: "LOW ROI" },
-            { id: "BOOKING", label: "Fast Booking", score: 8 },
-            { id: "PRE-ORDER", label: "Pre-order", score: 5 }
+            { id: "EMI", label: "Finance/EMI", score: 8 },
+            { id: "BOOKING", label: "Fast Booking", score: 10, bonus: "Priority Support" },
+            { id: "PRE-ORDER", label: "Pre-order", score: 9 }
         ]
     }
 ];
@@ -79,7 +80,8 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
             if (modelUpper.includes("FZ") && id === "FZ") return true;
             if (modelUpper.includes("AEROX") && id === "AEROX") return true;
             if (modelUpper.includes("XSR") && id === "XSR") return true;
-            if ((modelUpper.includes("RAYZR") || modelUpper.includes("FASCINO")) && id === "SCOOTER") return true;
+            if (modelUpper.includes("RAYZR")  && id === "RAYZR") return true;
+            if ( modelUpper.includes("FASCINO") && id === "FASCINO") return true;
         }
         return false;
     };
@@ -202,11 +204,11 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                             key="form"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="w-full bg-card/80 backdrop-blur-md rounded-[1.5rem] sm:rounded-[2.5rem] md:rounded-[3.5rem] p-4 sm:p-6 md:p-10 lg:p-12 shadow-2xl border border-border"
+                            className="w-full bg-card/80 backdrop-blur-md rounded-[1.5rem] sm:rounded-[2.5rem] md:rounded-[3.5rem] p-6 sm:p-6 md:p-10 lg:p-12 shadow-2xl border border-border"
                         >
 
 
-                            <form onSubmit={handleFormSubmit} className="space-y-4 md:space-y-8">
+                            <form onSubmit={handleFormSubmit} className="space-y-2 md:space-y-6">
                                 {errors.server && (
                                     <div className="bg-red-500/10 border border-red-500/50 p-4 rounded-2xl flex items-center gap-3">
                                         <Info className="w-5 h-5 text-red-500 shrink-0" />
@@ -220,7 +222,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 ))}
                                 <input type="hidden" name="bikeModel" value={bikeModel || ""} />
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-6">
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Your Name</label>
                                         <div className="relative">
@@ -257,11 +259,11 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 </div>
 
                                 {/* Categorized Interests */}
-                                <div className="space-y-4">
+                                <div className="space-y-2 sm:space-y-4">
                                     <label className="text-[12px] font-black uppercase tracking-widest text-foreground ml-2">What are you looking for?</label>
-                                    <div className="space-y-6">
+                                    <div className="space-y-2 sm:space-y-6">
                                         {categories.map((cat) => (
-                                            <div key={cat.name} className="space-y-3">
+                                            <div key={cat.name} className="space-y-1 sm:space-y-3">
                                                 <h5 className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-900 border-l-2 border-racing-blue/30 pl-3 ml-2">{cat.name}</h5>
                                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                                     {cat.items.map((item) => (
@@ -273,8 +275,8 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                                 value={item.label}
                                                                 defaultChecked={isItemSelected(item.id)}
                                                             />
-                                                            <div className="px-3 py-3 sm:py-4 rounded-2xl bg-cyan-900/60 border border-cyan-900/60 peer-checked:border-racing-blue/90 peer-checked:bg-racing-blue/30 transition-all flex flex-col items-center justify-center text-center h-full">
-                                                                <span className="text-[12px] font-black uppercase tracking-tighter text-white peer-checked:text-white transition-colors">
+                                                            <div className="px-3 py-3 sm:py-4 rounded-2xl bg-cyan-900/90 border-3 peer-checked:border-l-8 dark:border-cyan-100/60 peer-checked:bg-gradient-to-r from-racing-blue/90 to-purple-500 transition-all flex flex-col items-center justify-center text-center h-full">
+                                                                <span className="text-[12px] lg:text-[14px] xl:text-[16px] font-black  tracking-tighter text-white peer-checked:text-white transition-colors">
                                                                     {item.label}
                                                                 </span>
                                                                 {item.bonus && (

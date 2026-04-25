@@ -80,7 +80,7 @@ export function Hero() {
                             Explore Models
                             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <a href="#inquiry" className="w-full sm:w-auto bg-white hover:bg-gray-100 text-black px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs transition-all shadow-2xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95">
+                        <a href="/inquiry" className="w-full sm:w-auto bg-white hover:bg-gray-100 text-black px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs transition-all shadow-2xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95">
                             Book Test Ride
                         </a>
                         <a href="#promotions" className="w-full sm:w-auto bg-zinc-900/50 hover:bg-zinc-800 text-white px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs transition-all border border-white/10 shadow-2xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95">
