@@ -1,10 +1,31 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, Phone, Package, Plus, Minus, Trash2, Search, IndianRupee, Loader2, Save, X, Bike, CheckCircle2 } from "lucide-react";
+import { User, Phone, Package, Plus, Minus, Trash2, Search, IndianRupee, Loader2, Save, X, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils/cn";
-import { API_URL } from "@/lib/config";
+import { API_URL, API_BASE_URL } from "@/lib/config";
+
+interface Spare {
+    _id: string;
+    name: string;
+    price: number;
+    category: string;
+    stock: number;
+    image?: string;
+    bikeId?: string;
+    bikeIds?: { name: string }[];
+}
+
+interface BilledItem {
+    itemId: string;
+    name: string;
+    price: number;
+    quantity: number;
+    stock: number;
+    itemType: 'accessory' | 'spare';
+    image?: string;
+}
 
 interface AccessoryBillingProps {
     onSuccess?: () => void;
@@ -12,16 +33,18 @@ interface AccessoryBillingProps {
 
 export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
     const [loading, setLoading] = useState(false);
-    const [spares, setSpares] = useState<any[]>([]);
+    const [spares, setSpares] = useState<Spare[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [showPicker, setShowPicker] = useState(false);
+    const [hoveredImage, setHoveredImage] = useState<string | null>(null);
+    const [hoverPos, setHoverPos] = useState({ x: 0, y: 0 });
 
     const [form, setForm] = useState({
         name: "",
         phone: "",
         bikeModel: "General",
         regNumber: "N/A",
-        items: [] as any[],
+        items: [] as BilledItem[],
         cost: 0,
         notes: "Direct Accessory Sale"
     });
@@ -35,30 +58,32 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                 const res = await fetch(`${API_URL}/spares`);
                 const data = await res.json();
                 if (data.success) setSpares(data.data);
-            } catch (err) {
-                console.error("Failed to fetch spares:", err);
+            } catch (error) {
+                console.error("Failed to fetch spares:", error);
             }
         };
         fetchSpares();
     }, []);
 
-    const calculateTotal = (items: any[]) => {
+    const calculateTotal = (items: BilledItem[]) => {
         return items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     };
 
-    const handleAddItem = (spare: any) => {
+    const handleAddItem = (spare: Spare) => {
         const existing = form.items.find(i => i.itemId === spare._id);
         let newItems;
         if (existing) {
             newItems = form.items.map(i => i.itemId === spare._id ? { ...i, quantity: i.quantity + 1 } : i);
         } else {
+            const itemType: 'accessory' | 'spare' = (spare.category === 'Accessory' || !spare.bikeId || !['Engine', 'Transmission', 'Electrical'].includes(spare.category)) ? 'accessory' : 'spare';
             newItems = [...form.items, {
                 itemId: spare._id,
                 name: spare.name,
                 price: spare.price,
                 quantity: 1,
                 stock: spare.stock,
-                itemType: (spare.category === 'Accessory' || !spare.bikeId || !['Engine', 'Transmission', 'Electrical'].includes(spare.category)) ? 'accessory' : 'spare'
+                itemType,
+                image: spare.image
             }];
         }
         setForm({ ...form, items: newItems, cost: calculateTotal(newItems) });
@@ -113,9 +138,10 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                 setErrorMessage(data.message || "Failed to process billing");
                 setStatus('error');
             }
-        } catch (err) {
+        } catch (error) {
             setErrorMessage("Connection error. Please try again.");
             setStatus('error');
+            console.log("Billing error:", error);
         } finally {
             setLoading(false);
         }
@@ -124,7 +150,7 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
     const filteredSpares = spares.filter(s =>
         s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.bikeIds?.some((b: any) => b.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+        s.bikeIds?.some((b: { name: string }) => b.name?.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     return (
@@ -205,17 +231,39 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                                             initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             key={idx}
-                                            className="flex items-center justify-between p-4 bg-muted/10 border border-border rounded-2xl group"
+                                            className="flex items-center justify-between p-4 bg-muted/10 border border-border rounded-2xl group/billed relative hover:z-50 transition-all"
                                         >
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-display font-black text-foreground uppercase tracking-tight">{item.name}</span>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-[9px] font-bold text-muted-foreground uppercase">₹{item.price} • {item.itemType}</span>
-                                                    {item.quantity > item.stock && (
-                                                        <span className="text-[8px] font-black bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">
-                                                            Low Stock: {item.stock} Avail.
-                                                        </span>
+                                            <div className="flex items-center gap-4">
+                                                <div 
+                                                    className="relative w-12 h-12 bg-background border border-border rounded-xl flex items-center justify-center shrink-0 cursor-zoom-in"
+                                                    onMouseEnter={(e) => {
+                                                        const rect = e.currentTarget.getBoundingClientRect();
+                                                        item.image && setHoveredImage(item.image.startsWith('/uploads') ? `${API_BASE_URL}${item.image}` : item.image);
+                                                        setHoverPos({ x: rect.right + 20, y: rect.top });
+                                                    }}
+                                                    onMouseLeave={() => setHoveredImage(null)}
+                                                >
+                                                    {item.image ? (
+                                                        <img
+                                                            src={item.image.startsWith('/uploads') ? `${API_BASE_URL}${item.image}` : item.image}
+                                                            alt={item.name}
+                                                            className="w-full h-full object-contain p-1 rounded-xl"
+                                                            onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                                                        />
+                                                    ) : (
+                                                        <Package className="w-6 h-6 text-orange-500/50" />
                                                     )}
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-display font-black text-foreground uppercase tracking-tight">{item.name}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[9px] font-bold text-muted-foreground uppercase">₹{item.price} • {item.itemType}</span>
+                                                        {item.quantity > item.stock && (
+                                                            <span className="text-[8px] font-black bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">
+                                                                Low Stock: {item.stock} Avail.
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-6">
@@ -297,7 +345,28 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                         )}
                     </form>
                 </div>
-            </div>
+
+            {/* Global Hover Preview Portal-like Element */}
+            <AnimatePresence>
+                {hoveredImage && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.5 }}
+                        className="fixed z-[9999] pointer-events-none flex items-center justify-center p-4 bg-card border border-border rounded-[2rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] overflow-hidden"
+                        style={{ 
+                            width: '200px', 
+                            height: '200px',
+                            left: `${hoverPos.x}px`,
+                            top: `${hoverPos.y}px`,
+                        }}
+                    >
+                        <img src={hoveredImage} alt="Preview" className="w-full h-full object-contain rounded-2xl" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
 
             {/* Picker Modal */}
             <AnimatePresence>
@@ -343,11 +412,28 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                                         <button
                                             key={spare._id}
                                             onClick={() => handleAddItem(spare)}
-                                            className="w-full flex items-center justify-between p-4 bg-muted/30 hover:bg-orange-500/5 border border-border rounded-2xl transition-all group/item hover:border-orange-500/30"
+                                            className="w-full flex items-center justify-between p-4 bg-muted/30 hover:bg-orange-500/5 border border-border rounded-2xl transition-all group/item hover:border-orange-500/30 relative hover:z-50"
                                         >
                                             <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 bg-background border border-border rounded-xl flex items-center justify-center">
-                                                    <Package className="w-6 h-6 text-orange-500/50" />
+                                                <div 
+                                                    className="relative w-12 h-12 bg-background border border-border rounded-xl flex items-center justify-center shrink-0 cursor-zoom-in"
+                                                    onMouseEnter={(e) => {
+                                                        const rect = e.currentTarget.getBoundingClientRect();
+                                                        spare.image && setHoveredImage(spare.image.startsWith('/uploads') ? `${API_BASE_URL}${spare.image}` : spare.image);
+                                                        setHoverPos({ x: rect.right + 20, y: rect.top });
+                                                    }}
+                                                    onMouseLeave={() => setHoveredImage(null)}
+                                                >
+                                                    {spare.image ? (
+                                                        <img
+                                                            src={spare.image.startsWith('/uploads') ? `${API_BASE_URL}${spare.image}` : spare.image}
+                                                            alt={spare.name}
+                                                            className="w-full h-full object-contain p-1 rounded-xl"
+                                                            onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                                                        />
+                                                    ) : (
+                                                        <Package className="w-6 h-6 text-orange-500/50" />
+                                                    )}
                                                 </div>
                                                 <div className="text-left">
                                                     <span className="text-xs font-black uppercase tracking-tight text-foreground block group-hover/item:text-orange-500 transition-colors">{spare.name}</span>

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { API_URL, API_BASE_URL } from "@/lib/config";
-import { Play, ExternalLink, Loader2 } from "lucide-react";
+import { Play, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 type Ad = {
@@ -14,9 +15,16 @@ type Ad = {
     link: string;
 };
 
+type PromoResponse = Ad & {
+    status: 'Active' | 'Scheduled' | 'Inactive';
+};
+
 export function AdCarousel() {
     const [ads, setAds] = useState<Ad[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string>("");
+    const [selectedType, setSelectedType] = useState<Ad["type"]>("Poster");
 
     useEffect(() => {
         const fetchAds = async () => {
@@ -25,7 +33,7 @@ export function AdCarousel() {
                 const data = await res.json();
                 if (data.success) {
                     setAds(data.data
-                        .filter((ad: any) => ad.status === 'Active' || ad.status === 'Scheduled')
+                        .filter((ad: PromoResponse) => ad.status === 'Active' || ad.status === 'Scheduled')
                         .slice(0, 3)
                     );
                 }
@@ -38,6 +46,27 @@ export function AdCarousel() {
         fetchAds();
     }, []);
 
+    useEffect(() => {
+        return () => {
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
+
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setSelectedFile(file);
+        setPreviewUrl(URL.createObjectURL(file));
+
+        if (file.type.startsWith("video/")) {
+            setSelectedType("Video");
+        } else {
+            setSelectedType("Poster");
+        }
+    };
 
     return (
         <section id="promotions" className="relative py-16 bg-transparent overflow-hidden scroll-mt-[100px]">
@@ -51,41 +80,106 @@ export function AdCarousel() {
                     </div>
                 </div>
 
+                <div className="mb-10 space-y-6">
+                    <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
+                        <label className="block text-sm font-black uppercase tracking-widest text-muted-foreground">
+                            Upload image or video
+                            <input
+                                type="file"
+                                accept="image/*,video/*"
+                                onChange={handleFileChange}
+                                className="mt-3 block w-full rounded-3xl border border-border bg-background px-4 py-3 text-sm text-foreground"
+                            />
+                        </label>
+                        <label className="block text-sm font-black uppercase tracking-widest text-muted-foreground">
+                            Ad type
+                            <select
+                                value={selectedType}
+                                onChange={(e) => setSelectedType(e.target.value as Ad["type"])}
+                                className="mt-3 block w-full rounded-3xl border border-border bg-background px-4 py-3 text-sm text-foreground"
+                            >
+                                <option value="Poster">Poster</option>
+                                <option value="Video">Video</option>
+                                <option value="Banner">Banner</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    {previewUrl && (
+                        <div className="rounded-[2rem] overflow-hidden bg-muted/50 border border-border p-4">
+                            <div className="mb-4 flex items-center justify-between">
+                                <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                                    Preview ({selectedType})
+                                </span>
+                                <span className="text-xs text-gray-300">
+                                    {selectedFile?.type}
+                                </span>
+                            </div>
+                            {selectedFile?.type.startsWith("video/") ? (
+                                <video controls src={previewUrl} className="w-full rounded-3xl" />
+                            ) : (
+                                <Image
+                                    src={previewUrl}
+                                    alt="Selected preview"
+                                    width={900}
+                                    height={500}
+                                    unoptimized
+                                    className="w-full rounded-3xl object-cover"
+                                />
+                            )}
+                        </div>
+                    )}
+                </div>
+
                 <div className="relative">
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-                        {ads.map((ad) => (
-                            <AdCard key={ad._id} ad={ad} />
-                        ))}
+                        {loading ? (
+                            Array.from({ length: 3 }).map((_, idx) => (
+                                <div
+                                    key={idx}
+                                    className="h-96 rounded-[1.5rem] bg-muted/30 border border-border animate-pulse"
+                                />
+                            ))
+                        ) : ads.length > 0 ? (
+                            ads.map((ad) => <AdCard key={ad._id} ad={ad} />)
+                        ) : (
+                            <div className="col-span-full rounded-[1.5rem] bg-muted/50 border border-border p-12 text-center text-gray-300">
+                                No active promotions available.
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
-            {/* Background Accent */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-racing-blue/5 blur-[120px] rounded-full -z-10 pointer-events-none" />
         </section>
     );
 }
 
 function AdCard({ ad }: { ad: Ad }) {
+    const imageUrl = ad.image.startsWith('/uploads') ? `${API_BASE_URL}${ad.image}` : ad.image;
+
     return (
         <div className="group flex flex-col space-y-4">
             <div className="relative aspect-[4/5] w-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden bg-muted/50 backdrop-blur-md border border-border shadow-2xl gpu-accelerated">
-                {/* Visual content part */}
                 <div className="absolute inset-0 w-full h-full">
-                    {/* Blurred background for non-banner types */}
                     {(ad.type === "Poster" || ad.type === "Video") && ad.image && (
                         <div className="absolute inset-0 w-full h-full overflow-hidden">
-                            <img
-                                src={ad.image.startsWith('/uploads') ? `${API_BASE_URL}${ad.image}` : ad.image}
+                            <Image
+                                src={imageUrl}
                                 alt=""
+                                fill
+                                unoptimized
                                 className="w-full h-full object-cover blur-3xl opacity-40 scale-110"
                             />
                         </div>
                     )}
                     {ad.image && (
-                        <img
-                            src={ad.image.startsWith('/uploads') ? `${API_BASE_URL}${ad.image}` : ad.image}
+                        <Image
+                            src={imageUrl}
                             alt={ad.name}
+                            fill
+                            unoptimized
                             className={cn(
                                 "relative z-10 w-full h-full transition-transform duration-700 group-hover:scale-105 object-cover"
                             )}
@@ -117,6 +211,7 @@ function AdCard({ ad }: { ad: Ad }) {
                     <a
                         href={ad.link}
                         target="_blank"
+                        rel="noreferrer"
                         className="inline-flex items-center gap-3 px-8 py-4 bg-white text-racing-blue rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-racing-blue hover:text-white transition-all shadow-xl hover:-translate-y-1"
                     >
                         {ad.type === "Video" ? <Play className="w-4 h-4 fill-current" /> : <ExternalLink className="w-4 h-4" />}

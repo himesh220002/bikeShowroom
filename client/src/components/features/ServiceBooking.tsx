@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
-import { API_URL } from "@/lib/config";
+import { API_URL, API_BASE_URL } from "@/lib/config";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wrench, Calendar, Clock, Bike, Package, CheckCircle2, ChevronRight, User, Plus, Minus, Trash2, Search, ShieldAlert, UserCheck } from "lucide-react";
@@ -29,6 +29,8 @@ export function ServiceBooking() {
     const [availableSlots, setAvailableSlots] = useState<any[]>([]);
     const [loadingSlots, setLoadingSlots] = useState(false);
     const [defaultCapacity, setDefaultCapacity] = useState(4);
+    const [hoveredImage, setHoveredImage] = useState<string | null>(null);
+    const [hoverPos, setHoverPos] = useState({ x: 0, y: 0 });
 
     const updateCart = (newCart: { [id: string]: { item: any, quantity: number } }) => {
         localStorage.setItem('spares_cart', JSON.stringify(newCart));
@@ -339,40 +341,64 @@ export function ServiceBooking() {
 
                                         {cartItems.length > 0 ? (
                                             <div className="space-y-2">
-                                                {cartItems.map((item, idx) => (
-                                                    <div key={idx} className="flex items-center justify-between p-4 bg-muted/20 border border-border rounded-2xl group/item">
-                                                        <div className="flex flex-col">
-                                                            <span className="text-[10px] font-black uppercase tracking-tight text-foreground">{item.name}</span>
-                                                            <span className="text-[8px] font-bold text-muted-foreground uppercase">{item.itemType} • ₹{item.price} each</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="flex items-center gap-2 bg-background/50 rounded-xl p-1 border border-border">
+                                                {Object.values(cart).map((entry: any, idx) => {
+                                                    const item = entry.item;
+                                                    const quantity = entry.quantity;
+                                                    const thumbSrc = item.image
+                                                        ? (item.image.startsWith('/uploads') ? `${API_BASE_URL}${item.image}` : item.image)
+                                                        : null;
+                                                    return (
+                                                        <div key={idx} className="flex items-center justify-between p-4 bg-muted/20 border border-border rounded-2xl group/item relative hover:z-50 transition-all">
+                                                            <div className="flex items-center gap-3">
+                                                                <div 
+                                                                    className="relative w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center shrink-0 cursor-zoom-in"
+                                                                    onMouseEnter={(e) => {
+                                                                        const rect = e.currentTarget.getBoundingClientRect();
+                                                                        thumbSrc && setHoveredImage(thumbSrc);
+                                                                        setHoverPos({ x: rect.right + 20, y: rect.top });
+                                                                    }}
+                                                                    onMouseLeave={() => setHoveredImage(null)}
+                                                                >
+                                                                    {thumbSrc ? (
+                                                                        <img src={thumbSrc} alt={item.name} className="w-full h-full object-contain p-1 rounded-xl" onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }} />
+                                                                    ) : (
+                                                                        <Package className="w-4 h-4 text-muted-foreground" />
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[10px] font-black uppercase tracking-tight text-foreground">{item.name}</span>
+                                                                    <span className="text-[8px] font-bold text-muted-foreground uppercase">{item.category === 'Accessory' ? 'accessory' : 'spare'} • ₹{item.price} each</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="flex items-center gap-2 bg-background/50 rounded-xl p-1 border border-border">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleQtyChange(item._id, -1)}
+                                                                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-card hover:bg-red-500/10 text-red-500 transition-all border border-border/50 shadow-sm"
+                                                                    >
+                                                                        <Minus className="w-3 h-3" />
+                                                                    </button>
+                                                                    <span className="text-xs font-black min-w-[1.5rem] text-center">{quantity}</span>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleQtyChange(item._id, 1)}
+                                                                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-card hover:bg-racing-blue/10 text-racing-blue transition-all border border-border/50 shadow-sm"
+                                                                    >
+                                                                        <Plus className="w-3 h-3" />
+                                                                    </button>
+                                                                </div>
                                                                 <button
                                                                     type="button"
-                                                                    onClick={() => handleQtyChange(item.itemId, -1)}
-                                                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-card hover:bg-red-500/10 text-red-500 transition-all border border-border/50 shadow-sm"
+                                                                    onClick={() => handleRemoveItem(item._id)}
+                                                                    className="p-2.5 text-red-500 hover:bg-red-500/10 rounded-xl transition-all opacity-40 group-hover/item:opacity-100"
                                                                 >
-                                                                    <Minus className="w-3 h-3" />
-                                                                </button>
-                                                                <span className="text-xs font-black min-w-[1.5rem] text-center">{item.quantity}</span>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => handleQtyChange(item.itemId, 1)}
-                                                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-card hover:bg-racing-blue/10 text-racing-blue transition-all border border-border/50 shadow-sm"
-                                                                >
-                                                                    <Plus className="w-3 h-3" />
+                                                                    <Trash2 className="w-4 h-4" />
                                                                 </button>
                                                             </div>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleRemoveItem(item.itemId)}
-                                                                className="p-2.5 text-red-500 hover:bg-red-500/10 rounded-xl transition-all opacity-40 group-hover/item:opacity-100"
-                                                            >
-                                                                <Trash2 className="w-4 h-4" />
-                                                            </button>
                                                         </div>
-                                                    </div>
-                                                ))}
+                                                    );
+                                                })}
                                             </div>
                                         ) : (
                                             <div className="p-8 border-2 border-dashed border-border rounded-[2rem] flex flex-col items-center justify-center text-center opacity-60">
@@ -413,76 +439,104 @@ export function ServiceBooking() {
                                             </div>
 
                                             <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-2">
-                                                {spares.filter(s => s.name.toLowerCase().includes(spareSearchQuery.toLowerCase())).map((spare) => (
-                                                    <button
-                                                        key={spare._id}
-                                                        type="button"
-                                                        onClick={() => {
-                                                            if (spare.stock === 0) {
-                                                                handleDemandRestock(spare._id);
-                                                                return;
-                                                            }
-                                                            const entry = cart[spare._id];
-                                                            if (entry) {
-                                                                if (entry.quantity >= spare.stock) {
-                                                                    setBlinkingId(spare._id);
-                                                                    setTimeout(() => setBlinkingId(null), 1000);
+                                                {spares.filter(s => s.name.toLowerCase().includes(spareSearchQuery.toLowerCase())).map((spare) => {
+                                                    const thumbSrc = spare.image
+                                                        ? (spare.image.startsWith('/uploads') ? `${API_BASE_URL}${spare.image}` : spare.image)
+                                                        : null;
+                                                    return (
+                                                        <button
+                                                            key={spare._id}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                if (spare.stock === 0) {
+                                                                    handleDemandRestock(spare._id);
                                                                     return;
                                                                 }
-                                                                const newCart = { ...cart };
-                                                                newCart[spare._id] = {
-                                                                    ...entry,
-                                                                    quantity: entry.quantity + 1
-                                                                };
-                                                                updateCart(newCart);
-                                                            } else {
-                                                                const newCart = { ...cart };
-                                                                newCart[spare._id] = {
-                                                                    item: spare,
-                                                                    quantity: 1
-                                                                };
-                                                                updateCart(newCart);
-                                                            }
-                                                        }}
-                                                        className={cn(
-                                                            "w-full flex items-center justify-between p-5 rounded-2xl transition-all group/item border",
-                                                            spare.stock === 0
-                                                                ? (demandedIds.includes(spare._id) ? "bg-muted/30 border-border opacity-60 cursor-not-allowed" : "bg-red-500/5 border-red-500/20 hover:bg-red-500/10 hover:border-red-500/40")
-                                                                : (blinkingId === spare._id ? "bg-red-500/10 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.15)] scale-[1.02]" : "bg-muted/20 hover:bg-racing-blue/5 border-border hover:border-racing-blue/30")
-                                                        )}
-                                                    >
-                                                        <div className="flex flex-col text-left">
-                                                            <div className="flex items-center gap-2 mb-1">
-                                                                <span className={cn(
-                                                                    "text-xs font-black uppercase tracking-tight transition-colors",
-                                                                    spare.stock === 0 ? "text-red-500" : "text-foreground group-hover/item:text-racing-blue"
-                                                                )}>
-                                                                    {spare.name}
-                                                                </span>
-                                                                {spare.stock === 0 && (
-                                                                    <span className="text-[7px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-sm">OUT OF STOCK</span>
+                                                                const entry = cart[spare._id];
+                                                                if (entry) {
+                                                                    if (entry.quantity >= spare.stock) {
+                                                                        setBlinkingId(spare._id);
+                                                                        setTimeout(() => setBlinkingId(null), 1000);
+                                                                        return;
+                                                                    }
+                                                                    const newCart = { ...cart };
+                                                                    newCart[spare._id] = {
+                                                                        ...entry,
+                                                                        quantity: entry.quantity + 1
+                                                                    };
+                                                                    updateCart(newCart);
+                                                                } else {
+                                                                    const newCart = { ...cart };
+                                                                    newCart[spare._id] = {
+                                                                        item: spare,
+                                                                        quantity: 1
+                                                                    };
+                                                                    updateCart(newCart);
+                                                                }
+                                                            }}
+                                                            className={cn(
+                                                                "w-full flex items-center justify-between p-4 rounded-2xl transition-all group/item border relative hover:z-50",
+                                                                spare.stock === 0
+                                                                    ? (demandedIds.includes(spare._id) ? "bg-muted/30 border-border opacity-60 cursor-not-allowed" : "bg-red-500/5 border-red-500/20 hover:bg-red-500/10 hover:border-red-500/40")
+                                                                    : (blinkingId === spare._id ? "bg-red-500/10 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.15)] scale-[1.02]" : "bg-muted/20 hover:bg-racing-blue/5 border-border hover:border-racing-blue/30")
+                                                            )}
+                                                        >
+                                                            <div className="flex items-center gap-3 text-left">
+                                                                {/* Thumbnail */}
+                                                                <div 
+                                                                    className="relative w-11 h-11 rounded-xl bg-background border border-border flex items-center justify-center shrink-0 cursor-zoom-in"
+                                                                    onMouseEnter={(e) => {
+                                                                        const rect = e.currentTarget.getBoundingClientRect();
+                                                                        thumbSrc && setHoveredImage(thumbSrc);
+                                                                        setHoverPos({ x: rect.right + 20, y: rect.top });
+                                                                    }}
+                                                                    onMouseLeave={() => setHoveredImage(null)}
+                                                                >
+                                                                    {thumbSrc ? (
+                                                                        <img
+                                                                            src={thumbSrc}
+                                                                            alt={spare.name}
+                                                                            className="w-full h-full object-contain p-1 rounded-xl"
+                                                                            onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                                                                        />
+                                                                    ) : (
+                                                                        <Package className="w-5 h-5 text-muted-foreground" />
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex flex-col">
+                                                                    <div className="flex items-center gap-2 mb-0.5">
+                                                                        <span className={cn(
+                                                                            "text-xs font-black uppercase tracking-tight transition-colors",
+                                                                            spare.stock === 0 ? "text-red-500" : "text-foreground group-hover/item:text-racing-blue"
+                                                                        )}>
+                                                                            {spare.name}
+                                                                        </span>
+                                                                        {spare.stock === 0 && (
+                                                                            <span className="text-[7px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-sm">OUT OF STOCK</span>
+                                                                        )}
+                                                                    </div>
+                                                                    <span className="text-[9px] font-bold text-muted-foreground uppercase">
+                                                                        {spare.category} • ₹{spare.price}
+                                                                        {spare.stock > 0 && ` • ${spare.stock} in stock`}
+                                                                        {cart[spare._id] && ` • ${cart[spare._id].quantity} added`}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className={cn(
+                                                                "p-2 rounded-lg transition-all shrink-0",
+                                                                spare.stock === 0
+                                                                    ? (demandedIds.includes(spare._id) ? "bg-muted text-muted-foreground" : "bg-red-500 text-white shadow-lg shadow-red-500/20")
+                                                                    : (cart[spare._id] ? "bg-racing-blue text-white opacity-100" : "bg-racing-blue/10 text-racing-blue opacity-0 group-hover/item:opacity-100")
+                                                            )}>
+                                                                {spare.stock === 0 ? (
+                                                                    demandedIds.includes(spare._id) ? <UserCheck className="w-4 h-4" /> : <ShieldAlert className="w-4 h-4" />
+                                                                ) : (
+                                                                    <CheckCircle2 className="w-4 h-4" />
                                                                 )}
                                                             </div>
-                                                            <span className="text-[9px] font-bold text-muted-foreground uppercase">
-                                                                {spare.category} • ₹{spare.price}
-                                                                {spare.stock > 0 && ` • ${spare.stock} in stock`}
-                                                                {cart[spare._id] && ` • ${cart[spare._id].quantity} added`}
-                                                            </span>
-                                                        </div>
-                                                        <div className={cn(
-                                                            "p-2 rounded-lg transition-all",
-                                                            spare.stock === 0
-                                                                ? (demandedIds.includes(spare._id) ? "bg-muted text-muted-foreground" : "bg-red-500 text-white shadow-lg shadow-red-500/20")
-                                                                : (cart[spare._id] ? "bg-racing-blue text-white opacity-100" : "bg-racing-blue/10 text-racing-blue opacity-0 group-hover/item:opacity-100")
-                                                        )}>
-                                                            {spare.stock === 0 ? (
-                                                                demandedIds.includes(spare._id) ? <UserCheck className="w-4 h-4" /> : <ShieldAlert className="w-4 h-4" />
-                                                            ) : (
-                                                                <CheckCircle2 className="w-4 h-4" />
-                                                            )}
-                                                        </div>
-                                                    </button>
-                                                ))}
+                                                        </button>
+                                                    );
+                                                })}
                                             </div>
                                             <div className="mt-8 pt-8 border-t border-border flex justify-end">
                                                 <button
@@ -785,6 +839,27 @@ export function ServiceBooking() {
                     </AnimatePresence>
                 </form>
             </div>
+
+            {/* Global Hover Preview Portal-like Element */}
+            <AnimatePresence>
+                {hoveredImage && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.5 }}
+                        className="fixed z-[9999] pointer-events-none flex items-center justify-center p-4 bg-card border border-border rounded-[2rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] overflow-hidden"
+                        style={{ 
+                            width: '200px', 
+                            height: '200px',
+                            left: `${hoverPos.x}px`,
+                            top: `${hoverPos.y}px`,
+                        }}
+                    >
+                        <img src={hoveredImage} alt="Preview" className="w-full h-full object-contain rounded-2xl" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

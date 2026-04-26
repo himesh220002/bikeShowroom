@@ -676,21 +676,22 @@ export function GarageDashboard() {
                                     {(selectedBike.documents || []).map((doc, idx) => {
                                         const expiringSoon = doc.expiryDate && new Date(doc.expiryDate).getTime() < (Date.now() + 45 * 24 * 60 * 60 * 1000);
                                         return (
-                                        <div key={doc._id || idx} className={`p-8 bg-zinc-50/50 rounded-3xl border transition-all ${expiringSoon ? 'border-amber-200 bg-amber-50/30' : 'border-zinc-100 hover:bg-white hover:shadow-xl hover:shadow-black/5'}`}>
-                                            <div className="flex justify-between items-start mb-8">
-                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${expiringSoon ? 'bg-amber-100' : 'bg-zinc-100'}`}>
-                                                    <FileText className={`w-6 h-6 ${expiringSoon ? 'text-amber-600' : 'text-zinc-600'}`} />
+                                            <div key={doc._id || idx} className={`p-8 bg-zinc-50/50 rounded-3xl border transition-all ${expiringSoon ? 'border-amber-200 bg-amber-50/30' : 'border-zinc-100 hover:bg-white hover:shadow-xl hover:shadow-black/5'}`}>
+                                                <div className="flex justify-between items-start mb-8">
+                                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${expiringSoon ? 'bg-amber-100' : 'bg-zinc-100'}`}>
+                                                        <FileText className={`w-6 h-6 ${expiringSoon ? 'text-amber-600' : 'text-zinc-600'}`} />
+                                                    </div>
+                                                    <a href={doc.docUrl} target="_blank" rel="noreferrer" className="p-3 hover:bg-zinc-100 rounded-xl transition-all">
+                                                        <ExternalLink className="w-5 h-5 text-gray-400" />
+                                                    </a>
                                                 </div>
-                                                <a href={doc.docUrl} target="_blank" rel="noreferrer" className="p-3 hover:bg-zinc-100 rounded-xl transition-all">
-                                                    <ExternalLink className="w-5 h-5 text-gray-400" />
-                                                </a>
+                                                <h4 className="text-sm font-black uppercase text-zinc-900 mb-1">{doc.docType}</h4>
+                                                <p className={`text-[10px] font-bold uppercase tracking-wider ${expiringSoon ? 'text-amber-600' : 'text-gray-400'}`}>
+                                                    {doc.expiryDate ? `Expires ${new Date(doc.expiryDate).toLocaleDateString()}` : "No expiry"}
+                                                </p>
                                             </div>
-                                            <h4 className="text-sm font-black uppercase text-zinc-900 mb-1">{doc.docType}</h4>
-                                            <p className={`text-[10px] font-bold uppercase tracking-wider ${expiringSoon ? 'text-amber-600' : 'text-gray-400'}`}>
-                                                {doc.expiryDate ? `Expires ${new Date(doc.expiryDate).toLocaleDateString()}` : "No expiry"}
-                                            </p>
-                                        </div>
-                                    )})}
+                                        )
+                                    })}
                                 </div>
 
                                 {(selectedBike.documents || []).length === 0 && (
@@ -824,7 +825,7 @@ export function GarageDashboard() {
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 overflow-hidden shadow-2xl shadow-black/10"
+                            className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10 max-h-[90vh] overflow-y-auto custom-scrollbar"
                         >
                             <h2 className="text-3xl font-display font-black uppercase mb-10 text-zinc-900">Install New Modification</h2>
                             <div className="space-y-8">
@@ -894,21 +895,37 @@ export function GarageDashboard() {
                 {showStatusModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowStatusModal(false)} className="absolute inset-0 bg-zinc-900/60 backdrop-blur-md" />
-                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10">
+                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10 max-h-[90vh] overflow-y-auto custom-scrollbar">
                             <h2 className="text-3xl font-display font-black uppercase mb-8 text-zinc-900">Update Part Condition</h2>
                             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-6">Select bike part and current condition observed by owner.</p>
                             <div className="space-y-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Bike part / entity</label>
-                                    <input className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={partStatusForm.part} onChange={(e) => setPartStatusForm({ ...partStatusForm, part: e.target.value.toLowerCase() })} placeholder="Example: engine, brakes, clutch, chain, battery" />
+                                    <select 
+                                        className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none cursor-pointer" 
+                                        value={partStatusForm.part} 
+                                        onChange={(e) => setPartStatusForm({ ...partStatusForm, part: e.target.value })}
+                                    >
+                                        <option value="" disabled>Select Part</option>
+                                        <option value="engine">Engine</option>
+                                        <option value="brakes">Brakes</option>
+                                        <option value="clutch">Clutch</option>
+                                        <option value="chain">Chain & Sprockets</option>
+                                        <option value="battery">Battery</option>
+                                        <option value="tires">Tires</option>
+                                        <option value="coolant">Coolant</option>
+                                        <option value="suspension">Suspension</option>
+                                        <option value="electrical">Electrical</option>
+                                        <option value="lights">Lights / Indicators</option>
+                                    </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Current condition status</label>
                                     <select className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={partStatusForm.status} onChange={(e) => setPartStatusForm({ ...partStatusForm, status: e.target.value as "healthy" | "watch" | "critical" | "fixed" })}>
-                                    <option value="healthy">Healthy</option>
-                                    <option value="watch">Watch</option>
-                                    <option value="critical">Critical</option>
-                                    <option value="fixed">Fixed</option>
+                                        <option value="healthy">Healthy</option>
+                                        <option value="watch">Watch</option>
+                                        <option value="critical">Critical</option>
+                                        <option value="fixed">Fixed</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
@@ -924,7 +941,7 @@ export function GarageDashboard() {
                 {showIssueModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowIssueModal(false)} className="absolute inset-0 bg-zinc-900/60 backdrop-blur-md" />
-                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10">
+                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10 max-h-[90vh] overflow-y-auto custom-scrollbar">
                             <h2 className="text-3xl font-display font-black uppercase mb-8 text-zinc-900">Report New Issue</h2>
                             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-6">Choose issue from dropdowns. System auto-generates probable cause and recommended Yamaha fix.</p>
                             <div className="space-y-6">
@@ -935,39 +952,39 @@ export function GarageDashboard() {
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Bike system</label>
                                     <select
-                                    className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none"
-                                    value={issueForm.system}
-                                    onChange={(e) => {
-                                        const nextSystem = e.target.value;
-                                        const nextProblem = PROBLEM_LIBRARY[nextSystem]?.[0]?.label || "";
-                                        setIssueForm({ ...issueForm, system: nextSystem, problem: nextProblem });
-                                    }}
-                                >
-                                    <option value="engine">Engine</option>
-                                    <option value="brakes">Brakes</option>
-                                    <option value="electrical">Electrical</option>
-                                    <option value="connectivity">Connectivity</option>
-                                </select>
+                                        className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none"
+                                        value={issueForm.system}
+                                        onChange={(e) => {
+                                            const nextSystem = e.target.value;
+                                            const nextProblem = PROBLEM_LIBRARY[nextSystem]?.[0]?.label || "";
+                                            setIssueForm({ ...issueForm, system: nextSystem, problem: nextProblem });
+                                        }}
+                                    >
+                                        <option value="engine">Engine</option>
+                                        <option value="brakes">Brakes</option>
+                                        <option value="electrical">Electrical</option>
+                                        <option value="connectivity">Connectivity</option>
+                                    </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Observed problem</label>
                                     <select
-                                    className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none"
-                                    value={issueForm.problem}
-                                    onChange={(e) => setIssueForm({ ...issueForm, problem: e.target.value })}
-                                >
-                                    {(PROBLEM_LIBRARY[issueForm.system] || []).map((problem) => (
-                                        <option key={problem.label} value={problem.label}>{problem.label}</option>
-                                    ))}
-                                </select>
+                                        className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none"
+                                        value={issueForm.problem}
+                                        onChange={(e) => setIssueForm({ ...issueForm, problem: e.target.value })}
+                                    >
+                                        {(PROBLEM_LIBRARY[issueForm.system] || []).map((problem) => (
+                                            <option key={problem.label} value={problem.label}>{problem.label}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Severity level</label>
                                     <select className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none" value={issueForm.severity} onChange={(e) => setIssueForm({ ...issueForm, severity: e.target.value as "low" | "medium" | "high" })}>
-                                    <option value="low">Low</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="high">High</option>
-                                </select>
+                                        <option value="low">Low</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="high">High</option>
+                                    </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Owner note (optional)</label>
@@ -988,7 +1005,7 @@ export function GarageDashboard() {
                 {showDiagnosticModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowDiagnosticModal(false)} className="absolute inset-0 bg-zinc-900/60 backdrop-blur-md" />
-                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10">
+                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10 max-h-[90vh] overflow-y-auto custom-scrollbar">
                             <h2 className="text-3xl font-display font-black uppercase mb-8 text-zinc-900">Add Diagnostic Report</h2>
                             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-6">Use after workshop checkup or self-diagnostic scan.</p>
                             <div className="space-y-6">
@@ -1013,7 +1030,7 @@ export function GarageDashboard() {
                 {showAnalyticsModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowAnalyticsModal(false)} className="absolute inset-0 bg-zinc-900/60 backdrop-blur-md" />
-                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10">
+                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10 max-h-[90vh] overflow-y-auto custom-scrollbar">
                             <h2 className="text-3xl font-display font-black uppercase mb-8 text-zinc-900">Add Ride Analytics</h2>
                             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-6">Enter measured values for the selected ride period. Use odometer/trip meter data for accuracy.</p>
                             <div className="space-y-6">
@@ -1046,7 +1063,7 @@ export function GarageDashboard() {
                 {showDocModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowDocModal(false)} className="absolute inset-0 bg-zinc-900/60 backdrop-blur-md" />
-                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10">
+                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10 max-h-[90vh] overflow-y-auto custom-scrollbar">
                             <h2 className="text-3xl font-display font-black uppercase mb-8 text-zinc-900">Add Document</h2>
                             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-6">Attach important bike ownership documents for your vault.</p>
                             <div className="space-y-6">
@@ -1081,7 +1098,7 @@ export function GarageDashboard() {
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 overflow-hidden shadow-2xl shadow-black/10"
+                            className="relative w-full max-w-xl bg-white border border-zinc-100 rounded-[3rem] p-10 shadow-2xl shadow-black/10 max-h-[90vh] overflow-y-auto custom-scrollbar"
                         >
                             <h2 className="text-3xl font-display font-black uppercase mb-10 text-zinc-900">Manage Machine Identity</h2>
                             {selectedBike.identitySource === "sale_ledger" && (
