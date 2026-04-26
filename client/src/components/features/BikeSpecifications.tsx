@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 // import { Gauge, Cpu, Binary, Shield, Zap, Fuel, Scale, Ruler, Layers } from "lucide-react";
 import { LucideIcon } from "@/components/ui/LucideIcon";
+import Link from "next/link";
 
 interface BikeSpecificationsProps {
     bike: any;
@@ -76,9 +77,14 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-                    <div className="bg-card p-10 rounded-[3rem] border border-border">
-                        <h4 className="text-xl font-display font-black text-foreground uppercase tracking-tight mb-8">Dimensions & Chassis</h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    <div className="relative group overflow-hidden bg-card p-10 rounded-[3rem] border border-border">
+                        <div
+                            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                            style={{ backgroundImage: `url("/images/fascino.png")` }}
+                        />
+                        <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
+                        <h4 className="text-xl relative z-10 font-display font-black text-foreground uppercase tracking-tight mb-8">Dimensions & Chassis</h4>
+                        <div className="z-10 relative grid grid-cols-1 sm:grid-cols-2 gap-8">
                             {secondarySpecs.map((spec) => (
                                 <div key={spec.label} className="flex flex-col gap-2">
                                     <div className="flex items-center gap-3">
@@ -92,7 +98,12 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                     </div>
 
                     <div className="bg-blue-800 rounded-[3rem] p-10 flex flex-col justify-between relative overflow-hidden group">
-                        <div className="relative z-10">
+                        <div
+                            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                            style={{ backgroundImage: `url("/images/fascino.png")` }}
+                        />
+                        <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
+                        <div className="relative z-10">   
                             <h4 className="text-xl font-display font-black text-white uppercase tracking-tight mb-6">Key Features</h4>
                             <div className="flex flex-wrap gap-3">
                                 {Array.isArray(bike.fullSpecs.features) && bike.fullSpecs.features.map((feature: string) => (
@@ -105,9 +116,9 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                         <div className="absolute -bottom-10 -right-10 opacity-20 group-hover:scale-110 transition-transform duration-700">
                             <div className="w-40 h-40 bg-white rounded-full blur-3xl" />
                         </div>
-                        <div className="relative z-10 mt-12 bg-white text-racing-blue px-6 py-3 rounded-2xl w-fit text-xs font-black uppercase shadow-xl">
+                        <Link href="https://www.yamaha-motor-india.com/" className="relative z-10 mt-12 bg-white text-racing-blue px-6 py-3 rounded-2xl w-fit text-xs font-black uppercase shadow-xl">
                             Yamaha Racing Heritage
-                        </div>
+                        </Link>
                     </div>
                 </div>
             </div>

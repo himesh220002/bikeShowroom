@@ -56,9 +56,9 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                         </div>
 
                         <div className="mb-10">
-                            <h1 className="text-3xl md:text-4xl font-display font-black text-foreground uppercase tracking-tighter leading-none mb-4">
+                            <h1 className="text-3xl md:text-4xl text-center sm:text-start font-display font-black text-foreground tracking-tighter leading-none mb-4">
                                 {bike.name} <br />
-                                <span className="text-racing-blue">{color.name}</span>
+                                <span className="text-xl text-racing-blue">{color.name}</span>
                             </h1>
 
                             {/* Mobile Image - Injected between Name and Color Selector */}
@@ -83,7 +83,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
 
                             {/* Color Selector */}
                             {bike.colors.length > 1 && (
-                                <div className="mt-8 flex flex-col gap-3">
+                                <div className="mt-8 flex flex-col items-center sm:items-start gap-3">
                                     <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Available Colors</span>
                                     <div className="flex gap-4">
                                         {bike.colors.map((c: any, index: number) => (
@@ -127,7 +127,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                             ))}
                         </div>
 
-                        <div className="flex flex-wrap gap-6 mb-8 items-center">
+                        <div className="flex flex-wrap gap-6 mb-8 items-center justify-center sm:justify-start">
                             <div className="flex flex-col">
                                 <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">
                                     {color.price ? "Price" : "Starting From"}
@@ -152,7 +152,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                     <div className="flex text-yellow-500">
                                         {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-2 h-2 fill-current" />)}
                                     </div>
-                                    <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-widest">500+ Reviews</span>
+                                    <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-widest">200+ Reviews</span>
                                 </div>
                             </div>
                         </div>

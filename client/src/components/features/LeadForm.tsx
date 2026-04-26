@@ -30,7 +30,7 @@ const categories = [
         name: "Services & Offers",
         items: [
             { id: "SERVICE", label: "Service", score: 6 },
-            { id: "EMI", label: "Finance/EMI", score: 8 },
+            { id: "EMI", label: "Finance/EMI", score: 8, bonus: "Low Interest Rates" },
             { id: "BOOKING", label: "Fast Booking", score: 10, bonus: "Priority Support" },
             { id: "PRE-ORDER", label: "Pre-order", score: 9 }
         ]
@@ -233,7 +233,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                 defaultValue={user?.displayName || ""}
                                                 placeholder="Who's riding?"
                                                 className={cn(
-                                                    "w-full bg-background border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-3 md:py-4 text-sm font-black text-foreground transition-all outline-none",
+                                                    "w-full bg-white border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-3 md:py-4 text-sm font-black text-gray-800 transition-all outline-none",
                                                     errors.name ? "border-red-500" : "border-border"
                                                 )}
                                             />
@@ -250,7 +250,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                 maxLength={10}
                                                 placeholder="Mobile number"
                                                 className={cn(
-                                                    "w-full bg-background border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-3 md:py-4 text-sm font-black text-foreground transition-all outline-none",
+                                                    "w-full bg-white border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl pl-14 pr-8 py-3 md:py-4 text-sm font-black text-gray-800 transition-all outline-none",
                                                     errors.phone ? "border-red-500" : "border-border"
                                                 )}
                                             />
@@ -264,7 +264,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                     <div className="space-y-2 sm:space-y-6">
                                         {categories.map((cat) => (
                                             <div key={cat.name} className="space-y-1 sm:space-y-3">
-                                                <h5 className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-900 border-l-2 border-racing-blue/30 pl-3 ml-2">{cat.name}</h5>
+                                                <h5 className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-500 border-l-2 border-racing-blue/30 pl-3 ml-2">{cat.name}</h5>
                                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                                     {cat.items.map((item) => (
                                                         <label key={item.id} className="relative cursor-pointer">
@@ -275,8 +275,8 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                                 value={item.label}
                                                                 defaultChecked={isItemSelected(item.id)}
                                                             />
-                                                            <div className="px-3 py-3 sm:py-4 rounded-2xl bg-cyan-900/90 border-3 peer-checked:border-l-8 dark:border-cyan-100/60 peer-checked:bg-gradient-to-r from-racing-blue/90 to-purple-500 transition-all flex flex-col items-center justify-center text-center h-full">
-                                                                <span className="text-[12px] lg:text-[14px] xl:text-[16px] font-black  tracking-tighter text-white peer-checked:text-white transition-colors">
+                                                            <div className="px-2 py-2 sm:py-3 rounded-2xl bg-cyan-900/90 hover:bg-racing-blue/80  peer-checked:bg-gradient-to-r from-racing-blue/20 to-purple-500/90 transition-all flex flex-col items-center justify-center text-center h-full">
+                                                                <span className="text-[14px] lg:text-[16px] xl:text-[18px] font-black  tracking-tighter text-white peer-checked:text-white transition-colors">
                                                                     {item.label}
                                                                 </span>
                                                                 {item.bonus && (
@@ -300,7 +300,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                         value={notes}
                                         onChange={(e) => setNotes(e.target.value)}
                                         placeholder="EMI preferences, test ride schedule..."
-                                        className="w-full bg-background border border-border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl px-8 py-4 text-sm font-black text-foreground transition-all outline-none resize-none max-h-[150px]"
+                                        className="w-full bg-white border border-border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl px-8 py-4 text-sm font-medium text-gray-800 transition-all outline-none resize-none max-h-[150px]"
                                     />
                                 </div>
 
