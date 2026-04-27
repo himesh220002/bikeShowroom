@@ -21,15 +21,19 @@ export function Hero() {
                 className="absolute inset-0 z-0 will-change-transform translate-z-0"
             >
                 <Image
-                    src="/images/hero_showroom.png"
+                    // src="/images/hero_showroom.png"
+                    // src="/images/bikemountain.jpg"
+                    // src="/images/bikemountainvertical.jpg"
+                    src="/images/bikevertical.jpg"
+                    // src="/images/racingleanbike.jpg"
                     alt="Choudhary Yamaha Showroom"
                     fill
                     sizes="100vw"
                     className="object-cover object-center scale-110 opacity-60 dark:opacity-60"
                     priority
                 />
-                <div className="absolute inset-0 bg-linear-to-b from-black/90 via-black/40 to-black" />
-                <div className="absolute inset-0 bg-linear-to-r from-black via-black/50 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-b from-black/70 via-black/20 to-black/40" />
+                <div className="absolute inset-0 bg-linear-to-r from-black/90 via-blak/10 to-transparent" />
             </motion.div>
 
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12 md:py-24">
@@ -43,7 +47,7 @@ export function Hero() {
                         <div className="p-1 bg-racing-blue rounded-full">
                             <Star className="w-3 h-3 text-white fill-white" />
                         </div>
-                        <span className="text-gray-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                        <span className="text-gray-400 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em]">
                             The Call of the Blue • Authorized Yamaha Dealer Katihar
                         </span>
                     </motion.div>
@@ -64,9 +68,9 @@ export function Hero() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-lg md:text-xl text-gray-400 mb-12 max-w-xl leading-relaxed font-medium"
+                        className="text-base sm:text-md md:text-xl text-gray-400 mb-12 max-w-xl leading-relaxed font-medium"
                     >
-                        Experience the absolute pinnacle of Yamaha performance at Choudhary Yamaha.
+                        <span className="hidden md:block">Experience the absolute pinnacle of Yamaha performance at Choudhary Yamaha.</span>
                         Engineered for thrill, built for excellence.
                     </motion.p>
 
@@ -116,7 +120,7 @@ export function Hero() {
                     initial={{ opacity: 0, scale: 0.8, x: 20 }}
                     animate={{ opacity: 1, scale: 1, x: 0 }}
                     transition={{ duration: 1.5, ease: "easeOut" }}
-                    className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 w-[250px] h-[250px] items-center justify-center pointer-events-none z-0"
+                    className="hidden lg:flex absolute right-0 top-2/7 -translate-y-1/2 w-[150px] h-[150px] items-center justify-center pointer-events-none z-0"
                 >
                     <div className="relative w-full h-full">
                         <Image

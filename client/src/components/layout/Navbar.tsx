@@ -87,6 +87,9 @@ export function Navbar() {
 
                     {/* Desktop Actions */}
                     <div className="hidden 2xl:flex items-center gap-4">
+                        <Link href="/admin">
+                            <div className="hidden md:flex items-center gap-2 p-2 opacity-0 hover:opacity-4 hover:bg-muted/50 rounded-full transition-colors cursor-pointer group">A</div>
+                        </Link>
                         <Link
                             href={`tel:${config.showroomPhone.replace(/\s+/g, '')}`}
                             className="p-3 rounded-full hover:bg-muted transition-colors group border border-transparent hover:border-border"
@@ -159,15 +162,15 @@ export function Navbar() {
                     </div>
 
                     <div className="flex 2xl:hidden gap-2 items-center">
-                    <Link href="/inquiry" className="px-4 py-2 text-white font-medium bg-gradient-to-r from-blue-900 to-purple-700 rounded-xl hover:bg-green-900">Inquiry</Link>
+                        <Link href="/inquiry" className="px-4 py-2 text-white font-medium bg-gradient-to-r from-blue-900 to-purple-700 rounded-xl hover:bg-green-900">Inquiry</Link>
 
-                    {/* Mobile Menu Button */}
-                    <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="2xl:hidden p-2.5 text-white bg-zinc-900/80 rounded-xl backdrop-blur-lg border border-white/10 shadow-xl"
-                    >
-                        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                    </button>
+                        {/* Mobile Menu Button */}
+                        <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className="2xl:hidden p-2.5 text-white bg-zinc-900/80 rounded-xl backdrop-blur-lg border border-white/10 shadow-xl"
+                        >
+                            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -204,53 +207,71 @@ export function Navbar() {
                                 </div>
                             </div>
                             <div className="flex-1 overflow-y-auto px-6 py-4">
-                            {navLinks.map((link, idx) => (
-                                <motion.div
-                                    key={link.name}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: idx * 0.1 }}
-                                >
-                                    <Link
-                                        href={link.href}
-                                        onClick={() => setIsOpen(false)}
-                                        className="flex items-center justify-center gap-10 text-xl font-display font-black text-foreground uppercase tracking-tight py-4 border-b border-border group"
+                                {navLinks.map((link, idx) => (
+                                    <motion.div
+                                        key={link.name}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: idx * 0.1 }}
                                     >
-                                        <span className="flex items-center gap-3">
-                                            <link.icon className="w-5 h-5 text-racing-blue" />
-                                            {link.name}
-                                        </span>
-                                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
-                                    </Link>
-                                </motion.div>
-                            ))}
-                            <div className="pt-6 pb-10 space-y-4">
-                                {authLoading ? (
-                                    <div className="h-14 bg-muted rounded-3xl animate-pulse" />
-                                ) : user ? (
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-3xl border border-border">
-                                            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-racing-blue">
-                                                {user.avatar ? (
-                                                    <Image src={user.avatar} alt={user.displayName} width={48} height={48} className="object-cover" />
-                                                ) : (
-                                                    <div className="w-full h-full bg-racing-blue flex items-center justify-center">
-                                                        <UserIcon className="w-6 h-6 text-white" />
-                                                    </div>
-                                                )}
+                                        <Link
+                                            href={link.href}
+                                            onClick={() => setIsOpen(false)}
+                                            className="flex items-center justify-center gap-10 text-xl font-display font-black text-foreground uppercase tracking-tight py-4 border-b border-border group"
+                                        >
+                                            <span className="flex items-center gap-3">
+                                                <link.icon className="w-5 h-5 text-racing-blue" />
+                                                {link.name}
+                                            </span>
+                                            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
+                                        </Link>
+                                    </motion.div>
+                                ))}
+                                <div className="pt-6 pb-10 space-y-4">
+                                    {authLoading ? (
+                                        <div className="h-14 bg-muted rounded-3xl animate-pulse" />
+                                    ) : user ? (
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-3xl border border-border">
+                                                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-racing-blue">
+                                                    {user.avatar ? (
+                                                        <Image src={user.avatar} alt={user.displayName} width={48} height={48} className="object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full bg-racing-blue flex items-center justify-center">
+                                                            <UserIcon className="w-6 h-6 text-white" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-black text-foreground uppercase tracking-wider">{user.displayName}</span>
+                                                    <Link href="/profile" onClick={() => setIsOpen(false)} className="text-[10px] font-black text-racing-blue uppercase tracking-[0.2em] mt-0.5">View Profile</Link>
+                                                </div>
                                             </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-black text-foreground uppercase tracking-wider">{user.displayName}</span>
-                                                <Link href="/profile" onClick={() => setIsOpen(false)} className="text-[10px] font-black text-racing-blue uppercase tracking-[0.2em] mt-0.5">View Profile</Link>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <button
+                                                    onClick={() => { logout(); setIsOpen(false); }}
+                                                    className="bg-muted py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px] text-red-500 border border-border"
+                                                >
+                                                    <LogOut className="w-4 h-4 mr-2" /> Sign Out
+                                                </button>
+                                                <Link
+                                                    href="/inquiry"
+                                                    onClick={() => setIsOpen(false)}
+                                                    className="bg-racing-blue text-white py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]"
+                                                >
+                                                    Test Ride
+                                                </Link>
                                             </div>
                                         </div>
+                                    ) : (
                                         <div className="grid grid-cols-2 gap-4">
-                                            <button
-                                                onClick={() => { logout(); setIsOpen(false); }}
-                                                className="bg-muted py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px] text-red-500 border border-border"
+                                            <Link
+                                                href="/login"
+                                                onClick={() => setIsOpen(false)}
+                                                className="bg-muted py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px] text-foreground border border-border"
                                             >
-                                                <LogOut className="w-4 h-4 mr-2" /> Sign Out
-                                            </button>
+                                                <LogIn className="w-4 h-4 mr-2" /> Sign In
+                                            </Link>
                                             <Link
                                                 href="/inquiry"
                                                 onClick={() => setIsOpen(false)}
@@ -259,33 +280,15 @@ export function Navbar() {
                                                 Test Ride
                                             </Link>
                                         </div>
-                                    </div>
-                                ) : (
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <Link
-                                            href="/login"
-                                            onClick={() => setIsOpen(false)}
-                                            className="bg-muted py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px] text-foreground border border-border"
-                                        >
-                                            <LogIn className="w-4 h-4 mr-2" /> Sign In
-                                        </Link>
-                                        <Link
-                                            href="/inquiry"
-                                            onClick={() => setIsOpen(false)}
-                                            className="bg-racing-blue text-white py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]"
-                                        >
-                                            Test Ride
-                                        </Link>
-                                    </div>
-                                )}
-                                <Link
-                                    href={`tel:${config.showroomPhone.replace(/\s+/g, '')}`}
-                                    onClick={() => setIsOpen(false)}
-                                    className="block w-full text-center py-4 bg-muted/30 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground border border-border/30"
-                                >
-                                    Contact Dealer: {config.showroomPhone}
-                                </Link>
-                            </div>
+                                    )}
+                                    <Link
+                                        href={`tel:${config.showroomPhone.replace(/\s+/g, '')}`}
+                                        onClick={() => setIsOpen(false)}
+                                        className="block w-full text-center py-4 bg-muted/30 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground border border-border/30"
+                                    >
+                                        Contact Dealer: {config.showroomPhone}
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </motion.div>

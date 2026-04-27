@@ -4,6 +4,7 @@ export interface IAd extends Document {
     name: string;
     type: 'Poster' | 'Video' | 'Banner';
     image: string;
+    thumbnail?: string;
     description?: string;
     link: string;
     status: 'Active' | 'Inactive' | 'Scheduled';
@@ -18,6 +19,7 @@ const AdSchema: Schema = new Schema({
     name: { type: String, required: true },
     type: { type: String, enum: ['Poster', 'Video', 'Banner'], required: true },
     image: { type: String, required: true },
+    thumbnail: { type: String },
     description: { type: String },
     link: { type: String, required: true },
     status: { type: String, enum: ['Active', 'Inactive', 'Scheduled'], default: 'Scheduled' },

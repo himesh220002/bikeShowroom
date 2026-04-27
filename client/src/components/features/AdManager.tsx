@@ -11,6 +11,7 @@ type Campaign = {
     name: string;
     type: "Poster" | "Video" | "Banner";
     image: string;
+    thumbnail?: string;
     description?: string;
     link: string;
     status: "Active" | "Inactive" | "Scheduled";
@@ -33,7 +34,9 @@ export function AdManager() {
     const [link, setLink] = useState("");
     const [description, setDescription] = useState("");
     const [image, setImage] = useState<File | null>(null);
+    const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<string | null>(null);
     const [month, setMonth] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -58,11 +61,46 @@ export function AdManager() {
         fetchAds();
     }, []);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const generateThumbnail = (file: File) => {
+        const video = document.createElement('video');
+        video.src = URL.createObjectURL(file);
+        video.crossOrigin = 'anonymous';
+        video.currentTime = 1; // Capture frame at 1 second
+        
+        video.onloadeddata = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    const thumbFile = new File([blob], "thumbnail.jpg", { type: "image/jpeg" });
+                    setThumbnail(thumbFile);
+                    setThumbnailPreviewUrl(URL.createObjectURL(thumbFile));
+                }
+            }, 'image/jpeg', 0.8);
+            
+            URL.revokeObjectURL(video.src);
+        };
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             setImage(file);
             setPreviewUrl(URL.createObjectURL(file));
+            
+            // Auto-detect type if not manually set or if creating new
+            if (file.type.startsWith("video/")) {
+                setType("Video");
+                generateThumbnail(file);
+            } else if (file.type.startsWith("image/")) {
+                if (type === "Video") setType("Poster");
+                setThumbnail(null);
+                setThumbnailPreviewUrl(null);
+            }
         }
     };
 
@@ -78,6 +116,7 @@ export function AdManager() {
         formData.append('link', link);
         formData.append('description', description);
         if (image) formData.append('image', image);
+        if (thumbnail) formData.append('thumbnail', thumbnail);
         formData.append('status', status);
         formData.append('month', month);
         if (startDate) formData.append('startDate', startDate);
@@ -151,7 +190,9 @@ export function AdManager() {
         setLink("");
         setDescription("");
         setImage(null);
+        setThumbnail(null);
         setPreviewUrl(null);
+        setThumbnailPreviewUrl(null);
         setEditingAd(null);
         setMonth("");
         setStartDate("");
@@ -166,6 +207,11 @@ export function AdManager() {
         setLink(ad.link);
         setDescription(ad.description || "");
         setPreviewUrl(ad.image.startsWith('/uploads') ? `${API_BASE_URL}${ad.image}` : ad.image);
+        if (ad.thumbnail) {
+            setThumbnailPreviewUrl(ad.thumbnail.startsWith('/uploads') ? `${API_BASE_URL}${ad.thumbnail}` : ad.thumbnail);
+        } else {
+            setThumbnailPreviewUrl(null);
+        }
         setMonth(ad.month || "");
         setStartDate(ad.startDate ? new Date(ad.startDate).toISOString().split('T')[0] : "");
         setEndDate(ad.endDate ? new Date(ad.endDate).toISOString().split('T')[0] : "");
@@ -328,7 +374,11 @@ export function AdManager() {
                                 className="relative aspect-[4/3] w-full border-2 border-dashed border-border rounded-3xl overflow-hidden group cursor-pointer hover:border-racing-blue/50 transition-colors flex flex-col items-center justify-center bg-muted/30"
                             >
                                 {previewUrl ? (
-                                    <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                                    image?.type.startsWith("video/") || editingAd?.type === "Video" ? (
+                                        <video src={previewUrl} className="w-full h-full object-cover" autoPlay muted loop />
+                                    ) : (
+                                        <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                                    )
                                 ) : (
                                     <div className="text-center p-8">
                                         <div className="w-16 h-16 bg-background rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-all shadow-xl">
@@ -341,9 +391,9 @@ export function AdManager() {
                                 <input
                                     type="file"
                                     ref={fileInputRef}
-                                    onChange={handleImageChange}
+                                    onChange={handleFileChange}
                                     className="hidden"
-                                    accept="image/*"
+                                    accept="image/*,video/*"
                                 />
                                 {previewUrl && (
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -351,6 +401,52 @@ export function AdManager() {
                                     </div>
                                 )}
                             </div>
+
+                            {type === "Video" && (
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Video Thumbnail (Poster)</label>
+                                    <div className="relative aspect-video w-full border border-border rounded-2xl overflow-hidden bg-muted/20 flex items-center justify-center">
+                                        {thumbnailPreviewUrl ? (
+                                            <img src={thumbnailPreviewUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span className="text-[10px] text-muted-foreground uppercase font-black">No thumbnail generated</span>
+                                        )}
+                                        <div className="absolute bottom-4 right-4 flex gap-2">
+                                            <button 
+                                                type="button"
+                                                onClick={() => {
+                                                    const input = document.createElement('input');
+                                                    input.type = 'file';
+                                                    input.accept = 'image/*';
+                                                    input.onchange = (e) => {
+                                                        const file = (e.target as HTMLInputElement).files?.[0];
+                                                        if (file) {
+                                                            setThumbnail(file);
+                                                            setThumbnailPreviewUrl(URL.createObjectURL(file));
+                                                        }
+                                                    };
+                                                    input.click();
+                                                }}
+                                                className="bg-racing-blue text-white p-2 rounded-lg shadow-lg hover:bg-blue-600 transition-colors"
+                                                title="Upload custom thumbnail"
+                                            >
+                                                <Upload className="w-4 h-4" />
+                                            </button>
+                                            {image && image.type.startsWith('video/') && (
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => generateThumbnail(image)}
+                                                    className="bg-white text-zinc-900 p-2 rounded-lg shadow-lg hover:bg-zinc-100 transition-colors"
+                                                    title="Re-generate from video"
+                                                >
+                                                    <Edit3 className="w-4 h-4" />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] text-muted-foreground uppercase font-bold text-center">Standard poster for video ads</p>
+                                </div>
+                            )}
                         </div>
                     </form>
                 </div>
@@ -388,7 +484,7 @@ export function AdManager() {
                                 </div>
                                 <div className="w-20 h-20 bg-muted rounded-2xl overflow-hidden border border-border flex-shrink-0">
                                     <img
-                                        src={camp.image.startsWith('/uploads') ? `${API_BASE_URL}${camp.image}` : camp.image}
+                                        src={camp.thumbnail ? (camp.thumbnail.startsWith('/uploads') ? `${API_BASE_URL}${camp.thumbnail}` : camp.thumbnail) : (camp.image.startsWith('/uploads') ? `${API_BASE_URL}${camp.image}` : camp.image)}
                                         alt={camp.name}
                                         className="w-full h-full object-cover"
                                     />

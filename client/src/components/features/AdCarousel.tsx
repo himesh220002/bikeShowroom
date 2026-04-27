@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useState, useRef, type ChangeEvent } from "react";
 import { API_URL, API_BASE_URL } from "@/lib/config";
-import { Play, ExternalLink } from "lucide-react";
+import { Play, Pause, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 type Ad = {
@@ -11,6 +11,7 @@ type Ad = {
     name: string;
     type: "Poster" | "Video" | "Banner";
     image: string;
+    thumbnail?: string;
     description?: string;
     link: string;
 };
@@ -22,9 +23,7 @@ type PromoResponse = Ad & {
 export function AdCarousel() {
     const [ads, setAds] = useState<Ad[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string>("");
-    const [selectedType, setSelectedType] = useState<Ad["type"]>("Poster");
+
 
     useEffect(() => {
         const fetchAds = async () => {
@@ -46,27 +45,7 @@ export function AdCarousel() {
         fetchAds();
     }, []);
 
-    useEffect(() => {
-        return () => {
-            if (previewUrl) {
-                URL.revokeObjectURL(previewUrl);
-            }
-        };
-    }, [previewUrl]);
 
-    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        setSelectedFile(file);
-        setPreviewUrl(URL.createObjectURL(file));
-
-        if (file.type.startsWith("video/")) {
-            setSelectedType("Video");
-        } else {
-            setSelectedType("Poster");
-        }
-    };
 
     return (
         <section id="promotions" className="relative py-16 bg-transparent overflow-hidden scroll-mt-[100px]">
@@ -80,56 +59,7 @@ export function AdCarousel() {
                     </div>
                 </div>
 
-                <div className="mb-10 space-y-6">
-                    <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
-                        <label className="block text-sm font-black uppercase tracking-widest text-muted-foreground">
-                            Upload image or video
-                            <input
-                                type="file"
-                                accept="image/*,video/*"
-                                onChange={handleFileChange}
-                                className="mt-3 block w-full rounded-3xl border border-border bg-background px-4 py-3 text-sm text-foreground"
-                            />
-                        </label>
-                        <label className="block text-sm font-black uppercase tracking-widest text-muted-foreground">
-                            Ad type
-                            <select
-                                value={selectedType}
-                                onChange={(e) => setSelectedType(e.target.value as Ad["type"])}
-                                className="mt-3 block w-full rounded-3xl border border-border bg-background px-4 py-3 text-sm text-foreground"
-                            >
-                                <option value="Poster">Poster</option>
-                                <option value="Video">Video</option>
-                                <option value="Banner">Banner</option>
-                            </select>
-                        </label>
-                    </div>
 
-                    {previewUrl && (
-                        <div className="rounded-[2rem] overflow-hidden bg-muted/50 border border-border p-4">
-                            <div className="mb-4 flex items-center justify-between">
-                                <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-                                    Preview ({selectedType})
-                                </span>
-                                <span className="text-xs text-gray-300">
-                                    {selectedFile?.type}
-                                </span>
-                            </div>
-                            {selectedFile?.type.startsWith("video/") ? (
-                                <video controls src={previewUrl} className="w-full rounded-3xl" />
-                            ) : (
-                                <Image
-                                    src={previewUrl}
-                                    alt="Selected preview"
-                                    width={900}
-                                    height={500}
-                                    unoptimized
-                                    className="w-full rounded-3xl object-cover"
-                                />
-                            )}
-                        </div>
-                    )}
-                </div>
 
                 <div className="relative">
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
@@ -158,6 +88,45 @@ export function AdCarousel() {
 
 function AdCard({ ad }: { ad: Ad }) {
     const imageUrl = ad.image.startsWith('/uploads') ? `${API_BASE_URL}${ad.image}` : ad.image;
+    const thumbUrl = ad.thumbnail ? (ad.thumbnail.startsWith('/uploads') ? `${API_BASE_URL}${ad.thumbnail}` : ad.thumbnail) : imageUrl;
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+
+    useEffect(() => {
+        if (ad.type !== "Video") return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    videoRef.current?.play().catch(() => {});
+                    setIsPlaying(true);
+                } else {
+                    videoRef.current?.pause();
+                    setIsPlaying(false);
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        if (videoRef.current) {
+            observer.observe(videoRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [ad.type]);
+
+    const togglePlay = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (!videoRef.current) return;
+        
+        if (isPlaying) {
+            videoRef.current.pause();
+            setIsPlaying(false);
+        } else {
+            videoRef.current.play();
+            setIsPlaying(true);
+        }
+    };
 
     return (
         <div className="group flex flex-col space-y-4">
@@ -166,7 +135,7 @@ function AdCard({ ad }: { ad: Ad }) {
                     {(ad.type === "Poster" || ad.type === "Video") && ad.image && (
                         <div className="absolute inset-0 w-full h-full overflow-hidden">
                             <Image
-                                src={imageUrl}
+                                src={ad.type === "Video" ? thumbUrl : imageUrl}
                                 alt=""
                                 fill
                                 unoptimized
@@ -175,15 +144,38 @@ function AdCard({ ad }: { ad: Ad }) {
                         </div>
                     )}
                     {ad.image && (
-                        <Image
-                            src={imageUrl}
-                            alt={ad.name}
-                            fill
-                            unoptimized
-                            className={cn(
-                                "relative z-10 w-full h-full transition-transform duration-700 group-hover:scale-105 object-cover"
-                            )}
-                        />
+                        ad.type === "Video" ? (
+                            <div className="relative w-full h-full cursor-pointer" onClick={togglePlay}>
+                                <video
+                                    ref={videoRef}
+                                    src={imageUrl}
+                                    poster={thumbUrl}
+                                    muted
+                                    loop
+                                    playsInline
+                                    className="relative z-10 w-full h-full transition-transform duration-700 group-hover:scale-105 object-cover"
+                                />
+                                {/* Play/Pause Overlay */}
+                                <div className={cn(
+                                    "absolute inset-0 z-20 flex items-center justify-center transition-all duration-300",
+                                    isPlaying ? "opacity-0 group-hover:opacity-100 bg-black/10" : "opacity-100 bg-black/30"
+                                )}>
+                                    <div className="w-16 h-16 rounded-full bg-racing-blue/90 text-white flex items-center justify-center backdrop-blur-md shadow-2xl scale-90 group-hover:scale-100 transition-transform">
+                                        {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <Image
+                                src={imageUrl}
+                                alt={ad.name}
+                                fill
+                                unoptimized
+                                className={cn(
+                                    "relative z-10 w-full h-full transition-transform duration-700 group-hover:scale-105 object-cover"
+                                )}
+                            />
+                        )
                     )}
                     <div className="absolute top-6 left-6 z-20">
                         <span className="px-3 py-1 bg-racing-blue text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">

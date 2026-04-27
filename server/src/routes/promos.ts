@@ -90,17 +90,19 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Create new campaign with image upload
-router.post('/', upload.single('image'), async (req, res) => {
+// Create new campaign with image/video and optional thumbnail upload
+router.post('/', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]), async (req, res) => {
     try {
         const { name, type, link, status, description, month, startDate, endDate } = req.body;
+        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-        if (!req.file) {
-            return res.status(400).json({ success: false, message: 'Image is required' });
+        if (!files || !files['image']) {
+            return res.status(400).json({ success: false, message: 'Primary visual (image/video) is required' });
         }
 
-        // Return path relative to server's static folder
-        const imagePath = `/uploads/ads/${req.file.filename}`;
+        // Return paths relative to server's static folder
+        const imagePath = `/uploads/ads/${files['image'][0].filename}`;
+        const thumbnailPath = files['thumbnail'] ? `/uploads/ads/${files['thumbnail'][0].filename}` : undefined;
 
         const adCount = await Ad.countDocuments();
 
@@ -114,6 +116,7 @@ router.post('/', upload.single('image'), async (req, res) => {
             startDate: startDate ? new Date(startDate) : undefined,
             endDate: endDate ? new Date(endDate) : undefined,
             image: imagePath,
+            thumbnail: thumbnailPath,
             impact: '0',
             priority: adCount
         });
@@ -148,9 +151,11 @@ router.post('/reorder', async (req, res) => {
 });
 
 // Update campaign
-router.put('/:id', upload.single('image'), async (req, res) => {
+router.put('/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]), async (req, res) => {
     try {
         const { name, type, link, status, description, month, startDate, endDate } = req.body;
+        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+        
         const updateData: any = {
             name,
             type,
@@ -162,17 +167,28 @@ router.put('/:id', upload.single('image'), async (req, res) => {
             endDate: endDate ? new Date(endDate) : undefined
         };
 
-        if (req.file) {
-            // New image uploaded
-            updateData.image = `/images/ads/${req.file.filename}`;
+        const oldAd = await Ad.findById(req.params.id);
+        if (!oldAd) return res.status(404).json({ success: false, message: 'Ad not found' });
 
-            // Cleanup old image
-            const oldAd = await Ad.findById(req.params.id);
-            if (oldAd && oldAd.image && oldAd.image.startsWith('/uploads/')) {
+        if (files && files['image']) {
+            // New primary file uploaded
+            updateData.image = `/uploads/ads/${files['image'][0].filename}`;
+
+            // Cleanup old primary file
+            if (oldAd.image && oldAd.image.startsWith('/uploads/')) {
                 const oldPath = path.join(__dirname, '../../public', oldAd.image);
-                if (fs.existsSync(oldPath)) {
-                    fs.unlinkSync(oldPath);
-                }
+                if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+            }
+        }
+
+        if (files && files['thumbnail']) {
+            // New thumbnail uploaded
+            updateData.thumbnail = `/uploads/ads/${files['thumbnail'][0].filename}`;
+
+            // Cleanup old thumbnail
+            if (oldAd.thumbnail && oldAd.thumbnail.startsWith('/uploads/')) {
+                const oldThumbPath = path.join(__dirname, '../../public', oldAd.thumbnail);
+                if (fs.existsSync(oldThumbPath)) fs.unlinkSync(oldThumbPath);
             }
         }
 
@@ -182,7 +198,6 @@ router.put('/:id', upload.single('image'), async (req, res) => {
             { new: true }
         );
 
-        if (!ad) return res.status(404).json({ success: false, message: 'Ad not found' });
         res.json({ success: true, data: ad });
     } catch (error: any) {
         res.status(400).json({ success: false, error: error.message });
@@ -195,10 +210,14 @@ router.delete('/:id', async (req, res) => {
         const ad = await Ad.findByIdAndDelete(req.params.id);
         if (!ad) return res.status(404).json({ success: false, message: 'Ad not found' });
 
-        // Cleanup the physical file
-        const filePath = path.join(__dirname, '../../../client/public', ad.image);
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
+        // Cleanup the physical files
+        if (ad.image && ad.image.startsWith('/uploads/')) {
+            const filePath = path.join(__dirname, '../../public', ad.image);
+            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        }
+        if (ad.thumbnail && ad.thumbnail.startsWith('/uploads/')) {
+            const thumbPath = path.join(__dirname, '../../public', ad.thumbnail);
+            if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
         }
 
         res.json({ success: true, message: 'Ad deleted successfully' });
