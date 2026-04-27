@@ -34,8 +34,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const refreshUser = async () => {
         try {
             const res = await axios.get(`${API_URL}/auth/me`, { withCredentials: true });
-            if (res.data.success) {
-                setUser(res.data.data);
+            const data = res.data as any;
+            if (data.success) {
+                setUser(data.data);
             } else {
                 setUser(null);
             }
@@ -57,11 +58,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const loginLocal = async (data: any) => {
         try {
             const res = await axios.post(`${API_URL}/auth/login`, data, { withCredentials: true });
-            if (res.data.success) {
-                setUser(res.data.data);
+            const resData = res.data as any;
+            if (resData.success) {
+                setUser(resData.data);
                 return { success: true };
             }
-            return { success: false, message: res.data.message };
+            return { success: false, message: resData.message };
         } catch (err: any) {
             return { success: false, message: err.response?.data?.message || 'Login failed' };
         }
@@ -70,11 +72,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const register = async (data: any) => {
         try {
             const res = await axios.post(`${API_URL}/auth/register`, data, { withCredentials: true });
-            if (res.data.success) {
-                setUser(res.data.data);
+            const resData = res.data as any;
+            if (resData.success) {
+                setUser(resData.data);
                 return { success: true };
             }
-            return { success: false, message: res.data.message };
+            return { success: false, message: resData.message };
         } catch (err: any) {
             return { success: false, message: err.response?.data?.message || 'Registration failed' };
         }

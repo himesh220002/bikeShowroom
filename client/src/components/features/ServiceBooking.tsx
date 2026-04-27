@@ -90,9 +90,10 @@ export function ServiceBooking() {
                         phone: prev.phone
                     }));
 
-                    const res: any = await axios.get(`${API_URL}/user-bikes`, { withCredentials: true });
-                    if (res.data.success) {
-                        setUserBikes(res.data.data);
+                    const res = await axios.get(`${API_URL}/user-bikes`, { withCredentials: true });
+                    const resData = res.data as any;
+                    if (resData.success) {
+                        setUserBikes(resData.data);
                     }
                 } catch (err) {
                     console.error("Failed to fetch user bikes:", err);
@@ -107,10 +108,11 @@ export function ServiceBooking() {
             if (formData.appointmentDate) {
                 setLoadingSlots(true);
                 try {
-                    const res: any = await axios.get(`${API_URL}/workshop-slots/available?date=${formData.appointmentDate}`);
-                    if (res.data.success) {
-                        setAvailableSlots(res.data.data);
-                        if (res.data.defaultCapacity) setDefaultCapacity(res.data.defaultCapacity);
+                    const res = await axios.get(`${API_URL}/workshop-slots/available?date=${formData.appointmentDate}`);
+                    const resData = res.data as any;
+                    if (resData.success) {
+                        setAvailableSlots(resData.data);
+                        if (resData.defaultCapacity) setDefaultCapacity(resData.defaultCapacity);
                     }
                 } catch (err) {
                     console.error("Failed to fetch slots:", err);

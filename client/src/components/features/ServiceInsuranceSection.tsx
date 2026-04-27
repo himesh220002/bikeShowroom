@@ -57,12 +57,13 @@ export function ServiceInsuranceSection() {
     const fetchBikes = async () => {
         try {
             const res = await axios.get<any>(`${API_URL}/user-bikes`, { withCredentials: true });
-            if (res.data.success) {
-                setBikes(res.data.data);
-                if (res.data.data.length > 0) {
+            const data = res.data as any;
+            if (data.success) {
+                setBikes(data.data);
+                if (data.data.length > 0) {
                     setEditForm({
-                        registrationNumber: res.data.data[0].registrationNumber || "",
-                        chassisNumber: res.data.data[0].chassisNumber || ""
+                        registrationNumber: data.data[0].registrationNumber || "",
+                        chassisNumber: data.data[0].chassisNumber || ""
                     });
                 }
             }
@@ -77,8 +78,9 @@ export function ServiceInsuranceSection() {
         if (!bikes[0]) return;
         try {
             const res = await axios.put<any>(`${API_URL}/user-bikes/${bikes[0]._id}`, editForm, { withCredentials: true });
-            if (res.data.success) {
-                setBikes([res.data.data, ...bikes.slice(1)]);
+            const data = res.data as any;
+            if (data.success) {
+                setBikes([data.data, ...bikes.slice(1)]);
                 setIsEditing(false);
             }
         } catch (err) {

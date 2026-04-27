@@ -172,10 +172,11 @@ export function GarageDashboard() {
             fetchBikes();
             fetchOfficialBikes();
             axios.get<any>(`${API_URL}/config`).then((res) => {
-                if (res.data.success) {
+                const resData = res.data as any;
+                if (resData.success) {
                     setServiceCenter({
-                        serviceAddress: res.data.data.serviceAddress || "Nearest Yamaha Service Center",
-                        servicePhone: res.data.data.servicePhone || "N/A"
+                        serviceAddress: resData.data.serviceAddress || "Nearest Yamaha Service Center",
+                        servicePhone: resData.data.servicePhone || "N/A"
                     });
                 }
             }).catch(() => undefined);
@@ -185,11 +186,12 @@ export function GarageDashboard() {
     const fetchBikes = async () => {
         try {
             const res = await axios.get<any>(`${API_URL}/user-bikes`, { withCredentials: true });
-            if (res.data.success) {
-                setBikes(res.data.data);
-                if (res.data.data.length > 0) {
-                    setSelectedBike(res.data.data[0]);
-                    fetchServiceHistory(res.data.data[0]._id);
+            const resData = res.data as any;
+            if (resData.success) {
+                setBikes(resData.data);
+                if (resData.data.length > 0) {
+                    setSelectedBike(resData.data[0]);
+                    fetchServiceHistory(resData.data[0]._id);
                 }
             }
         } catch (err) {
@@ -202,8 +204,9 @@ export function GarageDashboard() {
     const fetchOfficialBikes = async () => {
         try {
             const res = await axios.get<any>(`${API_URL}/bikes`);
-            if (res.data.success) {
-                setOfficialBikes(res.data.data || []);
+            const resData = res.data as any;
+            if (resData.success) {
+                setOfficialBikes(resData.data || []);
             }
         } catch (err) {
             console.error(err);
@@ -213,8 +216,9 @@ export function GarageDashboard() {
     const fetchServiceHistory = async (bikeId: string) => {
         try {
             const res = await axios.get<any>(`${API_URL}/user-bikes/${bikeId}/services`, { withCredentials: true });
-            if (res.data.success) {
-                setServices(res.data.data);
+            const resData = res.data as any;
+            if (resData.success) {
+                setServices(resData.data);
             }
         } catch (err) {
             console.error(err);
@@ -225,8 +229,9 @@ export function GarageDashboard() {
         if (!selectedBike) return;
         try {
             const res = await axios.post<any>(`${API_URL}/user-bikes/${selectedBike._id}/modifications`, newMod, { withCredentials: true });
-            if (res.data.success) {
-                setSelectedBike(res.data.data);
+            const resData = res.data as any;
+            if (resData.success) {
+                setSelectedBike(resData.data);
                 setShowModModal(false);
                 setNewMod({ partName: "", brand: "", cost: 0, date: new Date().toISOString().split('T')[0], location: "" });
             }
@@ -239,8 +244,9 @@ export function GarageDashboard() {
         if (!selectedBike) return;
         try {
             const res = await axios.put<any>(`${API_URL}/user-bikes/${selectedBike._id}`, manageFormData, { withCredentials: true });
-            if (res.data.success) {
-                const updatedBike = res.data.data;
+            const resData = res.data as any;
+            if (resData.success) {
+                const updatedBike = resData.data;
                 setBikes(bikes.map(b => b._id === updatedBike._id ? updatedBike : b));
                 setSelectedBike(updatedBike);
                 setIsManaging(false);
@@ -263,8 +269,9 @@ export function GarageDashboard() {
                 partStatusForm,
                 { withCredentials: true }
             );
-            if (res.data.success) {
-                syncUpdatedBike(res.data.data);
+            const resData = res.data as any;
+            if (resData.success) {
+                syncUpdatedBike(resData.data);
                 setShowStatusModal(false);
                 setPartStatusForm({ part: "engine", status: "healthy", note: "" });
             }
@@ -290,8 +297,9 @@ export function GarageDashboard() {
                 },
                 { withCredentials: true }
             );
-            if (res.data.success) {
-                syncUpdatedBike(res.data.data);
+            const resData = res.data as any;
+            if (resData.success) {
+                syncUpdatedBike(resData.data);
                 setShowIssueModal(false);
                 setIssueForm({ title: "", system: "engine", problem: PROBLEM_LIBRARY.engine[0].label, severity: "medium", note: "" });
             }
@@ -308,8 +316,9 @@ export function GarageDashboard() {
                 { status },
                 { withCredentials: true }
             );
-            if (res.data.success) {
-                syncUpdatedBike(res.data.data);
+            const resData = res.data as any;
+            if (resData.success) {
+                syncUpdatedBike(resData.data);
             }
         } catch (err) {
             console.error(err);
@@ -324,8 +333,9 @@ export function GarageDashboard() {
                 diagnosticForm,
                 { withCredentials: true }
             );
-            if (res.data.success) {
-                syncUpdatedBike(res.data.data);
+            const resData = res.data as any;
+            if (resData.success) {
+                syncUpdatedBike(resData.data);
                 setShowDiagnosticModal(false);
                 setDiagnosticForm({ title: "", summary: "", healthScore: 100 });
             }
@@ -342,8 +352,9 @@ export function GarageDashboard() {
                 analyticsForm,
                 { withCredentials: true }
             );
-            if (res.data.success) {
-                syncUpdatedBike(res.data.data);
+            const resData = res.data as any;
+            if (resData.success) {
+                syncUpdatedBike(resData.data);
                 setShowAnalyticsModal(false);
                 setAnalyticsForm({ periodLabel: "Last 30 Days", distanceKm: 0, efficiencyKmpl: 0, activeHours: 0, odometerKm: 0 });
             }
@@ -360,8 +371,9 @@ export function GarageDashboard() {
                 docForm,
                 { withCredentials: true }
             );
-            if (res.data.success) {
-                syncUpdatedBike(res.data.data);
+            const resData = res.data as any;
+            if (resData.success) {
+                syncUpdatedBike(resData.data);
                 setShowDocModal(false);
                 setDocForm({ docType: "", docUrl: "", expiryDate: "" });
             }

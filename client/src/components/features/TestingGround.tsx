@@ -30,8 +30,9 @@ export function TestingGround() {
     const fetchTodaySlots = async () => {
         try {
             const res = await axios.get(`${API_URL}/workshop-slots/available?date=${today}`);
-            if (res.data.success) {
-                setSlots(res.data.data);
+            const resData = res.data as any;
+            if (resData.success) {
+                setSlots(resData.data);
             }
         } catch (err) {
             console.error("Failed to fetch today's slots:", err);
@@ -60,7 +61,8 @@ export function TestingGround() {
                 capacity: isFull ? currentBooked : 5
             });
 
-            if (res.data.success) {
+            const resData = res.data as any;
+            if (resData.success) {
                 fetchTodaySlots();
                 setMessage({ type: 'success', text: `Slot ${time} marked as ${isFull ? 'FULL' : 'AVAILABLE'}` });
             }
@@ -93,8 +95,9 @@ export function TestingGround() {
                 // Note: /services route upserts customer and returns the service object which contains customer reference or we can find the customer.
                 // For simplicity, we'll search for them by phone now.
                 const findRes = await axios.get(`${API_URL}/customers?search=${phone}`);
-                if (findRes.data.success && findRes.data.data.length > 0) {
-                    recipientIds.push(findRes.data.data[0]._id);
+                const findData = findRes.data as any;
+                if (findData.success && findData.data.length > 0) {
+                    recipientIds.push(findData.data[0]._id);
                 }
             }
 
@@ -108,7 +111,8 @@ export function TestingGround() {
                 recipientIds: recipientIds
             });
 
-            if (campaignRes.data.success) {
+            const campData = campaignRes.data as any;
+            if (campData.success) {
                 setMessage({ type: 'success', text: `Broadcast successfully sent to ${recipientIds.length} test numbers.` });
             }
         } catch (err: any) {

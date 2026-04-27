@@ -28,9 +28,10 @@ export function NotificationBell() {
     const fetchNotifications = async () => {
         try {
             const res = await axios.get(`${API_URL}/notifications`, { withCredentials: true });
-            if (res.data.success) {
-                setNotifications(res.data.data);
-                setUnreadCount(res.data.data.filter((n: Notification) => !n.isRead).length);
+            const data = res.data as any;
+            if (data.success) {
+                setNotifications(data.data);
+                setUnreadCount(data.data.filter((n: Notification) => !n.isRead).length);
             }
         } catch (err) {
             console.error("Failed to fetch notifications:", err);

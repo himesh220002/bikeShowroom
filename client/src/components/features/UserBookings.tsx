@@ -65,8 +65,9 @@ export function UserBookings() {
                 `${API_URL}/services/user`,
                 { withCredentials: true }
             );
-            if (res.data.success) {
-                setBookings(res.data.data);
+            const data = res.data as any;
+            if (data.success) {
+                setBookings(data.data);
             }
         } catch (err) {
             console.error("Failed to fetch bookings:", err);
@@ -86,7 +87,8 @@ export function UserBookings() {
     const handleRateService = async (id: string, rating: number) => {
         try {
             const res = await axios.post<{ success: boolean }>(`${API_URL}/services/${id}/rate`, { rating }, { withCredentials: true });
-            if (res.data.success) {
+            const data = res.data as any;
+            if (data.success) {
                 setBookings(prev => prev.map(b => b._id === id ? { ...b, rating } : b));
                 setShowRatingEdit(null);
 
@@ -107,7 +109,8 @@ export function UserBookings() {
     const handleSaveFeedback = async (id: string) => {
         try {
             const res = await axios.post<{ success: boolean }>(`${API_URL}/services/${id}/rate`, { feedback: tempFeedback }, { withCredentials: true });
-            if (res.data.success) {
+            const data = res.data as any;
+            if (data.success) {
                 setBookings(prev => prev.map(b => b._id === id ? { ...b, feedback: tempFeedback } : b));
                 setShowFeedbackEdit(null);
                 setTempFeedback("");
