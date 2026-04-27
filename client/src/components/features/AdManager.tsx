@@ -42,6 +42,7 @@ export function AdManager() {
     const [endDate, setEndDate] = useState("");
     const [status, setStatus] = useState<"Active" | "Inactive" | "Scheduled">("Scheduled");
     const [uploading, setUploading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -89,14 +90,39 @@ export function AdManager() {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setImage(file);
-            setPreviewUrl(URL.createObjectURL(file));
+            setError(null);
             
-            // Auto-detect type if not manually set or if creating new
+            // 1. Check File Size (50MB Limit)
+            if (file.size > 50 * 1024 * 1024) {
+                setError("Strict Block: File size exceeds 50MB limit. Please compress your visual.");
+                e.target.value = "";
+                return;
+            }
+
             if (file.type.startsWith("video/")) {
-                setType("Video");
-                generateThumbnail(file);
+                const video = document.createElement('video');
+                video.preload = 'metadata';
+                video.onloadedmetadata = () => {
+                    window.URL.revokeObjectURL(video.src);
+                    // 2. Check Duration (5 Minute Limit)
+                    if (video.duration > 300) {
+                        setError("Strict Block: Video is too long (Max 5 minutes allowed).");
+                        setImage(null);
+                        setPreviewUrl(null);
+                        setThumbnail(null);
+                        setThumbnailPreviewUrl(null);
+                        return;
+                    }
+                    
+                    setImage(file);
+                    setPreviewUrl(URL.createObjectURL(file));
+                    setType("Video");
+                    generateThumbnail(file);
+                };
+                video.src = URL.createObjectURL(file);
             } else if (file.type.startsWith("image/")) {
+                setImage(file);
+                setPreviewUrl(URL.createObjectURL(file));
                 if (type === "Video") setType("Poster");
                 setThumbnail(null);
                 setThumbnailPreviewUrl(null);
@@ -357,9 +383,16 @@ export function AdManager() {
                                 </div>
                             </div>
 
+                            {error && (
+                                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 animate-shake">
+                                    <X className="w-4 h-4 text-red-500" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-red-500">{error}</span>
+                                </div>
+                            )}
+
                             <button
                                 type="submit"
-                                disabled={uploading || (!editingAd && !image)}
+                                disabled={uploading || (!editingAd && !image) || !!error}
                                 className="w-full py-4 bg-racing-blue text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-racing-blue/20 hover:bg-dark-racing transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                             >
                                 {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
