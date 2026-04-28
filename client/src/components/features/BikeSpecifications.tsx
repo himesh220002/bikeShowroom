@@ -31,7 +31,7 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
 
     return (
         <section className="py-24 bg-muted/30 overflow-hidden">
-            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
                         Technical Specs
@@ -103,7 +103,7 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                             style={{ backgroundImage: `url("/images/fascino.png")` }}
                         />
                         <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
-                        <div className="relative z-10">   
+                        <div className="relative z-10">
                             <h4 className="text-xl font-display font-black text-white uppercase tracking-tight mb-6">Key Features</h4>
                             <div className="flex flex-wrap gap-3">
                                 {Array.isArray(bike.fullSpecs.features) && bike.fullSpecs.features.map((feature: string) => (

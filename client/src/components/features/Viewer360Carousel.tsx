@@ -80,7 +80,7 @@ export function Viewer360Carousel() {
     return (
         <div className="relative group/carousel">
             {loading ? (
-                <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-[3rem] overflow-hidden">
+                <div className="relative w-full aspect-[16/9] md:aspect-[16/9] rounded-[3rem] overflow-hidden">
                     <Skeleton className="w-full h-full" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
                         <Loader2 className="w-8 h-8 text-racing-blue animate-spin" />
@@ -90,7 +90,7 @@ export function Viewer360Carousel() {
             ) : (
                 <>
                     {/* Bike Info Header */}
-                    <div className="absolute top-24 left-1/2 -translate-x-1/2 z-30 pointer-events-none text-center hidden md:block">
+                    <div className="absolute top-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none text-center hidden md:block">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={currentBike.slug}
@@ -120,7 +120,7 @@ export function Viewer360Carousel() {
                                     "w-2 h-2 rounded-full transition-all",
                                     currentIndex === idx
                                         ? "bg-racing-blue w-8"
-                                        : "bg-muted hover:bg-muted-foreground/40"
+                                        : "bg-racing-blue/20 hover:bg-muted-foreground/40"
                                 )}
                                 title={bike.name}
                             />

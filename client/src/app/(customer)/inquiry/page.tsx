@@ -9,7 +9,7 @@ export default function InquiryPage() {
   return (
     <div className="flex flex-col bg-zinc-950/40 overflow-x-hidden">
       <section className="py-32 bg-zinc-950/40 backdrop-blur-sm">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-24 items-center">
             <div>
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">

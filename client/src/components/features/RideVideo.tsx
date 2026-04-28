@@ -61,12 +61,12 @@ export function RideVideo() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    className="max-w-[1600px] mx-auto w-full"
+                    className="max-w-7xl mx-auto w-full"
                 >
                     <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue mb-4">
                         Katihar Ride Chronicles
                     </h2>
-                    <h3 className="text-4xl md:text-7xl font-display font-black text-white uppercase tracking-tighter mb-6">
+                    <h3 className="text-4xl md:text-5xl font-display font-black text-white uppercase tracking-tighter mb-6">
                         PURE <span className="text-racing-blue italic">RACING</span> DNA
                     </h3>
                     <p className="text-sm md:text-lg text-gray-400 font-medium max-w-xl leading-relaxed">

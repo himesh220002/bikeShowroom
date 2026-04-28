@@ -40,15 +40,15 @@ export function Navbar() {
 
     return (
         <nav className={cn(
-            "fixed top-0 w-full z-50 transition-all duration-500 py-4",
+            "fixed top-0 w-full z-50 transition-all duration-500 py-2 2xl:py-4",
             (isScrolled || isAdmin || isService || pathname === "/" || pathname === "/products" || pathname === "/garage") ? "glass shadow-lg shadow-black/5" : "glass shadow-lg shadow-black/5",
             isAdmin && "lg:left-64 lg:w-[calc(100%-16rem)] border-b border-border"
         )}>
-            <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mx-20px px-4 sm:px-6 lg:px-6">
                 <div className="flex justify-between items-center">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 md:gap-4 group">
-                        <div className="relative w-10 h-10 md:w-14 md:h-14 transition-transform duration-500 group-hover:scale-110">
+                        <div className="relative w-10 h-10 md:w-12 md:h-12 transition-transform duration-500 group-hover:scale-110">
                             <Image
                                 src="/images/YamahaLogo.png"
                                 alt="Yamaha Logo"
@@ -69,12 +69,12 @@ export function Navbar() {
                     </Link>
 
                     {/* Desktop Nav */}
-                    <div className="hidden 2xl:flex items-center gap-6 2xl:gap-10">
+                    <div className="hidden xl:flex items-center gap-6 2xl:gap-10">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="text-[0.6875rem] font-black uppercase tracking-[0.2em] text-gradient-text hover:text-racing-blue transition-colors relative group"
+                                className="text-[0.7rem] font-black uppercase tracking-[0.2rem] text-secondary hover:text-blue-800 hover:scale-105 transition-colors relative group"
                             >
                                 {link.name}
                                 <span className={cn(
@@ -86,9 +86,9 @@ export function Navbar() {
                     </div>
 
                     {/* Desktop Actions */}
-                    <div className="hidden 2xl:flex items-center gap-4">
-                        <Link href="/admin">
-                            <div className="hidden md:flex items-center gap-2 p-2 opacity-0 hover:opacity-4 hover:bg-muted/50 rounded-full transition-colors cursor-pointer group">A</div>
+                    <div className="hidden xl:flex items-center gap-4">
+                        <Link href="/admin" target="_blank">
+                            <div className="hidden xl:flex items-center gap-2 p-2 opacity-0 hover:opacity-4 hover:bg-muted/50 rounded-full transition-colors cursor-pointer group">A</div>
                         </Link>
                         <Link
                             href={`tel:${config.showroomPhone.replace(/\s+/g, '')}`}
@@ -156,12 +156,12 @@ export function Navbar() {
                             href="/inquiry"
                             className="bg-yamaha-blue hover:bg-dark-racing text-white px-8 py-3.5 rounded-full text-[11px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-xl shadow-yamaha-blue/20 flex items-center gap-2"
                         >
-                            Book Test Ride
+                            Test Ride
                             <ChevronRight className="w-3.5 h-3.5" />
                         </Link>
                     </div>
 
-                    <div className="flex 2xl:hidden gap-2 items-center">
+                    <div className="flex xl:hidden gap-2 items-center">
                         <Link href="/inquiry" className="px-4 py-2 text-white font-medium bg-gradient-to-r from-blue-900 to-purple-700 rounded-xl hover:bg-green-900">Inquiry</Link>
 
                         {/* Mobile Menu Button */}
@@ -182,7 +182,7 @@ export function Navbar() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="2xl:hidden fixed inset-0 min-h-screen bg-background shadow-2xl"
+                        className="xl:hidden fixed inset-0 min-h-screen bg-background shadow-2xl"
                     >
                         <div className="h-screen flex flex-col">
                             <div className="px-6 pt-6 pb-4 border-b border-border bg-background">
@@ -287,6 +287,14 @@ export function Navbar() {
                                         className="block w-full text-center py-4 bg-muted/30 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground border border-border/30"
                                     >
                                         Contact Dealer: {config.showroomPhone}
+                                    </Link>
+                                    <Link
+                                        href="/admin"
+                                        target="_blank"
+                                        onClick={() => setIsOpen(false)}
+                                        className="block w-full text-center py-4 bg-muted/30 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground border border-border/30"
+                                    >
+                                        Admin
                                     </Link>
                                 </div>
                             </div>

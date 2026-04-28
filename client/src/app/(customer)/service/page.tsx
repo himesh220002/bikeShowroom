@@ -5,14 +5,14 @@ import { Wrench, Shield, Zap, MessageSquare } from "lucide-react";
 
 export default function ServicePage() {
     return (
-        <div className="min-h-screen bg-zinc-950 pt-32 md:pt-48 pb-24 relative overflow-hidden">
+        <div className="min-h-screen bg-zinc-950 pt-22 md:pt-28 pb-24 relative overflow-hidden">
             {/* <div className="h-[200px] inset-0 bg-black/50 z-0" /> */}
 
             {/* Background Decorative Elements */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-racing-blue/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-racing-blue/5 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
-            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Hero Header */}
                 <div className="mb-10 md:mb-20">
 
@@ -21,12 +21,12 @@ export default function ServicePage() {
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue">Premium Support Hub</span>
                     </div>
                     <div className="space-y-8">
-                        <h1 className="text-3xl md:text-5xl xl:text-7xl font-display font-black text-white uppercase tracking-tighter leading-none">
+                        <h1 className="text-3xl md:text-4xl xl:text-5xl font-display font-black text-white uppercase tracking-tighter leading-none">
                             YAMAHA <span className="text-gradient">SERVICE CENTER KATIHAR</span>
                         </h1>
                         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
                             <p className="text-gray-400 font-medium leading-relaxed max-w-2xl">
-                                Experience world-class authorized Yamaha repair at Choudhary Yamaha. Our certified service center in Katihar ensures your ride stays at its peak performance with genuine parts.
+                                Experience world-class authorized Yamaha repair at Choudhary Yamaha. <span className="hidden xl:block"> Our certified service center in Katihar ensures your ride stays at its peak performance with genuine parts.</span>
                             </p>
                             {/* <div className="flex flex-wrap gap-4 shrink-0">
                                 <div className="px-6 py-4 bg-zinc-900/50 border border-zinc-800 rounded-3xl flex items-center gap-4">

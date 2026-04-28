@@ -36,13 +36,13 @@ export default function Home() {
       <ShowroomExperience />
 
       {/* 360 Experience Integration (Part of Showroom/Featured) */}
-      <section id="explore" className="py-24 bg-zinc-900/20 backdrop-blur-sm overflow-hidden">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="explore" className="py-20 bg-zinc-900/20 backdrop-blur-sm overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
               Virtual Showroom
             </h2>
-            <h3 className="text-3xl md:text-7xl font-display font-black text-white uppercase tracking-tighter">
+            <h3 className="text-3xl md:text-5xl font-display font-black text-white uppercase tracking-tighter">
               IMMERSIVE <span className="text-gradient">360° VIEW</span>
             </h3>
           </div>
@@ -54,7 +54,7 @@ export default function Home() {
 
       {/* 8. Lead Capture Section */}
       <section id="inquiry" className="py-32 bg-zinc-950/40 backdrop-blur-sm">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-24 items-center">
             <div>
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">

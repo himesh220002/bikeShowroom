@@ -11,12 +11,12 @@ export function Footer() {
     const { config } = useConfig();
     return (
         <footer className="bg-card/80 backdrop-blur-md pt-24 pb-12 border-t border-border">
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-10 lg:gap-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex flex-wrap justify-center gap-6 lg:gap-10">
                     {/* Brand Meta */}
                     <div className="space-y-8">
-                        <Link href="/" className="flex items-center gap-4 group">
-                            <div className="relative w-12 h-12 transition-transform duration-500 group-hover:scale-110">
+                        <Link href="/" className="flex items-center justify-center gap-4 group">
+                            <div className="relative w-12 h-12 xl:w-16 xl:h-16 transition-transform duration-500 group-hover:scale-110">
                                 <Image
                                     src="/images/YamahaLogo.png"
                                     alt="Yamaha Logo"
@@ -56,120 +56,124 @@ export function Footer() {
                         </div>
                     </div>
 
-                    {/* Discovery */}
-                    <div className="lg:ml-12">
-                        <h4 className="text-[10px] font-black text-center xl:text-left uppercase tracking-[0.3em] text-muted-foreground/60 mb-8">
-                            Showroom Discovery
-                        </h4>
-                        <ul className="space-y-4">
-                            {[
-                                { name: "R-Series", href: "/products#sport" },
-                                { name: "MT-Series", href: "/products#sport" },
-                                { name: "FZ-Series", href: "/products#street" },
-                                { name: "Aerox 155", href: "/products#scooters" },
-                                { name: "Scooters", href: "/products#scooters" },
-                                { name: "About Us", href: "/#experience" },
-                            ].map((item) => (
-                                <li key={item.name}>
-                                    <Link href={item.href} className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
-                                        <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        {item.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    <div className="flex flex-wrap gap-10 justify-center">
 
-                    {/* Operations */}
-                    <div>
-                        <h4 className="text-[10px] font-black text-center xl:text-left uppercase tracking-[0.3em] text-muted-foreground/60 mb-8">
-                            Services & Support
-                        </h4>
-                        <ul className="space-y-4">
-                            {[
-                                { name: "Book A Service", href: "/service#booking" },
-                                { name: "Finance / EMI", href: "/#inquiry" },
-                                { name: "Insurance Sync", href: "/#inquiry" },
-                                { name: "Genuine Spares", href: "/service#spares" },
-                                { name: "WhatsApp Connect", href: "https://wa.me/917004100062" },
-                                { name: "Yamaha India Official", href: "https://www.yamaha-motor-india.com/" },
-                                { name: "Careers", href: "/careers" }
-                            ].map((item) => (
-                                <li key={item.name}>
-                                    <Link href={item.href} className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
-                                        <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        {item.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                        {/* Discovery */}
+                        <div className="lg:ml-12">
+                            <h4 className="text-[10px] font-black text-center xl:text-left uppercase tracking-[0.3em] text-muted-foreground/60 mb-8">
+                                Showroom Discovery
+                            </h4>
+                            <ul className="space-y-4">
+                                {[
+                                    { name: "R-Series", href: "/products#sport" },
+                                    { name: "MT-Series", href: "/products#sport" },
+                                    { name: "FZ-Series", href: "/products#street" },
+                                    { name: "Aerox 155", href: "/products#scooters" },
+                                    { name: "Scooters", href: "/products#scooters" },
+                                    { name: "About Us", href: "/#experience" },
+                                ].map((item) => (
+                                    <li key={item.name}>
+                                        <Link href={item.href} className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
+                                            <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            {item.name}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
 
-                    {/* Legal & Policies */}
-                    <div>
-                        <h4 className="text-[10px] font-black text-center xl:text-left uppercase tracking-[0.3em] text-muted-foreground/60 mb-8">
-                            Legal &amp; Policies
-                        </h4>
-                        <ul className="space-y-4">
-                            {[
-                                { name: "Terms & Conditions", href: "/legal?s=terms" },
-                                { name: "Privacy Policy", href: "/legal?s=privacy" },
-                                { name: "Return & Refund", href: "/legal?s=returns" },
-                                { name: "Warranty & Service", href: "/legal?s=warranty" },
-                                { name: "Finance & EMI Terms", href: "/legal?s=finance" },
-                                { name: "Disclaimer", href: "/legal?s=disclaimer" },
-                                { name: "Community Guidelines", href: "/legal?s=community" },
-                            ].map((item) => (
-                                <li key={item.name}>
-                                    <Link href={item.href} className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
-                                        <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        {item.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                        {/* Operations */}
+                        <div>
+                            <h4 className="text-[10px] font-black text-center xl:text-left uppercase tracking-[0.3em] text-muted-foreground/60 mb-8">
+                                Services & Support
+                            </h4>
+                            <ul className="space-y-4">
+                                {[
+                                    { name: "Book A Service", href: "/service#booking" },
+                                    { name: "Finance / EMI", href: "/#inquiry" },
+                                    { name: "Insurance Sync", href: "/#inquiry" },
+                                    { name: "Genuine Spares", href: "/service#spares" },
+                                    { name: "WhatsApp Connect", href: "https://wa.me/917004100062" },
+                                    { name: "Yamaha India Official", href: "https://www.yamaha-motor-india.com/" },
+                                    { name: "Careers", href: "/careers" }
+                                ].map((item) => (
+                                    <li key={item.name}>
+                                        <Link href={item.href} className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
+                                            <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            {item.name}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Legal & Policies */}
+                        <div>
+                            <h4 className="text-[10px] font-black text-center xl:text-left uppercase tracking-[0.3em] text-muted-foreground/60 mb-8">
+                                Legal &amp; Policies
+                            </h4>
+                            <ul className="space-y-4">
+                                {[
+                                    { name: "Terms & Conditions", href: "/legal?s=terms" },
+                                    { name: "Privacy Policy", href: "/legal?s=privacy" },
+                                    { name: "Return & Refund", href: "/legal?s=returns" },
+                                    { name: "Warranty & Service", href: "/legal?s=warranty" },
+                                    { name: "Finance & EMI Terms", href: "/legal?s=finance" },
+                                    { name: "Disclaimer", href: "/legal?s=disclaimer" },
+                                    { name: "Community Guidelines", href: "/legal?s=community" },
+                                ].map((item) => (
+                                    <li key={item.name}>
+                                        <Link href={item.href} className="text-sm font-black text-foreground hover:text-racing-blue transition-colors uppercase tracking-tight flex items-center justify-center xl:justify-start gap-2 group">
+                                            <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            {item.name}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
 
 
-                    <div className="space-y-8">
-                        <h4 className="text-[10px] font-black uppercase text-center xl:text-left tracking-[0.3em] text-muted-foreground/60 mb-8">
-                            Our Headquarters
-                        </h4>
-                        <div className="space-y-6">
-                            <div className="flex gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-racing-blue/5 flex items-center justify-center shrink-0">
-                                    <MapPin className="w-5 h-5 text-racing-blue" />
+                        <div className="space-y-8">
+                            <h4 className="text-[10px] font-black uppercase text-center xl:text-left tracking-[0.3em] text-muted-foreground/60 mb-8">
+                                Our Headquarters
+                            </h4>
+                            <div className="space-y-6">
+                                <div className="flex gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-racing-blue/5 flex items-center justify-center shrink-0">
+                                        <MapPin className="w-5 h-5 text-racing-blue" />
+                                    </div>
+                                    <div className="text-sm font-bold max-w-[350px] text-muted-foreground leading-snug">
+                                        {config.showroomAddress}
+                                    </div>
                                 </div>
-                                <div className="text-sm font-bold text-muted-foreground leading-snug">
-                                    {config.showroomAddress}
+                                <div className="flex gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-racing-blue/5 flex items-center justify-center shrink-0">
+                                        <Phone className="w-5 h-5 text-racing-blue" />
+                                    </div>
+                                    <div className="text-sm font-black text-foreground">
+                                        {config.showroomPhone}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-racing-blue/5 flex items-center justify-center shrink-0">
-                                    <Phone className="w-5 h-5 text-racing-blue" />
+                                <div className="flex gap-4 text-center xl:text-left">
+                                    <div className="w-10 h-10 rounded-xl bg-racing-blue/5 flex items-center justify-center shrink-0">
+                                        <Mail className="w-5 h-5 text-racing-blue" />
+                                    </div>
+                                    <div className="text-sm font-black text-foreground flex items-center">
+                                        {config.showroomEmail}
+                                    </div>
                                 </div>
-                                <div className="text-sm font-black text-foreground">
-                                    {config.showroomPhone}
-                                </div>
-                            </div>
-                            <div className="flex gap-4 text-center xl:text-left">
-                                <div className="w-10 h-10 rounded-xl bg-racing-blue/5 flex items-center justify-center shrink-0">
-                                    <Mail className="w-5 h-5 text-racing-blue" />
-                                </div>
-                                <div className="text-sm font-black text-foreground flex items-center">
-                                    {config.showroomEmail}
-                                </div>
-                            </div>
-                            <div className="flex gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-racing-blue/10 flex items-center justify-center shrink-0 ring-4 ring-racing-blue/5">
-                                    <ShieldCheck className="w-5 h-5 text-racing-blue" />
-                                </div>
-                                <div className="text-[10px] font-black uppercase tracking-widest text-racing-blue">
-                                    Yamaha Authorized <br />Digital Partner
+                                <div className="flex gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-racing-blue/10 flex items-center justify-center shrink-0 ring-4 ring-racing-blue/5">
+                                        <ShieldCheck className="w-5 h-5 text-racing-blue" />
+                                    </div>
+                                    <div className="text-[10px] font-black uppercase tracking-widest text-racing-blue">
+                                        Yamaha Authorized <br />Digital Partner
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 <div className="mt-24 pt-12 border-t border-border space-y-6">

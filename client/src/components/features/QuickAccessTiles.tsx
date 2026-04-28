@@ -59,7 +59,7 @@ const tiles = [
 export function QuickAccessTiles() {
     return (
         <section className="hidden md:block py-24 bg-zinc-950/40 backdrop-blur-sm">
-            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
                         Quick Service

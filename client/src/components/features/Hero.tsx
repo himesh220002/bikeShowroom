@@ -14,7 +14,7 @@ export function Hero() {
     const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
 
     return (
-        <section ref={ref} className="relative min-h-[90vh] flex items-center overflow-hidden bg-black pt-20 md:pt-28">
+        <section ref={ref} className="relative h-[100vh] flex items-center overflow-hidden bg-black pt-6 xl:pt-28">
             {/* Immersive Background - Optimized for Scroll Performance */}
             <motion.div
                 style={{ y }}
@@ -36,7 +36,7 @@ export function Hero() {
                 <div className="absolute inset-0 bg-linear-to-r from-black/90 via-blak/10 to-transparent" />
             </motion.div>
 
-            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12 md:py-24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12 md:py-24">
                 <div className="max-w-3xl">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -58,7 +58,7 @@ export function Hero() {
                         transition={{ duration: 0.8, delay: 0.2 }}
                         className="space-y-4 mb-8"
                     >
-                        <h1 className="text-5xl sm:text-6xl lg:text-7xl 2xl:text-[8rem] font-display font-black text-white leading-[0.9] md:leading-[0.85] uppercase tracking-tighter">
+                        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-black text-white leading-[0.9] md:leading-[0.85] uppercase tracking-tighter">
                             REVS YOUR <br />
                             <span className="text-gradient">HEART.</span>
                         </h1>

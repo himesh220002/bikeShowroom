@@ -43,7 +43,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
             />
             <div className="absolute bottom-0 left-0 w-1/3 h-screen bg-muted/20 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
-            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 md:pt-32">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 md:pt-32">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}

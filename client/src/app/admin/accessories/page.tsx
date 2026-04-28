@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function AdminAccessoriesPage() {
     return (
-        <div className="p-8 space-y-12 max-w-[1600px] mx-auto min-h-screen pb-24">
+        <div className="p-8 space-y-12 max-w-7xl mx-auto min-h-screen pb-24">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
                     <div className="flex items-center gap-3 mb-2">

@@ -294,7 +294,7 @@ Choudhary Yamaha Team`;
         });
 
     return (
-        <div className="min-h-screen bg-background p-4 sm:p-8 max-w-[1600px] mx-auto">
+        <div className="min-h-screen bg-background p-4 sm:p-8 max-w-7xl mx-auto">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                 <div className="space-y-1">

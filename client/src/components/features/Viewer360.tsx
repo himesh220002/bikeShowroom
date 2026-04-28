@@ -90,7 +90,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
     ];
 
     return (
-        <div className="relative max-w-[1200px] mx-auto h-[400px] sm:h-[600px] md:h-[700px] bg-background rounded-3xl md:rounded-[3rem] overflow-hidden border border-border shadow-2xl group/viewer">
+        <div className="relative max-w-7xl mx-auto h-[400px] sm:h-[600px] bg-background rounded-3xl md:rounded-[3rem] overflow-hidden border border-border shadow-2xl group/viewer">
             {/* Main 3D View (Custom Rotating Viewer) */}
             <div className="absolute inset-0 z-0">
                 {activeMode === "360" ? (

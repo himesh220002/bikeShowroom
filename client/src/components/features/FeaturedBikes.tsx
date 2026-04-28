@@ -85,7 +85,7 @@ export function FeaturedBikes() {
 
     return (
         <section id="machines" className="py-12 lg:py-32 bg-transparent overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}>
-            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-8">
 
                     <div className="space-y-4">

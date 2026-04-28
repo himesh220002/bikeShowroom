@@ -88,7 +88,7 @@ export default function ProductsPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-zinc-950 pt-24 md:pt-32 pb-24">
-                <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="mb-20 space-y-4">
                         <Skeleton className="h-6 w-32 rounded-full" />
                         <Skeleton className="h-12 w-64 rounded-xl" />
@@ -115,7 +115,7 @@ export default function ProductsPage() {
                 <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/40 via-zinc-950/80 to-zinc-950" />
             </div>
 
-            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
                 {/* Header Container */}
                 <div className="mb-10 md:mb-20 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
@@ -125,8 +125,8 @@ export default function ProductsPage() {
                             <Zap className="w-3 h-3" />
                             Yamaha Lineup
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter">
-                            YAMAHA <span className="text-racing-blue">SHOWROOM KATIHAR</span>
+                        <h1 className="text-4xl md:text-4xl font-display font-black text-white uppercase tracking-tighter">
+                            YAMAHA <span className="text-racing-blue">Products</span>
                         </h1>
                         <p className="text-gray-500 max-w-2xl font-medium leading-relaxed">
                             Discover the perfect balance of performance, style, and innovation across our diverse range of motorcycles and scooters.

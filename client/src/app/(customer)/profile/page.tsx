@@ -242,7 +242,7 @@ export default function ProfilePage() {
 
     return (
         <div className="min-h-screen bg-background pt-20 lg:pt-32 pb-20">
-            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="glass p-4 sm:p-12 rounded-[2rem] sm:rounded-[3rem] border border-border/50 relative overflow-hidden">
 
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-racing-blue/5 to-transparent pointer-events-none" />

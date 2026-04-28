@@ -80,8 +80,8 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
             if (modelUpper.includes("FZ") && id === "FZ") return true;
             if (modelUpper.includes("AEROX") && id === "AEROX") return true;
             if (modelUpper.includes("XSR") && id === "XSR") return true;
-            if (modelUpper.includes("RAYZR")  && id === "RAYZR") return true;
-            if ( modelUpper.includes("FASCINO") && id === "FASCINO") return true;
+            if (modelUpper.includes("RAYZR") && id === "RAYZR") return true;
+            if (modelUpper.includes("FASCINO") && id === "FASCINO") return true;
         }
         return false;
     };
@@ -261,7 +261,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                 {/* Categorized Interests */}
                                 <div className="space-y-2 sm:space-y-4">
                                     <label className="text-[12px] font-black uppercase tracking-widest text-foreground ml-2">What are you looking for?</label>
-                                    <div className="space-y-2 sm:space-y-6">
+                                    <div className="space-y-2 sm:space-y-2">
                                         {categories.map((cat) => (
                                             <div key={cat.name} className="space-y-1 sm:space-y-3">
                                                 <h5 className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-500 border-l-2 border-racing-blue/30 pl-3 ml-2">{cat.name}</h5>
@@ -275,8 +275,8 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                                                 value={item.label}
                                                                 defaultChecked={isItemSelected(item.id)}
                                                             />
-                                                            <div className="px-2 py-2 sm:py-3 rounded-2xl bg-cyan-900/90 hover:bg-racing-blue/80  peer-checked:bg-gradient-to-r from-racing-blue/20 to-purple-500/90 transition-all flex flex-col items-center justify-center text-center h-full">
-                                                                <span className="text-[14px] lg:text-[16px] xl:text-[18px] font-black  tracking-tighter text-white peer-checked:text-white transition-colors">
+                                                            <div className="px-2 py-2 sm:py-3 rounded-2xl bg-cyan-900/90 hover:bg-racing-blue/80  peer-checked:bg-gradient-to-r from-racing-blue/80 to-purple-500/90 transition-all flex flex-col items-center justify-center text-center h-full">
+                                                                <span className="text-[14px] lg:text-[16px] font-black  tracking-tighter text-white peer-checked:text-white transition-colors">
                                                                     {item.label}
                                                                 </span>
                                                                 {item.bonus && (

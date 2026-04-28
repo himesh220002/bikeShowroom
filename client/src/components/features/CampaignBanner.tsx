@@ -77,7 +77,7 @@ export function CampaignBanner() {
 
     return (
         <section id="promotions" className="hidden md:block py-24 bg-zinc-950 overflow-hidden">
-            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}

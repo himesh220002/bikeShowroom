@@ -53,7 +53,7 @@ const trustSignals = [
 export function Testimonials() {
     return (
         <section className="py-32 bg-zinc-950 border-y border-zinc-900 overflow-hidden">
-            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Trust Signals Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
                     {trustSignals.map((item, i) => (

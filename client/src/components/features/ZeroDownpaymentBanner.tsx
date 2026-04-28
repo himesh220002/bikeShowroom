@@ -16,7 +16,7 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className="max-w-[1600px] mx-auto relative min-h-[600px] sm:rounded-[1.5rem] md:rounded-[4rem] overflow-hidden border border-border shadow-2xl group"
+                className="max-w-7xl mx-auto relative min-h-[600px] sm:rounded-[1.5rem] md:rounded-[4rem] overflow-hidden border border-border shadow-2xl group"
             >
                 {/* Full Background Image */}
                 <div className="absolute inset-0 bg-zinc-950">

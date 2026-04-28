@@ -43,7 +43,7 @@ export function BikePageClient({ bike }: { bike: any }) {
                 {/* 360 Viewer Section */}
                 {bike.threeSixtyUrl && bike.threeSixtyImageCount && bike.threeSixtyImageCount > 35 && (
                     <section className="py-24 bg-zinc-900">
-                        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="text-center mb-16">
                                 <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
                                     Interactive Experience
@@ -68,7 +68,7 @@ export function BikePageClient({ bike }: { bike: any }) {
                 </div>
 
                 <section className="py-24 bg-zinc-950">
-                    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-24 items-center">
                             <motion.div
                                 initial={{ opacity: 0, x: -30 }}
@@ -137,7 +137,7 @@ export function BikePageClient({ bike }: { bike: any }) {
                 </section>
 
                 <div className="py-24 border-t border-zinc-900 bg-zinc-950">
-                    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <h3 className="text-2xl font-display font-black text-white uppercase tracking-tighter mb-12">
                             EXPLORE OTHER <span className="text-racing-blue">MACHINES</span>
                         </h3>
