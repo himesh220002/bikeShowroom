@@ -102,15 +102,15 @@ export function Hero() {
                     >
                         <div className="space-y-1">
                             <p className="text-3xl md:text-4xl font-display font-black text-white tracking-tighter">1.2K+</p>
-                            <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black tracking-[0.2em]">Katihar Riders</p>
+                            <p className="text-[9px] md:text-[10px] text-gray-100 uppercase font-black tracking-[0.2em]">Katihar Riders</p>
                         </div>
                         <div className="space-y-1">
                             <p className="text-3xl md:text-4xl font-display font-black text-white tracking-tighter">3+</p>
-                            <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black tracking-[0.2em]">Legacy Years</p>
+                            <p className="text-[9px] md:text-[10px] text-gray-100 uppercase font-black tracking-[0.2em]">Legacy Years</p>
                         </div>
                         <div className="hidden sm:block space-y-1">
                             <p className="text-3xl md:text-4xl font-display font-black text-white tracking-tighter">4.9/5</p>
-                            <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black tracking-[0.2em]">Rating</p>
+                            <p className="text-[9px] md:text-[10px] text-gray-100 uppercase font-black tracking-[0.2em]">Rating</p>
                         </div>
                     </motion.div>
                 </div>

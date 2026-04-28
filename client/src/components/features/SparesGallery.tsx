@@ -90,7 +90,7 @@ export function SparesGallery() {
                     const fetchedBikes = data.data;
                     setBikes(fetchedBikes);
                     // Default to 'Common Spares' if it exists or define a placeholder
-                    setSelectedBike({ _id: 'common', name: 'Common Spares' });
+                    setSelectedBike({ _id: 'all', name: 'All Genuine Spares & Accessories' });
                 }
             })
             .catch(err => console.error("Failed to fetch bikes:", err));
@@ -100,10 +100,10 @@ export function SparesGallery() {
         if (selectedBike) {
             setLoading(true);
             let url = `${API_URL}/spares`;
-            if (selectedBike._id === 'common') {
-                url = `${API_URL}/spares?bikeId=common`;
-            } else if (selectedBike._id === 'all') {
+            if (selectedBike._id === 'all') {
                 url = `${API_URL}/spares`;
+            } else if (selectedBike._id === 'common') {
+                url = `${API_URL}/spares?bikeId=common`;
             } else {
                 url = `${API_URL}/spares?bikeId=${selectedBike._id}`;
             }
@@ -157,11 +157,11 @@ export function SparesGallery() {
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Your Machine</label>
                         <div className="relative group w-full sm:max-w-[350px]">
                             <select
-                                value={selectedBike?._id || 'common'}
+                                value={selectedBike?._id || 'all'}
                                 onChange={(e) => {
                                     const val = e.target.value;
-                                    if (val === 'common') setSelectedBike({ _id: 'common', name: 'Common Spares' });
-                                    else if (val === 'all') setSelectedBike({ _id: 'all', name: 'All Available Spares' });
+                                    if (val === 'all') setSelectedBike({ _id: 'all', name: 'All Available Spares' });
+                                    else if (val === 'common') setSelectedBike({ _id: 'common', name: 'Common Spares' });
                                     else {
                                         const bike = bikes.find(b => b._id === val);
                                         if (bike) setSelectedBike(bike);
@@ -169,8 +169,9 @@ export function SparesGallery() {
                                 }}
                                 className="w-full bg-muted/80 border border-border rounded-2xl px-6 py-4 text-sm text-foreground focus:outline-none focus:border-racing-blue transition-all appearance-none cursor-pointer hover:bg-muted"
                             >
-                                <option value="common">Common & Universal Spares (Oils, Filters etc.)</option>
                                 <option value="all">All Genuine Spares & Accessories</option>
+                                <option value="common">Common & Universal Spares (Oils, Filters etc.)</option>
+
                                 <optgroup label="Bikes & Scooters">
                                     {bikes.map(bike => (
                                         <option key={bike._id} value={bike._id}>{bike.name}</option>

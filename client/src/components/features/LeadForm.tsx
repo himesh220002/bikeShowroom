@@ -204,7 +204,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                             key="form"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="w-full bg-card/80 backdrop-blur-md rounded-[1.5rem] sm:rounded-[2.5rem] md:rounded-[3.5rem] p-6 sm:p-6 md:p-10 lg:p-12 shadow-2xl border border-border"
+                            className="w-full bg-card/80 backdrop-blur-md rounded-[1.5rem] sm:rounded-[2.5rem] md:rounded-[3.5rem] p-6 sm:p-6 md:p-8 lg:p-10 shadow-2xl border border-border"
                         >
 
 

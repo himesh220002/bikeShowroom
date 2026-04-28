@@ -40,14 +40,14 @@ export function Navbar() {
 
     return (
         <nav className={cn(
-            "fixed top-0 w-full z-50 transition-all duration-500 py-2 2xl:py-4",
+            "fixed top-0 w-full z-50 transition-all duration-500 py-3",
             (isScrolled || isAdmin || isService || pathname === "/" || pathname === "/products" || pathname === "/garage") ? "glass shadow-lg shadow-black/5" : "glass shadow-lg shadow-black/5",
             isAdmin && "lg:left-64 lg:w-[calc(100%-16rem)] border-b border-border"
         )}>
             <div className="mx-20px px-4 sm:px-6 lg:px-6">
                 <div className="flex justify-between items-center">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 md:gap-4 group">
+                    <Link href="/" className="flex items-center gap-2 group">
                         <div className="relative w-10 h-10 md:w-12 md:h-12 transition-transform duration-500 group-hover:scale-110">
                             <Image
                                 src="/images/YamahaLogo.png"
@@ -58,11 +58,11 @@ export function Navbar() {
                                 priority
                             />
                         </div>
-                        <div className="flex flex-col gap-0 md:gap-1">
-                            <span className="text-base md:text-xl font-display font-black tracking-tighter text-gradient-text leading-none">
+                        <div className="flex flex-col justify-center gap-0 md:gap-0">
+                            <span className="text-[1rem] font-display font-black tracking-tighter text-gradient-text leading-none">
                                 CHOUDHARY
                             </span>
-                            <span className="text-[0.9rem] uppercase font-black tracking-[0.2em] text-red-500  -mt-0.5">
+                            <span className="text-[0.8rem] uppercase font-black tracking-[0.2em] text-red-500  -mt-0.5">
                                 YAMAHA
                             </span>
                         </div>
@@ -70,19 +70,28 @@ export function Navbar() {
 
                     {/* Desktop Nav */}
                     <div className="hidden xl:flex items-center gap-6 2xl:gap-10">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.name}
-                                href={link.href}
-                                className="text-[0.7rem] font-black uppercase tracking-[0.2rem] text-secondary hover:text-blue-800 hover:scale-105 transition-colors relative group"
-                            >
-                                {link.name}
-                                <span className={cn(
-                                    "absolute -bottom-1 left-0 w-0 h-0.5 bg-racing-blue group-hover:w-full transition-all duration-300",
-                                    isScrolled ? "opacity-100" : "opacity-0"
-                                )} />
-                            </Link>
-                        ))}
+                        {navLinks.map((link) => {
+                            const isActive = link.href.startsWith('/#')
+                                ? pathname === '/'
+                                : pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href + '/'));
+
+                            return (
+                                <Link
+                                    key={link.name}
+                                    href={link.href}
+                                    className={cn(
+                                        "text-[0.6rem] font-black uppercase tracking-[0.2rem] transition-colors relative group",
+                                        isActive ? "text-foreground" : "text-secondary hover:text-racing-blue"
+                                    )}
+                                >
+                                    {link.name}
+                                    <span className={cn(
+                                        "absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-purple-800/60 to-racing-blue/40 transition-all duration-300 rounded-full",
+                                        isActive ? "w-full" : "w-0 group-hover:w-full"
+                                    )} />
+                                </Link>
+                            );
+                        })}
                     </div>
 
                     {/* Desktop Actions */}
@@ -207,26 +216,35 @@ export function Navbar() {
                                 </div>
                             </div>
                             <div className="flex-1 overflow-y-auto px-6 py-4">
-                                {navLinks.map((link, idx) => (
-                                    <motion.div
-                                        key={link.name}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: idx * 0.1 }}
-                                    >
-                                        <Link
-                                            href={link.href}
-                                            onClick={() => setIsOpen(false)}
-                                            className="flex items-center justify-center gap-10 text-xl font-display font-black text-foreground uppercase tracking-tight py-4 border-b border-border group"
+                                {navLinks.map((link, idx) => {
+                                    const isActive = link.href.startsWith('/#')
+                                        ? pathname === '/'
+                                        : pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href + '/'));
+
+                                    return (
+                                        <motion.div
+                                            key={link.name}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: idx * 0.1 }}
                                         >
-                                            <span className="flex items-center gap-3">
-                                                <link.icon className="w-5 h-5 text-racing-blue" />
-                                                {link.name}
-                                            </span>
-                                            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-racing-blue transition-colors" />
-                                        </Link>
-                                    </motion.div>
-                                ))}
+                                            <Link
+                                                href={link.href}
+                                                onClick={() => setIsOpen(false)}
+                                                className={cn(
+                                                    "flex items-center justify-center gap-10 text-xl font-display font-black uppercase tracking-tight py-4 border-b transition-colors group",
+                                                    isActive ? "text-blue-800 border-racing-blue" : "text-foreground border-border"
+                                                )}
+                                            >
+                                                <span className="flex items-center gap-3">
+                                                    <link.icon className={cn("w-5 h-5", isActive ? "text-blue-800" : "text-muted-foreground group-hover:text-racing-blue")} />
+                                                    {link.name}
+                                                </span>
+                                                <ChevronRight className={cn("w-4 h-4 transition-colors", isActive ? "text-blue-800" : "text-muted-foreground group-hover:text-racing-blue")} />
+                                            </Link>
+                                        </motion.div>
+                                    );
+                                })}
                                 <div className="pt-6 pb-10 space-y-4">
                                     {authLoading ? (
                                         <div className="h-14 bg-muted rounded-3xl animate-pulse" />
