@@ -93,7 +93,7 @@ export function FeaturedBikes() {
                             <Zap className="w-3 h-3" />
                             Premium Lineup
                         </div>
-                        <h2 className="text-3xl md:text-5xl  xl:text-7xl font-display font-black text-white uppercase tracking-tighter">
+                        <h2 className="text-3xl md:text-4xl  xl:text-5xl font-display font-black text-white uppercase tracking-tighter">
                             FEATURED <span className="text-racing-blue">MACHINES</span>
                         </h2>
                     </div>
