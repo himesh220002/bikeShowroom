@@ -459,7 +459,7 @@ export function GarageDashboard() {
                     style={{ backgroundImage: `url(${selectedBike.bikeImage || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop'})` }}
                 />
 
-                <div className="relative z-20 max-w-[1400px] mx-auto h-full flex flex-col justify-end pb-12 px-8">
+                <div className="relative z-20 max-w-7xl mx-auto h-full flex flex-col justify-end pb-12 px-8">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                         <div>
                             <div className="flex items-center gap-3 mb-0">
@@ -502,7 +502,7 @@ export function GarageDashboard() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="max-w-[1400px] mx-auto px-8 py-8">
+            <div className="max-w-7xl mx-auto px-8 py-8">
                 <div className="flex items-center gap-10 border-b border-zinc-100 mb-12 overflow-x-auto no-scrollbar">
                     {[
                         { id: "overview", label: "Visual Hub", icon: Activity },
@@ -913,9 +913,9 @@ export function GarageDashboard() {
                             <div className="space-y-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Bike part / entity</label>
-                                    <select 
-                                        className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none cursor-pointer" 
-                                        value={partStatusForm.part} 
+                                    <select
+                                        className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-bold outline-none cursor-pointer"
+                                        value={partStatusForm.part}
                                         onChange={(e) => setPartStatusForm({ ...partStatusForm, part: e.target.value })}
                                     >
                                         <option value="" disabled>Select Part</option>

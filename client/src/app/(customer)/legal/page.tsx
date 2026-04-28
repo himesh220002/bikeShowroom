@@ -423,7 +423,7 @@ export default function LegalPage() {
                 <div className="absolute inset-0 opacity-[0.03]"
                     style={{ backgroundImage: "radial-gradient(circle, hsl(var(--foreground)) 1px, transparent 1px)", backgroundSize: "28px 28px" }}
                 />
-                <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 relative">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 relative">
                     <Link href="/" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors mb-8">
                         <ArrowLeft className="w-3.5 h-3.5" />
                         Back to Home
@@ -444,7 +444,7 @@ export default function LegalPage() {
                 </div>
             </div>
 
-            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 <div className="flex flex-col lg:flex-row gap-10">
                     {/* Sidebar Navigation */}
                     <div className="lg:w-72 shrink-0">

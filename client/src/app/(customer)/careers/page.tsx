@@ -139,7 +139,7 @@ export default function CareersPage() {
             </section>
 
             {/* Values & Culture */}
-            <section className="max-w-[1400px] mx-auto px-4 py-24 border-t border-border">
+            <section className="max-w-7xl mx-auto px-4 py-24 border-t border-border">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                     <div className="space-y-10">
                         <div>
@@ -177,7 +177,7 @@ export default function CareersPage() {
 
             {/* Training Section */}
             <section className="bg-muted px-4 py-24 border-y border-border">
-                <div className="max-w-[1400px] mx-auto space-y-20">
+                <div className="max-w-7xl mx-auto space-y-20">
                     <div className="text-center space-y-4">
                         <h2 className="text-4xl md:text-5xl font-display font-black text-foreground uppercase tracking-tighter leading-none">TRAINING & <span className="text-gradient">GROWTH</span></h2>
                         <p className="text-xs text-muted-foreground font-black uppercase tracking-[0.3em]">Structured methods for professional excellence</p>
@@ -220,7 +220,7 @@ export default function CareersPage() {
             </section>
 
             {/* Openings Section */}
-            <section id="openings" className="max-w-[1400px] mx-auto px-4 py-24 space-y-20">
+            <section id="openings" className="max-w-7xl mx-auto px-4 py-24 space-y-20">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                     <div>
                         <h2 className="text-4xl md:text-5xl font-display font-black text-foreground uppercase tracking-tighter leading-none">CURRENT <span className="text-gradient">OPENINGS</span></h2>
@@ -514,7 +514,7 @@ export default function CareersPage() {
             </AnimatePresence>
 
             {/* Direct Email Support */}
-            <div className="max-w-[1400px] mx-auto px-4 pt-10 text-center">
+            <div className="max-w-7xl mx-auto px-4 pt-10 text-center">
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">Not finding what you're looking for?</p>
                 <div className="flex items-center justify-center gap-2 mt-2">
                     <span className="text-sm font-medium text-muted-foreground">Directly email us at:</span>

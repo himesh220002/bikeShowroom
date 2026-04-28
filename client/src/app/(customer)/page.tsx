@@ -109,7 +109,7 @@ export default function Home() {
 
       {/* SEO/Local Keywords Footer */}
       <section className="py-16 bg-zinc-950/80 border-t border-zinc-900">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed">
             <div className="space-y-2">
               <p className="text-racing-blue/60 mb-2">Showroom & Dealers</p>
