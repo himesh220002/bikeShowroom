@@ -33,7 +33,7 @@ export function AdCarousel() {
                 if (data.success) {
                     setAds(data.data
                         .filter((ad: PromoResponse) => ad.status === 'Active' || ad.status === 'Scheduled')
-                        .slice(0, 3)
+                        .slice(0, 4)
                     );
                 }
             } catch (err) {
@@ -62,7 +62,7 @@ export function AdCarousel() {
 
 
                 <div className="relative">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {loading ? (
                             Array.from({ length: 3 }).map((_, idx) => (
                                 <div
@@ -98,7 +98,7 @@ function AdCard({ ad }: { ad: Ad }) {
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
-                    videoRef.current?.play().catch(() => {});
+                    videoRef.current?.play().catch(() => { });
                     setIsPlaying(true);
                 } else {
                     videoRef.current?.pause();
@@ -118,7 +118,7 @@ function AdCard({ ad }: { ad: Ad }) {
     const togglePlay = (e: React.MouseEvent) => {
         e.preventDefault();
         if (!videoRef.current) return;
-        
+
         if (isPlaying) {
             videoRef.current.pause();
             setIsPlaying(false);
@@ -204,10 +204,10 @@ function AdCard({ ad }: { ad: Ad }) {
                         href={ad.link}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-3 px-8 py-4 bg-white text-racing-blue rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-racing-blue hover:text-white transition-all shadow-xl hover:-translate-y-1"
+                        className="inline-flex items-center gap-3 px-4 md:px-8 py-2 md:py-4 bg-white text-racing-blue rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-racing-blue hover:text-white transition-all shadow-xl hover:-translate-y-1"
                     >
-                        {ad.type === "Video" ? <Play className="w-4 h-4 fill-current" /> : <ExternalLink className="w-4 h-4" />}
-                        {ad.type === "Video" ? "Watch Review" : "Explore"}
+                        {ad.type === "Video" ? <ExternalLink className="w-4 h-4 fill-current" /> : <ExternalLink className="w-4 h-4" />}
+                        {ad.type === "Video" ? "Review" : "Explore"}
                     </a>
                 </div>
             </div>

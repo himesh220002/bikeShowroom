@@ -57,7 +57,7 @@ export function AdminSidebar() {
                             priority
                         />
                     </div>
-                    <span className="text-lg font-display font-black tracking-tighter text-foreground uppercase">YAMAHA</span>
+                    <span className="text-lg font-display font-black tracking-tighter text-foreground uppercase">Admin Portal</span>
                 </div>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
@@ -77,7 +77,7 @@ export function AdminSidebar() {
             )}
 
             <aside className={cn(
-                "w-64 bg-card border-r border-border flex flex-col fixed left-0 top-0 py-20 h-screen z-[75] transition-transform duration-500 ease-in-out xl:translate-x-0",
+                "w-64 bg-card border-r border-border flex flex-col fixed left-0 top-0 py-20 xl:py-5 h-screen z-[75] transition-transform duration-500 ease-in-out xl:translate-x-0",
                 isOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 <div className="px-8 mb-12">
@@ -94,10 +94,10 @@ export function AdminSidebar() {
 
                         <div className="flex flex-col">
                             <span className="text-xl font-display font-black tracking-tighter text-foreground uppercase">
-                                YAMAHA
+                                Choudhary
                             </span>
-                            <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground -mt-1">
-                                Admin Portal
+                            <span className="text-lg uppercase font-black tracking-widest text-muted-foreground -mt-2">
+                                YAMAHA
                             </span>
                         </div>
                     </Link>

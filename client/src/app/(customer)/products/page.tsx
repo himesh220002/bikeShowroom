@@ -118,7 +118,7 @@ export default function ProductsPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
                 {/* Header Container */}
-                <div className="mb-10 md:mb-20 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
+                <div className="mb-10 md:mb-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
                     {/* Title Section - Hidden below XL */}
                     <div className="hidden xl:block space-y-4">
                         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-racing-blue/10 text-racing-blue text-[10px] font-black uppercase tracking-widest w-fit">
@@ -128,9 +128,9 @@ export default function ProductsPage() {
                         <h1 className="text-4xl md:text-4xl font-display font-black text-white uppercase tracking-tighter">
                             YAMAHA <span className="text-racing-blue">Products</span>
                         </h1>
-                        <p className="text-gray-500 max-w-2xl font-medium leading-relaxed">
+                        {/* <p className="text-gray-500 max-w-2xl font-medium leading-relaxed">
                             Discover the perfect balance of performance, style, and innovation across our diverse range of motorcycles and scooters.
-                        </p>
+                        </p> */}
                     </div>
 
                     {/* Search and Filter Section - Always visible */}
@@ -144,7 +144,7 @@ export default function ProductsPage() {
                                 placeholder="Search machines..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-zinc-400 border border-white/5 rounded-2xl py-4 pl-12 pr-6 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-racing-blue/50 transition-all font-bold"
+                                className="w-full bg-gray-900 border border-white/5 rounded-2xl py-3 pl-12 pr-6 text-sm text-white placeholder:text-zinc-300 focus:outline-none focus:border-racing-blue/50 transition-all font-bold"
                             />
                         </div>
                         <div className="flex items-center gap-2 p-1 bg-zinc-900 rounded-2xl border border-white/5 w-full sm:w-auto">
@@ -175,9 +175,9 @@ export default function ProductsPage() {
 
                     {categoriesWithBikes.map((category) => (
                         <section key={category.id} id={category.id} className="space-y-12">
-                            <div className="flex flex-col justify-between gap-6 border-b border-white/5 pb-8">
+                            <div className="flex flex-col justify-between gap-6 border-b border-white/5 pb-0">
                                 <div className="space-y-2">
-                                    <h2 className="text-2xl md:text-4xl font-display font-black text-white uppercase tracking-tight">
+                                    <h2 className="text-xl md:text-2xl font-display font-black text-white uppercase tracking-tight">
                                         {category.title}
                                     </h2>
                                     <p className="text-racing-blue text-xs font-black uppercase tracking-[0.3em]">

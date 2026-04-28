@@ -244,7 +244,7 @@ export function LeadsTable({ leads, onUpdate }: LeadsTableProps) {
                                     )}
                                 </div>
                             </th>
-                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[300px]">Admin Remarks</th>
+                            <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-r border-border/10 w-[200px]">Admin Remarks</th>
                             <th className="py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground w-[180px] text-center">Actions</th>
                         </tr>
                     </thead>
