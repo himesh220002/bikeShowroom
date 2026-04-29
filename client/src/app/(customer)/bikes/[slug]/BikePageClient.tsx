@@ -48,7 +48,7 @@ export function BikePageClient({ bike }: { bike: any }) {
                                 <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
                                     Interactive Experience
                                 </h2>
-                                <h3 className="text-5xl md:text-7xl font-display font-black text-white uppercase tracking-tighter">
+                                <h3 className="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white uppercase tracking-tighter">
                                     EXPLORE IN <span className="text-gradient">360 DEGREES</span>
                                 </h3>
                             </div>
@@ -80,9 +80,9 @@ export function BikePageClient({ bike }: { bike: any }) {
                                     <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
                                         Authorized Yamaha Dealer Katihar
                                     </h2>
-                                    <h3 className="text-3xl md:text-4xl xl:text-6xl font-display font-black text-white mb-8 uppercase tracking-tighter leading-none">
+                                    <h3 className="text-3xl md:text-4xl xl:text-5xl font-display font-black text-white mb-8  tracking-tighter leading-none">
                                         BOOK YOUR <br />
-                                        <span className="text-racing-blue">{bike.name} IN KATIHAR</span>
+                                        <span className="text-racing-blue">{bike.name}</span>
                                     </h3>
                                     <p className="text-md sm:text-lg text-gray-400 mb-12 max-w-xl font-medium leading-relaxed">
                                         Experience the thrill of Yamaha's engineering at Choudhary Yamaha. Get the best on-road price in Katihar and book your test ride today.
@@ -138,7 +138,7 @@ export function BikePageClient({ bike }: { bike: any }) {
 
                 <div className="py-24 border-t border-zinc-900 bg-zinc-950">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h3 className="text-2xl font-display font-black text-white uppercase tracking-tighter mb-12">
+                        <h3 className="text-2xl font-display font-black text-white uppercase tracking-tighter mb-0">
                             EXPLORE OTHER <span className="text-racing-blue">MACHINES</span>
                         </h3>
                     </div>

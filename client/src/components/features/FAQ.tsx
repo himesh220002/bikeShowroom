@@ -29,6 +29,34 @@ const FAQ_DATA = [
     {
         question: "Are genuine Yamaha spare parts available?",
         answer: "Yes, Choudhary Yamaha is an authorized dealer, and we stock 100% genuine Yamaha Blue Square spare parts and accessories. Using genuine parts is critical for maintaining performance, safety, and the long-term health of your engine."
+    },
+    {
+        question: "What is the warranty coverage on new Yamaha motorcycles?",
+        answer: "All new Yamaha two-wheelers come with a standard manufacturer warranty of 2 years or 30,000 KM (whichever occurs first). For added peace of mind, we also offer Extended Warranty programs that can protect your vehicle for up to 5 years."
+    },
+    {
+        question: "Does Choudhary Yamaha offer an exchange facility for old bikes?",
+        answer: "Yes, we have a 'Best Value' exchange program. You can bring in your old two-wheeler of any brand for a professional evaluation. The calculated resale value can be directly adjusted against the down payment of your new Yamaha."
+    },
+    {
+        question: "Is Roadside Assistance (RSA) available?",
+        answer: "We provide Yamaha's 24/7 Roadside Assistance (RSA) which covers breakdown support, fuel delivery, and towing services to the nearest authorized workshop. You can opt for this service at a nominal annual subscription fee during purchase."
+    },
+    {
+        question: "Can I check the on-road price for a specific model online?",
+        answer: "While ex-showroom prices are standard, the on-road price includes local RTO registration, insurance (1+5 years), and logistics. You can use the 'Request a Quote' button on our website to receive a precise on-road price breakdown for Katihar."
+    },
+    {
+        question: "What should I do if my bike's service is overdue?",
+        answer: "We recommend booking a service appointment immediately. Delaying service beyond the recommended KM or time interval can affect engine performance and may void your warranty. You can call our service desk at Mirchaibari to secure a priority slot."
+    },
+    {
+        question: "What accessories can I buy for my MT-15 or R15?",
+        answer: "We stock a wide range of official Yamaha accessories, including crash guards, tank pads, seat covers, mobile USB chargers, and performance-themed apparel. All accessories are installed by certified technicians to ensure no electrical wires are tampered with."
+    },
+    {
+        question: "Are there any special benefits for corporate or bulk bookings?",
+        answer: "Yes, we offer exclusive corporate schemes for employees of select organizations and special pricing for bulk/fleet purchases. Please carry your corporate ID card and visit our showroom to check the latest eligible offers."
     }
 ];
 
@@ -42,20 +70,20 @@ export function FAQ() {
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-racing-blue/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div className="text-center mb-16 space-y-4">
+                <div className="text-center mb-10 space-y-4">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-racing-blue/10 border border-racing-blue/20 text-racing-blue text-[10px] font-black uppercase tracking-[0.2em] animate-pulse">
                         <HelpCircle className="w-3.5 h-3.5" />
                         Rider Support
                     </div>
-                    <h2 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter italic">
-                        Frequently <span className="text-racing-blue">Asked</span>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white uppercase tracking-tighter italic">
+                        F<span className="text-racing-blue">AQ</span>
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest max-w-md mx-auto">
                         Quick solutions to common queries to help you start your Yamaha journey.
                     </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-1">
                     {FAQ_DATA.map((faq, index) => {
                         const isActive = activeIndex === index;
                         return (
@@ -70,11 +98,11 @@ export function FAQ() {
                             >
                                 <button
                                     onClick={() => setActiveIndex(isActive ? null : index)}
-                                    className="w-full px-4 sm:px-8 py-6 flex items-center justify-between text-left gap-4 group"
+                                    className="w-full px-4 sm:px-8 py-2 flex items-center justify-between text-left gap-2 group"
                                 >
                                     <span
                                         className={cn(
-                                            "text-sm font-black uppercase tracking-widest transition-colors duration-300",
+                                            "text-xs font-black uppercase tracking-widest transition-colors duration-300",
                                             isActive ? "text-white" : "text-gray-400 group-hover:text-white"
                                         )}
                                     >
@@ -82,7 +110,7 @@ export function FAQ() {
                                     </span>
                                     <div
                                         className={cn(
-                                            "w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-500",
+                                            "w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-500",
                                             isActive
                                                 ? "bg-racing-blue text-white rotate-180 shadow-lg shadow-racing-blue/20"
                                                 : "bg-white/5 text-gray-500"
@@ -103,7 +131,7 @@ export function FAQ() {
                                             transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
                                         >
                                             <div className="px-4 sm:px-8 pb-8">
-                                                <div className="p-6 bg-racing-blue/5 rounded-2xl border border-racing-blue/10 relative overflow-hidden">
+                                                <div className="p-4 bg-racing-blue/5 rounded-2xl border border-racing-blue/10 relative overflow-hidden">
                                                     {/* <div className="absolute left-0 top-0 bottom-0 w-1 bg-racing-blue" /> */}
                                                     <p className="text-xs font-bold text-gray-300 leading-relaxed tracking-wider">
                                                         {faq.answer}
@@ -118,7 +146,7 @@ export function FAQ() {
                     })}
                 </div>
 
-                <div className="mt-16 flex flex-col items-center gap-6">
+                <div className="mt-10 flex flex-col items-center gap-6">
                     <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Still have more questions?</p>
                     <a
                         href="#inquiry"

@@ -1,8 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Wallet, CheckCircle2, ArrowRight, Zap } from "lucide-react";
+import { Wallet, CheckCircle2, ArrowRight, Zap, Star } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+import { FinanceTransparencyPopup } from "./FinanceTransparencyPopup";
 
 interface ZeroDownpaymentBannerProps {
     bikeName: string;
@@ -10,6 +12,8 @@ interface ZeroDownpaymentBannerProps {
 }
 
 export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBannerProps) {
+    const [isTransparencyOpen, setIsTransparencyOpen] = useState(false);
+
     return (
         <section className="sm:py-12 md:py-24 bg-background overflow-hidden px-0 sm:px-6 lg:px-8">
             <motion.div
@@ -59,16 +63,16 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
                                 ZERO <br />
                                 <span className="text-racing-blue">DOWNPAYMENT</span>
                             </h2>
-                            <p className="text-lg md:text-2xl text-zinc-300 font-medium mb-12 max-w-xl leading-relaxed">
-                                Get your hands on the <span className="text-white font-black">{bikeName}</span> without any upfront cost. Our flexible financing solutions make ownership effortless.
+                            <p className="text-lg md:text-xl text-zinc-300 font-medium mb-12 max-w-xl leading-relaxed">
+                                Get your hands on the <span className="text-white font-black">{bikeName}</span> with minimal upfront investment. Our flexible financing solutions make ownership effortless.
                             </p>
                         </motion.div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                             {[
-                                "No Initial Security Deposit",
-                                "Low Interest Rate EMI",
-                                "Instant Digital Approval",
+                                "Up to 100% On-Road Funding",
+                                "Flexible Down Payment Options",
+                                "Spot Approval & Digital Processing",
                                 "Minimal Paperwork Required"
                             ].map((benefit, i) => (
                                 <motion.div
@@ -87,22 +91,41 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
                             ))}
                         </div>
 
-                        <motion.button
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.8 }}
-                            onClick={() => {
-                                if (onApply) onApply();
-                                else document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
-                            }}
-                            className="group bg-white text-zinc-950 px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-sm flex items-center gap-4 hover:bg-racing-blue hover:text-white transition-all transform active:scale-95 shadow-2xl"
-                        >
-                            Apply For Finance
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                        </motion.button>
+                        <div className="flex flex-col sm:flex-row items-center gap-4">
+                            <motion.button
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.8 }}
+                                onClick={() => {
+                                    if (onApply) onApply();
+                                    else document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
+                                }}
+                                className="group bg-white text-zinc-950 px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-sm flex items-center gap-4 hover:bg-racing-blue hover:text-white transition-all transform active:scale-95 shadow-2xl w-full sm:w-auto"
+                            >
+                                Apply For Finance
+                                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                            </motion.button>
+
+                            <motion.button
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.9 }}
+                                onClick={() => setIsTransparencyOpen(true)}
+                                className="flex items-center gap-2 px-6 py-4 rounded-xl border border-white/20 hover:border-white/40 hover:bg-white/5 transition-all text-white/70 hover:text-white group"
+                            >
+                                <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 group-hover:scale-125 transition-transform" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">View Finance Transparency Terms</span>
+                            </motion.button>
+                        </div>
                     </div>
                 </div>
+
+                <FinanceTransparencyPopup
+                    isOpen={isTransparencyOpen}
+                    onClose={() => setIsTransparencyOpen(false)}
+                />
 
                 {/* Decorative Background Element */}
                 <div className="absolute top-1/2 right-12 -translate-y-1/2 opacity-[0.04] pointer-events-none select-none hidden lg:block">

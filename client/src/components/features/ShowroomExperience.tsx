@@ -83,7 +83,7 @@ export function ShowroomExperience() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: 0.1 }}
-                                className="text-4xl md:text-6xl xl:text-7xl font-display font-black text-white uppercase tracking-tighter leading-[0.9] mb-8"
+                                className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-display font-black text-white uppercase tracking-tighter leading-[0.9] mb-8"
                             >
                                 THE HEART OF <br />
                                 <span className="text-gradient">BLUE EXCELLENCE.</span>

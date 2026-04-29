@@ -154,7 +154,7 @@ export function Navbar() {
                         ) : (
                             <Link
                                 href="/login"
-                                className="bg-zinc-800/50 hover:bg-zinc-800 text-white px-6 py-3 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border border-zinc-700 flex items-center gap-2"
+                                className="bg-zinc-800/50 hover:bg-zinc-800 text-white px-6 py-3 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border border-foreground/20 flex items-center gap-2"
                             >
                                 <LogIn className="w-3.5 h-3.5" />
                                 Sign In

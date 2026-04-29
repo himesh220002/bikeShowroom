@@ -78,7 +78,7 @@ export function Testimonials() {
                     <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
                         Voices of Excellence
                     </h2>
-                    <h3 className="text-3xl md:text-5xl font-display font-black text-white uppercase tracking-tighter">
+                    <h3 className="text-3xl md:text-4xl font-display font-black text-white uppercase tracking-tighter">
                         RIDER <span className="text-gradient">TESTIMONIALS</span>
                     </h3>
                 </div>
@@ -96,26 +96,30 @@ export function Testimonials() {
                         >
                             <Quote className="absolute top-8 right-8 w-12 h-12 text-racing-blue/10 group-hover:text-racing-blue/20 transition-colors" />
 
-                            <div className="flex gap-1 mb-6">
-                                {[...Array(testi.rating)].map((_, idx) => (
-                                    <Star key={idx} className="w-4 h-4 text-amber-500 fill-amber-500" />
-                                ))}
-                            </div>
-
-                            <p className="text-gray-400 text-lg font-medium leading-relaxed mb-8 italic">
-                                "{testi.quote}"
-                            </p>
-
-                            <div className="flex items-center gap-4">
-                                <div className="w-14 h-14 rounded-2xl bg-zinc-800 flex items-center justify-center border border-zinc-700">
-                                    <User className="w-6 h-6 text-gray-500" />
-                                </div>
+                            <div className="flex flex-col justify-between h-full">
                                 <div>
-                                    <h4 className="text-sm font-black text-white uppercase tracking-widest">{testi.name}</h4>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-[10px] font-black text-racing-blue uppercase tracking-widest">{testi.role}</span>
-                                        <span className="w-1 h-1 rounded-full bg-zinc-700" />
-                                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{testi.ltv}</span>
+                                    <div className="flex gap-1 mb-6">
+                                        {[...Array(testi.rating)].map((_, idx) => (
+                                            <Star key={idx} className="w-4 h-4 text-amber-500 fill-amber-500" />
+                                        ))}
+                                    </div>
+
+                                    <p className="text-gray-400 text-md font-medium leading-relaxed mb-8 italic">
+                                        "{testi.quote}"
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center gap-4">
+                                    <div className="w-14 h-14 rounded-2xl bg-zinc-800 flex items-center justify-center border border-zinc-700">
+                                        <User className="w-6 h-6 text-gray-500" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-sm font-black text-white uppercase tracking-widest">{testi.name}</h4>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] font-black text-racing-blue uppercase tracking-widest">{testi.role}</span>
+                                            <span className="w-1 h-1 rounded-full bg-zinc-700" />
+                                            <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">{testi.ltv}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -55,7 +55,7 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                             {spec.image && (
                                 <>
                                     <div
-                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                        className="absolute inset-0 bg-cover bg-center opacity-80 transition-transform duration-700 group-hover:scale-110"
                                         style={{ backgroundImage: `url("${spec.image}")` }}
                                     />
                                     <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
@@ -79,19 +79,19 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
                     <div className="relative group overflow-hidden bg-card p-10 rounded-[3rem] border border-border">
                         <div
-                            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                            style={{ backgroundImage: `url("/images/fascino.png")` }}
+                            className="absolute inset-0 bg-cover bg-center opacity-80 transition-transform duration-700 group-hover:scale-110"
+                            style={{ backgroundImage: `url("/images/bikemountain.jpg")` }}
                         />
                         <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
-                        <h4 className="text-xl relative z-10 font-display font-black text-foreground uppercase tracking-tight mb-8">Dimensions & Chassis</h4>
+                        <h4 className="text-xl relative z-10 font-display font-black text-white uppercase tracking-tight mb-8">Dimensions & Chassis</h4>
                         <div className="z-10 relative grid grid-cols-1 sm:grid-cols-2 gap-8">
                             {secondarySpecs.map((spec) => (
                                 <div key={spec.label} className="flex flex-col gap-2">
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md w-fit">
                                         <LucideIcon name={spec.icon} className="w-4 h-4 text-racing-blue" />
-                                        <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">{spec.label}</span>
+                                        <span className="text-[10px] text-white font-black uppercase tracking-widest">{spec.label}</span>
                                     </div>
-                                    <p className="text-foreground font-bold uppercase">{spec.value}</p>
+                                    <p className="text-white font-bold text-sm uppercase">{spec.value}</p>
                                 </div>
                             ))}
                         </div>
@@ -99,7 +99,7 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
 
                     <div className="bg-blue-800 rounded-[3rem] p-10 flex flex-col justify-between relative overflow-hidden group">
                         <div
-                            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                            className="absolute inset-0 bg-cover bg-center opacity-80 transition-transform duration-700 group-hover:scale-110"
                             style={{ backgroundImage: `url("/images/fascino.png")` }}
                         />
                         <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
