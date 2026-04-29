@@ -16,19 +16,21 @@ export function Footer() {
                     {/* Brand Meta */}
                     <div className="space-y-8">
                         <Link href="/" className="flex items-center justify-center gap-4 group">
-                            <div className="relative w-12 h-12 xl:w-16 xl:h-16 transition-transform duration-500 group-hover:scale-110">
+                            <div className="relative w-10 h-10 md:w-12 md:h-12 transition-transform duration-500 group-hover:scale-110">
                                 <Image
                                     src="/images/YamahaLogo.png"
                                     alt="Yamaha Logo"
                                     fill
+                                    sizes="(max-width: 768px) 100vw, 33vw"
                                     className="object-contain"
+                                    priority
                                 />
                             </div>
-                            <div className="flex flex-col gap-0 md:gap-1">
-                                <span className="text-base md:text-xl font-display font-black tracking-tighter text-gradient-text leading-none">
+                            <div className="flex flex-col justify-center gap-0 md:gap-0">
+                                <span className="text-[1rem] font-display font-black tracking-tighter text-gradient-text leading-none">
                                     CHOUDHARY
                                 </span>
-                                <span className="text-[0.9rem] uppercase font-black tracking-[0.2em] text-red-500  -mt-0.5">
+                                <span className="text-[0.8rem] uppercase font-black tracking-[0.2em] text-red-500  -mt-0.5">
                                     YAMAHA
                                 </span>
                             </div>
