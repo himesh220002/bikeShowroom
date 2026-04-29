@@ -20,13 +20,16 @@ export function ShowroomExperience() {
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="aspect-[5/5] rounded-[3rem] overflow-hidden border border-white/10 relative group"
+                            viewport={{ once: true, margin: "-50px" }}
+                            className="aspect-square rounded-[3rem] overflow-hidden border border-white/10 relative group bg-zinc-800/50"
                         >
                             <Image
                                 src="/images/r15v4-sp.webp"
                                 alt="Showroom Interior"
                                 fill
+                                priority
+                                unoptimized
+                                sizes="(max-width: 1024px) 100vw, 50vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -35,14 +38,17 @@ export function ShowroomExperience() {
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9, x: 20 }}
                                 whileInView={{ opacity: 1, scale: 1, x: 0 }}
-                                viewport={{ once: true }}
+                                viewport={{ once: true, margin: "-50px" }}
                                 transition={{ delay: 0.2 }}
-                                className="aspect-square rounded-[2.5rem] overflow-hidden border border-white/10 relative group"
+                                className="aspect-square rounded-[2.5rem] overflow-hidden border border-white/10 relative group bg-zinc-800/50"
                             >
                                 <Image
                                     src="/images/calloftheblue.png"
                                     alt="Our Expert Staff"
                                     fill
+                                    priority
+                                    unoptimized
+                                    sizes="(max-width: 1024px) 100vw, 50vw"
                                     className="object-contain transition-transform duration-700 group-hover:scale-110"
                                 />
                                 <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
