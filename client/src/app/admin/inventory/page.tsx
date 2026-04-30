@@ -230,7 +230,7 @@ export default function InventoryPage() {
                             </div>
                         </div>
 
-                        <h4 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter mb-2 leading-none">
+                        <h4 className="text-2xl font-display font-black text-foreground  tracking-tighter mb-2 leading-none">
                             {bike.category === 'scooty' ? bike.name.replace('Yamaha ', '') : bike.name}
                         </h4>
                         <div className="inline-block px-3 py-1 rounded-full bg-racing-blue/10 text-racing-blue text-[8px] font-black uppercase tracking-widest w-fit mb-6">

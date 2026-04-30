@@ -423,7 +423,7 @@ export function GarageDashboard() {
         setIsVerifyingVault(true);
         setVaultError("");
         try {
-            const res = await axios.post(`${API_URL}/auth/vault-verify`, { pin: vaultPin }, { withCredentials: true });
+            const res = await axios.post<any>(`${API_URL}/auth/vault-verify`, { pin: vaultPin }, { withCredentials: true });
             if (res.data.success) {
                 const key = await deriveKey(vaultPin, user._id);
                 setVaultKey(key);
@@ -447,7 +447,7 @@ export function GarageDashboard() {
         }
         setIsVerifyingVault(true);
         try {
-            const res = await axios.post(`${API_URL}/auth/vault-setup`, { pin: newVaultPin }, { withCredentials: true });
+            const res = await axios.post<any>(`${API_URL}/auth/vault-setup`, { pin: newVaultPin }, { withCredentials: true });
             if (res.data.success) {
                 const key = await deriveKey(newVaultPin, user._id);
                 setVaultKey(key);
