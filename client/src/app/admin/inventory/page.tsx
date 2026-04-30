@@ -187,112 +187,123 @@ export default function InventoryPage() {
                 <span className="px-2 py-0.5 bg-racing-blue/10 rounded text-[10px]">{items.length} Models</span>
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {items.map((bike: any) => (
-                    <div key={bike._id} className="p-8 bg-card border border-border rounded-[2.5rem] shadow-2xl group hover:border-racing-blue/30 transition-all flex flex-col relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-6 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all z-10">
-                            <button
-                                onClick={() => { setSelectedBike(bike); setIsModalOpen(true); }}
-                                className="p-2 bg-racing-blue text-white rounded-xl shadow-lg shadow-racing-blue/20"
-                            >
-                                <Edit3 className="w-4 h-4" />
-                            </button>
-                            <button
-                                onClick={() => deleteBike(bike._id)}
-                                className="p-2 bg-red-500 text-white rounded-xl shadow-lg shadow-red-500/20"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </button>
-                        </div>
-
-                        <div className="flex justify-between items-start mb-2">
-                            <div className="w-20 h-20 bg-background border border-border rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-black/5 overflow-hidden p-1">
-                                {bike.colors && bike.colors.length > 0 ? (
-                                    <BikeImage
-                                        src={(() => {
-                                            const img = cleanImageUrl(bike.colors[0].image);
-                                            if (img.startsWith('http') || img.startsWith('/')) return img;
-                                            // Prevent double 'images/' if paths are inconsistent
-                                            const cleanImg = img.startsWith('images/') ? img.replace('images/', '') : img;
-                                            return `${cleanImageUrl(bike.colorBaseUrl) || '/images/bikes/'}${cleanImg}`;
-                                        })()}
-                                        alt={bike.name}
-                                        width={64}
-                                        height={64}
-                                        className="w-full h-full object-contain"
-                                    />
-                                ) : (
-                                    <Package className="w-6 h-6 text-racing-blue" />
-                                )}
-                            </div>
-                            <div className="text-right">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Variants</span>
-                                <span className="text-3xl font-display font-black text-foreground italic tracking-tighter">{bike.colors.length} Colors</span>
-                            </div>
-                        </div>
-
-                        <h4 className="text-2xl font-display font-black text-foreground  tracking-tighter mb-2 leading-none">
-                            {bike.category === 'scooty' ? bike.name.replace('Yamaha ', '') : bike.name}
-                        </h4>
-                        <div className="inline-block px-3 py-1 rounded-full bg-racing-blue/10 text-racing-blue text-[8px] font-black uppercase tracking-widest w-fit mb-6">
-                            {bike.tag}
-                        </div>
-
-                        <div className="flex flex-wrap gap-2">
-                            {bike.colors.map((color: any, idx: number) => (
-                                <div
-                                    key={idx}
-                                    className="px-3 py-1.5 rounded-xl bg-muted/50 border border-border/50 flex items-center gap-3 group/item transition-all hover:bg-muted"
+                {items.map((bike: any) => {
+                    const totalStock = bike.colors.reduce((acc: number, c: any) => acc + (c.stock || 0), 0);
+                    return (
+                        <div
+                            key={bike._id}
+                            className={cn(
+                                "p-8 bg-card border-1 border-border rounded-[1.5rem] shadow-2xl group hover:border-racing-blue/30 transition-all flex flex-col relative overflow-hidden",
+                                totalStock < 3 ? totalStock == 0 ? "border-t-4 border-x-0 border-b-0 border-red-500 hover:border-red-500/90" : "border-t-4 border-x-0 border-b-0 border-red-300 hover:border-red-300/90" : ""
+                            )}
+                        >
+                            <div className="absolute top-0 right-0 p-6 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all z-10">
+                                <button
+                                    onClick={() => { setSelectedBike(bike); setIsModalOpen(true); }}
+                                    className="p-2 bg-racing-blue text-white rounded-xl shadow-lg shadow-racing-blue/20"
                                 >
-                                    <div
-                                        className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-sm"
-                                        style={{ backgroundColor: color.hex }}
-                                    />
-                                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mr-1">{color.name}</span>
+                                    <Edit3 className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => deleteBike(bike._id)}
+                                    className="p-2 bg-red-500 text-white rounded-xl shadow-lg shadow-red-500/20"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
 
-                                    <div className="flex items-center gap-2 bg-background/50 rounded-lg p-0.5 border border-border/50">
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleStockChange(bike._id, idx, -1); }}
-                                            className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-red-50 text-red-500 transition-colors shadow-sm"
-                                        >
-                                            <Minus className="w-3 h-3" strokeWidth={3} />
-                                        </button>
-                                        <span className="text-[12px] font-black w-6 text-center text-foreground">{color.stock || 0}</span>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleStockChange(bike._id, idx, 1); }}
-                                            className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-green-50 text-green-500 transition-colors shadow-sm"
-                                        >
-                                            <Plus className="w-3 h-3" strokeWidth={3} />
-                                        </button>
-                                    </div>
+                            <div className="flex justify-between items-center mb-2">
+                                <div className="w-20 h-20 bg-background border border-border rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-black/5 overflow-hidden p-1">
+                                    {bike.colors && bike.colors.length > 0 ? (
+                                        <BikeImage
+                                            src={(() => {
+                                                const img = cleanImageUrl(bike.colors[0].image);
+                                                if (img.startsWith('http') || img.startsWith('/')) return img;
+                                                // Prevent double 'images/' if paths are inconsistent
+                                                const cleanImg = img.startsWith('images/') ? img.replace('images/', '') : img;
+                                                return `${cleanImageUrl(bike.colorBaseUrl) || '/images/bikes/'}${cleanImg}`;
+                                            })()}
+                                            alt={bike.name}
+                                            width={64}
+                                            height={64}
+                                            className="w-full h-full object-contain"
+                                        />
+                                    ) : (
+                                        <Package className="w-6 h-6 text-racing-blue" />
+                                    )}
                                 </div>
-                            ))}
-                        </div>
+                                <div className="flex gap-2 items-center">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Total Stock</span>
+                                    <span className="text-2xl font-display font-black text-racing-blue italic tracking-tighter">
+                                        {totalStock}
+                                    </span>
+                                </div>
+                            </div>
 
-                        <div className="mt-8 pt-6 border-t border-border/10 flex justify-between items-center">
-                            <div className="flex flex-col">
-                                {bike.colors.some((c: any) => c.price && c.price !== bike.price) ? (
-                                    <>
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-racing-blue blink flex items-center gap-1">
-                                            <div className="w-1 h-1 rounded-full bg-racing-blue" /> Varied Pricing
-                                        </span>
-                                        <span className="text-lg font-display font-black text-foreground italic">From ₹ {bike.price}</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Base Price</span>
-                                        <span className="text-lg font-display font-black text-foreground italic">₹ {bike.price}</span>
-                                    </>
-                                )}
+                            <h4 className="text-2xl font-display font-black text-foreground  tracking-tighter mb-2 leading-none">
+                                {bike.category === 'scooty' ? bike.name.replace('Yamaha ', '') : bike.name}
+                            </h4>
+                            <div className="inline-block px-3 py-1 rounded-full bg-racing-blue/10 text-racing-blue text-[8px] font-black uppercase tracking-widest w-fit mb-6">
+                                {bike.tag}
                             </div>
-                            <div className="text-right">
-                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Total Stock</span>
-                                <span className="text-lg font-display font-black text-racing-blue italic">
-                                    {bike.colors.reduce((acc: number, c: any) => acc + c.stock, 0)}
-                                </span>
+
+                            <div className="flex flex-wrap gap-2">
+                                {bike.colors.map((color: any, idx: number) => (
+                                    <div
+                                        key={idx}
+                                        className="px-3 py-1.5 rounded-xl bg-muted/50 border border-border/50 flex items-center gap-3 group/item transition-all hover:bg-muted"
+                                    >
+                                        <div
+                                            className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-sm"
+                                            style={{ backgroundColor: color.hex }}
+                                        />
+                                        <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mr-1">{color.name}</span>
+
+                                        <div className="flex items-center gap-2 bg-background/50 rounded-lg p-0.5 border border-border/50">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleStockChange(bike._id, idx, -1); }}
+                                                className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-red-50 text-red-500 transition-colors shadow-sm"
+                                            >
+                                                <Minus className="w-3 h-3" strokeWidth={3} />
+                                            </button>
+                                            <span className="text-[12px] font-black w-6 text-center text-foreground">{color.stock || 0}</span>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleStockChange(bike._id, idx, 1); }}
+                                                className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-green-50 text-green-500 transition-colors shadow-sm"
+                                            >
+                                                <Plus className="w-3 h-3" strokeWidth={3} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-8 pt-6 border-t border-border/10 flex justify-between items-center">
+                                <div className="flex flex-col">
+                                    {bike.colors.some((c: any) => c.price && c.price !== bike.price) ? (
+                                        <>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-racing-blue blink flex items-center gap-1">
+                                                <div className="w-1 h-1 rounded-full bg-racing-blue" /> Varied Pricing
+                                            </span>
+                                            <span className="text-lg font-display font-black text-foreground italic">From ₹ {bike.price}</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Base Price</span>
+                                            <span className="text-lg font-display font-black text-foreground italic">₹ {bike.price}</span>
+                                        </>
+                                    )}
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Variants</span>
+                                    <span className="text-xl font-display font-black text-foreground italic tracking-tighter">
+                                        {bike.colors.length} Colors
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );
