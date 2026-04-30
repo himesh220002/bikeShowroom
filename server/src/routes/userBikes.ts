@@ -326,6 +326,28 @@ router.post('/:id/modifications', protect, async (req: any, res) => {
     }
 });
 
+// @desc    Delete modification
+// @route   DELETE /api/user-bikes/:id/modifications/:modId
+router.delete('/:id/modifications/:modId', protect, async (req: any, res) => {
+    try {
+        const bike = await UserBike.findOne({ _id: req.params.id, userId: req.user._id });
+
+        if (!bike) {
+            return res.status(404).json({ success: false, message: 'Bike not found' });
+        }
+
+        bike.modifications = bike.modifications.filter(
+            (mod: any) => mod._id.toString() !== req.params.modId
+        );
+        
+        await bike.save();
+
+        res.json({ success: true, data: bike });
+    } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // @desc    Upsert status for a bike part (owner observation)
 // @route   PATCH /api/user-bikes/:id/part-status
 router.patch('/:id/part-status', protect, async (req: any, res) => {

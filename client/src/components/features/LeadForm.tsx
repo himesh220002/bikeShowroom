@@ -299,7 +299,7 @@ export function LeadForm({ defaultInterest, bikeModel }: LeadFormProps) {
                                         rows={2}
                                         value={notes}
                                         onChange={(e) => setNotes(e.target.value)}
-                                        placeholder="EMI preferences, test ride schedule..."
+                                        placeholder="EMI options, test ride, quotation for {bike name, variant, color} ..."
                                         className="w-full bg-white border border-border focus:border-racing-blue/30 rounded-2xl md:rounded-3xl px-8 py-4 text-sm font-medium text-gray-800 transition-all outline-none resize-none max-h-[150px]"
                                     />
                                 </div>

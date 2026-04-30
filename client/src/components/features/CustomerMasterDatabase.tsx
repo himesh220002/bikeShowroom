@@ -341,12 +341,16 @@ export function CustomerMasterDatabase({ data }: { data: CustomerMasterData[] })
                                                         </div>
                                                         <div>
                                                             <div className="text-xs font-black text-white uppercase">{doc.docType}</div>
-                                                            <div className="text-[9px] text-gray-500 font-bold uppercase">Stored in Digital Twin</div>
+                                                            <div className="text-[9px] text-gray-500 font-bold uppercase">
+                                                                {doc.docUrl?.startsWith('v1:') ? '🔒 Encrypted in User Vault' : 'Stored in Digital Twin'}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <a href={doc.docUrl} target="_blank" className="p-2 rounded-xl bg-racing-blue/10 text-racing-blue hover:bg-racing-blue hover:text-white transition-all">
-                                                        <Download className="w-4 h-4" />
-                                                    </a>
+                                                    {!doc.docUrl?.startsWith('v1:') && (
+                                                        <a href={doc.docUrl} target="_blank" className="p-2 rounded-xl bg-racing-blue/10 text-racing-blue hover:bg-racing-blue hover:text-white transition-all">
+                                                            <Download className="w-4 h-4" />
+                                                        </a>
+                                                    )}
                                                 </div>
                                             ))
                                         ) : (

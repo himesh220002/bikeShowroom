@@ -13,6 +13,7 @@ interface User {
     phone?: string;
     role: 'user' | 'admin';
     authProvider: 'google' | 'local';
+    vaultPinSet?: boolean;
 }
 
 interface AuthContextType {

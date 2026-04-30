@@ -8,7 +8,7 @@ export default function GaragePage() {
     return (
         <main className="min-h-screen bg-zinc-950">
             <Navbar />
-            <div className="pt-20">
+            <div className="mt-10">
                 <GarageDashboard />
             </div>
             <Footer />

@@ -83,7 +83,11 @@ router.get(
 // @desc    Get current user
 // @route   GET /api/auth/me
 router.get('/me', protect, (req: any, res) => {
-    res.json({ success: true, data: req.user });
+    const userData = req.user.toObject();
+    userData.vaultPinSet = !!req.user.vaultPin;
+    delete userData.password;
+    delete userData.vaultPin;
+    res.json({ success: true, data: userData });
 });
 
 // @desc    Update user profile
@@ -124,6 +128,48 @@ router.get('/logout', (req: any, res) => {
         sameSite: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true' ? 'none' : 'lax',
     });
     res.json({ success: true, message: 'Logged out' });
+});
+
+// @desc    Setup vault PIN
+// @route   POST /api/auth/vault-setup
+router.post('/vault-setup', protect, async (req: any, res) => {
+    try {
+        const { pin } = req.body;
+        if (!pin || pin.length < 4) {
+            return res.status(400).json({ success: false, message: 'Invalid PIN' });
+        }
+        const user = await User.findById(req.user._id);
+        if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+        user.vaultPin = pin;
+        await user.save();
+        res.json({ success: true, message: 'Vault PIN setup complete' });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// @desc    Verify vault PIN
+// @route   POST /api/auth/vault-verify
+router.post('/vault-verify', protect, async (req: any, res) => {
+    try {
+        const { pin } = req.body;
+        const user = await User.findById(req.user._id);
+        if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+        if (!user.vaultPin) {
+            return res.status(400).json({ success: false, message: 'Vault PIN not setup' });
+        }
+
+        const isMatch = await user.compareVaultPin(pin);
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: 'Incorrect PIN' });
+        }
+
+        res.json({ success: true, message: 'PIN verified' });
+    } catch (error: any) {
+        res.status(500).json({ success: false, message: error.message });
+    }
 });
 
 export default router;

@@ -16,6 +16,9 @@ import { DigitalPlate } from "../ui/DigitalPlate";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { deriveKey, encryptData, decryptData } from "@/lib/utils/vaultCrypto";
+import { Lock, Unlock, KeyRound } from "lucide-react";
 
 interface IModification {
     _id?: string;
@@ -163,6 +166,15 @@ export function GarageDashboard() {
     const [docForm, setDocForm] = useState({ docType: "", docUrl: "", expiryDate: "" });
     const [serviceCenter, setServiceCenter] = useState({ serviceAddress: "Nearest Yamaha Service Center", servicePhone: "N/A" });
 
+    // Vault Security States
+    const [vaultKey, setVaultKey] = useState<CryptoKey | null>(null);
+    const [vaultPin, setVaultPin] = useState("");
+    const [isVerifyingVault, setIsVerifyingVault] = useState(false);
+    const [vaultError, setVaultError] = useState("");
+    const [decryptedDocs, setDecryptedDocs] = useState<Record<string, string>>({});
+    const [showVaultSetup, setShowVaultSetup] = useState(false);
+    const [newVaultPin, setNewVaultPin] = useState("");
+
     useEffect(() => {
         if (!authLoading && !user) {
             router.push("/login");
@@ -234,6 +246,19 @@ export function GarageDashboard() {
                 setSelectedBike(resData.data);
                 setShowModModal(false);
                 setNewMod({ partName: "", brand: "", cost: 0, date: new Date().toISOString().split('T')[0], location: "" });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleDeleteMod = async (modId: string) => {
+        if (!selectedBike || !confirm("Are you sure you want to remove this modification?")) return;
+        try {
+            const res = await axios.delete<any>(`${API_URL}/user-bikes/${selectedBike._id}/modifications/${modId}`, { withCredentials: true });
+            const resData = res.data as any;
+            if (resData.success) {
+                setSelectedBike(resData.data);
             }
         } catch (err) {
             console.error(err);
@@ -364,11 +389,17 @@ export function GarageDashboard() {
     };
 
     const handleAddDocument = async () => {
-        if (!selectedBike) return;
+        if (!selectedBike || !vaultKey) {
+            alert("Please unlock your vault first to secure this document.");
+            return;
+        }
         try {
+            // Encrypt the sensitive URL
+            const encryptedUrl = await encryptData(docForm.docUrl, vaultKey);
+            
             const res = await axios.post<any>(
                 `${API_URL}/user-bikes/${selectedBike._id}/documents`,
-                docForm,
+                { ...docForm, docUrl: encryptedUrl },
                 { withCredentials: true }
             );
             const resData = res.data as any;
@@ -376,11 +407,81 @@ export function GarageDashboard() {
                 syncUpdatedBike(resData.data);
                 setShowDocModal(false);
                 setDocForm({ docType: "", docUrl: "", expiryDate: "" });
+                // Immediately decrypt the new doc for display
+                const newDoc = resData.data.documents[resData.data.documents.length - 1];
+                if (newDoc._id) {
+                    setDecryptedDocs(prev => ({ ...prev, [newDoc._id]: docForm.docUrl }));
+                }
             }
         } catch (err) {
             console.error(err);
         }
     };
+
+    const handleUnlockVault = async () => {
+        if (!user || !vaultPin) return;
+        setIsVerifyingVault(true);
+        setVaultError("");
+        try {
+            const res = await axios.post(`${API_URL}/auth/vault-verify`, { pin: vaultPin }, { withCredentials: true });
+            if (res.data.success) {
+                const key = await deriveKey(vaultPin, user._id);
+                setVaultKey(key);
+                setVaultPin("");
+                // Trigger decryption for all existing docs
+                if (selectedBike) {
+                    decryptAllDocs(selectedBike.documents, key);
+                }
+            }
+        } catch (err: any) {
+            setVaultError(err.response?.data?.message || "Failed to unlock vault");
+        } finally {
+            setIsVerifyingVault(false);
+        }
+    };
+
+    const handleSetupVault = async () => {
+        if (!user || !newVaultPin || newVaultPin.length < 4) {
+            setVaultError("PIN must be at least 4 digits");
+            return;
+        }
+        setIsVerifyingVault(true);
+        try {
+            const res = await axios.post(`${API_URL}/auth/vault-setup`, { pin: newVaultPin }, { withCredentials: true });
+            if (res.data.success) {
+                const key = await deriveKey(newVaultPin, user._id);
+                setVaultKey(key);
+                setShowVaultSetup(false);
+                setNewVaultPin("");
+                // Refresh user to update vaultPinSet status
+                window.location.reload(); 
+            }
+        } catch (err: any) {
+            setVaultError(err.response?.data?.message || "Failed to setup vault");
+        } finally {
+            setIsVerifyingVault(false);
+        }
+    };
+
+    const decryptAllDocs = async (docs: IDocument[], key: CryptoKey) => {
+        const decrypted: Record<string, string> = {};
+        for (const doc of docs) {
+            if (doc._id) {
+                try {
+                    decrypted[doc._id] = await decryptData(doc.docUrl, key);
+                } catch (e) {
+                    decrypted[doc._id] = "Decryption Failed";
+                }
+            }
+        }
+        setDecryptedDocs(decrypted);
+    };
+
+    useEffect(() => {
+        if (activeTab === "docs" && selectedBike && vaultKey) {
+            decryptAllDocs(selectedBike.documents, vaultKey);
+        }
+    }, [activeTab, selectedBike, vaultKey]);
 
     if (loading || authLoading) return (
         <div className="min-h-screen bg-white flex items-center justify-center">
@@ -450,23 +551,23 @@ export function GarageDashboard() {
     return (
         <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-racing-blue/10">
             {/* Header / Hero */}
-            <div className="relative h-[50vh] overflow-hidden border-b border-zinc-100 bg-zinc-50/50">
-                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent z-10" />
+            <div className="relative h-[40vh] overflow-hidden border-b border-zinc-100 bg-zinc-50/50">
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
                 <motion.div
                     initial={{ scale: 1.1, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 0.15 }}
+                    animate={{ scale: 1, opacity: 0.25 }}
                     className="absolute inset-0 bg-cover bg-center mix-blend-multiply transition-opacity duration-1000"
                     style={{ backgroundImage: `url(${selectedBike.bikeImage || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop'})` }}
                 />
 
-                <div className="relative z-20 max-w-7xl mx-auto h-full flex flex-col justify-end pb-12 px-8">
+                <div className="relative z-20 max-w-7xl mx-auto h-full flex flex-col justify-end pb-6 px-8">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                         <div>
                             <div className="flex items-center gap-3 mb-0">
                                 <span className="px-4 py-1 bg-racing-blue text-white text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-racing-blue/20">Primary Asset</span>
                                 <span className="px-4 py-1 bg-white text-emerald-600 border border-emerald-100 shadow-sm text-[9px] font-black uppercase tracking-widest rounded-full">Score: {selectedBike.conditionScore || 100}%</span>
                             </div>
-                            <h1 className="text-6xl md:text-8xl font-display font-black uppercase tracking-tighter mb-4 text-zinc-900">
+                            <h1 className="text-4xl md:text-6xl font-display font-black uppercase tracking-tighter mb-4 text-zinc-900">
                                 {selectedBike.bikeModel}
                             </h1>
                             <div className="flex items-center gap-8">
@@ -474,7 +575,7 @@ export function GarageDashboard() {
                                 <div className="h-10 w-px bg-zinc-200 hidden md:block" />
                                 <div className="hidden md:block">
                                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">Odometer Log</p>
-                                    <p className="text-xl font-display font-black uppercase text-zinc-900">{(selectedBike.mileage || 0).toLocaleString()} <span className="text-[10px] font-sans text-gray-400">KM</span></p>
+                                    <p className="text-xl font-display font-black uppercase text-white/90 px-3 py-0 bg-gray-200/20 rounded-sm backdrop-blur-xl">{(selectedBike.mileage || 0).toLocaleString()} <span className="text-[10px] font-sans text-gray-400">KM</span></p>
                                 </div>
                             </div>
                         </div>
@@ -489,11 +590,11 @@ export function GarageDashboard() {
                                     });
                                     setIsManaging(true);
                                 }}
-                                className="px-10 py-5 bg-white border border-zinc-200 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-zinc-50 transition-all text-zinc-900 shadow-sm"
+                                className="px-6 py-2 lg:py-3 bg-white border border-zinc-200 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-zinc-50 transition-all text-zinc-900 shadow-sm"
                             >
                                 <Settings className="w-4 h-4 mr-2 inline-block" /> Manage
                             </button>
-                            <Link href="/service#booking" className="px-10 py-5 bg-racing-blue text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-blue-600 transition-all shadow-xl shadow-racing-blue/20">
+                            <Link href="/service#booking" className="px-6 py-2 lg:py-3 bg-racing-blue text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-blue-600 transition-all shadow-xl shadow-racing-blue/20">
                                 Book Service
                             </Link>
                         </div>
@@ -538,14 +639,15 @@ export function GarageDashboard() {
                                     </h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                         {[
-                                            { label: "Front & Rear Tires", value: selectedBike.consumables.tires, desc: "Estimated life based on friction coefficient" },
-                                            { label: "O-Ring Chain & Sprockets", value: selectedBike.consumables.chain, desc: "Log lube every 500km to extend life" },
-                                            { label: "Sintered Brake Pads", value: selectedBike.consumables.brakes, desc: "Hydraulic pressure & thickness estimate" },
-                                            { label: "High-Temp Coolant", value: selectedBike.consumables.coolant, desc: "PH balance and thermal range tracking" },
+                                            { label: "Front & Rear Tires", value: selectedBike.consumables.tires, desc: "Estimated life based on friction coefficient", url: "https://images.unsplash.com/photo-1677064400501-3299bb683cd7?q=80&w=1630" },
+                                            { label: "O-Ring Chain & Sprockets", value: selectedBike.consumables.chain, desc: "Log lube every 500km to extend life", url: "https://images.unsplash.com/photo-1657873961503-89a65459de2b?q=80&w=1631" },
+                                            { label: "Sintered Brake Pads", value: selectedBike.consumables.brakes, desc: "Hydraulic pressure & thickness estimate", url: "https://images.unsplash.com/photo-1760317890314-e964ffd7e6a6?q=80&w=1169" },
+                                            { label: "High-Temp Coolant", value: selectedBike.consumables.coolant, desc: "PH balance and thermal range tracking", url: "/images/temperature-gauge-light-on.jpg" },
                                         ].map((item) => (
                                             <div key={item.label} className="p-8 bg-zinc-50/50 rounded-3xl border border-zinc-100 space-y-5 hover:bg-white hover:shadow-xl hover:shadow-black/5 transition-all">
                                                 <div className="flex justify-between items-end">
-                                                    <div>
+                                                    <div className="space-y-2">
+                                                        <Image src={item.url} alt={item.label} width={200} height={200} className="w-48 h-24 object-cover rounded-lg" />
                                                         <h4 className="text-[11px] font-black uppercase tracking-widest text-zinc-900 mb-1">{item.label}</h4>
                                                         <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">{item.desc}</p>
                                                     </div>
@@ -638,7 +740,7 @@ export function GarageDashboard() {
                                 <div className="grid grid-cols-1 gap-4">
                                     {selectedBike.modifications?.length > 0 ? (
                                         selectedBike.modifications.map((mod, idx) => (
-                                            <div key={idx} className="p-8 bg-zinc-50/50 rounded-3xl border border-zinc-100 flex items-center justify-between group hover:bg-white hover:shadow-xl hover:shadow-black/5 transition-all">
+                                            <div key={mod._id || idx} className="p-8 bg-zinc-50/50 rounded-3xl border border-zinc-100 flex items-center justify-between group hover:bg-white hover:shadow-xl hover:shadow-black/5 transition-all">
                                                 <div className="flex items-center gap-6">
                                                     <div className="w-14 h-14 rounded-2xl bg-racing-blue/5 flex items-center justify-center">
                                                         <Zap className="w-7 h-7 text-racing-blue" />
@@ -648,10 +750,21 @@ export function GarageDashboard() {
                                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{mod.brand} • Installed {new Date(mod.date).toLocaleDateString()}</p>
                                                     </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="text-lg font-display font-black uppercase text-zinc-900">₹{(mod.cost || 0).toLocaleString()}</p>
-                                                    {mod.location && (
-                                                        <p className="text-[9px] font-black text-racing-blue uppercase tracking-widest">Slot: {mod.location}</p>
+                                                <div className="flex items-center gap-6">
+                                                    <div className="text-right">
+                                                        <p className="text-lg font-display font-black uppercase text-zinc-900">₹{(mod.cost || 0).toLocaleString()}</p>
+                                                        {mod.location && (
+                                                            <p className="text-[9px] font-black text-racing-blue uppercase tracking-widest">Slot: {mod.location}</p>
+                                                        )}
+                                                    </div>
+                                                    {mod._id && (
+                                                        <button
+                                                            onClick={() => handleDeleteMod(mod._id!)}
+                                                            className="p-3 bg-rose-50 text-rose-500 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-500 hover:text-white shadow-sm"
+                                                            title="Delete Modification"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
                                                     )}
                                                 </div>
                                             </div>
@@ -668,48 +781,134 @@ export function GarageDashboard() {
                         {activeTab === "docs" && (
                             <div className="space-y-8">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Document Vault & Certification</h3>
-                                    <div className="flex gap-3">
-                                        <button
-                                            onClick={() => setShowDiagnosticModal(true)}
-                                            className="px-4 py-2 bg-white border border-zinc-200 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-sm"
-                                        >
-                                            <Plus className="w-3.5 h-3.5" /> Add Diagnostic
-                                        </button>
-                                        <button
-                                            onClick={() => setShowDocModal(true)}
-                                            className="px-4 py-2 bg-white border border-zinc-200 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-sm"
-                                        >
-                                            <Plus className="w-3.5 h-3.5" /> Add Document
-                                        </button>
+                                    <div className="flex flex-col">
+                                        <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Document Vault & Certification</h3>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            {vaultKey ? (
+                                                <span className="text-[9px] font-black text-emerald-500 uppercase flex items-center gap-1">
+                                                    <Unlock className="w-3 h-3" /> Secure Link Established
+                                                </span>
+                                            ) : (
+                                                <span className="text-[9px] font-black text-rose-500 uppercase flex items-center gap-1">
+                                                    <Lock className="w-3 h-3" /> Vault Locked
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {(selectedBike.documents || []).map((doc, idx) => {
-                                        const expiringSoon = doc.expiryDate && new Date(doc.expiryDate).getTime() < (Date.now() + 45 * 24 * 60 * 60 * 1000);
-                                        return (
-                                            <div key={doc._id || idx} className={`p-8 bg-zinc-50/50 rounded-3xl border transition-all ${expiringSoon ? 'border-amber-200 bg-amber-50/30' : 'border-zinc-100 hover:bg-white hover:shadow-xl hover:shadow-black/5'}`}>
-                                                <div className="flex justify-between items-start mb-8">
-                                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${expiringSoon ? 'bg-amber-100' : 'bg-zinc-100'}`}>
-                                                        <FileText className={`w-6 h-6 ${expiringSoon ? 'text-amber-600' : 'text-zinc-600'}`} />
-                                                    </div>
-                                                    <a href={doc.docUrl} target="_blank" rel="noreferrer" className="p-3 hover:bg-zinc-100 rounded-xl transition-all">
-                                                        <ExternalLink className="w-5 h-5 text-gray-400" />
-                                                    </a>
-                                                </div>
-                                                <h4 className="text-sm font-black uppercase text-zinc-900 mb-1">{doc.docType}</h4>
-                                                <p className={`text-[10px] font-bold uppercase tracking-wider ${expiringSoon ? 'text-amber-600' : 'text-gray-400'}`}>
-                                                    {doc.expiryDate ? `Expires ${new Date(doc.expiryDate).toLocaleDateString()}` : "No expiry"}
-                                                </p>
-                                            </div>
-                                        )
-                                    })}
+                                    <div className="flex gap-3">
+                                        {vaultKey && (
+                                            <>
+                                                <button
+                                                    onClick={() => setShowDiagnosticModal(true)}
+                                                    className="px-4 py-2 bg-white border border-zinc-200 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-sm"
+                                                >
+                                                    <Plus className="w-3.5 h-3.5" /> Add Diagnostic
+                                                </button>
+                                                <button
+                                                    onClick={() => setShowDocModal(true)}
+                                                    className="px-4 py-2 bg-white border border-zinc-200 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-sm"
+                                                >
+                                                    <Plus className="w-3.5 h-3.5" /> Add Document
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
 
-                                {(selectedBike.documents || []).length === 0 && (
-                                    <div className="w-full py-8 bg-zinc-50/50 border-2 border-dashed border-zinc-100 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 text-center">
-                                        No documents yet. Add RC, insurance, warranty, and invoices.
+                                {!vaultKey ? (
+                                    <div className="p-12 bg-zinc-50 border border-zinc-100 rounded-[3rem] text-center space-y-6">
+                                        <div className="w-20 h-20 bg-racing-blue/10 rounded-[2rem] flex items-center justify-center mx-auto">
+                                            <KeyRound className="w-10 h-10 text-racing-blue" />
+                                        </div>
+                                        <div className="max-w-xs mx-auto">
+                                            <h4 className="text-xl font-display font-black uppercase text-zinc-900 mb-2">Unlock Your Vault</h4>
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-relaxed">
+                                                Enter your 6-digit Security PIN to decrypt and access your sensitive machine documentation.
+                                            </p>
+                                        </div>
+
+                                        {!user?.vaultPinSet ? (
+                                            <div className="space-y-4">
+                                                <p className="text-[10px] font-bold text-amber-600 uppercase">You haven't set up a security PIN yet.</p>
+                                                <div className="flex flex-col gap-3 max-w-xs mx-auto">
+                                                    <input
+                                                        type="password"
+                                                        placeholder="Create New PIN"
+                                                        className="px-6 py-4 bg-white border border-zinc-200 rounded-2xl text-center font-black tracking-[0.5em] outline-none focus:border-racing-blue transition-all"
+                                                        value={newVaultPin}
+                                                        onChange={(e) => setNewVaultPin(e.target.value)}
+                                                        maxLength={6}
+                                                    />
+                                                    <button
+                                                        onClick={handleSetupVault}
+                                                        disabled={isVerifyingVault}
+                                                        className="w-full py-4 bg-racing-blue text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-racing-blue/20 hover:bg-blue-600 transition-all disabled:opacity-50"
+                                                    >
+                                                        {isVerifyingVault ? "INITIALIZING..." : "SETUP SECURE VAULT"}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-4">
+                                                <div className="flex flex-col gap-3 max-w-xs mx-auto">
+                                                    <input
+                                                        type="password"
+                                                        placeholder="••••••"
+                                                        className="px-6 py-4 bg-white border border-zinc-200 rounded-2xl text-center font-black tracking-[0.5em] text-2xl outline-none focus:border-racing-blue transition-all"
+                                                        value={vaultPin}
+                                                        onChange={(e) => setVaultPin(e.target.value)}
+                                                        maxLength={6}
+                                                    />
+                                                    {vaultError && <p className="text-[9px] font-black text-rose-500 uppercase">{vaultError}</p>}
+                                                    <button
+                                                        onClick={handleUnlockVault}
+                                                        disabled={isVerifyingVault}
+                                                        className="w-full py-4 bg-zinc-900 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-black transition-all disabled:opacity-50"
+                                                    >
+                                                        {isVerifyingVault ? "VERIFYING..." : "UNLOCK VAULT"}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
+                                ) : (
+                                    <>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            {(selectedBike.documents || []).map((doc, idx) => {
+                                                const expiringSoon = doc.expiryDate && new Date(doc.expiryDate).getTime() < (Date.now() + 45 * 24 * 60 * 60 * 1000);
+                                                const decryptedUrl = doc._id ? decryptedDocs[doc._id] : null;
+
+                                                return (
+                                                    <div key={doc._id || idx} className={`p-8 bg-zinc-50/50 rounded-3xl border transition-all ${expiringSoon ? 'border-amber-200 bg-amber-50/30' : 'border-zinc-100 hover:bg-white hover:shadow-xl hover:shadow-black/5'}`}>
+                                                        <div className="flex justify-between items-start mb-8">
+                                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${expiringSoon ? 'bg-amber-100' : 'bg-zinc-100'}`}>
+                                                                <FileText className={`w-6 h-6 ${expiringSoon ? 'text-amber-600' : 'text-zinc-600'}`} />
+                                                            </div>
+                                                            {decryptedUrl ? (
+                                                                <a href={decryptedUrl} target="_blank" rel="noreferrer" className="p-3 bg-racing-blue/10 text-racing-blue hover:bg-racing-blue hover:text-white rounded-xl transition-all">
+                                                                    <ExternalLink className="w-5 h-5" />
+                                                                </a>
+                                                            ) : (
+                                                                <div className="p-3 bg-zinc-100 rounded-xl">
+                                                                    <Lock className="w-5 h-5 text-zinc-400" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <h4 className="text-sm font-black uppercase text-zinc-900 mb-1">{doc.docType}</h4>
+                                                        <p className={`text-[10px] font-bold uppercase tracking-wider ${expiringSoon ? 'text-amber-600' : 'text-gray-400'}`}>
+                                                            {doc.expiryDate ? `Expires ${new Date(doc.expiryDate).toLocaleDateString()}` : "No expiry"}
+                                                        </p>
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+
+                                        {(selectedBike.documents || []).length === 0 && (
+                                            <div className="w-full py-8 bg-zinc-50/50 border-2 border-dashed border-zinc-100 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 text-center">
+                                                No documents yet. Add RC, insurance, warranty, and invoices.
+                                            </div>
+                                        )}
+                                    </>
                                 )}
 
                                 <div className="space-y-4">
