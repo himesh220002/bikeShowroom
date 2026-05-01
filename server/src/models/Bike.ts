@@ -56,7 +56,7 @@ const ColorSchema = new Schema({
 
 const BikeSchema: Schema = new Schema({
     name: { type: String, required: true, unique: true },
-    slug: { type: String, required: true, unique: true },
+    slug: { type: String, required: true, unique: true, lowercase: true },
     category: { type: String, enum: ['bike', 'scooty'], required: true },
     tag: { type: String, required: true },
     description: { type: String, required: true },

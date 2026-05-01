@@ -43,7 +43,9 @@ const bikeQueue = requestQueue((req) => 'bikes');
 // Get single bike by slug
 router.get('/slug/:slug', async (req, res) => {
     try {
-        const bike = await Bike.findOne({ slug: req.params.slug.toLowerCase() });
+        const bike = await Bike.findOne({ 
+            slug: { $regex: new RegExp(`^${req.params.slug}$`, 'i') } 
+        });
         if (!bike) return res.status(404).json({ success: false, message: 'Bike not found' });
         res.json({ success: true, data: bike });
     } catch (error: any) {
