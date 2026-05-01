@@ -71,7 +71,7 @@ export function UserBookings() {
                 setBookings(fetchedBookings);
                 
                 // Auto-tab selection: show active if any exist, otherwise history
-                const hasActive = fetchedBookings.some(b => ["booked", "in-progress"].includes(b.status));
+                const hasActive = fetchedBookings.some((b: ServiceBooking) => ["booked", "in-progress"].includes(b.status));
                 setActiveTab(hasActive ? "active" : "history");
             }
         } catch (err) {
