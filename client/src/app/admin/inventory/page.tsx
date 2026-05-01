@@ -197,18 +197,18 @@ export default function InventoryPage() {
                                 totalStock < 3 ? totalStock == 0 ? "border-t-4 border-x-0 border-b-0 border-red-500 hover:border-red-500/90" : "border-t-4 border-x-0 border-b-0 border-red-300 hover:border-red-300/90" : ""
                             )}
                         >
-                            <div className="absolute top-0 right-0 p-6 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all z-10">
+                            <div className="absolute top-0 right-0 p-2 xl:p-6 flex gap-2 translate-y-1 opacity-70 xl:opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all z-10">
                                 <button
                                     onClick={() => { setSelectedBike(bike); setIsModalOpen(true); }}
                                     className="p-2 bg-racing-blue text-white rounded-xl shadow-lg shadow-racing-blue/20"
                                 >
-                                    <Edit3 className="w-4 h-4" />
+                                    <Edit3 className="lg:w-4 w-3 h-3 lg:h-4" />
                                 </button>
                                 <button
                                     onClick={() => deleteBike(bike._id)}
                                     className="p-2 bg-red-500 text-white rounded-xl shadow-lg shadow-red-500/20"
                                 >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash2 className="lg:w-4 w-3 h-3 lg:h-4" />
                                 </button>
                             </div>
 

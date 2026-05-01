@@ -308,9 +308,34 @@ export default function AdminDashboard() {
                     </h1>
                     <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] mt-1">Unified Intelligence & Workshop Management</p>
                 </div>
+
                 <div className="flex items-center gap-3 bg-card/50 border border-border px-4 py-2 rounded-xl">
                     <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                     <span className="text-[9px] font-black uppercase tracking-widest text-foreground">Sync Active</span>
+                </div>
+
+                {/* Intelligence & Analytics Entry */}
+                <div className="relative group hidden lg:block">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-racing-blue to-blue-600 rounded-[1rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
+                    <div
+                        onClick={goToInsights}
+                        className="relative flex flex-col md:flex-row items-center justify-between p-1 md:p-2 bg-card border border-border rounded-[1rem] shadow-xl hover:border-racing-blue/40 transition-all cursor-pointer overflow-hidden group/card"
+                    >
+                        <div className="absolute top-0 right-0 w-1/4 h-full bg-racing-blue/5 -skew-x-12 translate-x-1/2 pointer-events-none group-hover/card:translate-x-1/3 transition-transform duration-700" />
+
+                        <div className="flex items-center gap-6 mb-6 md:mb-0 relative z-10">
+                            <div className="w-8 h-8 bg-racing-blue/10 rounded-2xl flex items-center justify-center shadow-inner group-hover/card:scale-105 transition-transform duration-500">
+                                <TrendingUp className="w-4 h-4 text-racing-blue animate-pulse" />
+                            </div>
+                            <div>
+
+                                <h2 className="text-xl font-display font-black text-foreground uppercase tracking-tighter italic leading-none">
+                                    Insights
+                                </h2>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -348,43 +373,7 @@ export default function AdminDashboard() {
                 ))}
             </div>
 
-            {/* Intelligence & Analytics Entry */}
-            <div className="relative group hidden 2xl:block">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-racing-blue to-blue-600 rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
-                <div
-                    onClick={goToInsights}
-                    className="relative flex flex-col md:flex-row items-center justify-between p-3 md:p-4 bg-card border border-border rounded-[2rem] shadow-xl hover:border-racing-blue/40 transition-all cursor-pointer overflow-hidden group/card"
-                >
-                    <div className="absolute top-0 right-0 w-1/4 h-full bg-racing-blue/5 -skew-x-12 translate-x-1/2 pointer-events-none group-hover/card:translate-x-1/3 transition-transform duration-700" />
 
-                    <div className="flex items-center gap-6 mb-6 md:mb-0 relative z-10">
-                        <div className="w-14 h-14 bg-racing-blue/10 rounded-2xl flex items-center justify-center shadow-inner group-hover/card:scale-105 transition-transform duration-500">
-                            <TrendingUp className="w-7 h-7 text-racing-blue animate-pulse" />
-                        </div>
-                        <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <div className="w-1.5 h-1.5 rounded-full bg-racing-blue animate-ping" />
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-racing-blue">Management Intelligence</span>
-                            </div>
-                            <h2 className="text-xl font-display font-black text-foreground uppercase tracking-tighter italic leading-none">
-                                Performance <span className="text-gradient">Insights</span>
-                            </h2>
-                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-1">Conversion • Revenue • Velocity Feed</p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 relative z-10">
-                        <div className="hidden lg:flex flex-col items-end mr-6 opacity-30 group-hover/card:opacity-100 transition-opacity">
-                            <span className="text-[8px] font-black uppercase tracking-widest leading-none">Visual Reports</span>
-                            <span className="text-[8px] font-black uppercase tracking-widest mt-0.5">Live Feed</span>
-                        </div>
-                        <button className="flex items-center gap-2 px-8 py-3.5 bg-racing-blue text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-racing-blue/20 group-hover/card:shadow-racing-blue/40 transition-all active:scale-95 group-hover/card:translate-x-1">
-                            <BarChart2 className="w-4 h-4" />
-                            Analyze Full
-                        </button>
-                    </div>
-                </div>
-            </div>
 
             <div className="bg-card border border-border rounded-[2rem] shadow-xl relative overflow-hidden">
                 <button

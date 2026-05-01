@@ -80,7 +80,7 @@ export default function InsightsPage() {
         accessoryIntelligence = []
     } = data || {};
 
-    const InsightCard = ({ title, icon: Icon, children, className }: any) => (
+    const InsightCard = ({ title, icon: Icon, children, className, subtitle }: any) => (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -91,7 +91,10 @@ export default function InsightsPage() {
                     <div className="p-2 bg-racing-blue/10 rounded-xl group-hover:scale-110 transition-transform">
                         <Icon className="w-4 h-4 text-racing-blue" />
                     </div>
-                    <h3 className="text-lg font-display font-black uppercase italic tracking-tighter text-foreground">{title}</h3>
+                    <div>
+                        <h3 className="text-lg font-display font-black uppercase italic tracking-tighter text-foreground">{title}</h3>
+                        {subtitle && subtitle}
+                    </div>
                 </div>
                 <div className="w-2 h-2 rounded-full bg-racing-blue animate-pulse" />
             </div>
@@ -111,9 +114,9 @@ export default function InsightsPage() {
     const financeUptake = Math.round((financeCount / totalFinanceBase) * 100);
 
     return (
-        <div className="space-y-12 pb-20 animate-in fade-in duration-700">
+        <div className="space-y-6 pb-10 animate-in fade-in duration-700">
             {/* Header & Quick Sync */}
-            <div className="flex flex-col md:flex-row md:items-center bg-background rounded-[1.5rem] p-4 shadow-inner shadow-foreground/20 justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-center bg-background rounded-[1.5rem] p-3 shadow-inner shadow-foreground/20 justify-between gap-6">
                 <div className="flex items-center gap-6">
                     <button
                         onClick={() => router.back()}
@@ -122,7 +125,7 @@ export default function InsightsPage() {
                         <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                     </button>
                     <div>
-                        <h2 className="text-4xl font-display font-black text-foreground uppercase tracking-tighter italic leading-none">
+                        <h2 className="text-xl font-display font-black text-foreground uppercase tracking-tighter italic leading-none">
                             Showroom <span className="text-racing-blue">Intelligence</span>
                         </h2>
                         <div className="flex items-center gap-2 mt-2">
@@ -573,16 +576,16 @@ export default function InsightsPage() {
                     <div className="flex items-center gap-4 mt-1">
                         <div className="flex items-center gap-1.5">
                             <Zap className="w-3 h-3 text-amber-500 fill-amber-500" />
-                            <span className="text-[10px] font-black text-foreground">{overview.nps?.toFixed(1) || '0.0'} / 5.0</span>
+                            <span className="text-[10px] font-black text-foreground">{overview.nps?.toFixed(1) || '0.0'} / 10.0</span>
                         </div>
                         <div className="flex items-center gap-1.5 border-l border-border/50 pl-4">
                             <TrendingUp className="w-3 h-3 text-racing-blue" />
-                            <span className="text-[10px] font-black text-muted-foreground uppercase">{overview.npsCount || 0} Total Votes</span>
+                            <span className="text-[10px] font-black text-muted-foreground uppercase">from {overview.npsCount || 0} users</span>
                         </div>
                     </div>
                 }
             >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-[300px] overflow-y-auto pr-2 custom-scrollbar p-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pr-2 custom-scrollbar p-2">
                     {data?.recentFeedback?.length > 0 ? (
                         data.recentFeedback.map((fb: any, i: number) => (
                             <div key={i} className="p-4 bg-muted/30 rounded-2xl border border-border/50 space-y-2 hover:border-racing-blue/30 transition-all group">

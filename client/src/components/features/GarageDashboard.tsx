@@ -522,6 +522,18 @@ export function GarageDashboard() {
     const latestAnalytics = selectedBike.rideAnalytics?.[0];
     const latestDiagnostic = selectedBike.diagnosticReports?.[0];
     const selectedProblemDetail = (PROBLEM_LIBRARY[issueForm.system] || []).find((p) => p.label === issueForm.problem);
+
+    const formatTimelineDate = (dateStr: string) => {
+        if (!dateStr) return "N/A";
+        const date = new Date(dateStr);
+        // If it's a date-only string (no time), show only date
+        // Note: modification dates are YYYY-MM-DD
+        if (!dateStr.includes("T") && !dateStr.includes(":")) {
+            return date.toLocaleDateString();
+        }
+        return date.toLocaleString();
+    };
+
     const timelineEvents = [
         ...(selectedBike.issueReports || []).map((issue) => ({
             id: issue._id || `${issue.title}-${issue.observedAt}`,
@@ -940,7 +952,7 @@ export function GarageDashboard() {
                                         <div key={event.id || idx} className="relative pl-12 group">
                                             <div className={`absolute left-[-6px] top-2 w-3 h-3 rounded-full border-4 border-white transition-all group-hover:scale-125 ${event.premium ? 'bg-racing-blue shadow-[0_0_15px_rgba(0,149,255,0.4)]' : 'bg-zinc-300'}`} />
                                             <div>
-                                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">{new Date(event.date).toLocaleString()}</p>
+                                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">{formatTimelineDate(event.date)}</p>
                                                 <h4 className={`text-base font-black uppercase mb-1 ${event.premium ? 'text-racing-blue' : 'text-zinc-900'}`}>{event.title}</h4>
                                                 <p className="text-xs font-medium text-gray-500 leading-relaxed max-w-sm">{event.desc}</p>
                                             </div>

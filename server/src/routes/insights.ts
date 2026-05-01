@@ -180,9 +180,9 @@ router.get('/crm', async (req, res) => {
         const healthyModels = inventoryQuery.filter(i => i.stock > 2).length;
         const inventoryHealth = inventoryQuery.length > 0 ? Math.round((healthyModels / inventoryQuery.length) * 100) : 0;
 
-        const avgNPS = await Service.aggregate([
-            { $match: { "feedback.rating": { $exists: true } } },
-            { $group: { _id: null, avg: { $avg: "$feedback.rating" }, count: { $sum: 1 } } }
+        const avgRating = await Service.aggregate([
+            { $match: { "rating": { $exists: true } } },
+            { $group: { _id: null, avg: { $avg: "$rating" }, count: { $sum: 1 } } }
         ]);
 
         const recentFeedback = await Service.find({
@@ -340,8 +340,8 @@ router.get('/crm', async (req, res) => {
                     totalCustomers,
                     totalRevenue: totalSalesRevenue + actualServiceRevenue + actualAccessoryRevenue,
                     activeServices: await Service.countDocuments({ status: { $in: ['booked', 'in-progress'] } }),
-                    nps: avgNPS[0]?.avg || 0,
-                    npsCount: avgNPS[0]?.count || 0,
+                    nps: avgRating[0]?.avg || 0,
+                    npsCount: avgRating[0]?.count || 0,
                     serviceCompletionRate,
                     inventoryHealth,
                     noShowRate,

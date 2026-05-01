@@ -4,6 +4,7 @@ import Customer from '../models/Customer';
 import WorkshopSlot from '../models/WorkshopSlot';
 import Config from '../models/Config';
 import Spare from '../models/Spare';
+import UserBike from '../models/UserBike';
 import { protect } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -12,11 +13,22 @@ const router = Router();
 router.get('/user', protect, async (req: any, res) => {
     try {
         const userPhone = req.user.phone;
+        const userId = req.user._id;
+        
         if (!userPhone) {
             return res.json({ success: true, data: [] });
         }
 
-        const services = await Service.find({ phone: userPhone })
+        // Find user's bikes to get registration numbers
+        const userBikes = await UserBike.find({ userId });
+        const regNumbers = userBikes.map(b => b.registrationNumber).filter(Boolean);
+
+        const services = await Service.find({
+            $or: [
+                { phone: userPhone },
+                { regNumber: { $in: regNumbers } }
+            ]
+        })
             .populate('customerId')
             .sort({ createdAt: -1 });
 
@@ -322,8 +334,18 @@ router.post('/:id/rate', protect, async (req: any, res) => {
         const service = await Service.findById(req.params.id);
         if (!service) return res.status(404).json({ success: false, message: 'Service not found' });
 
-        // Security check: Only the customer who booked the service can rate/feedback it
-        if (service.phone !== userPhone) {
+        // Security check: Only the customer who booked the service OR the owner of the registered bike can rate it
+        let isAuthorized = service.phone === userPhone;
+
+        if (!isAuthorized && service.regNumber) {
+            const userBike = await UserBike.findOne({
+                userId: req.user._id,
+                registrationNumber: service.regNumber
+            });
+            if (userBike) isAuthorized = true;
+        }
+
+        if (!isAuthorized) {
             return res.status(403).json({ success: false, message: 'Unauthorized.' });
         }
 

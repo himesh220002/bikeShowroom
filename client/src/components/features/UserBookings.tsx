@@ -67,7 +67,12 @@ export function UserBookings() {
             );
             const data = res.data as any;
             if (data.success) {
-                setBookings(data.data);
+                const fetchedBookings = data.data;
+                setBookings(fetchedBookings);
+                
+                // Auto-tab selection: show active if any exist, otherwise history
+                const hasActive = fetchedBookings.some(b => ["booked", "in-progress"].includes(b.status));
+                setActiveTab(hasActive ? "active" : "history");
             }
         } catch (err) {
             console.error("Failed to fetch bookings:", err);
@@ -263,7 +268,7 @@ export function UserBookings() {
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 flex-1 max-w-2xl">
+                                        <div className="grid grid-cols-1 gap-6 flex-1 max-w-2xl">
                                             <div className="space-y-1">
                                                 <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block opacity-60">Scheduled Date</span>
                                                 <div className="flex items-center gap-2 text-foreground font-bold">
