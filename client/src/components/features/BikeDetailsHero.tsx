@@ -24,19 +24,25 @@ import { formatPrice } from "@/lib/utils/price";
 
 interface BikeDetailsHeroProps {
     bike: any;
+    selectedVariantIndex?: number;
+    onVariantChange?: (index: number) => void;
     onAction?: (intent: string) => void;
 }
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { BIKES, BikeVariant } from "@/lib/constants/bikes";
 
-export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
-    const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChange, onAction }: BikeDetailsHeroProps) {
     const [selectedColorIndex, setSelectedColorIndex] = useState(0);
 
+    // Reset color index when variant changes
+    useEffect(() => {
+        setSelectedColorIndex(0);
+    }, [selectedVariantIndex]);
+
     const currentVariant = useMemo(() => {
-        return bike.variants ? bike.variants[selectedVariantIndex] : null;
+        return bike.variants && bike.variants.length > 0 ? bike.variants[selectedVariantIndex] : null;
     }, [bike.variants, selectedVariantIndex]);
 
     const activeColors = useMemo(() => {
@@ -56,7 +62,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
             <div className="absolute bottom-0 left-0 w-1/3 h-screen bg-muted/20 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 md:pt-32">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -82,8 +88,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                             <button
                                                 key={idx}
                                                 onClick={() => {
-                                                    setSelectedVariantIndex(idx);
-                                                    setSelectedColorIndex(0); // Reset color when variant changes
+                                                    if (onVariantChange) onVariantChange(idx);
                                                 }}
                                                 className={cn(
                                                     "px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 flex items-center gap-2",
@@ -258,50 +263,70 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                         </div>
                     </motion.div>
 
-                    <motion.div
-                        key={`${color.name}-${selectedVariantIndex}`}
-                        initial={{ opacity: 0, scale: 0.8, x: 100 }}
-                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                        transition={{
-                            type: "spring",
-                            stiffness: 200,
-                            damping: 25,
-                            duration: 0.6
-                        }}
-                        className="relative hidden lg:block"
-                    >
-                        <div className="absolute inset-0 bg-racing-blue/20 blur-[150px] opacity-20 -z-10" />
-                        <BoxRevealImage
-                            src={color.image}
-                            alt={bike.name}
-                            className="w-full h-auto"
-                        />
+                    <div className=" flex flex-col gap-10">
 
-                        {/* Interactive floating specs */}
-                        <div className="absolute -top-10 -right-10 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
-                                    <Shield className="w-5 h-5 text-racing-blue" />
-                                </div>
-                                <div>
-                                    <p className="text-[8px] text-muted-foreground font-black uppercase mb-1">Warranty</p>
-                                    <p className="text-xs text-foreground font-bold uppercase">2 Years Standard</p>
+                        <motion.div
+                            key={`${color.name}-${selectedVariantIndex}`}
+                            initial={{ opacity: 0, scale: 0.8, x: 100 }}
+                            animate={{ opacity: 1, scale: 1, x: 0 }}
+                            transition={{
+                                type: "spring",
+                                stiffness: 200,
+                                damping: 25,
+                                duration: 0.6
+                            }}
+                            className="relative hidden lg:block"
+                        >
+                            <div className="absolute inset-0 bg-racing-blue/20 blur-[150px] opacity-20 -z-10" />
+                            <BoxRevealImage
+                                src={color.image}
+                                alt={bike.name}
+                                className="w-full h-auto"
+                            />
+
+                            {/* Interactive floating specs */}
+                            <div className="absolute -top-10 -right-10 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
+                                        <Shield className="w-5 h-5 text-racing-blue" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[8px] text-muted-foreground font-black uppercase mb-1">Warranty</p>
+                                        <p className="text-xs text-foreground font-bold uppercase">2 Years Standard</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="absolute -bottom-10 -left-10 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
-                                    <Clock className="w-5 h-5 text-racing-blue" />
-                                </div>
-                                <div>
-                                    <p className="text-[8px] text-muted-foreground font-black uppercase mb-1">Fast Delivery</p>
-                                    <p className="text-xs text-foreground font-bold uppercase">Within 7 Days</p>
+                            <div className="absolute -bottom-10 -left-10 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
+                                        <Clock className="w-5 h-5 text-racing-blue" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[8px] text-muted-foreground font-black uppercase mb-1">Fast Delivery</p>
+                                        <p className="text-xs text-foreground font-bold uppercase">Within 7 Days</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </motion.div>
+                        </motion.div>
+                        {bike.image2 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.4, duration: 0.8 }}
+                                className="relative w-full aspect-video  overflow-hidden  group"
+                            >
+                                {/* <div className="absolute inset-0 bg-gradient-to-tr from-racing-blue/5 to-transparent opacity-50 group-hover:opacity-70 transition-opacity" /> */}
+
+                                <Image
+                                    src={bike.image2}
+                                    alt={`${bike.name} secondary view`}
+                                    fill
+                                    className="object-contain p-2 transform group-hover:scale-105 transition-transform duration-700"
+                                />
+                            </motion.div>
+                        )}
+                    </div>
                 </div>
             </div >
 

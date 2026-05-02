@@ -127,26 +127,37 @@ export default function InventoryPage() {
         }
     };
 
-    const handleStockChange = async (bikeId: string, colorIndex: number, delta: number) => {
+    const handleStockChange = async (bikeId: string, colorIndex: number, delta: number, variantIndex?: number) => {
         const bike = bikes.find(b => b._id === bikeId);
         if (!bike) return;
 
-        const updatedColors = [...bike.colors];
-        const currentStock = updatedColors[colorIndex].stock || 0;
-        const newStock = Math.max(0, currentStock + delta);
-
-        if (newStock === currentStock) return;
-
-        updatedColors[colorIndex] = { ...updatedColors[colorIndex], stock: newStock };
+        let updatedBike = { ...bike };
+        if (variantIndex !== undefined) {
+            const updatedVariants = [...bike.variants];
+            const updatedColors = [...updatedVariants[variantIndex].colors];
+            const currentStock = updatedColors[colorIndex].stock || 0;
+            const newStock = Math.max(0, currentStock + delta);
+            if (newStock === currentStock) return;
+            updatedColors[colorIndex] = { ...updatedColors[colorIndex], stock: newStock };
+            updatedVariants[variantIndex] = { ...updatedVariants[variantIndex], colors: updatedColors };
+            updatedBike.variants = updatedVariants;
+        } else {
+            const updatedColors = [...bike.colors];
+            const currentStock = updatedColors[colorIndex].stock || 0;
+            const newStock = Math.max(0, currentStock + delta);
+            if (newStock === currentStock) return;
+            updatedColors[colorIndex] = { ...updatedColors[colorIndex], stock: newStock };
+            updatedBike.colors = updatedColors;
+        }
 
         // Optimistic UI update
-        setBikes(prev => prev.map(b => b._id === bikeId ? { ...b, colors: updatedColors } : b));
+        setBikes(prev => prev.map(b => b._id === bikeId ? updatedBike : b));
 
         try {
             const res = await fetch(`${API_URL}/bikes/${bikeId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...bike, colors: updatedColors })
+                body: JSON.stringify(updatedBike)
             });
             const data = await res.json();
             if (!data.success) {
@@ -189,7 +200,10 @@ export default function InventoryPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {items.map((bike: any) => {
-                    const totalStock = bike.colors.reduce((acc: number, c: any) => acc + (c.stock || 0), 0);
+                    const baseStock = bike.colors.reduce((acc: number, c: any) => acc + (c.stock || 0), 0);
+                    const variantStock = bike.variants?.reduce((acc: number, v: any) => 
+                        acc + v.colors.reduce((cAcc: number, c: any) => cAcc + (c.stock || 0), 0), 0) || 0;
+                    const totalStock = baseStock + variantStock;
                     return (
                         <div
                             key={bike._id}
@@ -248,32 +262,75 @@ export default function InventoryPage() {
                                 {bike.tag}
                             </div>
 
-                            <div className="flex flex-wrap gap-2">
-                                {bike.colors.map((color: any, idx: number) => (
-                                    <div
-                                        key={idx}
-                                        className="px-3 py-1.5 rounded-xl bg-muted/50 border border-border/50 flex items-center gap-3 group/item transition-all hover:bg-muted"
-                                    >
-                                        <div
-                                            className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-sm"
-                                            style={{ backgroundColor: color.hex }}
-                                        />
-                                        <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mr-1">{color.name}</span>
+                            <div className="space-y-4">
+                                {bike.colors.length > 0 && (
+                                    <div className="flex flex-wrap gap-2">
+                                        {bike.colors.map((color: any, idx: number) => (
+                                            <div
+                                                key={idx}
+                                                className="px-3 py-1.5 rounded-xl bg-muted/50 border border-border/50 flex items-center gap-3 group/item transition-all hover:bg-muted"
+                                            >
+                                                <div
+                                                    className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-sm"
+                                                    style={{ backgroundColor: color.hex }}
+                                                />
+                                                <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mr-1">{color.name}</span>
 
-                                        <div className="flex items-center gap-2 bg-background/50 rounded-lg p-0.5 border border-border/50">
-                                            <button
-                                                onClick={(e) => { e.stopPropagation(); handleStockChange(bike._id, idx, -1); }}
-                                                className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-red-50 text-red-500 transition-colors shadow-sm"
-                                            >
-                                                <Minus className="w-3 h-3" strokeWidth={3} />
-                                            </button>
-                                            <span className="text-[12px] font-black w-6 text-center text-foreground">{color.stock || 0}</span>
-                                            <button
-                                                onClick={(e) => { e.stopPropagation(); handleStockChange(bike._id, idx, 1); }}
-                                                className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-green-50 text-green-500 transition-colors shadow-sm"
-                                            >
-                                                <Plus className="w-3 h-3" strokeWidth={3} />
-                                            </button>
+                                                <div className="flex items-center gap-2 bg-background/50 rounded-lg p-0.5 border border-border/50">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleStockChange(bike._id, idx, -1); }}
+                                                        className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-red-50 text-red-500 transition-colors shadow-sm"
+                                                    >
+                                                        <Minus className="w-3 h-3" strokeWidth={3} />
+                                                    </button>
+                                                    <span className="text-[12px] font-black w-6 text-center text-foreground">{color.stock || 0}</span>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleStockChange(bike._id, idx, 1); }}
+                                                        className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-green-50 text-green-500 transition-colors shadow-sm"
+                                                    >
+                                                        <Plus className="w-3 h-3" strokeWidth={3} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {bike.variants?.map((variant: any, vIdx: number) => (
+                                    <div key={vIdx} className="space-y-2">
+                                        <div className="flex items-center gap-2 px-2">
+                                            <div className="w-1 h-3 bg-racing-blue rounded-full" />
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-foreground">{variant.name}</span>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {variant.colors.map((color: any, cIdx: number) => (
+                                                <div
+                                                    key={cIdx}
+                                                    className="px-3 py-1.5 rounded-xl bg-blue-500/5 border border-racing-blue/10 flex items-center gap-3 group/item transition-all hover:bg-racing-blue/10"
+                                                >
+                                                    <div
+                                                        className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-sm"
+                                                        style={{ backgroundColor: color.hex }}
+                                                    />
+                                                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mr-1">{color.name}</span>
+
+                                                    <div className="flex items-center gap-2 bg-background/50 rounded-lg p-0.5 border border-border/50">
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleStockChange(bike._id, cIdx, -1, vIdx); }}
+                                                            className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-red-50 text-red-500 transition-colors shadow-sm"
+                                                        >
+                                                            <Minus className="w-3 h-3" strokeWidth={3} />
+                                                        </button>
+                                                        <span className="text-[12px] font-black w-6 text-center text-foreground">{color.stock || 0}</span>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleStockChange(bike._id, cIdx, 1, vIdx); }}
+                                                            className="w-5 h-5 flex items-center justify-center rounded-md bg-white hover:bg-green-50 text-green-500 transition-colors shadow-sm"
+                                                        >
+                                                            <Plus className="w-3 h-3" strokeWidth={3} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 ))}

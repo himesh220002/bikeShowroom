@@ -12,6 +12,7 @@ import React, { useState } from "react";
 
 export function BikePageClient({ bike }: { bike: any }) {
     const [activeIntent, setActiveIntent] = useState<string | undefined>();
+    const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
 
     return (
         <main className="bg-zinc-950 min-h-screen overflow-x-hidden relative">
@@ -30,6 +31,8 @@ export function BikePageClient({ bike }: { bike: any }) {
 
                 <BikeDetailsHero
                     bike={bike}
+                    selectedVariantIndex={selectedVariantIndex}
+                    onVariantChange={setSelectedVariantIndex}
                     onAction={(intent) => {
                         setActiveIntent(intent);
                         document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
@@ -127,8 +130,11 @@ export function BikePageClient({ bike }: { bike: any }) {
                             >
                                 <div className="absolute -inset-10 bg-racing-blue/10 blur-[120px] opacity-20" />
                                 <LeadForm
-                                    key={activeIntent} // Re-mount to trigger auto-selection
-                                    bikeModel={bike.name}
+                                    key={`${activeIntent}-${selectedVariantIndex}`} // Re-mount to trigger auto-selection and notes update
+                                    bikeModel={bike.variants && bike.variants[selectedVariantIndex] 
+                                        ? `${bike.name} ${bike.variants[selectedVariantIndex].name}`
+                                        : bike.name
+                                    }
                                     defaultInterest={activeIntent}
                                 />
                             </motion.div>

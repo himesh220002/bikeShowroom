@@ -18,8 +18,21 @@ const bikeSchema = z.object({
             hex: z.string(),
             image: z.string(),
             colorOption: z.string(),
-            stock: z.number().min(0)
+            stock: z.number().min(0),
+            price: z.string().optional()
         })).min(1, 'At least one color/stock entry is required'),
+        variants: z.array(z.object({
+            name: z.string().min(1),
+            price: z.string().min(1),
+            colors: z.array(z.object({
+                name: z.string(),
+                hex: z.string(),
+                image: z.string(),
+                colorOption: z.string(),
+                stock: z.number().min(0),
+                price: z.string().optional()
+            }))
+        })).optional(),
         specs: z.array(z.object({
             icon: z.string(),
             label: z.string()
@@ -29,7 +42,8 @@ const bikeSchema = z.object({
         fullSpecs: z.record(z.string(), z.any()).optional(),
         threeSixtyUrl: z.string().optional(),
         threeSixtyImageCount: z.number().optional(),
-        brochureUrl: z.string().optional()
+        brochureUrl: z.string().optional(),
+        image2: z.string().optional()
     })
 });
 

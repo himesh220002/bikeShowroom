@@ -14,6 +14,12 @@ export interface ISpec {
     label: string;
 }
 
+export interface IVariant {
+    name: string;
+    price: string;
+    colors: IColor[];
+}
+
 export interface IFullSpec {
     engine: string;
     power: string;
@@ -40,9 +46,11 @@ export interface IBike extends Document {
     threeSixtyImageCount?: number;
     colorBaseUrl?: string;
     colors: IColor[];
+    variants?: IVariant[];
     specs: ISpec[];
     fullSpecs: IFullSpec;
     brochureUrl?: string;
+    image2?: string;
 }
 
 const ColorSchema = new Schema({
@@ -52,6 +60,12 @@ const ColorSchema = new Schema({
     colorOption: { type: String, required: true },
     stock: { type: Number, default: 0 },
     price: { type: String } // Optional: Defaults to base price if not set
+});
+
+const VariantSchema = new Schema({
+    name: { type: String, required: true },
+    price: { type: String, required: true },
+    colors: [ColorSchema]
 });
 
 const BikeSchema: Schema = new Schema({
@@ -65,12 +79,14 @@ const BikeSchema: Schema = new Schema({
     threeSixtyImageCount: { type: Number, default: 40 },
     colorBaseUrl: { type: String },
     colors: [ColorSchema],
+    variants: [VariantSchema],
     specs: [{
         icon: { type: String, required: true },
         label: { type: String, required: true }
     }],
     fullSpecs: { type: Schema.Types.Mixed, default: {} },
-    brochureUrl: { type: String }
+    brochureUrl: { type: String },
+    image2: { type: String }
 });
 
 export default mongoose.model<IBike>('Bike', BikeSchema);

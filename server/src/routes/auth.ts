@@ -83,7 +83,7 @@ router.get(
 // @desc    Get current user
 // @route   GET /api/auth/me
 router.get('/me', protect, (req: any, res) => {
-    const userData = req.user.toObject();
+    const userData = typeof req.user.toObject === 'function' ? req.user.toObject() : { ...req.user };
     userData.vaultPinSet = !!req.user.vaultPin;
     delete userData.password;
     delete userData.vaultPin;
