@@ -209,6 +209,8 @@ export function Footer() {
                         </div>
                     </div>
                 </div>
+                <Image src="/images/ChoudharyYamahaNASA.png" alt="Yamaha Logo" width={1920} height={400} sizes="(max-width: 768px) 100vw, 33vw" className="object-contain w-full" priority />
+
             </div>
         </footer>
     );
