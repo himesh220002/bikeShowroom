@@ -8,6 +8,8 @@ import axios from "axios";
 import { API_URL } from "@/lib/config";
 import { submitServiceBooking } from "@/lib/actions/serviceActions";
 
+import { formatPrice } from "@/lib/utils/price";
+
 export function SparesGallery() {
     const [bikes, setBikes] = useState<any[]>([]);
     const [selectedBike, setSelectedBike] = useState<any | null>(null);
@@ -212,7 +214,7 @@ export function SparesGallery() {
                             <div className="flex flex-col">
                                 <span className="text-[8px] font-black uppercase tracking-widest text-racing-blue leading-none mb-1">Cart Summary</span>
                                 <span className="text-sm font-display font-black text-white italic tracking-tighter line-clamp-1">
-                                    {cartCount} Items • ₹{cartTotal}
+                                    {cartCount} Items • ₹{formatPrice(cartTotal)}
                                 </span>
                             </div>
                             <button
@@ -263,7 +265,7 @@ export function SparesGallery() {
                                                 <span className="text-[8px] font-black uppercase tracking-[0.2em] text-racing-blue bg-racing-blue/10 px-3 py-1 rounded-full">
                                                     {spare.category}
                                                 </span>
-                                                <span className="text-sm font-display font-black text-foreground italic tracking-tighter">₹ {spare.price}</span>
+                                                <span className="text-sm font-display font-black text-foreground italic tracking-tighter">₹ {formatPrice(spare.price)}</span>
                                             </div>
                                             <h4 className="text-xl font-display font-black text-foreground tracking-tight mb-2 group-hover:text-racing-blue transition-colors">
                                                 {spare.name}

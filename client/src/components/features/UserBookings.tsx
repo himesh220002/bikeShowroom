@@ -23,6 +23,7 @@ import {
     X
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { formatPrice } from "@/lib/utils/price";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ServiceBooking {
@@ -346,7 +347,7 @@ export function UserBookings() {
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block opacity-40">Cost</span>
                                                         <span className="text-[10px] font-black text-racing-blue">
-                                                            {booking.billingType === 'free' ? 'Complementary' : `₹${booking.cost.toLocaleString('en-IN')}`}
+                                                            {booking.billingType === 'free' ? 'Complementary' : `₹${formatPrice(booking.cost || 0)}`}
                                                         </span>
                                                     </div>
                                                 )}

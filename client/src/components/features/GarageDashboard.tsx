@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { deriveKey, encryptData, decryptData } from "@/lib/utils/vaultCrypto";
 import { Lock, Unlock, KeyRound } from "lucide-react";
+import { formatPrice } from "@/lib/utils/price";
 
 interface IModification {
     _id?: string;
@@ -546,14 +547,14 @@ export function GarageDashboard() {
             id: mod._id || `${mod.partName}-${mod.date}`,
             date: mod.date,
             title: `Modification: ${mod.partName}`,
-            desc: `${mod.brand} • ₹${(mod.cost || 0).toLocaleString()}`,
+            desc: `${mod.brand} • ₹${formatPrice(mod.cost || 0)}`,
             premium: true
         })),
         ...(services || []).map((svc) => ({
             id: svc._id,
             date: svc.appointmentDate,
             title: `Service: ${svc.serviceType}`,
-            desc: `${svc.status.toUpperCase()} • ₹${(svc.cost || 0).toLocaleString()}`,
+            desc: `${svc.status.toUpperCase()} • ₹${formatPrice(svc.cost || 0)}`,
             premium: svc.status === "completed" || svc.status === "delivered"
         }))
     ]
@@ -587,7 +588,7 @@ export function GarageDashboard() {
                                 <div className="h-10 w-px bg-zinc-200 hidden md:block" />
                                 <div className="hidden md:block">
                                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">Odometer Log</p>
-                                    <p className="text-xl font-display font-black uppercase text-white/90 px-3 py-0 bg-gray-200/20 rounded-sm backdrop-blur-xl">{(selectedBike.mileage || 0).toLocaleString()} <span className="text-[10px] font-sans text-gray-400">KM</span></p>
+                                    <p className="text-xl font-display font-black uppercase text-white/90 px-3 py-0 bg-gray-200/20 rounded-sm backdrop-blur-xl">{formatPrice(selectedBike.mileage || 0)} <span className="text-[10px] font-sans text-gray-400">KM</span></p>
                                 </div>
                             </div>
                         </div>
@@ -764,7 +765,7 @@ export function GarageDashboard() {
                                                 </div>
                                                 <div className="flex items-center gap-6">
                                                     <div className="text-right">
-                                                        <p className="text-lg font-display font-black uppercase text-zinc-900">₹{(mod.cost || 0).toLocaleString()}</p>
+                                                        <p className="text-lg font-display font-black uppercase text-zinc-900">₹{formatPrice(mod.cost || 0)}</p>
                                                         {mod.location && (
                                                             <p className="text-[9px] font-black text-racing-blue uppercase tracking-widest">Slot: {mod.location}</p>
                                                         )}
@@ -989,7 +990,7 @@ export function GarageDashboard() {
                             <div className="space-y-1">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Investment</p>
                                 <p className="text-4xl font-display font-black text-zinc-900 uppercase tracking-tighter">
-                                    ₹{(totalInvestment || 0).toLocaleString()}
+                                    ₹{formatPrice(totalInvestment || 0)}
                                 </p>
                             </div>
                             <div className="h-px bg-zinc-200" />
@@ -1000,7 +1001,7 @@ export function GarageDashboard() {
                                 </div>
                                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
                                     <span className="text-gray-400">Mods Cost</span>
-                                    <span className="text-zinc-600">₹{modsCost.toLocaleString()}</span>
+                                    <span className="text-zinc-600">₹{formatPrice(modsCost)}</span>
                                 </div>
                             </div>
                         </div>

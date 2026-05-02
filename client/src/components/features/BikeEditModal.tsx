@@ -196,7 +196,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                     className="relative w-full max-w-4xl max-h-[90vh] bg-card border border-border rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col"
                 >
                     {/* Header */}
-                    <div className="p-8 border-b border-border flex justify-between items-center">
+                    <div className="p-3 border-b border-border flex justify-between items-center">
                         <h2 className="text-3xl font-display font-black text-foreground uppercase tracking-tighter italic">
                             {bike ? "EDIT" : "ADD"} <span className="text-racing-blue">MODEL</span>
                         </h2>
@@ -210,9 +210,9 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
 
                     {/* Form Body */}
                     <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                        <form id="bike-form" onSubmit={handleSave} className="space-y-10">
+                        <form id="bike-form" onSubmit={handleSave} className="space-y-4">
                             {/* Basic Info */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Model Name</label>
                                     <input
@@ -282,12 +282,12 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                             </div>
 
                             {/* Technical Specifications */}
-                            <div className="p-6 bg-muted/30 rounded-[2rem] border border-border/50">
+                            <div className="p-6 bg-blue-300/30 rounded-[2rem] border border-border/50">
                                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-racing-blue mb-6 flex items-center gap-2">
                                     <div className="w-1.5 h-1.5 rounded-full bg-racing-blue animate-pulse" />
                                     Technical Specifications
                                 </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Engine</label>
                                         <input
@@ -464,7 +464,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                             </div>
 
                             {/* Colors */}
-                            <div className="space-y-6">
+                            <div className="space-y-4">
                                 <div className="flex justify-between items-center">
                                     <h3 className="text-xs font-black uppercase tracking-[0.2em] text-foreground">Color Variants</h3>
                                     <button
@@ -477,18 +477,18 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                     </button>
                                 </div>
 
-                                <div className="grid grid-cols-1 gap-6">
+                                <div className="grid grid-cols-1 gap-3">
                                     {formData.colors.map((color, index) => (
-                                        <div key={index} className="p-6 bg-muted/20 rounded-[2rem] border border-border/50 relative group">
+                                        <div key={index} className="p-4 bg-gradient-to-r from-blue-100/50 to-orange-200/10 backdrop-blur-3xl rounded-[2rem] border border-border/50 relative group">
                                             <button
                                                 type="button"
                                                 onClick={() => removeColor(index)}
-                                                className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all shadow-lg shadow-black/5"
+                                                className="absolute top-2 right-4 p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-xl opacity-40 group-hover:opacity-100 transition-all shadow-lg shadow-black/5"
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
 
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                                                 <div className="space-y-2">
                                                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Color Name</label>
                                                     <input
@@ -527,7 +527,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                                         className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
                                                         placeholder="e.g. racing-blue, metallic-grey, dark-knight"
                                                     />
-                                                    <p className="text-[8px] text-muted-foreground mt-1 font-bold uppercase">This value completes the dynamic color image URL</p>
+
                                                 </div>
                                                 <div className="md:col-span-2 space-y-2">
                                                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Main Image Path / URL</label>
@@ -540,25 +540,27 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                                                         placeholder="e.g. /images/r15m.png (local) or direct path"
                                                     />
                                                 </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price (Optional)</label>
-                                                    <input
-                                                        type="text"
-                                                        value={color.price || ""}
-                                                        onChange={(e) => updateColor(index, 'price', e.target.value)}
-                                                        className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
-                                                        placeholder="Leave empty for base price"
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Initial Stock</label>
-                                                    <input
-                                                        required
-                                                        type="number"
-                                                        value={color.stock}
-                                                        onChange={(e) => updateColor(index, 'stock', parseInt(e.target.value) || 0)}
-                                                        className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
-                                                    />
+                                                <div className="flex gap-2">
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price (Optional)</label>
+                                                        <input
+                                                            type="text"
+                                                            value={color.price || ""}
+                                                            onChange={(e) => updateColor(index, 'price', e.target.value)}
+                                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                                            placeholder="Leave empty for base price"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Initial Stock</label>
+                                                        <input
+                                                            required
+                                                            type="number"
+                                                            value={color.stock}
+                                                            onChange={(e) => updateColor(index, 'stock', parseInt(e.target.value) || 0)}
+                                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -569,7 +571,7 @@ export function BikeEditModal({ isOpen, onClose, bike, onSave }: BikeEditModalPr
                     </div>
 
                     {/* Footer */}
-                    <div className="p-8 border-t border-border bg-muted/20 flex justify-end gap-4">
+                    <div className="p-3 border-t border-border bg-muted/20 flex justify-end gap-4">
                         <button
                             type="button"
                             onClick={onClose}

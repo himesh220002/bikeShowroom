@@ -11,6 +11,7 @@ import { SpareEditModal } from "@/components/features/SpareEditModal";
 import { BikeImage } from "@/components/ui/BikeImage";
 import { cleanImageUrl } from "@/lib/utils/url";
 import { ExportButton } from "@/components/ui/ExportButton";
+import { formatPrice } from "@/lib/utils/price";
 
 const socket = io(API_BASE_URL);
 
@@ -285,12 +286,12 @@ export default function InventoryPage() {
                                             <span className="text-[9px] font-black uppercase tracking-widest text-racing-blue blink flex items-center gap-1">
                                                 <div className="w-1 h-1 rounded-full bg-racing-blue" /> Varied Pricing
                                             </span>
-                                            <span className="text-lg font-display font-black text-foreground italic">From ₹ {bike.price}</span>
+                                            <span className="text-lg font-display font-black text-foreground italic">From ₹ {formatPrice(bike.price)}</span>
                                         </>
                                     ) : (
                                         <>
                                             <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Base Price</span>
-                                            <span className="text-lg font-display font-black text-foreground italic">₹ {bike.price}</span>
+                                            <span className="text-lg font-display font-black text-foreground italic">₹ {formatPrice(bike.price)}</span>
                                         </>
                                     )}
                                 </div>
@@ -382,7 +383,7 @@ export default function InventoryPage() {
                         <div className="mt-auto pt-4 border-t border-border/10 flex justify-between items-center">
                             <div>
                                 <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground block">Price</span>
-                                <span className="text-md font-display font-black text-foreground italic">₹ {spare.price}</span>
+                                <span className="text-md font-display font-black text-foreground italic">₹ {formatPrice(spare.price)}</span>
                             </div>
                             <div className="text-right">
                                 <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground block">Stock</span>

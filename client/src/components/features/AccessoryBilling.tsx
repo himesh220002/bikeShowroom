@@ -5,6 +5,7 @@ import { User, Phone, Package, Plus, Minus, Trash2, Search, IndianRupee, Loader2
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils/cn";
 import { API_URL, API_BASE_URL } from "@/lib/config";
+import { formatPrice } from "@/lib/utils/price";
 
 interface Spare {
     _id: string;
@@ -257,7 +258,7 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                                                 <div className="flex flex-col">
                                                     <span className="text-sm font-display font-black text-foreground uppercase tracking-tight">{item.name}</span>
                                                     <div className="flex items-center gap-2">
-                                                        <span className="text-[9px] font-bold text-muted-foreground uppercase">₹{item.price} • {item.itemType}</span>
+                                                        <span className="text-[9px] font-bold text-muted-foreground uppercase">₹{formatPrice(item.price)} • {item.itemType}</span>
                                                         {item.quantity > item.stock && (
                                                             <span className="text-[8px] font-black bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse">
                                                                 Low Stock: {item.stock} Avail.
@@ -285,7 +286,7 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                                                     </button>
                                                 </div>
                                                 <div className="w-24 text-right">
-                                                    <span className="text-sm font-display font-black text-foreground">₹{item.price * item.quantity}</span>
+                                                    <span className="text-sm font-display font-black text-foreground">₹{formatPrice(item.price * item.quantity)}</span>
                                                 </div>
                                                 <button
                                                     type="button"
@@ -307,7 +308,7 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Grand Total</span>
                                 <div className="flex items-center gap-2 text-3xl font-display font-black text-orange-500 italic tracking-tighter">
                                     <IndianRupee className="w-6 h-6" />
-                                    {form.cost}
+                                    {formatPrice(form.cost)}
                                 </div>
                             </div>
 
@@ -445,7 +446,7 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                                                 </div>
                                             </div>
                                             <div className="flex flex-col items-end">
-                                                <span className="text-sm font-display font-black text-foreground">₹{spare.price}</span>
+                                                <span className="text-sm font-display font-black text-foreground">₹{formatPrice(spare.price)}</span>
                                                 <span className={cn("text-[8px] font-black uppercase tracking-widest", spare.stock > 0 ? "text-emerald-500" : "text-red-500")}>
                                                     {spare.stock > 0 ? `In Stock: ${spare.stock}` : "Out of Stock"}
                                                 </span>

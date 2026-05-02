@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { Search, ChevronRight, FileText, Wrench, Shield, Calendar, Phone, Mail, User, Download, ExternalLink, ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { formatPrice } from "@/lib/utils/price";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface CustomerMasterData {
@@ -186,7 +187,7 @@ export function CustomerMasterDatabase({ data }: { data: CustomerMasterData[] })
                                     {customer.lastSale ? new Date(customer.lastSale.saleDate).toLocaleDateString() : "—"}
                                 </td>
                                 <td className="px-6 py-5 border-r border-zinc-100/30 font-black text-[12px] text-emerald-600">
-                                    ₹{(customer.lifetimeValue || 0).toLocaleString()}
+                                    ₹{formatPrice(customer.lifetimeValue || 0)}
                                 </td>
                                 <td className="px-6 py-5 border-r border-zinc-100/30">
                                     <span className="text-[9px] font-black uppercase text-racing-blue bg-racing-blue/5 px-2 py-0.5 rounded truncate block text-center">
@@ -208,7 +209,7 @@ export function CustomerMasterDatabase({ data }: { data: CustomerMasterData[] })
                                     {customer.lastSale?.engineNumber || "—"}
                                 </td>
                                 <td className="px-6 py-5 border-r border-zinc-100/30 font-black text-[12px] text-black">
-                                    {customer.lastSale ? `₹${Number(customer.lastSale.salePrice).toLocaleString()}` : "—"}
+                                    {customer.lastSale ? `₹${formatPrice(customer.lastSale.salePrice)}` : "—"}
                                 </td>
                                 <td className="px-6 py-5 border-r border-zinc-100/30">
                                     <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded border border-zinc-200 text-gray-600">

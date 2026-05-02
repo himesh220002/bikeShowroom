@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { Wrench, Bike, Calendar, Package, MoreVertical, Phone, MessageSquare, Users, Clock, ChevronDown, CheckCircle, Circle, MapPin, Tag, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { API_URL } from "@/lib/config";
+import { formatPrice } from "@/lib/utils/price";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExportButton } from "@/components/ui/ExportButton";
 import { ServiceStatusModal } from "./ServiceStatusModal";
@@ -277,7 +278,7 @@ export function ServicesTable({ services, onUpdate }: ServicesTableProps) {
                                 {/* Bill */}
                                 <td className="py-3 px-4 border-r border-border/10 text-center">
                                     <span className="text-[12px] font-black text-racing-blue">
-                                        {service.cost > 0 ? `₹${service.cost.toLocaleString('en-IN')}` : '—'}
+                                        {service.cost > 0 ? `₹${formatPrice(service.cost)}` : '—'}
                                     </span>
                                 </td>
 

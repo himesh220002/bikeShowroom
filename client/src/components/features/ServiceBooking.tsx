@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wrench, Calendar, Clock, Bike, Package, CheckCircle2, ChevronRight, User, Plus, Minus, Trash2, Search, ShieldAlert, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { formatPrice } from "@/lib/utils/price";
 import { submitServiceBooking } from "@/lib/actions/serviceActions";
 import Link from "next/link";
 
@@ -369,7 +370,7 @@ export function ServiceBooking() {
                                                                 </div>
                                                                 <div className="flex flex-col">
                                                                     <span className="text-[10px] font-black uppercase tracking-tight text-foreground">{item.name}</span>
-                                                                    <span className="text-[8px] font-bold text-muted-foreground uppercase">{item.category === 'Accessory' ? 'accessory' : 'spare'} • ₹{item.price} each</span>
+                                                                    <span className="text-[8px] font-bold text-muted-foreground uppercase">{item.category === 'Accessory' ? 'accessory' : 'spare'} • ₹{formatPrice(item.price)} each</span>
                                                                 </div>
                                                             </div>
                                                             <div className="flex items-center gap-3">
@@ -518,7 +519,7 @@ export function ServiceBooking() {
                                                                         )}
                                                                     </div>
                                                                     <span className="text-[9px] font-bold text-muted-foreground uppercase">
-                                                                        {spare.category} • ₹{spare.price}
+                                                                        {spare.category} • ₹{formatPrice(spare.price)}
                                                                         {spare.stock > 0 && ` • ${spare.stock} in stock`}
                                                                         {cart[spare._id] && ` • ${cart[spare._id].quantity} added`}
                                                                     </span>

@@ -2,6 +2,7 @@
 
 import { User, Phone, Bike, Calendar, Wrench, MessageSquare, History, ShoppingCart, Star, MapPin, UserCircle } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { formatPrice } from "@/lib/utils/price";
 import { useState, useMemo } from "react";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -271,7 +272,7 @@ Reply to this message to confirm your appointment!`;
                                 </td>
                                 <td className="py-3 px-4 border-r border-border/10 text-center">
                                     <div className="text-[12px] font-black text-emerald-600 italic">
-                                        ₹{(customer.lifetimeValue || 0).toLocaleString('en-IN')}
+                                        ₹{formatPrice(customer.lifetimeValue || 0)}
                                     </div>
                                 </td>
                                 <td className="py-3 px-4 border-r border-border/10 text-center">
@@ -294,7 +295,7 @@ Reply to this message to confirm your appointment!`;
                                     {customer.lastSale?.engineNumber || "—"}
                                 </td>
                                 <td className="py-3 px-4 border-r border-border/10 text-center font-black text-[11px]">
-                                    {customer.lastSale ? `₹${Number(customer.lastSale.salePrice).toLocaleString('en-IN')}` : "—"}
+                                    {customer.lastSale ? `₹${formatPrice(customer.lastSale.salePrice)}` : "—"}
                                 </td>
                                 <td className="py-3 px-4 border-r border-border/10 text-center">
                                     <span className="text-[9px] font-black uppercase border border-border px-2 py-0.5 rounded text-muted-foreground">{customer.lastSale?.paymentMethod || "—"}</span>

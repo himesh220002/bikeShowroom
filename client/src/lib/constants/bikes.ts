@@ -4,6 +4,14 @@ export interface BikeColor {
     image: string;
     colorOption: string;
     stock: number;
+    price?: string; // Support price variation by color
+}
+
+export interface BikeVariant {
+    name: string;
+    price: string;
+    colors: BikeColor[];
+    specs?: { icon: string; label: string }[];
 }
 
 export interface Bike {
@@ -14,6 +22,7 @@ export interface Bike {
     description: string;
     price: string;
     colors: BikeColor[];
+    variants?: BikeVariant[];
     specs: { icon: string; label: string }[];
     fullSpecs: {
         engine: string;
@@ -381,6 +390,34 @@ export const BIKES: Bike[] = [
         name: "Yamaha Fascino 125 FI",
         category: "scooty",
         price: "79,900 - 94,530",
+        variants: [
+            {
+                name: "Fascino Drum",
+                price: "79,900",
+                colors: [
+                    { name: "Metallic Black", hex: "#1c1c1c", image: "/images/fascino.png", colorOption: "metallic-black", stock: 3, price: "79,900" },
+                    { name: "Matte Blue", hex: "#1e3a8a", image: "/images/fascino.png", colorOption: "matte-blue", stock: 2, price: "79,900" },
+                    { name: "Vivid Red", hex: "#dc2626", image: "/images/fascino.png", colorOption: "vivid-red", stock: 1, price: "79,900" }
+                ]
+            },
+            {
+                name: "Fascino Disc",
+                price: "91,130",
+                colors: [
+                    { name: "Cyan Blue", hex: "#0891b2", image: "/images/fascino.png", colorOption: "cyan-blue", stock: 4, price: "91,130" },
+                    { name: "Silver", hex: "#d1d5db", image: "/images/fascino.png", colorOption: "silver", stock: 2, price: "91,130" },
+                    { name: "Matte Black", hex: "#18181b", image: "/images/fascino.png", colorOption: "matte-black", stock: 3, price: "91,130" }
+                ]
+            },
+            {
+                name: "Fascino S",
+                price: "94,530",
+                colors: [
+                    { name: "Matte Copper", hex: "#b45309", image: "/images/fascino.png", colorOption: "matte-copper", stock: 2, price: "94,530" },
+                    { name: "Matte Black", hex: "#18181b", image: "/images/fascino.png", colorOption: "matte-black", stock: 1, price: "94,530" }
+                ]
+            }
+        ],
         colors: [
             { name: "Vivid Red", hex: "#dc2626", image: "/images/fascino.png", colorOption: "vivid-red", stock: 3 },
             { name: "Metallic Black", hex: "#000", image: "https://www.yamaha-motor-india.com/theme/v4/images/webp_images/fascino_all/fascino125fi-new/color/Drum/Metallic-Black-cd.webp", colorOption: "metallic-black", stock: 2 }

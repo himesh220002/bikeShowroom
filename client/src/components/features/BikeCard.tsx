@@ -6,6 +6,8 @@ import Link from "next/link";
 import { LucideIcon } from "@/components/ui/LucideIcon";
 import { BikeImage } from "@/components/ui/BikeImage";
 
+import { formatPrice } from "@/lib/utils/price";
+
 interface BikeCardProps {
     bike: any;
     index?: number;
@@ -67,7 +69,7 @@ export function BikeCard({ bike, index = 0 }: BikeCardProps) {
                         <div className="flex items-baseline gap-1">
                             <span className="text-[9px] font-black text-racing-blue">₹</span>
                             <span className="text-xl md:text-2xl font-display font-black text-foreground tracking-tighter italic">
-                                {bike.price}*
+                                {formatPrice(bike.price)}*
                             </span>
                         </div>
                     </div>

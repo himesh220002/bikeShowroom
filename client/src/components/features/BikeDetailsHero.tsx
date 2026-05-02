@@ -20,19 +20,31 @@ import {
 import { cn } from "@/lib/utils/cn";
 import { BikeImage } from "@/components/ui/BikeImage";
 import { BoxRevealImage } from "@/components/ui/BoxRevealImage";
+import { formatPrice } from "@/lib/utils/price";
 
 interface BikeDetailsHeroProps {
     bike: any;
     onAction?: (intent: string) => void;
 }
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
-import { BIKES } from "@/lib/constants/bikes";
+import { BIKES, BikeVariant } from "@/lib/constants/bikes";
 
 export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
+    const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
     const [selectedColorIndex, setSelectedColorIndex] = useState(0);
-    const color = bike.colors[selectedColorIndex];
+
+    const currentVariant = useMemo(() => {
+        return bike.variants ? bike.variants[selectedVariantIndex] : null;
+    }, [bike.variants, selectedVariantIndex]);
+
+    const activeColors = useMemo(() => {
+        return currentVariant ? currentVariant.colors : bike.colors;
+    }, [currentVariant, bike.colors]);
+
+    const color = activeColors[selectedColorIndex] || activeColors[0];
+    const displayPrice = color.price || (currentVariant ? currentVariant.price : bike.price);
 
     return (
         <section className="relative min-h-screen bg-background pb-20 overflow-hidden">
@@ -61,9 +73,39 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                                 <span className="text-xl text-racing-blue">{color.name}</span>
                             </h1>
 
+                            {/* Variant Selector */}
+                            {bike.variants && bike.variants.length > 0 && (
+                                <div className="mt-8 mb-6 flex flex-col items-center sm:items-start gap-4">
+                                    <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Select Model Variant</span>
+                                    <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+                                        {bike.variants.map((variant: BikeVariant, idx: number) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => {
+                                                    setSelectedVariantIndex(idx);
+                                                    setSelectedColorIndex(0); // Reset color when variant changes
+                                                }}
+                                                className={cn(
+                                                    "px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 flex items-center gap-2",
+                                                    idx === selectedVariantIndex
+                                                        ? "bg-racing-blue border-racing-blue text-white shadow-lg shadow-racing-blue/20 scale-105"
+                                                        : "bg-muted/50 border-border/50 text-muted-foreground hover:border-racing-blue/30 hover:text-foreground"
+                                                )}
+                                            >
+                                                <div className={cn(
+                                                    "w-2 h-2 rounded-full",
+                                                    idx === selectedVariantIndex ? "bg-white animate-pulse" : "bg-muted-foreground/30"
+                                                )} />
+                                                {variant.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Mobile Image - Injected between Name and Color Selector */}
                             <motion.div
-                                key={`mobile-${color.name}`}
+                                key={`mobile-${color.name}-${selectedVariantIndex}`}
                                 initial={{ opacity: 0, scale: 0.8, y: 20 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
@@ -82,11 +124,11 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                             </motion.div>
 
                             {/* Color Selector */}
-                            {bike.colors.length > 1 && (
+                            {activeColors.length > 1 && (
                                 <div className="mt-8 flex flex-col items-center sm:items-start gap-3">
                                     <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Available Colors</span>
                                     <div className="flex gap-4">
-                                        {bike.colors.map((c: any, index: number) => (
+                                        {activeColors.map((c: any, index: number) => (
                                             <button
                                                 key={index}
                                                 onClick={() => setSelectedColorIndex(index)}
@@ -130,9 +172,9 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                         <div className="flex flex-wrap gap-6 mb-8 items-center justify-center sm:justify-start">
                             <div className="flex flex-col">
                                 <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-1">
-                                    {color.price ? "Price" : "Starting From"}
+                                    {displayPrice ? "Price" : "Starting From"}
                                 </span>
-                                <span className="text-2xl lg:text-4xl font-display font-black text-foreground tracking-tighter italic">₹ {color.price || bike.price}*</span>
+                                <span className="text-2xl lg:text-4xl font-display font-black text-foreground tracking-tighter italic">₹ {formatPrice(displayPrice)}*</span>
                                 <span className="text-[8px] text-muted-foreground/60 font-bold uppercase mt-1">*Ex-Showroom Price</span>
                             </div>
 
@@ -217,7 +259,7 @@ export function BikeDetailsHero({ bike, onAction }: BikeDetailsHeroProps) {
                     </motion.div>
 
                     <motion.div
-                        key={color.name}
+                        key={`${color.name}-${selectedVariantIndex}`}
                         initial={{ opacity: 0, scale: 0.8, x: 100 }}
                         animate={{ opacity: 1, scale: 1, x: 0 }}
                         transition={{

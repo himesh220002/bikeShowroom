@@ -5,6 +5,7 @@ import { X, User, Phone, Bike, Calendar, Clock, ShieldAlert, Wrench, Loader2, Sa
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils/cn";
 import { API_URL } from "@/lib/config";
+import { formatPrice } from "@/lib/utils/price";
 
 interface ManualServiceModalProps {
     isOpen: boolean;
@@ -282,7 +283,7 @@ export function ManualServiceModal({ isOpen, onClose, onSuccess }: ManualService
                                                     <div key={idx} className="flex items-center justify-between p-3 bg-background border border-border rounded-xl group/item">
                                                         <div className="flex flex-col">
                                                             <span className="text-[10px] font-black uppercase tracking-tight text-foreground">{item.name}</span>
-                                                            <span className="text-[8px] font-bold text-muted-foreground uppercase">{item.itemType} • ₹{item.price} each</span>
+                                                            <span className="text-[8px] font-bold text-muted-foreground uppercase">{item.itemType} • ₹{formatPrice(item.price)} each</span>
                                                         </div>
                                                         <div className="flex items-center gap-4">
                                                             <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-0.5 border border-border">
@@ -420,7 +421,7 @@ export function ManualServiceModal({ isOpen, onClose, onSuccess }: ManualService
                                                                     {spare.name}
                                                                     {isAdded && <span className="ml-2 bg-racing-blue text-white text-[7px] px-1.5 py-0.5 rounded-full">ADDED</span>}
                                                                 </span>
-                                                                <span className="text-[8px] font-bold text-muted-foreground uppercase">{spare.category} • ₹{spare.price}</span>
+                                                                <span className="text-[8px] font-bold text-muted-foreground uppercase">{spare.category} • ₹{formatPrice(spare.price)}</span>
                                                             </div>
                                                             <div className="flex flex-col items-end">
                                                                 <span className={cn("text-[7px] font-black uppercase tracking-widest", spare.stock > 0 ? "text-emerald-500" : "text-red-500")}>

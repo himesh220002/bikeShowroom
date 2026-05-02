@@ -5,6 +5,7 @@ import { Calendar, Clock, Plus, User, Bike, CheckCircle2, AlertCircle, MoreVerti
 
 import { API_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
+import { formatPrice } from "@/lib/utils/price";
 import { motion, AnimatePresence } from "framer-motion";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
 import { ManualServiceModal } from "./ManualServiceModal";
@@ -737,7 +738,7 @@ export function ServiceSchedule() {
                                         <td className="py-3 px-4 border-r border-border/10 text-center">
                                             <div className="flex items-center justify-center gap-0.5 text-[13px] font-black text-racing-blue italic">
                                                 <IndianRupee className="w-3 h-3" />
-                                                {Number(job.cost).toLocaleString('en-IN')}
+                                                {formatPrice(job.cost)}
                                             </div>
                                         </td>
 
@@ -1105,7 +1106,7 @@ export function ServiceSchedule() {
                                                         <div key={idx} className="flex items-center justify-between p-3 bg-background border border-border rounded-xl group/item">
                                                             <div className="flex flex-col">
                                                                 <span className="text-[10px] font-black uppercase tracking-tight text-foreground">{item.name}</span>
-                                                                <span className="text-[8px] font-bold text-muted-foreground uppercase">{item.itemType} • ₹{item.price} each</span>
+                                                                <span className="text-[8px] font-bold text-muted-foreground uppercase">{item.itemType} • ₹{formatPrice(item.price)} each</span>
                                                             </div>
                                                             <div className="flex items-center gap-4">
                                                                 <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-0.5 border border-border">
@@ -1247,7 +1248,7 @@ export function ServiceSchedule() {
                                                                     <span className="text-[8px] font-bold text-muted-foreground uppercase">{spare.bikeId?.name || "All Bikes"} • {spare.category}</span>
                                                                 </div>
                                                                 <div className="flex flex-col items-end">
-                                                                    <span className="text-xs font-display font-black text-foreground">₹{spare.price}</span>
+                                                                    <span className="text-xs font-display font-black text-foreground">₹{formatPrice(spare.price)}</span>
                                                                     <span className={cn("text-[7px] font-black uppercase tracking-widest", spare.stock > 0 ? "text-emerald-500" : "text-red-500")}>
                                                                         {spare.stock > 0 ? `In Stock (${spare.stock})` : "Out of Stock"}
                                                                     </span>
