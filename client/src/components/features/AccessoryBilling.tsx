@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, Phone, Package, Plus, Minus, Trash2, Search, IndianRupee, Loader2, Save, X, CheckCircle2 } from "lucide-react";
+import { User, Phone, Package, Plus, Minus, Trash2, Search, IndianRupee, Loader2, Save, X, CheckCircle2, Tag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils/cn";
 import { API_URL, API_BASE_URL } from "@/lib/config";
@@ -46,6 +46,8 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
         bikeModel: "General",
         regNumber: "N/A",
         items: [] as BilledItem[],
+        labourCost: 0,
+        gstRate: 18,
         cost: 0,
         notes: "Direct Accessory Sale"
     });
@@ -69,6 +71,15 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
     const calculateTotal = (items: BilledItem[]) => {
         return items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     };
+
+    // Sync grand total cost when items or labour change
+    useEffect(() => {
+        const itemsTotal = form.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+        const grandTotal = itemsTotal + form.labourCost;
+        if (form.cost !== grandTotal) {
+            setForm(prev => ({ ...prev, cost: grandTotal }));
+        }
+    }, [form.items, form.labourCost, form.cost]);
 
     const handleAddItem = (spare: Spare) => {
         const existing = form.items.find(i => i.itemId === spare._id);
@@ -119,7 +130,16 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                     serviceType: "Accessory Sale",
                     status: "delivered", // Mark as completed/delivered instantly
                     appointmentDate: new Date().toISOString().split('T')[0],
-                    appointmentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    appointmentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    items: [
+                        ...form.items,
+                        ...(form.labourCost > 0 ? [{
+                            name: "Fitting/Labour Charges",
+                            price: form.labourCost,
+                            quantity: 1,
+                            itemType: 'labour'
+                        }] : [])
+                    ]
                 })
             });
             const data = await res.json();
@@ -131,6 +151,8 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                     bikeModel: "General",
                     regNumber: "N/A",
                     items: [],
+                    labourCost: 0,
+                    gstRate: 18,
                     cost: 0,
                     notes: "Direct Accessory Sale"
                 });
@@ -156,7 +178,7 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
 
     return (
         <div className="max-w-4xl mx-auto">
-            <div className="bg-card border border-border rounded-[2.5rem] shadow-2xl overflow-hidden relative">
+            <div className="bg-card border border-border rounded-[2.5rem] shadow-2xl overflow-hidden relative mt-10">
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-orange-500/50 via-orange-500 to-orange-500/50" />
 
                 <div className="p-8 md:p-12">
@@ -235,7 +257,7 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                                             className="flex items-center justify-between p-4 bg-muted/10 border border-border rounded-2xl group/billed relative hover:z-50 transition-all"
                                         >
                                             <div className="flex items-center gap-4">
-                                                <div 
+                                                <div
                                                     className="relative w-12 h-12 bg-background border border-border rounded-xl flex items-center justify-center shrink-0 cursor-zoom-in"
                                                     onMouseEnter={(e) => {
                                                         const rect = e.currentTarget.getBoundingClientRect();
@@ -302,26 +324,100 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                             </div>
                         </div>
 
-                        {/* Total & Action */}
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-6 border-t border-border">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Grand Total</span>
-                                <div className="flex items-center gap-2 text-3xl font-display font-black text-orange-500 italic tracking-tighter">
-                                    <IndianRupee className="w-6 h-6" />
-                                    {formatPrice(form.cost)}
-                                </div>
+                        {/* Billing Summary Section */}
+                        <div className="border border-border/60 rounded-3xl p-8 space-y-6 bg-muted/5 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+                                <IndianRupee className="w-32 h-32 rotate-12" />
                             </div>
 
-                            <div className="flex items-center gap-4 w-full md:w-auto">
-                                <button
-                                    type="submit"
-                                    disabled={loading || form.items.length === 0}
-                                    className="flex-1 md:flex-none px-12 py-5 bg-orange-600 text-white rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-orange-600/20 flex items-center justify-center gap-3 disabled:opacity-50"
-                                >
-                                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                                    {loading ? "PROCESSING..." : "FINALIZE & BILL"}
-                                </button>
+                            <div className="flex items-center gap-2 mb-2">
+                                <Tag className="w-4 h-4 text-orange-500" />
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500">Billing Calculation Stream</h4>
                             </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Fitting / Labour Charges</label>
+                                        <div className="relative group">
+                                            <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-orange-500 transition-colors" />
+                                            <input
+                                                type="number"
+                                                value={form.labourCost}
+                                                onChange={(e) => setForm({ ...form, labourCost: Number(e.target.value) })}
+                                                className="w-full bg-background border border-border rounded-xl pl-12 pr-6 py-4 text-sm font-black text-foreground focus:outline-none focus:border-orange-500 transition-all shadow-sm"
+                                                placeholder="0"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">GST Percentage (%)</label>
+                                        <select
+                                            value={form.gstRate}
+                                            onChange={(e) => setForm({ ...form, gstRate: Number(e.target.value) })}
+                                            className="w-full bg-background border border-border rounded-xl px-4 py-4 text-sm font-black text-foreground focus:outline-none focus:border-orange-500 transition-all appearance-none cursor-pointer shadow-sm"
+                                        >
+                                            <option value={0}>0% (Non-Taxable)</option>
+                                            <option value={5}>5% GST</option>
+                                            <option value={12}>12% GST</option>
+                                            <option value={18}>18% GST (Standard)</option>
+                                            <option value={28}>28% GST</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="bg-background/40 rounded-3xl p-6 border border-border/50 space-y-4 backdrop-blur-sm">
+                                    {(() => {
+                                        const itemsTotal = form.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                                        const grandTotal = itemsTotal + form.labourCost;
+                                        const taxAmount = Math.round(grandTotal * (form.gstRate / (100 + form.gstRate)));
+                                        const baseAmount = grandTotal - taxAmount;
+
+                                        return (
+                                            <div className="space-y-3">
+                                                <div className="flex justify-between text-[11px] font-bold uppercase text-muted-foreground">
+                                                    <span>Accessories (Incl. GST)</span>
+                                                    <span>₹{formatPrice(itemsTotal)}</span>
+                                                </div>
+                                                <div className="flex justify-between text-[11px] font-bold uppercase text-muted-foreground">
+                                                    <span>Fitting Fee (Incl. GST)</span>
+                                                    <span>₹{formatPrice(form.labourCost)}</span>
+                                                </div>
+                                                <div className="h-[1px] bg-border/50 my-2" />
+                                                <div className="flex justify-between text-[11px] font-black uppercase text-foreground">
+                                                    <span>Grand Total</span>
+                                                    <span>₹{formatPrice(grandTotal)}</span>
+                                                </div>
+                                                <div className="flex justify-between text-[11px] font-bold uppercase text-emerald-600/70 italic">
+                                                    <span>GST Included ({form.gstRate}%)</span>
+                                                    <span>₹{formatPrice(taxAmount)}</span>
+                                                </div>
+                                                <div className="flex justify-between text-[11px] font-medium uppercase text-muted-foreground/60">
+                                                    <span>Base Amount</span>
+                                                    <span>₹{formatPrice(baseAmount)}</span>
+                                                </div>
+                                                <div className="h-4" />
+                                                <div className="flex justify-between items-center p-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl shadow-inner">
+                                                    <span className="text-[11px] font-black uppercase tracking-[0.1em] text-orange-600">Final Bill Amount</span>
+                                                    <span className="text-2xl font-display font-black text-orange-600 italic">₹{formatPrice(grandTotal)}</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Action Section */}
+                        <div className="flex items-center justify-end pt-4">
+                            <button
+                                type="submit"
+                                disabled={loading || form.items.length === 0}
+                                className="w-full md:w-auto px-16 py-6 bg-orange-600 text-white rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-orange-600/30 flex items-center justify-center gap-4 disabled:opacity-50"
+                            >
+                                {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
+                                {loading ? "PROCESSING BILL..." : "FINALIZE & PRINT BILL"}
+                            </button>
                         </div>
 
                         {status === 'success' && (
@@ -347,27 +443,27 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                     </form>
                 </div>
 
-            {/* Global Hover Preview Portal-like Element */}
-            <AnimatePresence>
-                {hoveredImage && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.5 }}
-                        className="fixed z-[9999] pointer-events-none flex items-center justify-center p-4 bg-card border border-border rounded-[2rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] overflow-hidden"
-                        style={{ 
-                            width: '200px', 
-                            height: '200px',
-                            left: `${hoverPos.x}px`,
-                            top: `${hoverPos.y}px`,
-                        }}
-                    >
-                        <img src={hoveredImage} alt="Preview" className="w-full h-full object-contain rounded-2xl" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+                {/* Global Hover Preview Portal-like Element */}
+                <AnimatePresence>
+                    {hoveredImage && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.5 }}
+                            className="fixed z-[9999] pointer-events-none flex items-center justify-center p-4 bg-card border border-border rounded-[2rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] overflow-hidden"
+                            style={{
+                                width: '200px',
+                                height: '200px',
+                                left: `${hoverPos.x}px`,
+                                top: `${hoverPos.y}px`,
+                            }}
+                        >
+                            <img src={hoveredImage} alt="Preview" className="w-full h-full object-contain rounded-2xl" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
 
             {/* Picker Modal */}
             <AnimatePresence>
@@ -416,7 +512,7 @@ export default function AccessoryBilling({ onSuccess }: AccessoryBillingProps) {
                                             className="w-full flex items-center justify-between p-4 bg-muted/30 hover:bg-orange-500/5 border border-border rounded-2xl transition-all group/item hover:border-orange-500/30 relative hover:z-50"
                                         >
                                             <div className="flex items-center gap-4">
-                                                <div 
+                                                <div
                                                     className="relative w-12 h-12 bg-background border border-border rounded-xl flex items-center justify-center shrink-0 cursor-zoom-in"
                                                     onMouseEnter={(e) => {
                                                         const rect = e.currentTarget.getBoundingClientRect();

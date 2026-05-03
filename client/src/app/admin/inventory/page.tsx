@@ -200,7 +200,8 @@ export default function InventoryPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {items.map((bike: any) => {
-                    const baseStock = bike.colors.reduce((acc: number, c: any) => acc + (c.stock || 0), 0);
+                    const hasVariants = bike.variants && bike.variants.length > 0;
+                    const baseStock = hasVariants ? 0 : bike.colors.reduce((acc: number, c: any) => acc + (c.stock || 0), 0);
                     const variantStock = bike.variants?.reduce((acc: number, v: any) => 
                         acc + v.colors.reduce((cAcc: number, c: any) => cAcc + (c.stock || 0), 0), 0) || 0;
                     const totalStock = baseStock + variantStock;
@@ -263,7 +264,7 @@ export default function InventoryPage() {
                             </div>
 
                             <div className="space-y-4">
-                                {bike.colors.length > 0 && (
+                                {bike.colors.length > 0 && !hasVariants && (
                                     <div className="flex flex-wrap gap-2">
                                         {bike.colors.map((color: any, idx: number) => (
                                             <div
@@ -355,7 +356,9 @@ export default function InventoryPage() {
                                 <div className="text-right">
                                     <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Variants</span>
                                     <span className="text-xl font-display font-black text-foreground italic tracking-tighter">
-                                        {bike.colors.length} Colors
+                                        {hasVariants 
+                                            ? bike.variants.reduce((acc: number, v: any) => acc + v.colors.length, 0)
+                                            : bike.colors.length} Colors
                                     </span>
                                 </div>
                             </div>

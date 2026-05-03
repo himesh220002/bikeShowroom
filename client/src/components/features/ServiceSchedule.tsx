@@ -30,9 +30,13 @@ export function ServiceSchedule() {
         priority: "Normal",
         technician: "",
         billingType: "paid" as 'free' | 'paid',
+        labourCost: 0,
+        gstRate: 18,
         cost: 0,
         items: [] as any[]
     });
+
+    const [viewingInvoice, setViewingInvoice] = useState<any>(null);
     const [spares, setSpares] = useState<any[]>([]);
     const [showSparePicker, setShowSparePicker] = useState(false);
     const [updating, setUpdating] = useState(false);
@@ -99,6 +103,15 @@ export function ServiceSchedule() {
         'deferred': "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
     };
 
+    // Sync grand total cost when items or labour change
+    useEffect(() => {
+        const totalParts = editForm.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+        const grandTotal = totalParts + editForm.labourCost;
+        if (editForm.cost !== grandTotal) {
+            setEditForm(prev => ({ ...prev, cost: grandTotal }));
+        }
+    }, [editForm.items, editForm.labourCost, editForm.cost]);
+
     const handleEdit = (job: any) => {
         setEditingJob(job);
         setEditForm({
@@ -112,8 +125,10 @@ export function ServiceSchedule() {
             priority: job.priority,
             technician: job.technician === "Unassigned" ? "" : job.technician,
             billingType: job.billingType || 'paid',
+            labourCost: job.items?.find((i: any) => i.itemType === 'labour')?.price || 0,
+            gstRate: 18,
             cost: job.cost || 0,
-            items: job.items || []
+            items: job.items?.filter((i: any) => i.itemType !== 'labour') || []
         });
         setShowSparePicker(false);
         setIsEditModalOpen(true);
@@ -137,8 +152,16 @@ export function ServiceSchedule() {
                     priority: editForm.priority,
                     technicianName: editForm.technician,
                     billingType: editForm.billingType,
-                    cost: editForm.cost,
-                    items: editForm.items
+                    cost: editForm.cost, // This will be the grand total
+                    items: [
+                        ...editForm.items,
+                        ...(editForm.labourCost > 0 ? [{
+                            name: "Labour Charges",
+                            price: editForm.labourCost,
+                            quantity: 1,
+                            itemType: 'labour'
+                        }] : [])
+                    ]
                 })
             });
             const data = await res.json();
@@ -736,10 +759,18 @@ export function ServiceSchedule() {
 
                                         {/* Cost */}
                                         <td className="py-3 px-4 border-r border-border/10 text-center">
-                                            <div className="flex items-center justify-center gap-0.5 text-[13px] font-black text-racing-blue italic">
-                                                <IndianRupee className="w-3 h-3" />
-                                                {formatPrice(job.cost)}
-                                            </div>
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setViewingInvoice(job);
+                                                }}
+                                                className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-racing-blue/5 border border-racing-blue/10 hover:bg-racing-blue/10 hover:border-racing-blue/20 transition-all group w-full"
+                                            >
+                                                <IndianRupee className="w-3 h-3 text-racing-blue group-hover:scale-110 transition-transform" />
+                                                <span className="text-xs font-black text-racing-blue italic tracking-tight">
+                                                    {formatPrice(job.cost)}
+                                                </span>
+                                            </button>
                                         </td>
 
                                         {/* Technician */}
@@ -1270,50 +1301,115 @@ export function ServiceSchedule() {
                                         </div>
                                     )}
 
-                                    {/* Billing Section */}
-                                    <div className="border border-border/60 rounded-2xl p-5 space-y-4 bg-muted/10">
-                                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                            <Tag className="w-3 h-3" /> Billing Configuration
-                                        </p>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {(['paid', 'free'] as const).map((type) => (
-                                                <button
-                                                    key={type}
-                                                    type="button"
-                                                    onClick={() => setEditForm({ ...editForm, billingType: type, cost: type === 'free' ? 0 : editForm.cost })}
-                                                    className={cn(
-                                                        "py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all",
-                                                        editForm.billingType === type
-                                                            ? type === 'paid'
-                                                                ? "bg-racing-blue text-white border-racing-blue shadow-lg shadow-racing-blue/20"
-                                                                : "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20"
-                                                            : "bg-background text-muted-foreground border-border hover:border-racing-blue/30"
-                                                    )}
-                                                >
-                                                    {type === 'paid' ? '💳 Paid Service' : '🎁 Free Service'}
-                                                </button>
-                                            ))}
+                                    {/* Billing Summary Section */}
+                                    <div className="border border-border/60 rounded-2xl p-6 space-y-6 bg-muted/10 relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                                            <IndianRupee className="w-24 h-24 rotate-12" />
                                         </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-[9px] font-black uppercase tracking-widest text-racing-blue">
-                                                {editForm.billingType === 'free' ? 'Extra Charges (if any)' : 'Final Bill Amount (Service + Parts + Labour)'}
-                                            </label>
-                                            <div className="relative">
-                                                <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-racing-blue" />
-                                                <input
-                                                    type="number"
-                                                    min="0"
-                                                    value={editForm.cost}
-                                                    onChange={(e) => setEditForm({ ...editForm, cost: Number(e.target.value) })}
-                                                    placeholder="0.00"
-                                                    className="w-full bg-racing-blue/5 border border-racing-blue/20 rounded-xl pl-11 pr-4 py-3.5 text-xs font-black text-racing-blue focus:outline-none focus:border-racing-blue/50 transition-all"
-                                                />
+                                        
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-racing-blue flex items-center gap-2">
+                                                <Tag className="w-3.5 h-3.5" /> Billing Workflow
+                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                {(['paid', 'free'] as const).map((type) => (
+                                                    <button
+                                                        key={type}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const isFree = type === 'free';
+                                                            setEditForm({ 
+                                                                ...editForm, 
+                                                                billingType: type, 
+                                                                labourCost: isFree ? 0 : editForm.labourCost 
+                                                            });
+                                                        }}
+                                                        className={cn(
+                                                            "px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest border transition-all",
+                                                            editForm.billingType === type
+                                                                ? type === 'paid'
+                                                                    ? "bg-racing-blue text-white border-racing-blue"
+                                                                    : "bg-emerald-500 text-white border-emerald-500"
+                                                                : "bg-background text-muted-foreground border-border"
+                                                        )}
+                                                    >
+                                                        {type}
+                                                    </button>
+                                                ))}
                                             </div>
-                                            {editForm.billingType === 'free' && (
-                                                <p className="text-[9px] text-emerald-600 font-bold pl-1">
-                                                    Free service — enter amount only if additional work was charged.
-                                                </p>
-                                            )}
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Labour Charges (Service Fee)</label>
+                                                    <div className="relative group">
+                                                        <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground group-focus-within:text-racing-blue transition-colors" />
+                                                        <input
+                                                            type="number"
+                                                            value={editForm.labourCost}
+                                                            onChange={(e) => setEditForm({ ...editForm, labourCost: Number(e.target.value) })}
+                                                            disabled={editForm.billingType === 'free'}
+                                                            className="w-full bg-background border border-border rounded-xl pl-11 pr-4 py-3 text-[13px] font-black text-foreground focus:outline-none focus:border-racing-blue transition-all disabled:opacity-50"
+                                                            placeholder="0"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">GST Percentage (%)</label>
+                                                    <select
+                                                        value={editForm.gstRate}
+                                                        onChange={(e) => setEditForm({ ...editForm, gstRate: Number(e.target.value) })}
+                                                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[13px] font-black text-foreground focus:outline-none focus:border-racing-blue transition-all appearance-none cursor-pointer"
+                                                    >
+                                                        <option value={0}>0% (Non-Taxable)</option>
+                                                        <option value={5}>5% GST</option>
+                                                        <option value={12}>12% GST</option>
+                                                        <option value={18}>18% GST (Standard)</option>
+                                                        <option value={28}>28% GST</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-background/50 rounded-2xl p-5 border border-border/50 space-y-3">
+                                                {(() => {
+                                                    const totalParts = editForm.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                                                    const grandTotal = totalParts + editForm.labourCost;
+                                                    const taxAmount = Math.round(grandTotal * (editForm.gstRate / (100 + editForm.gstRate)));
+                                                    const baseAmount = grandTotal - taxAmount;
+
+                                                    return (
+                                                        <div className="space-y-2">
+                                                            <div className="flex justify-between text-[10px] font-bold uppercase text-muted-foreground">
+                                                                <span>Parts & Spares (Incl. GST)</span>
+                                                                <span>₹{formatPrice(totalParts)}</span>
+                                                            </div>
+                                                            <div className="flex justify-between text-[10px] font-bold uppercase text-muted-foreground">
+                                                                <span>Labour Fee (Incl. GST)</span>
+                                                                <span>₹{formatPrice(editForm.labourCost)}</span>
+                                                            </div>
+                                                            <div className="h-[1px] bg-border/50 my-1" />
+                                                            <div className="flex justify-between text-[10px] font-black uppercase text-foreground">
+                                                                <span>Grand Total</span>
+                                                                <span>₹{formatPrice(grandTotal)}</span>
+                                                            </div>
+                                                            <div className="flex justify-between text-[10px] font-bold uppercase text-emerald-600/70 italic">
+                                                                <span>GST Included ({editForm.gstRate}%)</span>
+                                                                <span>₹{formatPrice(taxAmount)}</span>
+                                                            </div>
+                                                            <div className="flex justify-between text-[10px] font-medium uppercase text-muted-foreground/60">
+                                                                <span>Base Amount</span>
+                                                                <span>₹{formatPrice(baseAmount)}</span>
+                                                            </div>
+                                                            <div className="h-2" />
+                                                            <div className="flex justify-between items-center p-3 bg-racing-blue/10 border border-racing-blue/20 rounded-xl shadow-inner">
+                                                                <span className="text-[10px] font-black uppercase tracking-[0.1em] text-racing-blue">Final Bill Amount</span>
+                                                                <span className="text-xl font-display font-black text-racing-blue italic">₹{formatPrice(grandTotal)}</span>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -1349,6 +1445,140 @@ export function ServiceSchedule() {
                     // setJobs(prev => [newJob, ...prev]);
                 }}
             />
+
+            {/* Invoice Modal */}
+            <AnimatePresence>
+                {viewingInvoice && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setViewingInvoice(null)}
+                            className="absolute inset-0 bg-background/80 backdrop-blur-md"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative w-full max-w-2xl bg-card border border-border rounded-[2.5rem] shadow-2xl overflow-hidden"
+                        >
+                            <div className="absolute top-0 left-0 w-full h-2 bg-racing-blue" />
+                            
+                            <div className="p-8 md:p-10">
+                                <div className="flex items-start justify-between mb-10">
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-8 h-8 bg-racing-blue rounded-lg flex items-center justify-center text-white italic font-black text-xl shadow-lg shadow-racing-blue/20">A</div>
+                                            <h3 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter">SERVICE <span className="text-racing-blue italic">INVOICE</span></h3>
+                                        </div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground pl-10">Job ID: #{viewingInvoice._id?.slice(-6).toUpperCase() || 'TEMP'}</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => setViewingInvoice(null)}
+                                        className="p-3 hover:bg-muted rounded-2xl transition-colors group"
+                                    >
+                                        <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-8 mb-10 bg-muted/20 p-6 rounded-[2rem] border border-border/50">
+                                    <div className="space-y-1">
+                                        <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Customer Details</p>
+                                        <p className="text-sm font-black text-foreground">{viewingInvoice.name}</p>
+                                        <p className="text-xs font-bold text-muted-foreground">{viewingInvoice.phone}</p>
+                                    </div>
+                                    <div className="space-y-1 text-right">
+                                        <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Service Information</p>
+                                        <p className="text-sm font-black text-racing-blue italic">{viewingInvoice.bikeModel}</p>
+                                        <p className="text-xs font-bold text-muted-foreground">{viewingInvoice.regNumber}</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 mb-10">
+                                    <div className="flex items-center justify-between px-2">
+                                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+                                            <Package className="w-4 h-4" /> Billed Items & Services
+                                        </h4>
+                                        <span className="text-[9px] font-black uppercase text-racing-blue bg-racing-blue/10 px-2 py-1 rounded-md">{viewingInvoice.serviceType}</span>
+                                    </div>
+                                    
+                                    <div className="border border-border rounded-2xl overflow-hidden bg-background">
+                                        <table className="w-full text-left">
+                                            <thead>
+                                                <tr className="border-b border-border bg-muted/10">
+                                                    <th className="px-4 py-3 text-[8px] font-black uppercase tracking-widest text-muted-foreground">Description</th>
+                                                    <th className="px-4 py-3 text-[8px] font-black uppercase tracking-widest text-muted-foreground text-center">Qty</th>
+                                                    <th className="px-4 py-3 text-[8px] font-black uppercase tracking-widest text-muted-foreground text-right">Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-border/50">
+                                                {viewingInvoice.items?.map((item: any, idx: number) => (
+                                                    <tr key={idx} className="group hover:bg-muted/5 transition-colors">
+                                                        <td className="px-4 py-3">
+                                                            <p className="text-[11px] font-black text-foreground uppercase">{item.name}</p>
+                                                            <p className="text-[8px] font-bold text-muted-foreground uppercase">{item.itemType}</p>
+                                                        </td>
+                                                        <td className="px-4 py-3 text-center text-xs font-black">x{item.quantity}</td>
+                                                        <td className="px-4 py-3 text-right text-xs font-black">₹{formatPrice(item.price * item.quantity)}</td>
+                                                    </tr>
+                                                ))}
+                                                {(!viewingInvoice.items || viewingInvoice.items.length === 0) && (
+                                                    <tr>
+                                                        <td colSpan={3} className="px-4 py-8 text-center text-[10px] font-bold text-muted-foreground uppercase italic">No items listed for this job</td>
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end">
+                                    <div className="w-full max-w-[240px] space-y-3 bg-muted/20 p-6 rounded-3xl border border-border/50 relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 p-2 opacity-5">
+                                            <IndianRupee className="w-16 h-16 rotate-12" />
+                                        </div>
+                                        
+                                        {(() => {
+                                            const parts = viewingInvoice.items?.filter((i: any) => i.itemType !== 'labour').reduce((s: number, i: any) => s + (i.price * i.quantity), 0) || 0;
+                                            const labour = viewingInvoice.items?.find((i: any) => i.itemType === 'labour')?.price || 0;
+                                            const grand = viewingInvoice.cost || (parts + labour);
+                                            const tax = Math.round(grand * (18 / 118)); // Standard 18% assumption for invoice view
+                                            const base = grand - tax;
+
+                                            return (
+                                                <div className="space-y-2 relative z-10">
+                                                    <div className="flex justify-between text-[10px] font-bold uppercase text-muted-foreground">
+                                                        <span>Subtotal (Net)</span>
+                                                        <span>₹{formatPrice(base)}</span>
+                                                    </div>
+                                                    <div className="flex justify-between text-[10px] font-bold uppercase text-muted-foreground">
+                                                        <span>Included GST (18%)</span>
+                                                        <span>₹{formatPrice(tax)}</span>
+                                                    </div>
+                                                    <div className="h-[1px] bg-border/50 my-2" />
+                                                    <div className="flex justify-between items-center pt-1">
+                                                        <span className="text-[10px] font-black uppercase tracking-[0.1em] text-foreground">Grand Total</span>
+                                                        <span className="text-xl font-display font-black text-racing-blue italic">₹{formatPrice(grand)}</span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
+                                    </div>
+                                </div>
+
+                                <div className="mt-8 pt-8 border-t border-dashed border-border flex items-center justify-between opacity-60">
+                                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground italic">Thank you for choosing Antigravity Services</p>
+                                    <div className="flex items-center gap-1.5 grayscale opacity-50">
+                                        <div className="w-5 h-5 bg-racing-blue rounded-sm flex items-center justify-center text-white italic font-black text-[10px]">A</div>
+                                        <span className="text-[8px] font-black uppercase tracking-tighter">Premium Workshop Logic</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div >
     );
 }

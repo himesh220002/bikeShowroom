@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { Upload, Link as LinkIcon, Eye, Trash2, Plus, Loader2, X, Image as ImageIcon, CheckCircle2, GripVertical, Edit3 } from "lucide-react";
 import { API_URL, API_BASE_URL } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
-import { motion, Reorder } from "framer-motion";
+import { motion, Reorder, useDragControls } from "framer-motion";
 
 type Campaign = {
     _id: string;
@@ -21,6 +21,108 @@ type Campaign = {
     endDate?: string;
     createdAt: string;
 };
+
+interface CampaignItemProps {
+    camp: Campaign;
+    onEdit: (ad: Campaign) => void;
+    onDelete: (id: string) => void;
+}
+
+function CampaignItem({ camp, onEdit, onDelete }: CampaignItemProps) {
+    const controls = useDragControls();
+
+    return (
+        <Reorder.Item
+            value={camp}
+            dragListener={false}
+            dragControls={controls}
+            className="p-6 md:px-10 flex items-center justify-between hover:bg-muted/30 transition-colors bg-background/50 overflow-x-auto custom-scrollbar"
+            style={{ touchAction: 'pan-x pan-y' }}
+        >
+            <div className="flex items-center gap-8">
+                <div 
+                    className="text-muted-foreground/30 hover:text-racing-blue transition-colors cursor-grab active:cursor-grabbing p-2 -ml-2 shrink-0"
+                    onPointerDown={(e) => controls.start(e)}
+                    style={{ touchAction: 'none' }}
+                >
+                    <GripVertical className="w-5 h-5" />
+                </div>
+                <div className="w-20 h-20 bg-muted rounded-2xl overflow-hidden border border-border flex-shrink-0">
+                    <img
+                        src={camp.thumbnail ? (camp.thumbnail.startsWith('/uploads') ? `${API_BASE_URL}${camp.thumbnail}` : camp.thumbnail) : (camp.image.startsWith('/uploads') ? `${API_BASE_URL}${camp.image}` : camp.image)}
+                        alt={camp.name}
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+                <div className="space-y-1 shrink-0">
+                    <h4 className="text-lg font-display font-black text-foreground uppercase tracking-tight">{camp.name}</h4>
+                    <div className="flex items-center gap-4">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-racing-blue">{camp.type}</span>
+                        {camp.month && (
+                            <>
+                                <span className="w-1 h-1 rounded-full bg-border" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-amber-500">{camp.month} Edition</span>
+                            </>
+                        )}
+                        <span className="w-1 h-1 rounded-full bg-border" />
+                        <a href={camp.link} target="_blank" className="text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue flex items-center gap-1 transition-colors">
+                            <LinkIcon className="w-3 h-3" />
+                            Target Link
+                        </a>
+                    </div>
+                    <div className="flex items-center gap-4 pt-1">
+                        {camp.startDate && (
+                            <span className="text-[8px] font-bold text-muted-foreground/60 uppercase">
+                                From: {new Date(camp.startDate).toLocaleDateString()}
+                            </span>
+                        )}
+                        {camp.endDate && (
+                            <span className="text-[8px] font-bold text-muted-foreground/60 uppercase">
+                                Until: {new Date(camp.endDate).toLocaleDateString()}
+                            </span>
+                        )}
+                    </div>
+                    {camp.description && <p className="text-[10px] text-muted-foreground font-medium max-w-sm line-clamp-1">{camp.description}</p>}
+                </div>
+            </div>
+
+            <div className="flex items-center gap-8 shrink-0 ml-auto pl-8">
+                <div className="hidden lg:flex flex-col items-end">
+                    <span className="text-[8px] text-muted-foreground font-black uppercase tracking-[0.2em] mb-1">Live Status</span>
+                    <span className={cn(
+                        "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border",
+                        camp.status === "Active" ? "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20" :
+                            camp.status === "Scheduled" ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" :
+                                "bg-red-500/10 text-red-600 border-red-500/20"
+                    )}>
+                        {camp.status}
+                    </span>
+                </div>
+                <div className="flex items-center gap-3">
+                    <a
+                        href={camp.link}
+                        target="_blank"
+                        className="p-3 bg-muted/50 border border-border rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-racing-blue"
+                    >
+                        <Eye className="w-4 h-4" />
+                    </a>
+                    <button
+                        onClick={() => onEdit(camp)}
+                        className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-xl hover:bg-blue-500 hover:text-white transition-all text-blue-600/60 transition-all"
+                    >
+                        <Edit3 className="w-4 h-4" />
+                    </button>
+                    <button
+                        onClick={() => onDelete(camp._id)}
+                        className="p-3 bg-red-500/5 border border-red-500/10 rounded-xl hover:bg-red-500 hover:text-white transition-all text-red-600/60 transition-all"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+        </Reorder.Item>
+    );
+}
 
 export function AdManager() {
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -506,89 +608,12 @@ export function AdManager() {
                         </div>
                     )}
                     {campaigns.map((camp) => (
-                        <Reorder.Item
-                            key={camp._id}
-                            value={camp}
-                            className="p-6 md:px-10 flex items-center justify-between hover:bg-muted/30 transition-colors bg-background/50 cursor-grab active:cursor-grabbing"
-                        >
-                            <div className="flex items-center gap-8">
-                                <div className="text-muted-foreground/30 hover:text-racing-blue transition-colors">
-                                    <GripVertical className="w-5 h-5" />
-                                </div>
-                                <div className="w-20 h-20 bg-muted rounded-2xl overflow-hidden border border-border flex-shrink-0">
-                                    <img
-                                        src={camp.thumbnail ? (camp.thumbnail.startsWith('/uploads') ? `${API_BASE_URL}${camp.thumbnail}` : camp.thumbnail) : (camp.image.startsWith('/uploads') ? `${API_BASE_URL}${camp.image}` : camp.image)}
-                                        alt={camp.name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <h4 className="text-lg font-display font-black text-foreground uppercase tracking-tight">{camp.name}</h4>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-racing-blue">{camp.type}</span>
-                                        {camp.month && (
-                                            <>
-                                                <span className="w-1 h-1 rounded-full bg-border" />
-                                                <span className="text-[9px] font-black uppercase tracking-widest text-amber-500">{camp.month} Edition</span>
-                                            </>
-                                        )}
-                                        <span className="w-1 h-1 rounded-full bg-border" />
-                                        <a href={camp.link} target="_blank" className="text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue flex items-center gap-1 transition-colors">
-                                            <LinkIcon className="w-3 h-3" />
-                                            Target Link
-                                        </a>
-                                    </div>
-                                    <div className="flex items-center gap-4 pt-1">
-                                        {camp.startDate && (
-                                            <span className="text-[8px] font-bold text-muted-foreground/60 uppercase">
-                                                From: {new Date(camp.startDate).toLocaleDateString()}
-                                            </span>
-                                        )}
-                                        {camp.endDate && (
-                                            <span className="text-[8px] font-bold text-muted-foreground/60 uppercase">
-                                                Until: {new Date(camp.endDate).toLocaleDateString()}
-                                            </span>
-                                        )}
-                                    </div>
-                                    {camp.description && <p className="text-[10px] text-muted-foreground font-medium max-w-sm line-clamp-1">{camp.description}</p>}
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-8">
-                                <div className="hidden lg:flex flex-col items-end">
-                                    <span className="text-[8px] text-muted-foreground font-black uppercase tracking-[0.2em] mb-1">Live Status</span>
-                                    <span className={cn(
-                                        "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border",
-                                        camp.status === "Active" ? "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20" :
-                                            camp.status === "Scheduled" ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" :
-                                                "bg-red-500/10 text-red-600 border-red-500/20"
-                                    )}>
-                                        {camp.status}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <a
-                                        href={camp.link}
-                                        target="_blank"
-                                        className="p-3 bg-muted/50 border border-border rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-racing-blue"
-                                    >
-                                        <Eye className="w-4 h-4" />
-                                    </a>
-                                    <button
-                                        onClick={() => startEditing(camp)}
-                                        className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-xl hover:bg-blue-500 hover:text-white transition-all text-blue-600/60 transition-all"
-                                    >
-                                        <Edit3 className="w-4 h-4" />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(camp._id)}
-                                        className="p-3 bg-red-500/5 border border-red-500/10 rounded-xl hover:bg-red-500 hover:text-white transition-all text-red-600/60 transition-all"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-                        </Reorder.Item>
+                        <CampaignItem 
+                            key={camp._id} 
+                            camp={camp} 
+                            onEdit={startEditing} 
+                            onDelete={handleDelete} 
+                        />
                     ))}
                 </Reorder.Group>
             </div>

@@ -27,6 +27,8 @@ export function ManualServiceModal({ isOpen, onClose, onSuccess }: ManualService
         priority: "Normal",
         technicianName: "",
         billingType: "paid" as 'free' | 'paid',
+        labourCost: 0,
+        gstRate: 18,
         cost: 0,
         items: [] as any[],
         notes: ""
@@ -38,6 +40,15 @@ export function ManualServiceModal({ isOpen, onClose, onSuccess }: ManualService
     useEffect(() => {
         if (isOpen) setShowSparePicker(false);
     }, [isOpen]);
+
+    // Sync grand total cost when items or labour change
+    useEffect(() => {
+        const totalItems = form.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+        const grandTotal = totalItems + form.labourCost;
+        if (form.cost !== grandTotal) {
+            setForm(prev => ({ ...prev, cost: grandTotal }));
+        }
+    }, [form.items, form.labourCost, form.cost]);
 
     useEffect(() => {
         const fetchSpares = async () => {
@@ -55,7 +66,18 @@ export function ManualServiceModal({ isOpen, onClose, onSuccess }: ManualService
             const res = await fetch(`${API_URL}/services`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form)
+                body: JSON.stringify({
+                    ...form,
+                    items: [
+                        ...form.items,
+                        ...(form.labourCost > 0 ? [{
+                            name: "Labour Charges",
+                            price: form.labourCost,
+                            quantity: 1,
+                            itemType: 'labour'
+                        }] : [])
+                    ]
+                })
             });
             const data = await res.json();
             if (data.success) {
@@ -73,6 +95,8 @@ export function ManualServiceModal({ isOpen, onClose, onSuccess }: ManualService
                     priority: "Normal",
                     technicianName: "",
                     billingType: "paid",
+                    labourCost: 0,
+                    gstRate: 18,
                     cost: 0,
                     items: [],
                     notes: ""
@@ -448,47 +472,117 @@ export function ManualServiceModal({ isOpen, onClose, onSuccess }: ManualService
                                     </div>
                                 )}
 
-                                {/* Billing Configuration */}
-                                <div className="border border-border/60 rounded-2xl p-5 space-y-4 bg-muted/10">
-                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                                        <Tag className="w-3 h-3" /> Billing Configuration
-                                    </p>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {(['paid', 'free'] as const).map((type) => (
-                                            <button
-                                                key={type}
-                                                type="button"
-                                                onClick={() => setForm({ ...form, billingType: type, cost: type === 'free' ? 0 : form.cost })}
-                                                className={cn(
-                                                    "py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all",
-                                                    form.billingType === type
-                                                        ? type === 'paid'
-                                                            ? "bg-racing-blue text-white border-racing-blue shadow-lg shadow-racing-blue/20"
-                                                            : "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20"
-                                                        : "bg-background text-muted-foreground border-border hover:border-racing-blue/30"
-                                                )}
-                                            >
-                                                {type === 'paid' ? '💳 Paid Service' : '🎁 Free Service'}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-racing-blue">
-                                            {form.billingType === 'free' ? 'Extra Charges (if any)' : 'Final Bill Amount'}
-                                        </label>
-                                        <div className="relative">
-                                            <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-racing-blue" />
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                value={form.cost}
-                                                onChange={(e) => setForm({ ...form, cost: Number(e.target.value) })}
-                                                placeholder="0.00"
-                                                className="w-full bg-racing-blue/5 border border-racing-blue/20 rounded-xl pl-11 pr-4 py-3.5 text-xs font-black text-racing-blue focus:outline-none focus:border-racing-blue/50 transition-all"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                                 {/* Billing Summary Section */}
+                                 <div className="border border-border/60 rounded-2xl p-6 space-y-6 bg-muted/10 relative overflow-hidden">
+                                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                                         <IndianRupee className="w-24 h-24 rotate-12" />
+                                     </div>
+                                     
+                                     <div className="flex items-center justify-between">
+                                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-racing-blue flex items-center gap-2">
+                                             <Tag className="w-3.5 h-3.5" /> Billing Workflow
+                                         </p>
+                                         <div className="flex items-center gap-2">
+                                             {(['paid', 'free'] as const).map((type) => (
+                                                 <button
+                                                     key={type}
+                                                     type="button"
+                                                     onClick={() => {
+                                                         const isFree = type === 'free';
+                                                         setForm({ 
+                                                             ...form, 
+                                                             billingType: type, 
+                                                             labourCost: isFree ? 0 : form.labourCost 
+                                                         });
+                                                     }}
+                                                     className={cn(
+                                                         "px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest border transition-all",
+                                                         form.billingType === type
+                                                             ? type === 'paid'
+                                                                 ? "bg-racing-blue text-white border-racing-blue"
+                                                                 : "bg-emerald-500 text-white border-emerald-500"
+                                                             : "bg-background text-muted-foreground border-border"
+                                                     )}
+                                                 >
+                                                     {type}
+                                                 </button>
+                                             ))}
+                                         </div>
+                                     </div>
+
+                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                         <div className="space-y-4">
+                                             <div className="space-y-2">
+                                                 <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Labour Charges (Service Fee)</label>
+                                                 <div className="relative group">
+                                                     <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground group-focus-within:text-racing-blue transition-colors" />
+                                                     <input
+                                                         type="number"
+                                                         value={form.labourCost}
+                                                         onChange={(e) => setForm({ ...form, labourCost: Number(e.target.value) })}
+                                                         disabled={form.billingType === 'free'}
+                                                         className="w-full bg-background border border-border rounded-xl pl-11 pr-4 py-3 text-[13px] font-black text-foreground focus:outline-none focus:border-racing-blue transition-all disabled:opacity-50"
+                                                         placeholder="0"
+                                                     />
+                                                 </div>
+                                             </div>
+                                             <div className="space-y-2">
+                                                 <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">GST Percentage (%)</label>
+                                                 <select
+                                                     value={form.gstRate}
+                                                     onChange={(e) => setForm({ ...form, gstRate: Number(e.target.value) })}
+                                                     className="w-full bg-background border border-border rounded-xl px-4 py-3 text-[13px] font-black text-foreground focus:outline-none focus:border-racing-blue transition-all appearance-none cursor-pointer"
+                                                 >
+                                                     <option value={0}>0% (Non-Taxable)</option>
+                                                     <option value={5}>5% GST</option>
+                                                     <option value={12}>12% GST</option>
+                                                     <option value={18}>18% GST (Standard)</option>
+                                                     <option value={28}>28% GST</option>
+                                                 </select>
+                                             </div>
+                                         </div>
+
+                                         <div className="bg-background/50 rounded-2xl p-5 border border-border/50 space-y-3">
+                                             {(() => {
+                                                 const totalItems = form.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                                                 const grandTotal = totalItems + form.labourCost;
+                                                 const taxAmount = Math.round(grandTotal * (form.gstRate / (100 + form.gstRate)));
+                                                 const baseAmount = grandTotal - taxAmount;
+                                                 
+                                                 return (
+                                                     <div className="space-y-2">
+                                                         <div className="flex justify-between text-[10px] font-bold uppercase text-muted-foreground">
+                                                             <span>Parts & Spares (Incl. GST)</span>
+                                                             <span>₹{formatPrice(totalItems)}</span>
+                                                         </div>
+                                                         <div className="flex justify-between text-[10px] font-bold uppercase text-muted-foreground">
+                                                             <span>Labour Fee (Incl. GST)</span>
+                                                             <span>₹{formatPrice(form.labourCost)}</span>
+                                                         </div>
+                                                         <div className="h-[1px] bg-border/50 my-1" />
+                                                         <div className="flex justify-between text-[10px] font-black uppercase text-foreground">
+                                                             <span>Grand Total</span>
+                                                             <span>₹{formatPrice(grandTotal)}</span>
+                                                         </div>
+                                                         <div className="flex justify-between text-[10px] font-bold uppercase text-emerald-600/70 italic">
+                                                             <span>GST Included ({form.gstRate}%)</span>
+                                                             <span>₹{formatPrice(taxAmount)}</span>
+                                                         </div>
+                                                         <div className="flex justify-between text-[10px] font-medium uppercase text-muted-foreground/60">
+                                                             <span>Base Amount</span>
+                                                             <span>₹{formatPrice(baseAmount)}</span>
+                                                         </div>
+                                                         <div className="h-2" />
+                                                         <div className="flex justify-between items-center p-3 bg-racing-blue/10 border border-racing-blue/20 rounded-xl shadow-inner">
+                                                             <span className="text-[10px] font-black uppercase tracking-[0.1em] text-racing-blue">Final Bill Amount</span>
+                                                             <span className="text-xl font-display font-black text-racing-blue italic">₹{formatPrice(grandTotal)}</span>
+                                                         </div>
+                                                     </div>
+                                                 );
+                                             })()}
+                                         </div>
+                                     </div>
+                                 </div>
 
                                 <div className="flex items-center gap-4 pt-4">
                                     <button

@@ -20,7 +20,10 @@ import {
     MessageSquare,
     Save,
     Edit3,
-    X
+    X,
+    IndianRupee,
+    Package,
+    Tag
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { formatPrice } from "@/lib/utils/price";
@@ -59,6 +62,7 @@ export function UserBookings() {
 
     // Emoji Reaction State
     const [reactionEmoji, setReactionEmoji] = useState<{ id: string, emoji: string } | null>(null);
+    const [viewingInvoice, setViewingInvoice] = useState<any>(null);
 
     const fetchBookings = async () => {
         try {
@@ -70,7 +74,7 @@ export function UserBookings() {
             if (data.success) {
                 const fetchedBookings = data.data;
                 setBookings(fetchedBookings);
-                
+
                 // Auto-tab selection: show active if any exist, otherwise history
                 const hasActive = fetchedBookings.some((b: ServiceBooking) => ["booked", "in-progress"].includes(b.status));
                 setActiveTab(hasActive ? "active" : "history");
@@ -346,9 +350,14 @@ export function UserBookings() {
                                                 {booking.cost != null && (
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block opacity-40">Cost</span>
-                                                        <span className="text-[10px] font-black text-racing-blue">
-                                                            {booking.billingType === 'free' ? 'Complementary' : `₹${formatPrice(booking.cost || 0)}`}
-                                                        </span>
+                                                        <button
+                                                            onClick={() => setViewingInvoice(booking)}
+                                                            className="px-3 py-1 rounded-lg bg-racing-blue/5 border border-racing-blue/10 hover:bg-racing-blue/10 transition-all group"
+                                                        >
+                                                            <span className="text-[10px] font-black text-racing-blue italic group-hover:scale-105 transition-transform block">
+                                                                {booking.billingType === 'free' ? 'Complementary' : `₹${formatPrice(booking.cost || 0)}`}
+                                                            </span>
+                                                        </button>
                                                     </div>
                                                 )}
                                             </div>
@@ -420,6 +429,137 @@ export function UserBookings() {
                         ))
                     )}
                 </motion.div>
+            </AnimatePresence>
+
+            {/* Invoice Modal */}
+            <AnimatePresence>
+                {viewingInvoice && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setViewingInvoice(null)}
+                            className="absolute inset-0 bg-background/80 backdrop-blur-md"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative w-full max-h-[90vh]  mt-16 max-w-2xl bg-card border border-border rounded-[2.5rem] shadow-2xl overflow-hidden"
+                        >
+                            <div className="absolute top-0 left-0 w-full h-2 bg-racing-blue" />
+
+                            <div className="p-8 md:p-10">
+                                <div className="flex items-start justify-between mb-2">
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-8 h-8 bg-racing-blue rounded-lg flex items-center justify-center text-white italic font-black text-xl shadow-lg shadow-racing-blue/20">A</div>
+                                            <h3 className="text-2xl font-display font-black text-foreground uppercase tracking-tighter">SERVICE <span className="text-racing-blue italic">BREAKDOWN</span></h3>
+                                        </div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground pl-10">Ref: #{viewingInvoice._id?.slice(-6).toUpperCase() || 'NEW'}</p>
+                                    </div>
+                                    <button
+                                        onClick={() => setViewingInvoice(null)}
+                                        className="p-3 hover:bg-muted rounded-2xl transition-colors group"
+                                    >
+                                        <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-8 mb-6 bg-muted/20 p-6 rounded-[2rem] border border-border/50">
+                                    <div className="space-y-1">
+                                        <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Vehicle Details</p>
+                                        <p className="text-sm font-black text-foreground uppercase tracking-tighter">{viewingInvoice.bikeModel}</p>
+                                        <p className="text-xs font-bold text-muted-foreground">{viewingInvoice.regNumber}</p>
+                                    </div>
+                                    <div className="space-y-1 text-right">
+                                        <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Booking Info</p>
+                                        <p className="text-sm font-black text-racing-blue italic uppercase">{viewingInvoice.serviceType}</p>
+                                        <p className="text-xs font-bold text-muted-foreground">{new Date(viewingInvoice.appointmentDate).toDateString()}</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 mb-2">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 px-2">
+                                        <Package className="w-4 h-4" /> Billed Items & Spares
+                                    </h4>
+
+                                    <div className="border border-border rounded-2xl overflow-hidden bg-background">
+                                        <div className="max-h-[200px] overflow-y-auto custom-scrollbar">
+                                            <table className="w-full text-left">
+                                                <thead>
+                                                    <tr className="border-b border-border bg-muted/10 sticky top-0 z-10">
+                                                        <th className="px-4 py-3 text-[8px] font-black uppercase tracking-widest text-muted-foreground">Description</th>
+                                                        <th className="px-4 py-3 text-[8px] font-black uppercase tracking-widest text-muted-foreground text-center">Qty</th>
+                                                        <th className="px-4 py-3 text-[8px] font-black uppercase tracking-widest text-muted-foreground text-right">Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-border/50">
+                                                    {viewingInvoice.items?.map((item: any, idx: number) => (
+                                                        <tr key={idx} className="group hover:bg-muted/5 transition-colors">
+                                                            <td className="px-4 py-3">
+                                                                <p className="text-[11px] font-black text-foreground uppercase">{item.name}</p>
+                                                                <p className="text-[8px] font-bold text-muted-foreground uppercase">{item.itemType}</p>
+                                                            </td>
+                                                            <td className="px-4 py-3 text-center text-xs font-black">x{item.quantity}</td>
+                                                            <td className="px-4 py-3 text-right text-xs font-black">₹{formatPrice(item.price * item.quantity)}</td>
+                                                        </tr>
+                                                    ))}
+                                                    {(!viewingInvoice.items || viewingInvoice.items.length === 0) && (
+                                                        <tr>
+                                                            <td colSpan={3} className="px-4 py-8 text-center text-[10px] font-bold text-muted-foreground uppercase italic opacity-40">No items listed in this session</td>
+                                                        </tr>
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end">
+                                    <div className="w-full max-w-[240px] space-y-3 bg-muted/20 p-6 rounded-3xl border border-border/50 relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 p-2 opacity-5">
+                                            <IndianRupee className="w-16 h-16 rotate-12" />
+                                        </div>
+
+                                        {(() => {
+                                            const grand = viewingInvoice.cost || 0;
+                                            const tax = Math.round(grand * (18 / 118));
+                                            const base = grand - tax;
+
+                                            return (
+                                                <div className="space-y-2 relative z-10">
+                                                    <div className="flex justify-between text-[10px] font-bold uppercase text-muted-foreground">
+                                                        <span>Subtotal (Net)</span>
+                                                        <span>₹{formatPrice(base)}</span>
+                                                    </div>
+                                                    <div className="flex justify-between text-[10px] font-bold uppercase text-emerald-600/70 italic">
+                                                        <span>Inc. GST (18%)</span>
+                                                        <span>₹{formatPrice(tax)}</span>
+                                                    </div>
+                                                    <div className="h-[1px] bg-border/50 my-2" />
+                                                    <div className="flex justify-between items-center pt-1">
+                                                        <span className="text-[10px] font-black uppercase tracking-[0.1em] text-foreground">Total Bill</span>
+                                                        <span className="text-xl font-display font-black text-racing-blue italic">₹{formatPrice(grand)}</span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
+                                    </div>
+                                </div>
+
+                                <div className="mt-2 pt-2 border-t border-dashed border-border flex items-center justify-between opacity-60">
+                                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground italic">Authorized Workshop Record</p>
+                                    <div className="flex items-center gap-1.5 grayscale opacity-50">
+                                        <div className="w-5 h-5 bg-racing-blue rounded-sm flex items-center justify-center text-white italic font-black text-[10px]">A</div>
+                                        <span className="text-[8px] font-black uppercase tracking-tighter">Verified Logic</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
             </AnimatePresence>
         </div>
     );
