@@ -202,7 +202,7 @@ export default function InventoryPage() {
                 {items.map((bike: any) => {
                     const hasVariants = bike.variants && bike.variants.length > 0;
                     const baseStock = hasVariants ? 0 : bike.colors.reduce((acc: number, c: any) => acc + (c.stock || 0), 0);
-                    const variantStock = bike.variants?.reduce((acc: number, v: any) => 
+                    const variantStock = bike.variants?.reduce((acc: number, v: any) =>
                         acc + v.colors.reduce((cAcc: number, c: any) => cAcc + (c.stock || 0), 0), 0) || 0;
                     const totalStock = baseStock + variantStock;
                     return (
@@ -269,13 +269,15 @@ export default function InventoryPage() {
                                         {bike.colors.map((color: any, idx: number) => (
                                             <div
                                                 key={idx}
-                                                className="px-3 py-1.5 rounded-xl bg-muted/50 border border-border/50 flex items-center gap-3 group/item transition-all hover:bg-muted"
+                                                className="px-3 py-1.5 rounded-xl bg-muted/50 border border-border/50 flex items-center justify-between w-full gap-3 group/item transition-all hover:bg-muted"
                                             >
-                                                <div
-                                                    className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-sm"
-                                                    style={{ backgroundColor: color.hex }}
-                                                />
-                                                <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mr-1">{color.name}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <div
+                                                        className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-sm"
+                                                        style={{ backgroundColor: color.hex }}
+                                                    />
+                                                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mr-1">{color.name}</span>
+                                                </div>
 
                                                 <div className="flex items-center gap-2 bg-background/50 rounded-lg p-0.5 border border-border/50">
                                                     <button
@@ -307,13 +309,16 @@ export default function InventoryPage() {
                                             {variant.colors.map((color: any, cIdx: number) => (
                                                 <div
                                                     key={cIdx}
-                                                    className="px-3 py-1.5 rounded-xl bg-blue-500/5 border border-racing-blue/10 flex items-center gap-3 group/item transition-all hover:bg-racing-blue/10"
+                                                    className="px-3 py-1.5 rounded-xl bg-blue-500/5 border border-racing-blue/10 flex items-center justify-between w-full gap-3 group/item transition-all hover:bg-racing-blue/10"
                                                 >
-                                                    <div
-                                                        className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-sm"
-                                                        style={{ backgroundColor: color.hex }}
-                                                    />
-                                                    <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mr-1">{color.name}</span>
+                                                    <div className="flex gap-2 items-center">
+                                                        <div
+                                                            className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-sm"
+                                                            style={{ backgroundColor: color.hex }}
+                                                        />
+
+                                                        <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mr-1">{color.name}</span>
+                                                    </div>
 
                                                     <div className="flex items-center gap-2 bg-background/50 rounded-lg p-0.5 border border-border/50">
                                                         <button
@@ -356,7 +361,7 @@ export default function InventoryPage() {
                                 <div className="text-right">
                                     <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground block mb-1">Variants</span>
                                     <span className="text-xl font-display font-black text-foreground italic tracking-tighter">
-                                        {hasVariants 
+                                        {hasVariants
                                             ? bike.variants.reduce((acc: number, v: any) => acc + v.colors.length, 0)
                                             : bike.colors.length} Colors
                                     </span>
