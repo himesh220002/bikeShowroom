@@ -12,6 +12,7 @@ interface SaleFormProps {
 
 export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
     const [loading, setLoading] = useState(false);
+    const [selectionKey, setSelectionKey] = useState("");
     const [formData, setFormData] = useState({
         customerName: "",
         customerPhone: "",
@@ -60,6 +61,7 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
             });
             const data = await res.json();
             if (data.success) {
+                setSelectionKey("");
                 setFormData({
                     customerName: "",
                     customerPhone: "",
@@ -160,21 +162,44 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                                 id="bikeSelect"
                                 required
                                 className="w-full bg-background border border-border rounded-xl px-5 py-3.5 text-sm font-bold text-foreground focus:outline-none focus:border-racing-blue transition-all appearance-none"
-                                value={formData.bikeId + "|" + formData.variant}
+                                value={selectionKey}
                                 onChange={(e) => {
-                                    const [bikeId, variantName] = e.target.value.split("|");
+                                    const value = e.target.value;
+                                    setSelectionKey(value);
+                                    if (!value) {
+                                        setFormData({ ...formData, bikeId: "", variant: "", exShowroomPrice: "", salePrice: "2083" });
+                                        return;
+                                    }
+
+                                    const [bikeId, type, name1, name2] = value.split("|");
                                     const bike = bikes.find(b => b._id === bikeId);
-                                    const colorInfo = bike?.colors.find((c: any) => c.name === variantName);
-                                    const exPrice = colorInfo?.price?.split('-')[0].replace(/[^0-9]/g, '') || bike?.price?.split('-')[0].replace(/[^0-9]/g, '') || "";
+                                    
+                                    let exPrice = "";
+                                    let variantLabel = "";
+
+                                    if (type === "base") {
+                                        const color = bike?.colors.find((c: any) => c.name === name1);
+                                        // Priority: Color Price -> Base Bike Price
+                                        exPrice = color?.price?.split('-')[0].replace(/[^0-9]/g, '') || 
+                                                  bike?.price?.split('-')[0].replace(/[^0-9]/g, '') || "";
+                                        variantLabel = name1;
+                                    } else {
+                                        const variant = bike?.variants?.find((v: any) => v.name === name1);
+                                        const color = variant?.colors?.find((c: any) => c.name === name2);
+                                        // Priority: Color-in-Variant Price -> Variant Price -> Base Bike Price
+                                        exPrice = color?.price?.split('-')[0].replace(/[^0-9]/g, '') || 
+                                                  variant?.price?.split('-')[0].replace(/[^0-9]/g, '') || 
+                                                  bike?.price?.split('-')[0].replace(/[^0-9]/g, '') || "";
+                                        variantLabel = `${name1} (${name2})`;
+                                    }
 
                                     const nextData = {
                                         ...formData,
                                         bikeId: bikeId,
-                                        variant: variantName,
+                                        variant: variantLabel,
                                         exShowroomPrice: exPrice,
                                         insurance: "",
                                         roadTax: "",
-                                        // Reset to defaults on bike change to ensure accuracy
                                         extendedWarranty: "777",
                                         rsa: "307",
                                         hcCharge: "999",
@@ -184,13 +209,30 @@ export function SaleForm({ bikes, onSaleComplete }: SaleFormProps) {
                                 }}
                             >
                                 <option value="">Select a bike variant</option>
-                                {bikes.flatMap(bike =>
-                                    (bike.colors || []).filter((c: any) => c.stock > 0).map((color: any) => (
-                                        <option key={`${bike._id}-${color.name}`} value={`${bike._id}|${color.name}`}>
-                                            {bike.name} ({color.name}) - {color.stock} left
-                                        </option>
-                                    ))
-                                )}
+                                {bikes.flatMap(bike => {
+                                    const hasVariants = bike.variants && bike.variants.length > 0;
+                                    if (!hasVariants) {
+                                        return (bike.colors || []).filter((c: any) => c.stock > 0).map((color: any) => {
+                                            const price = color.price || bike.price;
+                                            return (
+                                                <option key={`${bike._id}-${color.name}`} value={`${bike._id}|base|${color.name}`}>
+                                                    {bike.name} ({color.name}) - {color.stock} left - ₹{price}
+                                                </option>
+                                            );
+                                        });
+                                    } else {
+                                        return bike.variants.flatMap((variant: any) => 
+                                            (variant.colors || []).filter((c: any) => c.stock > 0).map((color: any) => {
+                                                const price = color.price || variant.price || bike.price;
+                                                return (
+                                                    <option key={`${bike._id}-${variant.name}-${color.name}`} value={`${bike._id}|variant|${variant.name}|${color.name}`}>
+                                                        {bike.name} {variant.name} ({color.name}) - {color.stock} left - ₹{price}
+                                                    </option>
+                                                );
+                                            })
+                                        );
+                                    }
+                                })}
                             </select>
                         </div>
 

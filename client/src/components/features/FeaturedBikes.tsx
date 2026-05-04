@@ -41,15 +41,14 @@ export function FeaturedBikes() {
         }
     };
 
-    // Auto-play Effect - MUST be called before any conditional returns
+    // Auto-play Effect
     useEffect(() => {
-        if (loading || bikesToShow.length <= 1) return;
+        const isAutoScrollEnabled = false; // Toggle to true to re-enable auto-scrolling
+        if (!isAutoScrollEnabled || loading || bikesToShow.length <= 1) return;
 
         const interval = setInterval(() => {
             if (scrollRef.current) {
                 const { scrollLeft, scrollWidth, offsetWidth } = scrollRef.current;
-
-                // If at the end (or near it due to pixel precision), go back to start
                 const isAtEnd = scrollLeft + offsetWidth >= scrollWidth - 10;
 
                 if (isAtEnd) {
@@ -61,6 +60,49 @@ export function FeaturedBikes() {
         }, 20000);
 
         return () => clearInterval(interval);
+    }, [loading, bikesToShow.length]);
+
+    // 3-Second Auto-Snap Guard
+    useEffect(() => {
+        const scrollContainer = scrollRef.current;
+        if (!scrollContainer || loading) return;
+
+        let snapTimeout: NodeJS.Timeout;
+
+        const handleScroll = () => {
+            clearTimeout(snapTimeout);
+
+            snapTimeout = setTimeout(() => {
+                if (!scrollContainer) return;
+                const { scrollLeft, offsetWidth } = scrollContainer;
+
+                // Calculate card width based on current layout (Mobile 100%, SM 50%, XL 33%)
+                const item = scrollContainer.firstElementChild as HTMLElement;
+                if (!item) return;
+
+                const cardWidth = item.offsetWidth;
+                const gap = 32; // matching gap-8
+                const totalItemWidth = cardWidth + gap;
+
+                // Find nearest card index
+                const nearestIndex = Math.round(scrollLeft / totalItemWidth);
+                const targetScroll = nearestIndex * totalItemWidth;
+
+                // Only snap if we aren't already perfectly aligned (within 5px)
+                if (Math.abs(scrollLeft - targetScroll) > 5) {
+                    scrollContainer.scrollTo({
+                        left: targetScroll,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 1000); // 1 second timer
+        };
+
+        scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+        return () => {
+            scrollContainer.removeEventListener('scroll', handleScroll);
+            clearTimeout(snapTimeout);
+        };
     }, [loading, bikesToShow.length]);
 
     if (loading) {
@@ -116,13 +158,13 @@ export function FeaturedBikes() {
 
                 <div
                     ref={scrollRef}
-                    className="flex gap-8 overflow-x-auto pb-12 snap-x snap-mandatory scrollbar-hide will-change-transform"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    className="relative flex gap-8 overflow-x-auto pb-12 scrollbar-hide will-change-transform transform-gpu overscroll-x-contain"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'none' }}
                 >
                     {bikesToShow.map((bike: any, index: number) => (
                         <div
                             key={bike.slug || bike._id}
-                            className="w-[100%] sm:w-[calc(50%-1rem)] xl:w-[calc(33.333%-1.33rem)] flex-shrink-0 snap-center"
+                            className="w-[100%] sm:w-[calc(50%-1rem)] xl:w-[calc(33.333%-1.33rem)] flex-shrink-0"
                         >
                             <BikeCard bike={bike} index={index} />
                         </div>

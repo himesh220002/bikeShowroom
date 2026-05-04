@@ -24,10 +24,9 @@ export function BikeCard({ bike, index = 0 }: BikeCardProps) {
             className="block h-full"
         >
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "0px" }}
-                transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.1 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut", delay: Math.min(index * 0.05, 0.3) }}
                 className="group relative bg-card/70 backdrop-blur-md rounded-[2.5rem] p-8 h-[450px] sm:h-[450px] md:h-[500px] border border-border hover:border-racing-blue/40 transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden will-change-transform gpu-accelerated"
             >
                 {/* Dynamic Background Glow */}
