@@ -41,7 +41,7 @@ export function BikeCard({ bike, index = 0 }: BikeCardProps) {
                     </span>
 
                     <div className="space-y-1 mb-6">
-                        <h4 className="text-xl md:text-2xl font-display font-black text-foreground tracking-tighter uppercase leading-none group-hover:text-blue-800 transition-colors duration-500">
+                        <h4 className="text-xl md:text-2xl font-display font-black text-foreground tracking-tighter leading-none group-hover:text-blue-800 transition-colors duration-500">
                             {bike.name}
                         </h4>
                         <p className="text-muted-foreground font-bold uppercase tracking-[0.3em] text-[7px] md:text-[8px]">
