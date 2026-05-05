@@ -15,7 +15,8 @@ import {
     RotateCcw,
     CheckCircle2,
     Wallet,
-    AlertTriangle
+    AlertTriangle,
+    Bike
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { BikeImage } from "@/components/ui/BikeImage";
@@ -248,6 +249,13 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
                                 Finance Options
                                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>
+                            <Link
+                                href={`/test-ride?bike=${bike.slug}`}
+                                className="group bg-orange-400/40 border border-border text-foreground px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:bg-racing-blue hover:text-white hover:border-racing-blue transition-all transform active:scale-95"
+                            >
+                                Test Ride
+                                <Bike className="w-6 h-6 lg:w-8 lg:h-8 group-hover:rotate-12 transition-transform" />
+                            </Link>
                             {bike.brochureUrl && (
                                 <a
                                     href={bike.brochureUrl}

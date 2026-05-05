@@ -21,11 +21,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useTheme } from "@/components/providers/ThemeProvider";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getUnreadTestRideCount } from "@/lib/services/testRideService";
+import { socket } from "@/lib/api"; // Assuming socket is exported from api.ts
 
 const menuItems = [
     { icon: LayoutDashboard, label: "Overview", href: "/admin" },
     { icon: Users, label: "Sales Leads", href: "/admin/leads" },
+    { icon: Bike, label: "Ride Requests", href: "/admin/ride-requests", badge: true },
     { icon: UserCheck, label: "Customer CRM", href: "/admin/crm" },
     { icon: BarChart2, label: "Ads & Marketing", href: "/admin/ads" },
     { icon: Calendar, label: "Service Schedule", href: "/admin/services" },
@@ -37,6 +40,31 @@ export function AdminSidebar() {
     const pathname = usePathname();
     const { theme, toggleTheme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
+    const [unreadRides, setUnreadRides] = useState(0);
+
+    useEffect(() => {
+        const fetchUnread = async () => {
+            try {
+                const res = await getUnreadTestRideCount();
+                if (res.success) setUnreadRides(res.count);
+            } catch (err) {
+                console.error("Error fetching unread ride count:", err);
+            }
+        };
+
+        fetchUnread();
+
+        // Listen for new test rides if socket is available
+        if (socket) {
+            socket.on('new-test-ride', () => {
+                setUnreadRides(prev => prev + 1);
+            });
+        }
+
+        return () => {
+            if (socket) socket.off('new-test-ride');
+        };
+    }, []);
 
     const logout = () => {
         localStorage.removeItem("admin_session_active");
@@ -112,14 +140,21 @@ export function AdminSidebar() {
                                 href={item.href}
                                 onClick={() => setIsOpen(false)}
                                 className={cn(
-                                    "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all",
+                                    "flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all",
                                     isActive
                                         ? "bg-racing-blue/10 text-racing-blue"
                                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                 )}
                             >
-                                <item.icon className={cn("w-5 h-5", isActive ? "text-racing-blue" : "text-muted-foreground")} />
-                                {item.label}
+                                <div className="flex items-center gap-3">
+                                    <item.icon className={cn("w-5 h-5", isActive ? "text-racing-blue" : "text-muted-foreground")} />
+                                    {item.label}
+                                </div>
+                                {(item as any).badge && unreadRides > 0 && (
+                                    <span className="bg-racing-blue text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg shadow-racing-blue/20 animate-bounce">
+                                        {unreadRides}
+                                    </span>
+                                )}
                             </Link>
                         );
                     })}

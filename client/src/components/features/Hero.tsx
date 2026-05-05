@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Star, ChevronRight, Activity } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import Link from "next/link";
 
 export function Hero() {
     const ref = useRef(null);
@@ -21,11 +22,7 @@ export function Hero() {
                 className="absolute inset-0 z-0 will-change-transform translate-z-0"
             >
                 <Image
-                    // src="/images/hero_showroom.png"
-                    // src="/images/bikemountain.jpg"
-                    // src="/images/bikemountainvertical.jpg"
                     src="/images/bikevertical.jpg"
-                    // src="/images/racingleanbike.jpg"
                     alt="Choudhary Yamaha Showroom"
                     fill
                     sizes="100vw"
@@ -84,9 +81,12 @@ export function Hero() {
                             Explore Models
                             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </a>
-                        <a href="/inquiry" className="w-full sm:w-auto bg-white hover:bg-gray-100 text-black px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs transition-all shadow-2xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95">
+                        <Link
+                            href="/test-ride"
+                            className="w-full sm:w-auto bg-white hover:bg-gray-100 text-black px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs transition-all shadow-2xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95"
+                        >
                             Book Test Ride
-                        </a>
+                        </Link>
                         <a href="#promotions" className="w-full sm:w-auto bg-zinc-900/50 hover:bg-zinc-800 text-white px-8 py-4 rounded-full font-black uppercase tracking-widest text-xs transition-all border border-white/10 shadow-2xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95">
                             <Star className="w-3.5 h-3.5 text-racing-blue" />
                             View Offers
@@ -131,13 +131,13 @@ export function Hero() {
                             className="object-contain opacity-20 brightness-200 invert"
                         />
                     </div>
-                    {/* Optimized Glow - Removed animate-pulse to prevent compositor thrashing during scroll */}
                     <div className="absolute inset-0 bg-racing-blue/20 blur-[100px] rounded-full opacity-40" />
                 </motion.div>
             </div>
 
             {/* Bottom Gradient for Smooth Transition */}
             <div className="absolute bottom-0 left-0 w-full h-40 bg-linear-to-t from-black to-transparent z-10" />
+
         </section>
     );
 }

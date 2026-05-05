@@ -162,7 +162,7 @@ export function Navbar() {
                         )}
 
                         <Link
-                            href="/inquiry"
+                            href="/test-ride"
                             className="bg-yamaha-blue hover:bg-dark-racing text-white px-8 py-3.5 rounded-full text-[11px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-xl shadow-yamaha-blue/20 flex items-center gap-2"
                         >
                             Test Ride
@@ -273,7 +273,7 @@ export function Navbar() {
                                                     <LogOut className="w-4 h-4 mr-2" /> Sign Out
                                                 </button>
                                                 <Link
-                                                    href="/inquiry"
+                                                    href="/test-ride"
                                                     onClick={() => setIsOpen(false)}
                                                     className="bg-racing-blue text-white py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]"
                                                 >
@@ -291,7 +291,7 @@ export function Navbar() {
                                                 <LogIn className="w-4 h-4 mr-2" /> Sign In
                                             </Link>
                                             <Link
-                                                href="/inquiry"
+                                                href="/test-ride"
                                                 onClick={() => setIsOpen(false)}
                                                 className="bg-racing-blue text-white py-4 rounded-3xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]"
                                             >

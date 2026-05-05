@@ -17,7 +17,8 @@ import { SaleForm } from "@/components/features/SaleForm";
 import { useRouter } from "next/navigation";
 import { SlotManagement } from "@/components/features/SlotManagement";
 import { TestingGround } from "@/components/features/TestingGround";
-import { FlaskConical } from "lucide-react";
+import { FlaskConical, Bike as BikeIcon } from "lucide-react";
+import { getTestRides, TestRideData } from "@/lib/services/testRideService";
 
 const socket = io(API_BASE_URL);
 
@@ -28,6 +29,7 @@ export default function AdminDashboard() {
     const [bikes, setBikes] = useState<any[]>([]);
     const [sales, setSales] = useState<any[]>([]);
     const [customers, setCustomers] = useState<any[]>([]);
+    const [testRides, setTestRides] = useState<TestRideData[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<"leads" | "services" | "hot" | "sales" | "slots" | "testing" | "master">("leads");
     const [isSaleFormOpen, setIsSaleFormOpen] = useState(false);
@@ -40,13 +42,14 @@ export default function AdminDashboard() {
 
     const fetchData = async () => {
         try {
-            const [leadsRes, servicesRes, qualifiedRes, bikesRes, salesRes, customersRes] = await Promise.all([
+            const [leadsRes, servicesRes, qualifiedRes, bikesRes, salesRes, customersRes, testRidesRes] = await Promise.all([
                 fetch(`${API_URL}/leads`),
                 fetch(`${API_URL}/services`),
                 fetch(`${API_URL}/qualified-leads`),
                 fetch(`${API_URL}/bikes`),
                 fetch(`${API_URL}/sales`),
-                fetch(`${API_URL}/customers`)
+                fetch(`${API_URL}/customers`),
+                getTestRides()
             ]);
 
             const leadsData = await leadsRes.json();
@@ -55,6 +58,7 @@ export default function AdminDashboard() {
             const bikesData = await bikesRes.json();
             const salesData = await salesRes.json();
             const customersData = await customersRes.json();
+            const testRidesData = testRidesRes as any;
 
             if (leadsData.success) setLeads(leadsData.data);
             if (servicesData.success) setServices(servicesData.data);
@@ -62,6 +66,7 @@ export default function AdminDashboard() {
             if (bikesData.success) setBikes(bikesData.data);
             if (salesData.success) setSales(salesData.data);
             if (customersData.success) setCustomers(customersData.data);
+            if (testRidesData.success) setTestRides(testRidesData.data);
         } catch (err) {
             console.error("Failed to sync dashboard:", err);
         } finally {
@@ -125,6 +130,11 @@ export default function AdminDashboard() {
             notifyUser("💰 NEW SALE!", `${newSale.customerName} just bought a ${newSale.bikeName}!`);
         });
 
+        socket.on("new-test-ride", (newRide: TestRideData) => {
+            setTestRides((prev) => [newRide, ...prev]);
+            notifyUser("New Test Ride Request!", `${newRide.name} wants to ride the ${newRide.bikeModel}.`);
+        });
+
         const notifyUser = (title: string, body: string) => {
             if ("Notification" in window && Notification.permission === "granted") {
                 new Notification(title, { body });
@@ -141,6 +151,7 @@ export default function AdminDashboard() {
             socket.off("service_updated");
             socket.off("lead_escalated");
             socket.off("sale_recorded");
+            socket.off("new-test-ride");
         };
     }, []);
 
@@ -161,8 +172,19 @@ export default function AdminDashboard() {
         return acc + bikeStock;
     }, 0);
 
+    const unreadRides = testRides.filter(r => r.status === 'Unread').length;
+    const scheduledRides = testRides.filter(r => r.status === 'Scheduled').length;
+
     const stats = [
         { label: "Active Inquiries", value: leads.length.toString(), icon: Users, change: "Live", trend: "up", tab: "leads" as const },
+        {
+            label: "Ride Booking",
+            value: `New-${unreadRides} & Sch-${scheduledRides}`,
+            icon: BikeIcon,
+            change: "Live",
+            trend: "up",
+            href: "/admin/ride-requests"
+        },
         { label: "Hot Leads 🔥", value: qualifiedLeads.length.toString(), icon: Rocket, change: "Escalating", trend: "up", tab: "hot" as const },
         { label: "Workshop Queue", value: services.length.toString(), icon: Wrench, change: "Live", trend: "up", href: "/admin/services" },
         { label: "Inventory", value: totalStock.toString(), icon: Package, change: "Stable", trend: "neutral", href: "/admin/inventory" },
@@ -339,7 +361,7 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 p-4 sm:p-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-4 p-4 sm:p-0">
 
                 {stats.map((stat) => (
                     <button

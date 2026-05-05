@@ -9,7 +9,7 @@ const tiles = [
     {
         title: "Book Test Ride",
         icon: Bike,
-        href: "#inquiry",
+        href: "/test-ride",
         description: "Experience the thrill first-hand",
         color: "bg-blue-500/10 text-blue-500",
         hoverColor: "group-hover:bg-blue-500 group-hover:text-white"

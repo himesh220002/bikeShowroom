@@ -214,7 +214,7 @@ export default function ProductsPage() {
                             </p>
                         </div>
                         <Link
-                            href="/#inquiry"
+                            href="/test-ride"
                             className="bg-zinc-950 text-white px-12 py-6 rounded-full font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-4"
                         >
                             Book Test Ride

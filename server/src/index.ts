@@ -33,6 +33,7 @@ import notificationsRouter from './routes/notifications';
 import insightsRouter from './routes/insights';
 import employeesRouter from './routes/employees';
 import careerRouter from './routes/career';
+import testRideRouter from './routes/testRideRoutes';
 import bcrypt from 'bcryptjs';
 import Config from './models/Config';
 
@@ -211,6 +212,7 @@ app.use('/api/notifications', notificationsRouter);
 app.use('/api/insights', insightsRouter);
 app.use('/api/employees', employeesRouter);
 app.use('/api/career', careerRouter);
+app.use('/api/test-rides', testRideRouter);
 
 app.get('/', (req, res) => {
     res.send('Bike Showroom API is running with Socket.io...');

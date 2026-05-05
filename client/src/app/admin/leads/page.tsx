@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { LeadsTable } from "@/components/features/LeadsTable";
+import { RideRequestTable } from "@/components/features/RideRequestTable";
 import { API_URL } from "@/lib/config";
 import { Download, Plus, Loader2 } from "lucide-react";
 import { AdminTableControls } from "@/components/ui/AdminTableControls";
@@ -119,6 +120,13 @@ export default function LeadsPage() {
                 ) : (
                     <LeadsTable leads={processedLeads} />
                 )}
+            </div>
+
+            {/* Ride Request Section */}
+            <div className="pt-12 border-t border-border">
+                <div className="bg-background border border-border rounded-[1rem] p-8 shadow-2xl overflow-hidden">
+                    <RideRequestTable />
+                </div>
             </div>
 
             <LeadAddModal

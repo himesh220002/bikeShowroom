@@ -9,10 +9,21 @@ import { LeadForm } from "@/components/features/LeadForm";
 import { FeaturedBikes } from "@/components/features/FeaturedBikes";
 import { Viewer360 } from "@/components/features/Viewer360";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function BikePageClient({ bike }: { bike: any }) {
     const [activeIntent, setActiveIntent] = useState<string | undefined>();
     const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+    const router = useRouter();
+
+    const handleAction = (intent: string) => {
+        if (intent === "TEST_RIDE") {
+            router.push(`/test-ride?bike=${bike.slug}`);
+        } else {
+            setActiveIntent(intent);
+            document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     return (
         <main className="bg-zinc-950 min-h-screen overflow-x-hidden relative">
@@ -33,10 +44,7 @@ export function BikePageClient({ bike }: { bike: any }) {
                     bike={bike}
                     selectedVariantIndex={selectedVariantIndex}
                     onVariantChange={setSelectedVariantIndex}
-                    onAction={(intent) => {
-                        setActiveIntent(intent);
-                        document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
+                    onAction={handleAction}
                 />
 
                 <div id="specifications">
@@ -63,10 +71,7 @@ export function BikePageClient({ bike }: { bike: any }) {
                 <div id="promotion">
                     <ZeroDownpaymentBanner
                         bikeName={bike.name}
-                        onApply={() => {
-                            setActiveIntent("EMI");
-                            document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
+                        onApply={() => handleAction("EMI")}
                     />
                 </div>
 
