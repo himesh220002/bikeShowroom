@@ -220,7 +220,7 @@ export function UserBookings() {
                             <div
                                 key={booking._id}
                                 className={cn(
-                                    "bg-zinc-900/40 backdrop-blur-md rounded-[2rem] border border-white/5 overflow-hidden hover:border-racing-blue/30 transition-all group relative",
+                                    "bg-gray-100/40 backdrop-blur-md rounded-[2rem] border border-white/5 overflow-hidden hover:border-racing-blue/30 transition-all group relative",
                                     booking.status === 'in-progress' && "border-racing-blue/20 bg-racing-blue/[0.05]"
                                 )}
                             >
