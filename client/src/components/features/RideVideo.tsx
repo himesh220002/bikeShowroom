@@ -48,7 +48,7 @@ export function RideVideo() {
                     className="w-full h-full object-cover"
                 >
                     {/* <source src="/videos/yamaha r15 ride katihar mar26.mp4" type="video/mp4" /> */}
-                    <source src="/videos/ymhaktrr15ridemar26.mp4" type="video/mp4" />
+                    <source src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/videos/ymhaktrr15ridemar26.mp4`} type="video/mp4" />
                     Your browser does not support the video tag.
                 </video>
 
