@@ -42,43 +42,85 @@ export default function ProductsPage() {
         return matchesSearch && matchesFilter;
     });
 
+    // const CATEGORIES_CONFIG = [
+    //     {
+    //         id: "sport",
+    //         title: "Sport Motorcycles",
+    //         subtitle: "R-Series & MT-Series",
+    //         description: "Engineered for performance, designed for the track and the street.",
+    //         filter: (b: any) => b.category === 'bike' && ["r15v4", "mt15", "mt03"].includes(b.slug)
+    //     },
+    //     {
+    //         id: "street",
+    //         title: "Street Commuters",
+    //         subtitle: "FZ-Series",
+    //         description: "The Lord of the Streets. Muscular, reliable, and fuel-efficient.",
+    //         filter: (b: any) => b.category === 'bike' && ["fzs-v4", "fz-fi", "fz-rave"].includes(b.slug)
+    //     },
+    //     {
+    //         id: "retro",
+    //         title: "Neo-Retro",
+    //         subtitle: "XSR & FZ-X",
+    //         description: "Classic aesthetics meet modern technology for a timeless ride.",
+    //         filter: (b: any) => b.category === 'bike' && ["fzx", "xsr155"].includes(b.slug)
+    //     },
+    //     {
+    //         id: "other-motorcycles",
+    //         title: "More Motorcycles",
+    //         subtitle: "New Arrivals",
+    //         description: "Check out our latest additions to the Yamaha lineup.",
+    //         filter: (b: any) => b.category === 'bike' && !["r15v4", "mt15", "mt03", "fzs-v4", "fz-fi", "fz-rave", "fzx", "xsr155"].includes(b.slug)
+    //     },
+    //     {
+    //         id: "scooters",
+    //         title: "Performance Scooters",
+    //         subtitle: "Aerox, RayZR & Fascino",
+    //         description: "Stylish, powerful, and practical for the modern urban landscape.",
+    //         filter: (b: any) => b.category === 'scooty'
+    //     }
+    // ];
+
     const CATEGORIES_CONFIG = [
         {
             id: "sport",
             title: "Sport Motorcycles",
             subtitle: "R-Series & MT-Series",
             description: "Engineered for performance, designed for the track and the street.",
-            filter: (b: any) => b.category === 'bike' && ["r15v4", "mt15", "mt03"].includes(b.slug)
+            filter: (b: any) =>
+                b.category === "bike" &&
+                (
+                    b.slug.startsWith("r15") || // covers all R15 variants (r15v4, r15m, r15s, etc.)
+                    ["mt15", "mt03"].includes(b.slug)
+                ),
         },
         {
             id: "street",
             title: "Street Commuters",
             subtitle: "FZ-Series",
             description: "The Lord of the Streets. Muscular, reliable, and fuel-efficient.",
-            filter: (b: any) => b.category === 'bike' && ["fzs-v4", "fz-fi", "fz-rave"].includes(b.slug)
+            filter: (b: any) =>
+                b.category === "bike" &&
+                b.slug.startsWith("fz") && !b.slug.startsWith("fzx") && !b.slug.startsWith("fz-x hybrid"), // covers all FZ variants (fzs-v4, fz-fi, fz-rave, etc.)
         },
         {
             id: "retro",
             title: "Neo-Retro",
             subtitle: "XSR & FZ-X",
             description: "Classic aesthetics meet modern technology for a timeless ride.",
-            filter: (b: any) => b.category === 'bike' && ["fzx", "xsr155"].includes(b.slug)
-        },
-        {
-            id: "other-motorcycles",
-            title: "More Motorcycles",
-            subtitle: "New Arrivals",
-            description: "Check out our latest additions to the Yamaha lineup.",
-            filter: (b: any) => b.category === 'bike' && !["r15v4", "mt15", "mt03", "fzs-v4", "fz-fi", "fz-rave", "fzx", "xsr155"].includes(b.slug)
+            filter: (b: any) =>
+                b.category === "bike" &&
+                (b.slug.startsWith("fzx") || b.slug.startsWith("xsr") || b.slug.startsWith("fz-x hybrid") || b.slug.startsWith("xsr")), // covers all FZX and XSR variants
         },
         {
             id: "scooters",
             title: "Performance Scooters",
             subtitle: "Aerox, RayZR & Fascino",
             description: "Stylish, powerful, and practical for the modern urban landscape.",
-            filter: (b: any) => b.category === 'scooty'
-        }
+            filter: (b: any) =>
+                b.category === "scooty", // covers all scooter models
+        },
     ];
+
 
     const categoriesWithBikes = CATEGORIES_CONFIG.map(cat => ({
         ...cat,
@@ -105,7 +147,7 @@ export default function ProductsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-zinc-950 pt-24 md:pt-32 pb-24 relative overflow-hidden">
+        <div className="min-h-screen bg-zinc-950 p-24 relative overflow-hidden">
             {/* Showroom Background Image - Fixed Position */}
             <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
                 <div
@@ -125,9 +167,7 @@ export default function ProductsPage() {
                             <Zap className="w-3 h-3" />
                             Yamaha Lineup
                         </div>
-                        <h1 className="text-4xl md:text-4xl font-display font-black text-white uppercase tracking-tighter">
-                            YAMAHA <span className="text-racing-blue">Products</span>
-                        </h1>
+
                         {/* <p className="text-gray-500 max-w-2xl font-medium leading-relaxed">
                             Discover the perfect balance of performance, style, and innovation across our diverse range of motorcycles and scooters.
                         </p> */}
@@ -171,7 +211,7 @@ export default function ProductsPage() {
                 </div>
 
                 {/* Categories */}
-                <div className="space-y-16 md:space-y-32">
+                <div className="space-y-16">
 
                     {categoriesWithBikes.map((category) => (
                         <section key={category.id} id={category.id} className="space-y-12">
@@ -184,9 +224,9 @@ export default function ProductsPage() {
                                         {category.subtitle}
                                     </p>
                                 </div>
-                                <p className="text-gray-400 text-sm max-w-md">
+                                {/* <p className="text-gray-400 text-sm max-w-md">
                                     {category.description}
-                                </p>
+                                </p> */}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

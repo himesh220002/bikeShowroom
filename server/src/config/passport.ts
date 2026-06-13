@@ -33,8 +33,8 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID || 'dummy_client_id',
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy_client_secret',
-            callbackURL: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true' || (typeof window === 'undefined' && process.env.CLIENT_URL?.includes('vercel.app'))
-                ? 'https://bikeshowroom-bixq.onrender.com/api/auth/google/callback'
+            callbackURL: process.env.NODE_ENV === 'production' || process.env.RENDER === 'true'
+                ? `${process.env.BACKEND_URL || 'https://api2.cyphertech.online'}/api/auth/google/callback`
                 : 'http://localhost:5000/api/auth/google/callback',
         },
         async (accessToken, refreshToken, profile, done) => {

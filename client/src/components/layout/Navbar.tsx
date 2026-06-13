@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useAuth } from "@/context/AuthContext";
 import { LogIn, User as UserIcon, LogOut, ChevronDown } from "lucide-react";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { NotificationBell } from "@/components/features/NotificationBell";
 import { useConfig } from "@/components/providers/ConfigProvider";
 import { Compass, Warehouse, Bike, Wrench, MessageCircle } from "lucide-react";
@@ -32,9 +31,9 @@ export function Navbar() {
 
     const navLinks = [
         { name: "Explore", href: "/#explore", icon: Compass },
-        { name: "My Garage", href: "/garage", icon: Warehouse },
         { name: "Products", href: "/products", icon: Bike },
         { name: "Service & Spares", href: "/service", icon: Wrench },
+        { name: "My Garage", href: "/garage", icon: Warehouse },
         { name: "Inquiry", href: "/inquiry", icon: MessageCircle },
     ];
 
@@ -106,7 +105,6 @@ export function Navbar() {
                             <Phone className="w-4 h-4 text-muted-foreground group-hover:text-racing-blue" />
                         </Link>
 
-                        <ThemeToggle />
                         {user && <NotificationBell />}
 
                         {authLoading ? (
@@ -210,7 +208,6 @@ export function Navbar() {
                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Menu</span>
 
                                     <div className="flex items-center gap-4">
-                                        <ThemeToggle />
                                         {user && <NotificationBell />}
                                     </div>
                                 </div>

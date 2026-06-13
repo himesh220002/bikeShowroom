@@ -20,24 +20,11 @@ export function SparesGallery() {
     const [blinkingId, setBlinkingId] = useState<string | null>(null);
     const [demandedIds, setDemandedIds] = useState<string[]>([]);
 
-    // Load cart from localStorage on mount
-    useEffect(() => {
-        const savedCart = localStorage.getItem('spares_cart');
-        if (savedCart) {
-            try {
-                setCart(JSON.parse(savedCart));
-            } catch (e) {
-                console.error("Failed to parse cart", e);
-            }
-        }
-    }, []);
-
-    // Save cart to localStorage whenever it changes
-    useEffect(() => {
-        localStorage.setItem('spares_cart', JSON.stringify(cart));
-        // Dispatch a custom event to notify ServiceBooking if it's on the same page
+    const updateCart = (newCart: any) => {
+        localStorage.setItem('spares_cart', JSON.stringify(newCart));
         window.dispatchEvent(new Event('spares_cart_updated'));
-    }, [cart]);
+        setCart(newCart);
+    };
 
     const addToCart = (item: any) => {
         const currentQty = cart[item._id]?.quantity || 0;
@@ -46,27 +33,44 @@ export function SparesGallery() {
             setTimeout(() => setBlinkingId(null), 1000);
             return;
         }
-        setCart(prev => ({
-            ...prev,
+        updateCart({
+            ...cart,
             [item._id]: {
                 item,
                 quantity: currentQty + 1
             }
-        }));
+        });
     };
 
     const removeFromCart = (id: string) => {
-        setCart(prev => {
-            if (!prev[id]) return prev;
-            const newCart = { ...prev };
-            if (newCart[id].quantity > 1) {
-                newCart[id].quantity -= 1;
-            } else {
-                delete newCart[id];
-            }
-            return newCart;
-        });
+        if (!cart[id]) return;
+        const newCart = { ...cart };
+        if (newCart[id].quantity > 1) {
+            newCart[id].quantity -= 1;
+        } else {
+            delete newCart[id];
+        }
+        updateCart(newCart);
     };
+
+    useEffect(() => {
+        const syncCart = () => {
+            const savedCart = localStorage.getItem('spares_cart');
+            if (savedCart) {
+                try {
+                    setCart(JSON.parse(savedCart));
+                } catch (e) {
+                    console.error("Failed to parse cart", e);
+                }
+            } else {
+                setCart({});
+            }
+        };
+
+        syncCart();
+        window.addEventListener('spares_cart_updated', syncCart);
+        return () => window.removeEventListener('spares_cart_updated', syncCart);
+    }, []);
 
     const handleDemandRestock = async (spareId: string) => {
         try {
@@ -246,12 +250,12 @@ export function SparesGallery() {
                                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
                             >
                                 {filteredSpares.map((spare) => (
-                                    <div key={spare._id} className="group border border-border bg-card rounded-[1.5rem] p-3 hover:border-racing-blue/30 transition-all flex flex-col">
-                                        <div className="aspect-square rounded-3xl bg-muted/30 border border-border p-0 mb-6 overflow-hidden relative">
+                                    <div key={spare._id} className="group border border-white/5 bg-zinc-900/40 backdrop-blur-md rounded-[2rem] p-4 hover:border-racing-blue/40 transition-all flex flex-col hover:bg-zinc-800/50 hover:shadow-2xl hover:shadow-racing-blue/10">
+                                        <div className="aspect-square rounded-3xl bg-zinc-950/80 border border-white/5 p-4 mb-6 overflow-hidden relative flex items-center justify-center">
                                             <img
                                                 src={spare.image}
                                                 alt={spare.name}
-                                                className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                                                className="w-full h-full object-contain group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500 drop-shadow-2xl"
                                             />
                                             {spare.stock === 0 && (
                                                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
@@ -261,16 +265,16 @@ export function SparesGallery() {
                                         </div>
 
                                         <div className="mb-6 flex-1">
-                                            <div className="flex justify-between items-start mb-2">
-                                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-racing-blue bg-racing-blue/10 px-3 py-1 rounded-full">
+                                            <div className="flex justify-between items-start mb-3">
+                                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-racing-blue bg-racing-blue/10 border border-racing-blue/20 px-3 py-1 rounded-full">
                                                     {spare.category}
                                                 </span>
-                                                <span className="text-sm font-display font-black text-foreground italic tracking-tighter">₹ {formatPrice(spare.price)}</span>
+                                                <span className="text-sm font-display font-black text-white italic tracking-tighter">₹ {formatPrice(spare.price)}</span>
                                             </div>
-                                            <h4 className="text-xl font-display font-black text-foreground tracking-tight mb-2 group-hover:text-racing-blue transition-colors">
+                                            <h4 className="text-xl font-display font-black text-white tracking-tight mb-2 group-hover:text-racing-blue transition-colors">
                                                 {spare.name}
                                             </h4>
-                                            <p className="text-[12px] text-muted-foreground font-medium leading-relaxed line-clamp-2">
+                                            <p className="text-[11px] text-zinc-500 font-medium leading-relaxed line-clamp-2">
                                                 {spare.description}
                                             </p>
                                         </div>
@@ -353,6 +357,31 @@ export function SparesGallery() {
                     </AnimatePresence>
                 </div>
             </div>
+
+            {/* Floating Cart Widget */}
+            <AnimatePresence>
+                {cartCount > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 50, scale: 0.9 }}
+                        className="fixed bottom-8 right-8 z-[100] bg-zinc-900/90 backdrop-blur-xl border border-white/10 p-4 rounded-[2rem] shadow-2xl flex items-center gap-6"
+                    >
+                        <div className="flex flex-col pl-2">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-racing-blue leading-none mb-1">Items Selected</span>
+                            <span className="text-lg font-display font-black text-white italic tracking-tighter">
+                                {cartCount} Items • ₹{formatPrice(cartTotal)}
+                            </span>
+                        </div>
+                        <button
+                            onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}
+                            className="px-6 py-4 bg-racing-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-racing-blue/30"
+                        >
+                            Proceed to Booking <ChevronRight className="w-4 h-4" />
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

@@ -177,7 +177,7 @@ export function UserBookings() {
                     </p>
                 </div>
 
-                <div className="flex gap-2 p-1 bg-muted/90 border border-border rounded-xl backdrop-blur-sm">
+                <div className="flex gap-2 p-1 bg-zinc-900/50 border border-white/5 rounded-xl backdrop-blur-sm">
                     <button
                         onClick={() => setActiveTab("active")}
                         className={cn(
@@ -208,7 +208,7 @@ export function UserBookings() {
                     className="space-y-4"
                 >
                     {currentList.length === 0 ? (
-                        <div className="bg-gray-100 p-20 rounded-[3rem] text-center border border-dashed border-border/50 bg-card/10">
+                        <div className="bg-zinc-900/20 p-20 rounded-[3rem] text-center border border-dashed border-white/10 backdrop-blur-sm">
                             {activeTab === "active" ? <Activity className="w-12 h-12 text-muted-foreground/30 mx-auto mb-6" /> : <History className="w-12 h-12 text-muted-foreground/30 mx-auto mb-6" />}
                             <h4 className="text-xl font-display font-black text-foreground uppercase tracking-tighter mb-2 opacity-50">
                                 No {activeTab} Records
@@ -220,8 +220,8 @@ export function UserBookings() {
                             <div
                                 key={booking._id}
                                 className={cn(
-                                    "bg-background rounded-[2rem] border border-border/50 overflow-hidden hover:border-racing-blue/30 transition-all group relative",
-                                    booking.status === 'in-progress' && "border-racing-blue/20 bg-racing-blue/[0.02]"
+                                    "bg-zinc-900/40 backdrop-blur-md rounded-[2rem] border border-white/5 overflow-hidden hover:border-racing-blue/30 transition-all group relative",
+                                    booking.status === 'in-progress' && "border-racing-blue/20 bg-racing-blue/[0.05]"
                                 )}
                             >
                                 {/* Emoji Reaction Overlay */}

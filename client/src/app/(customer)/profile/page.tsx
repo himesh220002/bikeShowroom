@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { UserBookings } from "@/components/features/UserBookings";
+import { useRouter } from "next/navigation";
 
 interface UserBike {
     _id: string;
@@ -25,6 +26,7 @@ interface UserBike {
 }
 
 export default function ProfilePage() {
+    const router = useRouter();
     const { user, loading: authLoading } = useAuth();
     const [bikes, setBikes] = useState<UserBike[]>([]);
     const [officialBikes, setOfficialBikes] = useState<any[]>([]);
@@ -235,7 +237,7 @@ export default function ProfilePage() {
 
     if (!user) {
         if (typeof window !== 'undefined') {
-            window.location.href = '/login';
+            router.push('/login');
         }
         return null;
     }

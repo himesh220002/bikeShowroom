@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import { API_URL } from '@/lib/config';
 
 interface User {
@@ -31,6 +32,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     const refreshUser = async () => {
         try {
@@ -88,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             await axios.get(`${API_URL}/auth/logout`, { withCredentials: true });
             setUser(null);
-            window.location.href = '/';
+            router.push('/');
         } catch (err) {
             console.error('Logout failed:', err);
         }

@@ -14,6 +14,11 @@ import { useRouter } from "next/navigation";
 export function BikePageClient({ bike }: { bike: any }) {
     const [activeIntent, setActiveIntent] = useState<string | undefined>();
     const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+    const [selectedColorIndex, setSelectedColorIndex] = useState(0);
+
+    const currentVariant = bike.variants && bike.variants.length > 0 ? bike.variants[selectedVariantIndex] : null;
+    const activeColors = currentVariant ? currentVariant.colors : bike.colors;
+    const primaryColor = activeColors[selectedColorIndex] || activeColors[0];
     const router = useRouter();
 
     const handleAction = (intent: string) => {
@@ -27,14 +32,11 @@ export function BikePageClient({ bike }: { bike: any }) {
 
     return (
         <main className="bg-zinc-950 min-h-screen overflow-x-hidden relative">
-            {/* Unified Page Background */}
-            <div
-                className="fixed inset-0 z-0 pointer-events-none opacity-20"
-                style={{
-                    backgroundImage: "url('/images/mt15v2background.webp')",
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundAttachment: 'fixed'
+            {/* Unified Dynamic Background */}
+            <motion.div
+                className="fixed inset-0 z-0 pointer-events-none transition-colors duration-1000"
+                animate={{
+                    background: `radial-gradient(circle at 50% 0%, ${primaryColor.hex}15 0%, transparent 60%), radial-gradient(circle at 100% 100%, ${primaryColor.hex}10 0%, transparent 50%)`
                 }}
             />
             <div className="relative z-10">
@@ -43,7 +45,12 @@ export function BikePageClient({ bike }: { bike: any }) {
                 <BikeDetailsHero
                     bike={bike}
                     selectedVariantIndex={selectedVariantIndex}
-                    onVariantChange={setSelectedVariantIndex}
+                    onVariantChange={(idx) => {
+                        setSelectedVariantIndex(idx);
+                        setSelectedColorIndex(0);
+                    }}
+                    selectedColorIndex={selectedColorIndex}
+                    onColorChange={setSelectedColorIndex}
                     onAction={handleAction}
                 />
 
@@ -53,7 +60,7 @@ export function BikePageClient({ bike }: { bike: any }) {
 
                 {/* 360 Viewer Section */}
                 {bike.threeSixtyUrl && bike.threeSixtyImageCount && bike.threeSixtyImageCount > 35 && (
-                    <section className="py-24 bg-zinc-900">
+                    <section className="py-24 bg-gradient-to-b from-indigo-100 to-gray-400/20 backdrop-blur-sm">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="text-center mb-16">
                                 <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-4">
@@ -75,7 +82,16 @@ export function BikePageClient({ bike }: { bike: any }) {
                     />
                 </div>
 
-                <section className="py-24 bg-zinc-950">
+                <section className="py-24 bg-transparent relative">
+                    {/* Massive Watermark */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 0.05 }}
+                        viewport={{ once: true }}
+                        className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden"
+                    >
+                        <h2 className="text-[30vw] font-black text-white whitespace-nowrap opacity-5 select-none">{bike.name}</h2>
+                    </motion.div>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-24 items-center">
                             <motion.div
@@ -136,7 +152,7 @@ export function BikePageClient({ bike }: { bike: any }) {
                                 <div className="absolute -inset-10 bg-racing-blue/10 blur-[120px] opacity-20" />
                                 <LeadForm
                                     key={`${activeIntent}-${selectedVariantIndex}`} // Re-mount to trigger auto-selection and notes update
-                                    bikeModel={bike.variants && bike.variants[selectedVariantIndex] 
+                                    bikeModel={bike.variants && bike.variants[selectedVariantIndex]
                                         ? `${bike.name} ${bike.variants[selectedVariantIndex].name}`
                                         : bike.name
                                     }
@@ -147,7 +163,7 @@ export function BikePageClient({ bike }: { bike: any }) {
                     </div>
                 </section>
 
-                <div className="py-24 border-t border-zinc-900 bg-zinc-950">
+                <div className="mt-24 border-t border-white/5 bg-transparent relative z-10">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <h3 className="text-2xl font-display font-black text-white uppercase tracking-tighter mb-0">
                             EXPLORE OTHER <span className="text-racing-blue">MACHINES</span>

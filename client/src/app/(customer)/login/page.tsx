@@ -6,9 +6,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 
 export default function LoginPage() {
+    const router = useRouter();
     const { login, loginLocal, register, user } = useAuth();
     const [mode, setMode] = useState<'login' | 'register' | 'options'>('options');
     const [formData, setFormData] = useState({
@@ -20,7 +22,7 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
 
     if (user) {
-        window.location.href = '/profile';
+        router.push('/profile');
         return null;
     }
 
@@ -37,12 +39,12 @@ export default function LoginPage() {
             setError(res.message || 'Action failed');
             setLoading(false);
         } else {
-            window.location.href = '/profile';
+            router.push('/profile');
         }
     };
 
     return (
-        <div className="min-h-screen bg-background flex items-center justify-center px-4 relative overflow-hidden">
+        <div className="min-h-screen bg-background flex items-center justify-center px-4 py-24 relative overflow-hidden">
             {/* Background Accents */}
             <div className="absolute top-1/4 -left-20 w-96 h-96 bg-racing-blue/10 rounded-full blur-[120px]" />
             <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-racing-blue/5 rounded-full blur-[100px]" />
@@ -103,14 +105,14 @@ export default function LoginPage() {
                                     className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 hover:border-racing-blue transition-all group text-left"
                                 >
                                     <LogIn className="w-5 h-5 text-racing-blue mb-4 transition-transform group-hover:scale-110" />
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white">Guest Login</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-white">Login</p>
                                 </button>
                                 <button
                                     onClick={() => setMode('register')}
                                     className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 hover:border-racing-blue transition-all group text-left"
                                 >
                                     <UserIcon className="w-5 h-5 text-racing-blue mb-4 transition-transform group-hover:scale-110" />
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-white">New Account</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-white">Create Account</p>
                                 </button>
                             </div>
                         </motion.div>

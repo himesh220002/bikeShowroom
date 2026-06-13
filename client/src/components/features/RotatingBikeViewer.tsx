@@ -224,7 +224,7 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-full cursor-grab active:cursor-grabbing select-none flex items-center justify-center bg-background overflow-hidden touch-action-none"
+            className="relative w-full h-full cursor-grab active:cursor-grabbing select-none flex items-center justify-center backdrop-blur-xl overflow-hidden touch-action-none"
             style={{ touchAction: 'none' }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -250,7 +250,7 @@ export function RotatingBikeViewer({ baseUrl, imageCount = 40 }: { baseUrl: stri
             )}
 
             {/* Image Stack - z-10 (Between grid and text) */}
-            <div className="relative w-full max-w-4xl aspect-[16/9] flex items-center justify-center z-10 pointer-events-none sm:scale-100 scale-[1.4] transition-transform duration-500">
+            <div className="relative w-full max-w-4xl mt-10 aspect-[16/9] flex items-center justify-center z-10 pointer-events-none sm:scale-100 scale-[1.4] transition-transform duration-500">
                 {Array.from({ length: TOTAL_IMAGES }, (_, i) => i + 1).map((i) => (
                     <ImageFrame
                         key={i}

@@ -257,7 +257,7 @@ export function ServiceBooking() {
 
     return (
         <div className="w-full max-w-4xl mx-auto">
-            <div className="bg-card rounded-[1.5rem] md:rounded-[3rem] p-4 md:p-8 md:p-10 border border-border shadow-2xl relative overflow-hidden">
+            <div className="bg-card rounded-[1.5rem] md:rounded-[2.5rem] p-4 md:p-6 border border-border shadow-2xl relative overflow-hidden">
                 {/* Progress Bar */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-muted">
                     <motion.div
@@ -266,7 +266,7 @@ export function ServiceBooking() {
                     />
                 </div>
 
-                <div className="flex justify-between items-center mb-12">
+                <div className="flex justify-between items-center mb-8">
                     <div>
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-racing-blue mb-2 block">Service Center</span>
                         <h2 className="text-3xl md:text-4xl font-display font-black text-foreground uppercase tracking-tighter">
@@ -289,7 +289,7 @@ export function ServiceBooking() {
                                 exit={{ opacity: 0, x: -20 }}
                                 className="space-y-6"
                             >
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-3">
                                     {serviceOptions.map((opt) => (
                                         <button
                                             key={opt.id}
@@ -302,27 +302,27 @@ export function ServiceBooking() {
                                                 );
                                             }}
                                             className={cn(
-                                                "p-6 rounded-2xl border text-left transition-all group",
+                                                "p-4 rounded-xl border text-left transition-all group flex items-center justify-between",
                                                 serviceType.includes(opt.id as any)
                                                     ? "bg-racing-blue/10 border-racing-blue"
                                                     : "bg-background/50 border-border hover:border-racing-blue/30"
                                             )}
                                         >
-                                            <div className="flex items-center gap-4">
+                                            <div className="flex items-center gap-3">
                                                 <div className={cn(
-                                                    "w-12 h-12 rounded-xl flex items-center justify-center transition-colors relative",
+                                                    "w-10 h-10 rounded-lg flex items-center justify-center transition-colors relative shrink-0",
                                                     serviceType.includes(opt.id as any) ? "bg-racing-blue text-white" : "bg-muted text-muted-foreground group-hover:text-foreground"
                                                 )}>
-                                                    <opt.icon className="w-6 h-6" />
+                                                    <opt.icon className="w-5 h-5" />
                                                     {serviceType.includes(opt.id as any) && (
-                                                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center">
-                                                            <CheckCircle2 className="w-2.5 h-2.5 text-white" />
+                                                        <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center">
+                                                            <CheckCircle2 className="w-2 h-2 text-white" />
                                                         </div>
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-sm font-black text-foreground uppercase tracking-widest mb-1">{opt.label}</h4>
-                                                    <p className="text-[10px] text-muted-foreground font-medium">{opt.desc}</p>
+                                                    <h4 className="text-[11px] font-black text-foreground uppercase tracking-widest mb-0.5">{opt.label}</h4>
+                                                    <p className="text-[9px] text-muted-foreground font-medium leading-tight">{opt.desc}</p>
                                                 </div>
                                             </div>
                                         </button>
@@ -343,7 +343,7 @@ export function ServiceBooking() {
                                         </div>
 
                                         {cartItems.length > 0 ? (
-                                            <div className="space-y-2">
+                                            <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-2 pt-1">
                                                 {Object.values(cart).map((entry: any, idx) => {
                                                     const item = entry.item;
                                                     const quantity = entry.quantity;
@@ -351,8 +351,8 @@ export function ServiceBooking() {
                                                         ? (item.image.startsWith('/uploads') ? `${API_BASE_URL}${item.image}` : item.image)
                                                         : null;
                                                     return (
-                                                        <div key={idx} className="flex items-center justify-between p-4 bg-muted/20 border border-border rounded-2xl group/item relative hover:z-50 transition-all">
-                                                            <div className="flex items-center gap-3">
+                                                        <div key={idx} className="flex-shrink-0 w-48 flex flex-col p-3 bg-muted/20 border border-border rounded-2xl group/item relative hover:z-50 transition-all">
+                                                            <div className="flex items-center justify-between mb-2">
                                                                 <div 
                                                                     className="relative w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center shrink-0 cursor-zoom-in"
                                                                     onMouseEnter={(e) => {
@@ -368,35 +368,33 @@ export function ServiceBooking() {
                                                                         <Package className="w-4 h-4 text-muted-foreground" />
                                                                     )}
                                                                 </div>
-                                                                <div className="flex flex-col">
-                                                                    <span className="text-[10px] font-black uppercase tracking-tight text-foreground">{item.name}</span>
-                                                                    <span className="text-[8px] font-bold text-muted-foreground uppercase">{item.category === 'Accessory' ? 'accessory' : 'spare'} • ₹{formatPrice(item.price)} each</span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="flex items-center gap-2 bg-background/50 rounded-xl p-1 border border-border">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleQtyChange(item._id, -1)}
-                                                                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-card hover:bg-red-500/10 text-red-500 transition-all border border-border/50 shadow-sm"
-                                                                    >
-                                                                        <Minus className="w-3 h-3" />
-                                                                    </button>
-                                                                    <span className="text-xs font-black min-w-[1.5rem] text-center">{quantity}</span>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleQtyChange(item._id, 1)}
-                                                                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-card hover:bg-racing-blue/10 text-racing-blue transition-all border border-border/50 shadow-sm"
-                                                                    >
-                                                                        <Plus className="w-3 h-3" />
-                                                                    </button>
-                                                                </div>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handleRemoveItem(item._id)}
-                                                                    className="p-2.5 text-red-500 hover:bg-red-500/10 rounded-xl transition-all opacity-40 group-hover/item:opacity-100"
+                                                                    className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg transition-all opacity-40 group-hover/item:opacity-100"
                                                                 >
-                                                                    <Trash2 className="w-4 h-4" />
+                                                                    <Trash2 className="w-3 h-3" />
+                                                                </button>
+                                                            </div>
+                                                            <div className="flex flex-col mb-3">
+                                                                <span className="text-[10px] font-black uppercase tracking-tight text-foreground line-clamp-1">{item.name}</span>
+                                                                <span className="text-[8px] font-bold text-muted-foreground uppercase">₹{formatPrice(item.price)} each</span>
+                                                            </div>
+                                                            <div className="flex items-center justify-between mt-auto bg-background/50 rounded-xl p-1 border border-border">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleQtyChange(item._id, -1)}
+                                                                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-card hover:bg-red-500/10 text-red-500 transition-all border border-border/50 shadow-sm"
+                                                                >
+                                                                    <Minus className="w-3 h-3" />
+                                                                </button>
+                                                                <span className="text-xs font-black min-w-[1.5rem] text-center">{quantity}</span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleQtyChange(item._id, 1)}
+                                                                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-card hover:bg-racing-blue/10 text-racing-blue transition-all border border-border/50 shadow-sm"
+                                                                >
+                                                                    <Plus className="w-3 h-3" />
                                                                 </button>
                                                             </div>
                                                         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
     Star,
     ArrowRight,
@@ -27,20 +27,48 @@ interface BikeDetailsHeroProps {
     bike: any;
     selectedVariantIndex?: number;
     onVariantChange?: (index: number) => void;
+    selectedColorIndex?: number;
+    onColorChange?: (index: number) => void;
     onAction?: (intent: string) => void;
 }
 
-import { useState, useMemo, useEffect } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { BIKES, BikeVariant } from "@/lib/constants/bikes";
 
-export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChange, onAction }: BikeDetailsHeroProps) {
-    const [selectedColorIndex, setSelectedColorIndex] = useState(0);
+export function BikeDetailsHero({
+    bike,
+    selectedVariantIndex = 0,
+    onVariantChange,
+    selectedColorIndex = 0,
+    onColorChange,
+    onAction
+}: BikeDetailsHeroProps) {
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
 
-    // Reset color index when variant changes
-    useEffect(() => {
-        setSelectedColorIndex(0);
-    }, [selectedVariantIndex]);
+    const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+    const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const xPct = mouseX / width - 0.5;
+        const yPct = mouseY / height - 0.5;
+        x.set(xPct);
+        y.set(yPct);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
+    };
 
     const currentVariant = useMemo(() => {
         return bike.variants && bike.variants.length > 0 ? bike.variants[selectedVariantIndex] : null;
@@ -54,7 +82,7 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
     const displayPrice = color.price || (currentVariant ? currentVariant.price : bike.price);
 
     return (
-        <section className="relative min-h-screen bg-background pb-20 overflow-hidden">
+        <section className="relative min-h-screen bg-gradient-to-b from-gray-200 via-indigo-100 to-gray-800/90 p-26 overflow-hidden">
             {/* Background elements */}
             <div
                 className="absolute top-0 right-0 w-1/2 h-screen blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 transition-colors duration-1000"
@@ -62,7 +90,7 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
             />
             <div className="absolute bottom-0 left-0 w-1/3 h-screen bg-muted/20 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 md:pt-32">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 ">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
@@ -137,7 +165,9 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
                                         {activeColors.map((c: any, index: number) => (
                                             <button
                                                 key={index}
-                                                onClick={() => setSelectedColorIndex(index)}
+                                                onClick={() => {
+                                                    if (onColorChange) onColorChange(index);
+                                                }}
                                                 className={cn(
                                                     "w-8 h-8 rounded-full border-2 transition-all p-1",
                                                     index === selectedColorIndex ? "border-racing-blue scale-110" : "border-transparent border-foreground/10 hover:border-foreground/20"
@@ -155,11 +185,11 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
                             )}
                         </div>
 
-                        <p className="text-sm md:text-xl text-muted-foreground font-medium leading-relaxed max-w-xl mb-4 md:mb-10">
+                        <p className="text-sm md:text-xl text-muted-foreground font-medium leading-relaxed max-w-xl mb-4">
                             {bike.description}
                         </p>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+                        {/* <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-4">
                             {[
                                 { label: "Top Speed", value: bike.fullSpecs?.topSpeed || "140 km/h", icon: Zap },
                                 { label: "Mileage", value: bike.fullSpecs?.mileage || "45 kmpl", icon: Shield },
@@ -173,7 +203,7 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
                                     <span className="text-sm md:text-lg font-display font-black text-foreground italic">{fact.value}</span>
                                 </div>
                             ))}
-                        </div>
+                        </div> */}
 
                         <div className="flex flex-wrap gap-6 mb-8 items-center justify-center sm:justify-start">
                             <div className="flex flex-col">
@@ -209,16 +239,16 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="mb-10 p-5 rounded-3xl bg-racing-blue/5 border border-racing-blue/20 flex items-start gap-4 max-w-md backdrop-blur-sm shadow-2xl shadow-black/20"
+                                className="mb-4 p-2 w-fit rounded-xl bg-racing-blue/5 border border-racing-blue/20 flex items-center gap-4 max-w-md backdrop-blur-sm shadow-2xl shadow-black/20"
                             >
-                                <div className="w-10 h-10 rounded-2xl bg-racing-blue/10 flex items-center justify-center shrink-0">
-                                    <AlertTriangle className="w-5 h-5 text-racing-blue" />
+                                <div className="w-10 h-10 rounded-xl bg-red-400/40 flex items-center justify-center shrink-0">
+                                    <AlertTriangle className="w-5 h-5 text-yellow-400" />
                                 </div>
                                 <div>
-                                    <h4 className="text-[10px] font-black text-racing-blue uppercase tracking-widest mb-1">Color Out of Stock</h4>
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-loose">
+                                    <h4 className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Color Out of Stock</h4>
+                                    {/* <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-loose">
                                         This colour is not available at the moment. Please contact the dealer to <span className="text-foreground">pre-order</span> this bike colour for you.
-                                    </p>
+                                    </p> */}
                                 </div>
                             </motion.div>
                         )}
@@ -230,16 +260,16 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
                                     else document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
                                 }}
                                 className={cn(
-                                    "group px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 transition-all transform active:scale-95 shadow-2xl",
+                                    "group p-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 transition-all transform active:scale-95 shadow-2xl",
                                     color.stock === 0
-                                        ? "bg-background border border-racing-blue/50 text-racing-blue hover:bg-muted shadow-racing-blue/5"
+                                        ? "bg-gray-900 border border-racing-blue/50 text-white hover:bg-gray-800 shadow-racing-blue/5"
                                         : "bg-racing-blue text-white hover:bg-dark-racing shadow-racing-blue/20"
                                 )}
                             >
-                                {color.stock === 0 ? "Pre-order Now" : "Book Machine"}
+                                {color.stock === 0 ? "Pre-order" : "Book Machine"}
                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>
-                            <button
+                            {/* <button
                                 onClick={() => {
                                     if (onAction) onAction("EMI");
                                     else document.getElementById('inquiry')?.scrollIntoView({ behavior: 'smooth' });
@@ -248,13 +278,13 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
                             >
                                 Finance Options
                                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </button>
+                            </button> */}
                             <Link
                                 href={`/test-ride?bike=${bike.slug}`}
-                                className="group bg-orange-400/40 border border-border text-foreground px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:bg-racing-blue hover:text-white hover:border-racing-blue transition-all transform active:scale-95"
+                                className="group bg-amber-400/60 border border-border text-foreground px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:bg-racing-blue hover:text-white hover:border-racing-blue transition-all transform active:scale-95"
                             >
                                 Test Ride
-                                <Bike className="w-6 h-6 lg:w-8 lg:h-8 group-hover:rotate-12 transition-transform" />
+                                <Bike className="w-6 h-6 lg:w-8 lg:h-8 group-hover:-rotate-35 transition-transform" />
                             </Link>
                             {bike.brochureUrl && (
                                 <a
@@ -262,7 +292,7 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
                                     download={bike.brochureUrl.startsWith('/')}
                                     target={bike.brochureUrl.startsWith('/') ? undefined : "_blank"}
                                     rel={bike.brochureUrl.startsWith('/') ? undefined : "noopener noreferrer"}
-                                    className="px-6 md:px-10 py-5 bg-muted/50 text-muted-foreground border border-border/50 rounded-2xl font-black uppercase tracking-widest text-[11px] md:text-xs hover:border-foreground/20 hover:text-foreground transition-all transform active:scale-95 flex items-center justify-center gap-3 sm:col-span-2 lg:col-auto"
+                                    className="px-6 md:px-10 py-5 bg-muted/50 text-gray-700 border border-border/50 rounded-2xl font-black uppercase tracking-widest text-[11px] md:text-xs hover:border-foreground/20 hover:text-foreground transition-all transform active:scale-95 flex items-center justify-center gap-3 sm:col-span-2 lg:col-auto"
                                 >
                                     <Download className="w-4 h-4" />
                                     Brochure
@@ -283,17 +313,27 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
                                 damping: 25,
                                 duration: 0.6
                             }}
-                            className="relative hidden lg:block"
+                            className="relative hidden lg:block cursor-crosshair"
+                            style={{
+                                rotateX,
+                                rotateY,
+                                transformStyle: "preserve-3d",
+                                perspective: "1000px"
+                            }}
+                            onMouseMove={handleMouseMove}
+                            onMouseLeave={handleMouseLeave}
                         >
                             <div className="absolute inset-0 bg-racing-blue/20 blur-[150px] opacity-20 -z-10" />
-                            <BoxRevealImage
-                                src={color.image}
-                                alt={bike.name}
-                                className="w-full h-auto"
-                            />
+                            <div style={{ transform: "translateZ(50px)" }}>
+                                <BoxRevealImage
+                                    src={color.image}
+                                    alt={bike.name}
+                                    className="w-full h-auto drop-shadow-2xl"
+                                />
+                            </div>
 
                             {/* Interactive floating specs */}
-                            <div className="absolute -top-10 -right-10 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block">
+                            <div className="absolute -bottom-10 left-0 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block shadow-2xl transition-transform hover:scale-110" style={{ transform: "translateZ(80px)" }}>
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
                                         <Shield className="w-5 h-5 text-racing-blue" />
@@ -305,7 +345,7 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
                                 </div>
                             </div>
 
-                            <div className="absolute -bottom-10 -left-10 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block">
+                            <div className="absolute -bottom-10 -right-10 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block shadow-2xl transition-transform hover:scale-110" style={{ transform: "translateZ(80px)" }}>
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
                                         <Clock className="w-5 h-5 text-racing-blue" />
@@ -330,7 +370,7 @@ export function BikeDetailsHero({ bike, selectedVariantIndex = 0, onVariantChang
                                     src={bike.image2}
                                     alt={`${bike.name} secondary view`}
                                     fill
-                                    className="object-contain p-2 transform group-hover:scale-105 transition-transform duration-700"
+                                    className="object-contain p-2 transform group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-700 drop-shadow-2xl"
                                 />
                             </motion.div>
                         )}

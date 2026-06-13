@@ -90,7 +90,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
     ];
 
     return (
-        <div className="relative max-w-7xl mx-auto h-[400px] sm:h-[600px] bg-background rounded-3xl md:rounded-[3rem] overflow-hidden border border-border shadow-2xl group/viewer">
+        <div className="relative max-w-4xl mx-auto h-[400px] sm:h-[500px] bg-background/20 backdrop-blur-sm rounded-2xl  overflow-hidden shadow-2xl group/viewer">
             {/* Main 3D View (Custom Rotating Viewer) */}
             <div className="absolute inset-0 z-0">
                 {activeMode === "360" ? (
@@ -132,7 +132,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
             </div>
 
             {/* Content Context (Bottom Left) */}
-            <div className="absolute bottom-8 left-8 p-8 bg-card/90 backdrop-blur-lg border border-border rounded-[2.5rem] max-w-xs z-20 shadow-2xl hidden lg:block will-change-transform">
+            {/* <div className="absolute bottom-8 left-8 p-8 bg-card/90 backdrop-blur-lg border border-border rounded-[2.5rem] max-w-xs z-20 shadow-2xl hidden lg:block will-change-transform">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeMode}
@@ -161,7 +161,7 @@ export function Viewer360({ bike }: { bike: Bike }) {
                         </p>
                     </motion.div>
                 </AnimatePresence>
-            </div>
+            </div> */}
 
             {/* Sound Check Overlay */}
             <AnimatePresence>
@@ -173,12 +173,12 @@ export function Viewer360({ bike }: { bike: Bike }) {
                         className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/60 backdrop-blur-sm pointer-events-none"
                     >
                         <div className="flex flex-col items-center gap-8 pointer-events-auto">
-                            <div className="text-center mb-4">
+                            <div className="text-center">
                                 <h4 className="text-xs font-black text-racing-blue uppercase tracking-[0.3em] mb-2">Exhaust Note</h4>
-                                <p className="text-[10px] text-muted-foreground font-bold uppercase">Yamaha {bike.name} Signature Series</p>
+                                <p className="text-[14px] text-muted-foreground font-bold uppercase">Yamaha {bike.name} Signature Series</p>
                             </div>
 
-                            <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-4">
                                 <button
                                     onClick={() => setIsPlaying(!isPlaying)}
                                     disabled={!soundPath}

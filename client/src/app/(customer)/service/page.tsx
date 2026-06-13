@@ -5,107 +5,62 @@ import { Wrench, Shield, Zap, MessageSquare } from "lucide-react";
 
 export default function ServicePage() {
     return (
-        <div className="min-h-screen bg-zinc-950 pt-22 md:pt-28 pb-24 relative overflow-hidden">
-            {/* <div className="h-[200px] inset-0 bg-black/50 z-0" /> */}
-
+        <div className="min-h-screen bg-zinc-950 pt-26 pb-12 relative overflow-hidden">
             {/* Background Decorative Elements */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-racing-blue/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-racing-blue/5 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-racing-blue/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-racing-blue/5 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                {/* Hero Header */}
-                <div className="mb-10 md:mb-20">
+                {/* Hero Header & Booking Split Layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start mb-24">
 
-                    <div className="flex items-center gap-3 mb-6">
-                        <span className="w-12 h-1 bg-racing-blue rounded-full shadow-[0_0_10px_rgba(37,99,235,0.5)]" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue">Premium Support Hub</span>
-                    </div>
-                    <div className="space-y-8">
-                        <h1 className="text-3xl md:text-4xl xl:text-5xl font-display font-black text-white uppercase tracking-tighter leading-none">
-                            YAMAHA <span className="text-gradient">SERVICE CENTER KATIHAR</span>
+                    {/* Left Column: Hero Text & Trust Badges */}
+                    <div className="lg:col-span-5 space-y-4 sticky top-2">
+                        <div className="flex items-center gap-3">
+                            <span className="w-12 h-1 bg-racing-blue rounded-full shadow-[0_0_10px_rgba(37,99,235,0.5)]" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-racing-blue">Premium Support Hub</span>
+                        </div>
+                        <h1 className="text-4xl md:text-5xl xl:text-6xl font-display font-black text-white uppercase tracking-tighter leading-[1.1]">
+                            YAMAHA <span className="text-gradient block">SERVICE</span>
                         </h1>
-                        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-                            <p className="text-gray-400 font-medium leading-relaxed max-w-2xl">
-                                Experience world-class authorized Yamaha repair at Choudhary Yamaha. <span className="hidden xl:block"> Our certified service center in Katihar ensures your ride stays at its peak performance with genuine parts.</span>
-                            </p>
-                            {/* <div className="flex flex-wrap gap-4 shrink-0">
-                                <div className="px-6 py-4 bg-zinc-900/50 border border-zinc-800 rounded-3xl flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
-                                        <MessageSquare className="w-5 h-5 text-racing-blue" />
+                        <p className="text-zinc-400 font-medium leading-relaxed max-w-md text-sm">
+                            World-class authorized Yamaha repair at Choudhary Yamaha, Katihar. Certified technicians, genuine parts, and precision care.
+                        </p>
+
+                        {/* Sleek Trust Badges */}
+                        <div className="flex flex-col gap-4 pt-6 border-t border-white/5">
+                            {[
+                                { icon: Wrench, label: "Certified Technicians", desc: "Factory-trained experts" },
+                                // { icon: Shield, label: "Official Warranty", desc: "100% genuine parts" },
+                                { icon: Zap, label: "Quick Turnaround", desc: "Express service bay" }
+                            ].map((stat, i) => (
+                                <div key={i} className="flex items-center gap-4 group">
+                                    <div className="w-12 h-12 bg-zinc-900/50 rounded-2xl border border-white/5 flex items-center justify-center group-hover:bg-racing-blue/10 group-hover:border-racing-blue/30 transition-colors shadow-lg">
+                                        <stat.icon className="w-5 h-5 text-racing-blue" />
                                     </div>
                                     <div>
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500 block">WhatsApp Support</span>
-                                        <span className="text-xs font-black text-white uppercase tracking-widest">+91 70041 00062</span>
+                                        <span className="text-xs font-black text-white uppercase tracking-widest block">{stat.label}</span>
+                                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{stat.desc}</span>
                                     </div>
-                                </div>
-                            </div> */}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-1 gap-12 xl:gap-24">
-                    {/* Left Side: Booking & Stats */}
-                    <div id="booking" className="lg:col-span-1 xl:col-span-1 space-y-16">
-                        <section>
-                            <ServiceBooking />
-                        </section>
-
-                        <section className="pt-16 border-t border-white/5">
-                            <UserBookings />
-                        </section>
-
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                            {[
-                                { icon: Wrench, label: "Certified", value: "Technicians" },
-                                { icon: Shield, label: "Official", value: "Warranty" },
-                                { icon: Zap, label: "Quick", value: "Turnaround" }
-                            ].map((stat, i) => (
-                                <div key={i} className="p-6 bg-zinc-900/40 border border-white/5 rounded-[2.5rem] text-center hover:border-racing-blue/20 transition-all group">
-                                    <stat.icon className="w-6 h-6 text-racing-blue mx-auto mb-4 group-hover:scale-110 transition-transform" />
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500 block mb-1">{stat.label}</span>
-                                    <span className="text-sm font-black text-white uppercase tracking-tighter italic">{stat.value}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    {/* Right Side: Spare Parts Discovery */}
-                    <div id="spares" className="flex justify-center items-center space-y-12">
-
-                        <SparesGallery />
+                    {/* Right Column: Service Booking Form */}
+                    <div id="booking" className="lg:col-span-7 w-full">
+                        <ServiceBooking />
                     </div>
                 </div>
 
-                {/* Bottom Trust Section */}
-                <div className="mt-24 pt-16 border-t border-zinc-900">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                        {[
-                            {
-                                title: "Genuine Spares",
-                                desc: "Every part we install is a Yamaha Authorized component, maintaining your bike's integrity."
-                            },
-                            {
-                                title: "Warranty Protection",
-                                desc: "Official service logs ensure your manufacturer's warranty remains intact and valid."
-                            },
-                            {
-                                title: "Digital History",
-                                desc: "Access your complete service and parts replacement records through your digital 'My Garage'."
-                            },
-                            {
-                                title: "Advanced Tuning",
-                                desc: "Proprietary Yamaha diagnostic tools (YDT) used for precise engine mapping and health checks."
-                            }
-                        ].map((item, idx) => (
-                            <div key={idx} className="space-y-4">
-                                <h4 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-3">
-                                    <span className="text-racing-blue font-display italic">0{idx + 1}</span>
-                                    {item.title}
-                                </h4>
-                                <p className="text-[11px] text-zinc-500 font-medium leading-relaxed">{item.desc}</p>
-                            </div>
-                        ))}
-                    </div>
+                {/* Track Your Service */}
+                <div className=" border-t border-white/5">
+                    <UserBookings />
+                </div>
+
+                {/* Genuine Spares Shopping */}
+                <div id="spares" className="pt-16 border-t border-white/5">
+                    <SparesGallery />
                 </div>
             </div>
         </div>

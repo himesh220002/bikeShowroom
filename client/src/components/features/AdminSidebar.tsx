@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
     Bike,
     LayoutDashboard,
@@ -38,6 +38,7 @@ const menuItems = [
 
 export function AdminSidebar() {
     const pathname = usePathname();
+    const router = useRouter();
     const { theme, toggleTheme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
     const [unreadRides, setUnreadRides] = useState(0);
@@ -68,7 +69,7 @@ export function AdminSidebar() {
 
     const logout = () => {
         localStorage.removeItem("admin_session_active");
-        window.location.href = "/";
+        router.push("/");
     };
 
     return (

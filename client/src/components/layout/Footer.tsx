@@ -140,7 +140,7 @@ export function Footer() {
                                 Our Headquarters
                             </h4>
                             <div className="space-y-6">
-                                <div className="flex gap-4">
+                                <div className="flex gap-4 items-center">
                                     <div className="w-10 h-10 rounded-xl bg-racing-blue/5 flex items-center justify-center shrink-0">
                                         <MapPin className="w-5 h-5 text-racing-blue" />
                                     </div>
@@ -148,7 +148,7 @@ export function Footer() {
                                         {config.showroomAddress}
                                     </div>
                                 </div>
-                                <div className="flex gap-4">
+                                <div className="flex gap-4 items-center">
                                     <div className="w-10 h-10 rounded-xl bg-racing-blue/5 flex items-center justify-center shrink-0">
                                         <Phone className="w-5 h-5 text-racing-blue" />
                                     </div>
@@ -156,7 +156,7 @@ export function Footer() {
                                         {config.showroomPhone}
                                     </div>
                                 </div>
-                                <div className="flex gap-4 text-center xl:text-left">
+                                <div className="flex gap-4  items-center text-center xl:text-left">
                                     <div className="w-10 h-10 rounded-xl bg-racing-blue/5 flex items-center justify-center shrink-0">
                                         <Mail className="w-5 h-5 text-racing-blue" />
                                     </div>
@@ -164,7 +164,7 @@ export function Footer() {
                                         {config.showroomEmail}
                                     </div>
                                 </div>
-                                <div className="flex gap-4">
+                                <div className="flex gap-4 items-center">
                                     <div className="w-10 h-10 rounded-xl bg-racing-blue/10 flex items-center justify-center shrink-0 ring-4 ring-racing-blue/5">
                                         <ShieldCheck className="w-5 h-5 text-racing-blue" />
                                     </div>
@@ -197,7 +197,7 @@ export function Footer() {
                     </div>
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                            © 2022 Choudhary Yamaha. Excellence Synchronized. <span>|</span> <Link href="https://myweb-nine-tawny.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-racing-blue hover:text-racing-blue transition-colors">Digitally Empowered by CypherTech</Link>
+                            © 2022 Choudhary Yamaha. Excellence Synchronized. <span>|</span> <Link href="https://cyphertech.online/" target="_blank" rel="noopener noreferrer" className="text-racing-blue hover:text-racing-blue transition-colors">Digitally Empowered by CypherTech</Link>
                         </p>
                         <div className="flex items-center gap-8">
                             <Link href="/requirements" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-racing-blue transition-colors">Digital Roadmap</Link>
