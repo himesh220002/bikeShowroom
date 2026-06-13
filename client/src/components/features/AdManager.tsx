@@ -22,6 +22,19 @@ type Campaign = {
     createdAt: string;
 };
 
+const getMediaUrl = (path: string | undefined | null) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    if (path.startsWith('/uploads')) {
+        // Handle potential double slashes if API_BASE_URL ends with slash
+        const baseUrl = API_BASE_URL.replace(/\/$/, '');
+        return `${baseUrl}${path}`;
+    }
+    // Static assets from public folder
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    return `${basePath}${path.startsWith('/') ? path : `/${path}`}`;
+};
+
 interface CampaignItemProps {
     camp: Campaign;
     onEdit: (ad: Campaign) => void;
@@ -49,7 +62,7 @@ function CampaignItem({ camp, onEdit, onDelete }: CampaignItemProps) {
                 </div>
                 <div className="w-20 h-20 bg-muted rounded-2xl overflow-hidden border border-border flex-shrink-0">
                     <img
-                        src={camp.thumbnail ? (camp.thumbnail.startsWith('/uploads') ? `${API_BASE_URL}${camp.thumbnail}` : camp.thumbnail) : (camp.image.startsWith('/uploads') ? `${API_BASE_URL}${camp.image}` : camp.image)}
+                        src={getMediaUrl(camp.thumbnail || camp.image)}
                         alt={camp.name}
                         className="w-full h-full object-cover"
                     />
@@ -137,6 +150,8 @@ export function AdManager() {
     const [description, setDescription] = useState("");
     const [image, setImage] = useState<File | null>(null);
     const [thumbnail, setThumbnail] = useState<File | null>(null);
+    const [imageUrlInput, setImageUrlInput] = useState("");
+    const [thumbnailUrlInput, setThumbnailUrlInput] = useState("");
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<string | null>(null);
     const [month, setMonth] = useState("");
@@ -211,12 +226,14 @@ export function AdManager() {
                         setError("Strict Block: Video is too long (Max 5 minutes allowed).");
                         setImage(null);
                         setPreviewUrl(null);
+                        setImageUrlInput("");
                         setThumbnail(null);
                         setThumbnailPreviewUrl(null);
                         return;
                     }
                     
                     setImage(file);
+                    setImageUrlInput("");
                     setPreviewUrl(URL.createObjectURL(file));
                     setType("Video");
                     generateThumbnail(file);
@@ -224,6 +241,7 @@ export function AdManager() {
                 video.src = URL.createObjectURL(file);
             } else if (file.type.startsWith("image/")) {
                 setImage(file);
+                setImageUrlInput("");
                 setPreviewUrl(URL.createObjectURL(file));
                 if (type === "Video") setType("Poster");
                 setThumbnail(null);
@@ -235,7 +253,7 @@ export function AdManager() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!name || !link) return;
-        if (!editingAd && !image) return;
+        if (!editingAd && !image && !imageUrlInput) return;
 
         setUploading(true);
         const formData = new FormData();
@@ -244,7 +262,11 @@ export function AdManager() {
         formData.append('link', link);
         formData.append('description', description);
         if (image) formData.append('image', image);
+        else if (imageUrlInput) formData.append('imageUrl', imageUrlInput);
+        
         if (thumbnail) formData.append('thumbnail', thumbnail);
+        else if (thumbnailUrlInput) formData.append('thumbnailUrl', thumbnailUrlInput);
+        
         formData.append('status', status);
         formData.append('month', month);
         if (startDate) formData.append('startDate', startDate);
@@ -319,6 +341,8 @@ export function AdManager() {
         setDescription("");
         setImage(null);
         setThumbnail(null);
+        setImageUrlInput("");
+        setThumbnailUrlInput("");
         setPreviewUrl(null);
         setThumbnailPreviewUrl(null);
         setEditingAd(null);
@@ -334,12 +358,14 @@ export function AdManager() {
         setType(ad.type);
         setLink(ad.link);
         setDescription(ad.description || "");
-        setPreviewUrl(ad.image.startsWith('/uploads') ? `${API_BASE_URL}${ad.image}` : ad.image);
-        if (ad.thumbnail) {
-            setThumbnailPreviewUrl(ad.thumbnail.startsWith('/uploads') ? `${API_BASE_URL}${ad.thumbnail}` : ad.thumbnail);
-        } else {
-            setThumbnailPreviewUrl(null);
-        }
+        
+        const isExternal = ad.image && ad.image.startsWith('http');
+        setImageUrlInput(isExternal ? ad.image : "");
+        setPreviewUrl(getMediaUrl(ad.image));
+        
+        const isThumbExternal = ad.thumbnail && ad.thumbnail.startsWith('http');
+        setThumbnailUrlInput(isThumbExternal && ad.thumbnail ? ad.thumbnail : "");
+        setThumbnailPreviewUrl(getMediaUrl(ad.thumbnail));
         setMonth(ad.month || "");
         setStartDate(ad.startDate ? new Date(ad.startDate).toISOString().split('T')[0] : "");
         setEndDate(ad.endDate ? new Date(ad.endDate).toISOString().split('T')[0] : "");
@@ -494,7 +520,7 @@ export function AdManager() {
 
                             <button
                                 type="submit"
-                                disabled={uploading || (!editingAd && !image) || !!error}
+                                disabled={uploading || (!editingAd && !image && !imageUrlInput) || !!error}
                                 className="w-full py-4 bg-racing-blue text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-racing-blue/20 hover:bg-dark-racing transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                             >
                                 {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
@@ -535,6 +561,31 @@ export function AdManager() {
                                         <p className="text-white text-[10px] font-black uppercase tracking-widest">Change Image</p>
                                     </div>
                                 )}
+                            </div>
+
+                            <div className="flex items-center gap-4 mt-2">
+                                <div className="h-px bg-border flex-1" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">OR</span>
+                                <div className="h-px bg-border flex-1" />
+                            </div>
+
+                            <div className="space-y-2 mt-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">External URL (e.g., Unsplash/Imgur)</label>
+                                <input
+                                    type="url"
+                                    value={imageUrlInput}
+                                    onChange={e => {
+                                        setImageUrlInput(e.target.value);
+                                        if (e.target.value) {
+                                            setPreviewUrl(e.target.value);
+                                            setImage(null);
+                                        } else {
+                                            setPreviewUrl(null);
+                                        }
+                                    }}
+                                    placeholder="https://..."
+                                    className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                />
                             </div>
 
                             {type === "Video" && (
@@ -580,6 +631,25 @@ export function AdManager() {
                                         </div>
                                     </div>
                                     <p className="text-[9px] text-muted-foreground uppercase font-bold text-center">Standard poster for video ads</p>
+                                    
+                                    <div className="space-y-2 mt-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">External Thumbnail URL</label>
+                                        <input
+                                            type="url"
+                                            value={thumbnailUrlInput}
+                                            onChange={e => {
+                                                setThumbnailUrlInput(e.target.value);
+                                                if (e.target.value) {
+                                                    setThumbnailPreviewUrl(e.target.value);
+                                                    setThumbnail(null);
+                                                } else {
+                                                    setThumbnailPreviewUrl(null);
+                                                }
+                                            }}
+                                            placeholder="https://..."
+                                            className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-racing-blue/50 outline-none transition-all"
+                                        />
+                                    </div>
                                 </div>
                             )}
                         </div>

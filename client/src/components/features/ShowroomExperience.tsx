@@ -24,7 +24,7 @@ export function ShowroomExperience() {
                             className="aspect-square rounded-[3rem] overflow-hidden border border-white/10 relative group bg-zinc-800/50"
                         >
                             <Image
-                                src="/images/r15v4-sp.webp"
+                                src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/images/r15v4-sp.webp`}
                                 alt="Showroom Interior"
                                 fill
                                 priority
@@ -43,7 +43,7 @@ export function ShowroomExperience() {
                                 className="aspect-square rounded-[2.5rem] overflow-hidden border border-white/10 relative group bg-zinc-800/50"
                             >
                                 <Image
-                                    src="/images/calloftheblue.png"
+                                    src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/images/calloftheblue.png`}
                                     alt="Our Expert Staff"
                                     fill
                                     priority

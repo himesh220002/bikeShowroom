@@ -49,8 +49,6 @@ const allowedOrigins = [
     "https://bike-showroom-client.vercel.app", // Added Vercel domain
     "https://cyphertech.online",
     "https://www.cyphertech.online",
-    "https://cyphertech.online/yamahabikes",
-    "https://www.cyphertech.online/yamahabikes",
 ];
 
 if (process.env.CLIENT_URL) {

@@ -20,6 +20,17 @@ type PromoResponse = Ad & {
     status: 'Active' | 'Scheduled' | 'Inactive';
 };
 
+const getMediaUrl = (path: string | undefined | null) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    if (path.startsWith('/uploads')) {
+        const baseUrl = API_BASE_URL.replace(/\/$/, '');
+        return `${baseUrl}${path}`;
+    }
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    return `${basePath}${path.startsWith('/') ? path : `/${path}`}`;
+};
+
 export function AdCarousel() {
     const [ads, setAds] = useState<Ad[]>([]);
     const [loading, setLoading] = useState(true);
@@ -87,8 +98,8 @@ export function AdCarousel() {
 }
 
 function AdCard({ ad }: { ad: Ad }) {
-    const imageUrl = ad.image.startsWith('/uploads') ? `${API_BASE_URL}${ad.image}` : ad.image;
-    const thumbUrl = ad.thumbnail ? (ad.thumbnail.startsWith('/uploads') ? `${API_BASE_URL}${ad.thumbnail}` : ad.thumbnail) : imageUrl;
+    const imageUrl = getMediaUrl(ad.image);
+    const thumbUrl = getMediaUrl(ad.thumbnail) || imageUrl;
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
 

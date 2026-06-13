@@ -93,16 +93,16 @@ router.get('/', async (req, res) => {
 // Create new campaign with image/video and optional thumbnail upload
 router.post('/', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]), async (req, res) => {
     try {
-        const { name, type, link, status, description, month, startDate, endDate } = req.body;
+        const { name, type, link, status, description, month, startDate, endDate, imageUrl, thumbnailUrl } = req.body;
         const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-        if (!files || !files['image']) {
-            return res.status(400).json({ success: false, message: 'Primary visual (image/video) is required' });
+        if ((!files || !files['image']) && !imageUrl) {
+            return res.status(400).json({ success: false, message: 'Primary visual (file or URL) is required' });
         }
 
-        // Return paths relative to server's static folder
-        const imagePath = `/uploads/ads/${files['image'][0].filename}`;
-        const thumbnailPath = files['thumbnail'] ? `/uploads/ads/${files['thumbnail'][0].filename}` : undefined;
+        // Return paths relative to server's static folder, or the external URL
+        const imagePath = files && files['image'] ? `/uploads/ads/${files['image'][0].filename}` : imageUrl;
+        const thumbnailPath = files && files['thumbnail'] ? `/uploads/ads/${files['thumbnail'][0].filename}` : thumbnailUrl;
 
         const adCount = await Ad.countDocuments();
 
@@ -153,7 +153,7 @@ router.post('/reorder', async (req, res) => {
 // Update campaign
 router.put('/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]), async (req, res) => {
     try {
-        const { name, type, link, status, description, month, startDate, endDate } = req.body;
+        const { name, type, link, status, description, month, startDate, endDate, imageUrl, thumbnailUrl } = req.body;
         const files = req.files as { [fieldname: string]: Express.Multer.File[] };
         
         const updateData: any = {
@@ -179,6 +179,8 @@ router.put('/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'thumb
                 const oldPath = path.join(__dirname, '../../public', oldAd.image);
                 if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
             }
+        } else if (imageUrl) {
+            updateData.image = imageUrl;
         }
 
         if (files && files['thumbnail']) {
@@ -190,6 +192,8 @@ router.put('/:id', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'thumb
                 const oldThumbPath = path.join(__dirname, '../../public', oldAd.thumbnail);
                 if (fs.existsSync(oldThumbPath)) fs.unlinkSync(oldThumbPath);
             }
+        } else if (thumbnailUrl) {
+            updateData.thumbnail = thumbnailUrl;
         }
 
         const ad = await Ad.findByIdAndUpdate(
