@@ -46,7 +46,11 @@ const httpServer = createServer(app);
 const allowedOrigins = [
     "http://localhost:3000",
     "http://localhost:3001",
-    "https://bike-showroom-client.vercel.app" // Added Vercel domain
+    "https://bike-showroom-client.vercel.app", // Added Vercel domain
+    "https://cyphertech.online",
+    "https://www.cyphertech.online",
+    "https://cyphertech.online/yamahabikes",
+    "https://www.cyphertech.online/yamahabikes",
 ];
 
 if (process.env.CLIENT_URL) {
