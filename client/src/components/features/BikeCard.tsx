@@ -16,7 +16,7 @@ export function BikeCard({ bike, index = 0, isActive = true }: BikeCardProps) {
     const primaryColor = bike.colors?.[0] || { name: 'Standard', hex: '#333', image: '' };
 
     return (
-        <div className="block h-full w-full">
+        <Link href={`/bikes/${bike.slug}`} className="block h-full w-full">
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -85,6 +85,6 @@ export function BikeCard({ bike, index = 0, isActive = true }: BikeCardProps) {
                     </Link>
                 </div>
             </motion.div>
-        </div>
+        </Link>
     );
 }
