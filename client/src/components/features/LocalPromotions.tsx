@@ -59,7 +59,7 @@ export function LocalPromotions() {
                             {/* Background Image */}
                             <div
                                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                                style={{ backgroundImage: `url(${promo.image})` }}
+                                ref={(el) => { if (el) el.style.backgroundImage = `url("${process.env.NEXT_PUBLIC_BASE_PATH || ''}${promo.image}")` }}
                             />
                             {/* Overlay Gradient */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />

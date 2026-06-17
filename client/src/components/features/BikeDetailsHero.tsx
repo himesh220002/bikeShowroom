@@ -82,11 +82,11 @@ export function BikeDetailsHero({
     const displayPrice = color.price || (currentVariant ? currentVariant.price : bike.price);
 
     return (
-        <section className="relative min-h-screen bg-gradient-to-b from-gray-200 via-indigo-100 to-gray-800/90 p-26 overflow-hidden">
+        <section className="relative min-h-screen bg-gradient-to-b from-gray-200 via-indigo-100 to-gray-800/90 pt-26 overflow-hidden">
             {/* Background elements */}
             <div
                 className="absolute top-0 right-0 w-1/2 h-screen blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 transition-colors duration-1000"
-                style={{ backgroundColor: `${color.hex}22` || 'rgba(0,123,255,0.05)' }}
+                ref={(el) => { if (el) el.style.backgroundColor = `${color.hex}22` || 'rgba(0,123,255,0.05)'; }}
             />
             <div className="absolute bottom-0 left-0 w-1/3 h-screen bg-muted/20 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
@@ -152,14 +152,14 @@ export function BikeDetailsHero({
                                     alt={bike.name}
                                     width={600}
                                     height={400}
-                                    className="w-full h-auto object-contain drop-shadow-[0_20px_20px_rgba(0,0,0,0.4)]"
+                                    className="w-full h-auto max-h-[300px] object-contain drop-shadow-[0_20px_20px_rgba(0,0,0,0.4)]"
                                     priority
                                 />
                             </motion.div>
 
                             {/* Color Selector */}
                             {activeColors.length > 1 && (
-                                <div className="mt-8 flex flex-col items-center sm:items-start gap-3">
+                                <div className="mt-8 flex flex-col items-center lg:items-start gap-3">
                                     <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Available Colors</span>
                                     <div className="flex gap-4">
                                         {activeColors.map((c: any, index: number) => (
@@ -176,7 +176,7 @@ export function BikeDetailsHero({
                                             >
                                                 <div
                                                     className="w-full h-full rounded-full shadow-inner"
-                                                    style={{ backgroundColor: c.hex || '#555' }}
+                                                    ref={(el) => { if (el) el.style.backgroundColor = c.hex || '#555'; }}
                                                 />
                                             </button>
                                         ))}
@@ -324,7 +324,7 @@ export function BikeDetailsHero({
                             onMouseLeave={handleMouseLeave}
                         >
                             <div className="absolute inset-0 bg-racing-blue/20 blur-[150px] opacity-20 -z-10" />
-                            <div style={{ transform: "translateZ(50px)" }}>
+                            <div ref={(el) => { if (el) el.style.transform = "translateZ(50px)"; }}>
                                 <BoxRevealImage
                                     src={color.image}
                                     alt={bike.name}
@@ -333,7 +333,7 @@ export function BikeDetailsHero({
                             </div>
 
                             {/* Interactive floating specs */}
-                            <div className="absolute -bottom-10 left-0 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block shadow-2xl transition-transform hover:scale-110" style={{ transform: "translateZ(80px)" }}>
+                            <div className="absolute -bottom-10 left-0 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block shadow-2xl transition-transform hover:scale-110" ref={(el) => { if (el) el.style.transform = "translateZ(80px)"; }}>
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
                                         <Shield className="w-5 h-5 text-racing-blue" />
@@ -345,7 +345,7 @@ export function BikeDetailsHero({
                                 </div>
                             </div>
 
-                            <div className="absolute -bottom-10 -right-10 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block shadow-2xl transition-transform hover:scale-110" style={{ transform: "translateZ(80px)" }}>
+                            <div className="absolute -bottom-10 -right-10 bg-card/80 backdrop-blur-xl border border-border p-4 rounded-3xl hidden md:block shadow-2xl transition-transform hover:scale-110" ref={(el) => { if (el) el.style.transform = "translateZ(80px)"; }}>
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-racing-blue/10 rounded-2xl flex items-center justify-center">
                                         <Clock className="w-5 h-5 text-racing-blue" />

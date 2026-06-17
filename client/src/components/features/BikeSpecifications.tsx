@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-// import { Gauge, Cpu, Binary, Shield, Zap, Fuel, Scale, Ruler, Layers } from "lucide-react";
+import { Gauge, Cpu, Binary, Shield, Zap, Fuel, Scale, Ruler, Layers } from "lucide-react";
 import { LucideIcon } from "@/components/ui/LucideIcon";
+
 import Link from "next/link";
 
 interface BikeSpecificationsProps {
@@ -72,8 +73,8 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                             {/* Animated Grayscale Image */}
                             {spec.image && (
                                 <div
-                                    className="absolute inset-0 bg-cover bg-center opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-1000 group-hover:scale-110"
-                                    style={{ backgroundImage: `url("${process.env.NEXT_PUBLIC_BASE_PATH || ''}${spec.image}")` }}
+                                    className="absolute inset-0 bg-cover bg-center opacity-80 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-110"
+                                    ref={(el) => { if (el) el.style.backgroundImage = `url("${process.env.NEXT_PUBLIC_BASE_PATH || ''}${spec.image}")` }}
                                 />
                             )}
 
@@ -103,7 +104,7 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                     <div className="relative group overflow-hidden bg-zinc-900 p-8 md:p-12 rounded-[2.5rem] border border-white/5 shadow-2xl">
                         <div
                             className="absolute inset-0 bg-cover bg-center opacity-30 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-1000 group-hover:scale-110"
-                            style={{ backgroundImage: `url("${process.env.NEXT_PUBLIC_BASE_PATH || ''}/images/bikemountain.jpg")` }}
+                            ref={(el) => { if (el) el.style.backgroundImage = `url("${process.env.NEXT_PUBLIC_BASE_PATH || ''}/images/bikemountain.jpg")` }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-tr from-zinc-950 via-zinc-950/80 to-transparent" />
 
@@ -130,7 +131,7 @@ export function BikeSpecifications({ bike }: BikeSpecificationsProps) {
                     <div className="bg-gradient-to-br from-blue-900 to-zinc-950 rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-between relative overflow-hidden group shadow-2xl border border-white/5">
                         <div
                             className="absolute inset-0 bg-cover bg-center opacity-20 group-hover:opacity-40 transition-all duration-1000 group-hover:scale-110 mix-blend-overlay"
-                            style={{ backgroundImage: `url("${process.env.NEXT_PUBLIC_BASE_PATH || ''}/images/fascino.png")` }}
+                            ref={(el) => { if (el) el.style.backgroundImage = `url("${process.env.NEXT_PUBLIC_BASE_PATH || ''}/images/fascino.png")` }}
                         />
 
                         <div className="relative z-10">

@@ -63,7 +63,7 @@ export function Testimonials() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1 }}
-                            className="flex flex-col items-center text-center p-8 bg-zinc-900/40 rounded-[3rem] border border-white/5 hover:border-racing-blue/20 transition-all group"
+                            className="flex flex-col items-center text-center p-4 md:p-8 bg-zinc-900/40 rounded-[1.5rem] border border-white/5 hover:border-racing-blue/20 transition-all group"
                         >
                             <div className={cn("w-16 h-16 rounded-2xl bg-zinc-950 flex items-center justify-center mb-6 border border-zinc-800 group-hover:border-racing-blue/50 transition-all shadow-2xl", item.color)}>
                                 <item.icon className="w-8 h-8" />

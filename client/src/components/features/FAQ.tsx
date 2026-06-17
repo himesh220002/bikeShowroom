@@ -90,7 +90,7 @@ export function FAQ() {
                             <div
                                 key={index}
                                 className={cn(
-                                    "group border rounded-3xl transition-all duration-500 overflow-hidden",
+                                    "group border rounded-2xl transition-all duration-500 overflow-hidden",
                                     isActive
                                         ? "bg-zinc-900 border-racing-blue/50 shadow-[0_20px_50px_rgba(45,106,255,0.1)]"
                                         : "bg-zinc-900/40 border-white/5 hover:border-racing-blue/20"
@@ -102,7 +102,7 @@ export function FAQ() {
                                 >
                                     <span
                                         className={cn(
-                                            "text-xs font-black uppercase tracking-widest transition-colors duration-300",
+                                            "text-xs font-black tracking-widest transition-colors duration-300",
                                             isActive ? "text-white" : "text-gray-400 group-hover:text-white"
                                         )}
                                     >

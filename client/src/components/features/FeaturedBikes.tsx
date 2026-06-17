@@ -83,31 +83,37 @@ export function FeaturedBikes() {
             let filter = "blur(0px)";
 
             if (offset === 0) {
-                width = "75%";
+                width = "92%";
                 left = "4%";
                 opacity = 1;
                 zIndex = 10;
             } else if (offset === 1) {
-                width = "15%";
-                left = "83%";
+                width = "3%";
+                left = "97%";
+                opacity = 1;
+                zIndex = 5;
+            } else if (offset === -1) {
+                width = "3%";
+                left = "0%";
                 opacity = 1;
                 zIndex = 5;
             } else if (offset === 2) {
                 width = "10%";
                 left = "102%";
-                opacity = 1;
-                zIndex = 2;
-            } else if (offset === -1) {
-                width = "75%";
-                left = "-80%";
                 opacity = 0;
+                zIndex = 2;
+            } else if (offset === -2) {
+                width = "10%";
+                left = "-12%";
+                opacity = 0;
+                zIndex = 2;
             } else if (offset > 2) {
                 left = "150%";
                 width = "10%";
                 opacity = 0;
             } else {
                 left = "-150%";
-                width = "75%";
+                width = "10%";
                 opacity = 0;
             }
             return { width, left, x, zIndex, opacity, scale, filter };
@@ -185,8 +191,7 @@ export function FeaturedBikes() {
     return (
         <section
             id="machines"
-            className="py-12 lg:py-20 relative overflow-hidden transition-colors duration-1000"
-            style={{ backgroundColor: `${primaryColor}10`, containIntrinsicSize: '0 800px' }}
+            className="py-12 lg:py-20 relative bg-primary containIntrinsicSize: 0_800px overflow-hidden transition-colors duration-1000"
         >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/90 pointer-events-none" />
 
@@ -204,12 +209,14 @@ export function FeaturedBikes() {
 
                     <div className="hidden sm:flex width-fit gap-4">
                         <button
+                            title="previous bike"
                             onClick={handlePrev}
                             className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center text-foreground hover:border-racing-blue transition-all group active:scale-95"
                         >
                             <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
                         </button>
                         <button
+                            title="next bike"
                             onClick={handleNext}
                             className="w-14 h-14 rounded-2xl bg-racing-blue flex items-center justify-center text-white hover:bg-dark-racing transition-all group active:scale-95 shadow-xl shadow-racing-blue/20"
                         >
@@ -275,7 +282,7 @@ export function FeaturedBikes() {
                         { icon: Bike, title: "Swift Valuations", desc: "Digital exchange scoring" },
                         { icon: Phone, title: "Expert Support", desc: "Certified Technicians" }
                     ].map((item, i) => (
-                        <div key={item.title} className="bg-gray-900 p-6 rounded-3xl border border-gray-800 flex items-center gap-5 group hover:border-racing-blue/20 transition-all">
+                        <div key={item.title} className="bg-gray-900 p-3 sm:p-6 rounded-2xl border border-gray-800 flex items-center gap-5 group hover:border-racing-blue/20 transition-all">
                             <div className="w-12 h-12 bg-racing-blue/10 rounded-2xl flex items-center justify-center shrink-0">
                                 <item.icon className="w-6 h-6 text-racing-blue" />
                             </div>

@@ -20,7 +20,12 @@ import {
     Rotate3d,
     Play,
     Pause,
-    X
+    X,
+    Scale,
+    Ruler,
+    Layers,
+    TrendingUp,
+
 } from "lucide-react";
 
 const iconMap = {
@@ -43,7 +48,12 @@ const iconMap = {
     Rotate3d,
     Play,
     Pause,
-    X
+    X,
+    Scale,
+    Ruler,
+    Layers,
+    TrendingUp,
+
 };
 
 export type IconName = keyof typeof iconMap;

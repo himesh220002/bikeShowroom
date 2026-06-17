@@ -303,6 +303,7 @@ export function UserBookings() {
                                                                     <span className="text-[8px] font-black text-muted-foreground opacity-40 uppercase">/10</span>
                                                                 </div>
                                                                 <button
+                                                                    title="edit rating"
                                                                     onClick={() => setShowRatingEdit(booking._id)}
                                                                     className="p-1.5 bg-muted rounded-lg hover:bg-racing-blue/10 transition-colors group/edit"
                                                                 >
@@ -327,7 +328,7 @@ export function UserBookings() {
                                                                 </button>
                                                             ))}
                                                             {showRatingEdit === booking._id && (
-                                                                <button onClick={() => setShowRatingEdit(null)} className="w-6 h-6 flex items-center justify-center text-muted-foreground">
+                                                                <button title="close" onClick={() => setShowRatingEdit(null)} className="w-6 h-6 flex items-center justify-center text-muted-foreground">
                                                                     <X className="w-3 h-3" />
                                                                 </button>
                                                             )}
@@ -402,6 +403,7 @@ export function UserBookings() {
                                                                     <MessageSquare className="w-3 h-3" /> Shared Feedback
                                                                 </div>
                                                                 <button
+                                                                    title="edit feedback"
                                                                     onClick={() => { setShowFeedbackEdit(booking._id); setTempFeedback(booking.feedback || ""); }}
                                                                     className="text-muted-foreground hover:text-racing-blue transition-colors"
                                                                 >
@@ -460,6 +462,7 @@ export function UserBookings() {
                                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground pl-10">Ref: #{viewingInvoice._id?.slice(-6).toUpperCase() || 'NEW'}</p>
                                     </div>
                                     <button
+                                        title="close invoice"
                                         onClick={() => setViewingInvoice(null)}
                                         className="p-3 hover:bg-muted rounded-2xl transition-colors group"
                                     >

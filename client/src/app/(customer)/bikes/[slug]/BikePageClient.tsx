@@ -113,7 +113,7 @@ export function BikePageClient({ bike }: { bike: any }) {
                                     </p>
                                 </div>
 
-                                <div className="bg-zinc-900/50 p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-zinc-800 backdrop-blur-sm relative overflow-hidden group">
+                                <div className="bg-zinc-900/50 p-6 md:p-10 rounded-[1.5rem] border border-zinc-800 backdrop-blur-sm relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-racing-blue/10 blur-3xl -mr-16 -mt-16 group-hover:bg-racing-blue/20 transition-colors" />
                                     <h4 className="text-white font-black uppercase tracking-widest mb-6 text-xs md:text-sm flex items-center gap-2">
                                         <Shield className="w-6 h-6 text-racing-blue" />

@@ -20,7 +20,7 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className="max-w-7xl mx-auto relative min-h-[600px] sm:rounded-[1.5rem] md:rounded-[4rem] overflow-hidden border border-border shadow-2xl group"
+                className="max-w-7xl mx-auto relative min-h-[600px] sm:rounded-[1.5rem] overflow-hidden border border-border shadow-2xl group"
             >
                 {/* Full Background Image */}
                 <div className="absolute inset-0 bg-zinc-950">
@@ -38,7 +38,7 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
                     <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/60 via-transparent to-transparent" />
                 </div>
 
-                <div className="relative z-10 h-full flex items-center p-8 md:p-20">
+                <div className="relative z-10 h-full flex items-center p-6 md:p-12">
                     <div className="max-w-3xl">
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
@@ -59,8 +59,8 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
                         >
-                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-black text-white uppercase tracking-tighter leading-[0.85] mb-8">
-                                ZERO <br />
+                            <h2 className="flex gap-2 text-3xl md:text-4xl lg:text-5xl font-display font-black text-white uppercase tracking-tighter leading-[0.85] mb-4">
+                                <span className="text-racing-blue">ZERO</span>
                                 <span className="text-racing-blue">DOWNPAYMENT</span>
                             </h2>
                             <p className="text-lg md:text-xl text-zinc-300 font-medium mb-12 max-w-xl leading-relaxed">
@@ -68,7 +68,7 @@ export function ZeroDownpaymentBanner({ bikeName, onApply }: ZeroDownpaymentBann
                             </p>
                         </motion.div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                             {[
                                 "Up to 100% On-Road Funding",
                                 "Flexible Down Payment Options",

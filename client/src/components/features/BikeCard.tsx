@@ -26,7 +26,7 @@ export function BikeCard({ bike, index = 0, isActive = true }: BikeCardProps) {
                 {/* Background Glow */}
                 <div
                     className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-700 mix-blend-screen pointer-events-none"
-                    style={{ background: `radial-gradient(circle at 50% 0%, ${primaryColor.hex}40 0%, transparent 70%)` }}
+                    ref={(el) => { if (el) el.style.background = `radial-gradient(circle at 50% 0%, ${primaryColor.hex}40 0%, transparent 70%)`; }}
                 />
 
                 {/* Tag */}
@@ -80,9 +80,9 @@ export function BikeCard({ bike, index = 0, isActive = true }: BikeCardProps) {
                         </div>
                     </div>
 
-                    <Link href={`/bikes/${bike.slug}`} className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20 group-hover:bg-racing-blue group-hover:border-racing-blue transition-all duration-500 shadow-xl shrink-0 group-hover:scale-110">
+                    <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20 group-hover:bg-racing-blue group-hover:border-racing-blue transition-all duration-500 shadow-xl shrink-0 group-hover:scale-110">
                         <ChevronRight className="w-6 h-6 group-hover:translate-x-0.5 transition-transform" />
-                    </Link>
+                    </div>
                 </div>
             </motion.div>
         </Link>
